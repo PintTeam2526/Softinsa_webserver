@@ -21,6 +21,7 @@ Plataforma de badges para a Softinsa
 Para executar o projeto usa este comando:
 
 ```bash
+  npm install //apenas na primeira vez
   npm start
 ```
 
