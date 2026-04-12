@@ -2,6 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
+var modeloDocumentos = require('../models/Documentos.model');
 
 //Adicionar um documento
 router.post('/create', function(req, res, next) {

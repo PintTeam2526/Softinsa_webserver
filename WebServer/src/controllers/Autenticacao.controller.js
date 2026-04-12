@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var modeloAutenticacao = require('../models/Autenticacao.model');
 
 //Registar um utilizador
 router.post('/register', function(req, res, next) {
@@ -14,9 +15,10 @@ router.post('/login', function(req, res, next) {
 });
 
 //Obter detalhes de um utilizador autenticado
-router.get('/get-me', function(req, res, next) {
-     res.send('Obter detalhes de um utilizador autenticado');
-    //res.json({chave:'valor'}); 
+router.get('/get-me', async function(req, res) {
+    var id = req.params.id;
+    var resposta = await modeloAutenticacao.getAutenticacao(id);
+    res.json(resposta.rows);  
 });
 
 //Editar detalhes de um utilizador autenticado

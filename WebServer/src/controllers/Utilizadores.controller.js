@@ -3,16 +3,16 @@ var router = express.Router();
 var modeloUtilizador = require('../models/Utilizadores.model')
 
 //Mostrar todos os utilizadores
-router.get('/show', async function(req, res, next) {
+router.get('/show', async function(req, res) {
     var resposta = await modeloUtilizador.getAllUsers();
     res.json(resposta.rows);
-    //res.send('Mostrar todos os utilizadores');
 });
 
 //Mostrar um utilizador com um determinado id
-router.get('/show/:id', function(req, res, next) {
-    res.send('Mostrar um utilizador com um determinado id');
-    //res.json({chave:'valor'});
+router.get('/show/:id', async function(req, res) {
+    var id = req.params.id;
+    var resposta = await modeloUtilizador.getUserByID(id);
+    res.json(resposta.rows);
 });
 
 //Adicionar um utilizador
@@ -28,9 +28,10 @@ router.put('/update/:id', function(req, res, next) {
 });
 
 //Eliminar um utilizador com um determinado id
-router.put('/delete/:id', function(req, res, next) {
-    res.send('Eliminar um utilizador com um determinado id');
-    //res.json({chave:'valor'});
+router.delete('/delete/:id', async function(req, res) {
+    var id = req.params.id;
+    var resposta = await modeloUtilizador.getUserByID(id);
+    res.json(resposta.rows);
 });
 
 module.exports = router;

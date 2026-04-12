@@ -1,10 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var modeloPedidos = require('../models/Pedidos.model');
 
 //Mostrar todos os pedidos
-router.get('/show', function(req, res, next) {
-    res.send('Mostrar todos os pedidos');
-    //res.json({chave:'valor'});
+router.get('/show', async function(req, res) {
+    var resposta = await modeloPedidos.getAllPedidos();
+    res.json(resposta.rows);
+});
+
+//Mostrar um pedido com um determinado id
+router.get('/show/:id', async function(req, res) {
+    var id = req.params.id;
+    var resposta = await modeloPedidos.getPedidoByID(id);
+    res.json(resposta.rows); 
 });
 
 //Adicionar pedidos
@@ -13,16 +21,17 @@ router.post('/create', function(req, res, next) {
     //res.json({chave:'valor'});
 });
 
-//Mostrar um pedido com um determinado id
-router.get('/show/:id', function(req, res, next) {
-    res.send('Mostrar um pedido com um determinado id');
-    //res.json({chave:'valor'}); 
-});
-
 //Atualizar um pedido com um determinado id
 router.put('/update/:id', function(req, res, next) {
     res.send('Atualizar um pedido com um determinado id');
     //res.json({chave:'valor'}); 
+});
+
+//Apagar um pedido com determinado id
+router.delete('/delete/:id', async function(req, res) {
+    var id = req.params.id;
+    var resposta = await modeloPedidos.deletePedidoByID(id);
+    res.json(resposta.rows); 
 });
 
 //Metodo de avaliação do talent manager
