@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-
 var modeloAreas = require('../models/Areas.model');
 
 //Mostrar todas as areas
