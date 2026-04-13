@@ -1,3 +1,5 @@
+//LIGAÇÂO A BASE DE DADOS
+
 const { Pool } = require('pg');
 require('dotenv').config();
 
