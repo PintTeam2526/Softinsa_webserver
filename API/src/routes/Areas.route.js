@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloAreas = require('../models/Areas.model');
+var modeloAreas = require('../controllers/Areas.controller');
 
 //Mostrar todas as areas
 router.get('/show', async function(req, res) {

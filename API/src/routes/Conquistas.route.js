@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloConquistas = require('../models/Conquistas.model');
+var modeloConquistas = require('../controllers/Conquistas.controller');
 
 //Mostrar todas as conquistas
 router.get('/show', async function(req, res) {

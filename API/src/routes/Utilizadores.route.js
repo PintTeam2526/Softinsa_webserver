@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloUtilizador = require('../models/Utilizadores.model')
+var modeloUtilizador = require('../controllers/Utilizadores.controller')
 
 //Mostrar todos os utilizadores
 router.get('/show', async function(req, res) {

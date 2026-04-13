@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloAutenticacao = require('../models/Autenticacao.model');
+var modeloAutenticacao = require('../controllers/Autenticacao.controller');
 
 //Registar um utilizador
 router.post('/register', function(req, res, next) {

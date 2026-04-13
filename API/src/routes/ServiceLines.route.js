@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloServiceLines = require('../models/ServiceLines.model');
+var modeloServiceLines = require('../controllers/ServiceLines.controller');
 
 //Mostrar todas as service lines
 router.get('/show', async function(req, res) {

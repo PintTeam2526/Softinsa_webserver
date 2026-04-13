@@ -1,23 +1,31 @@
-//LIGAÇÂO A BASE DE DADOS
+// LIGAÇÃO À BASE DE DADOS COM SEQUELIZE
 
-const { Pool } = require('pg');
+const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+// Criar instância do Sequelize
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 5432,
+    dialect: 'postgres',
+    logging: false, // podes pôr true se quiseres ver queries no console
+  }
+);
 
-pool.connect()
-  .then(client => {
-    console.log('Ligado ao PostgreSQL');
-    client.release();
-  })
-  .catch(err => {
-    console.error('Erro ao ligar ao PostgreSQL:', err.message);
-  });
+// Testar ligação
+async function connectDB() {
+  try {
+    await sequelize.authenticate();
+    console.log('Ligado ao PostgreSQL com Sequelize');
+  } catch (error) {
+    console.error('Erro ao ligar ao PostgreSQL:', error.message);
+  }
+}
 
-module.exports = pool;
+connectDB();
+
+module.exports = sequelize;

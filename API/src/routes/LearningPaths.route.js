@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloLearningPaths = require('../models/LearningPaths.model');
+var modeloLearningPaths = require('../controllers/LearningPaths.controller');
 
 //Mostrar todas as Learning Paths
 router.get('/show', async function(req, res) {

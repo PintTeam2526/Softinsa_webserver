@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloPedidos = require('../models/Pedidos.model');
+var modeloPedidos = require('../controllers/Pedidos.controller');
 
 //Mostrar todos os pedidos
 router.get('/show', async function(req, res) {

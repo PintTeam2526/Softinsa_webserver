@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var modeloBadges = require('../models/Badges.model');
+var modeloBadges = require('../controllers/Badges.controller');
 
 //Mostrar todos os badges
 router.get('/show', async function(req, res) {

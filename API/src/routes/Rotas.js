@@ -1,17 +1,17 @@
 const express = require('express');
 
-var homepageRouter = require('../controllers/Homepage.controller');
-var autenticacaoRouter = require('../controllers/Autenticacao.controller');
-var gestaoRouter = require('../controllers/Gestao.controller');
-var utilizadoresRouter = require('../controllers/Utilizadores.controller');
-var badgesRouter = require('../controllers/Badges.controller');
-var areasRouter = require('../controllers/Areas.controller');
-var serviceLinesRouter = require('../controllers/ServiceLines.controller');
-var learningPathsRouter = require('../controllers/LearningPaths.controller');
-var pedidosRouter = require('../controllers/Pedidos.controller');
-var conquistasRouter = require('../controllers/Conquistas.controller');
-var documentosRouter = require('../controllers/Documentos.controller');
-var notificacoesRouter = require('../controllers/Notificacoes.controller');
+var homepageRouter = require('../routes/Homepage.route');
+var autenticacaoRouter = require('../routes/Autenticacao.route');
+var gestaoRouter = require('../routes/Gestao.route');
+var utilizadoresRouter = require('../routes/Utilizadores.route');
+var badgesRouter = require('../routes/Badges.route');
+var areasRouter = require('../routes/Areas.route');
+var serviceLinesRouter = require('../routes/ServiceLines.route');
+var learningPathsRouter = require('../routes/LearningPaths.route');
+var pedidosRouter = require('../routes/Pedidos.route');
+var conquistasRouter = require('../routes/Conquistas.route');
+var documentosRouter = require('../routes/Documentos.route');
+var notificacoesRouter = require('../routes/Notificacoes.route');
 
 const router = express.Router();
 
