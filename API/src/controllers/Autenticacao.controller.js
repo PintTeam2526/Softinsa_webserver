@@ -1,13 +1,11 @@
-const db = require('../models/database');
+const Autenticacao = require('../models/Autenticacao');
 
-class ModeloAutenticacao {
-    
-    static async getAutenticacao() {
-      const resultados = await db.query('???????????????????????????????');
-      return resultados;
-    }
+//NÃO ESTÁ FEITO
+const controllers = {};
+controllers.funcao??? = async (req, res) => {
+    const resultado = await Autenticacao.funcao???(); 
+    res.json(resultado);
+};
 
 
-}
-
-module.exports = ModeloAutenticacao;
+module.exports = controllers;

@@ -12,7 +12,7 @@ router.get('/get/:id', controllerBadges.getBadgeByID);
 router.post('/create', controllerBadges.createBadge);
 
 // Atualizar badge
-router.put('/update/:id', controllerBadges.updateBadge);
+router.put('/update/:id', controllerBadges.updateBadgeByID);
 
 // Apagar badge
 router.delete('/delete/:id', controllerBadges.deleteBadgeByID);
