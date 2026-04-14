@@ -21,13 +21,13 @@ router.delete('/delete/:id', controllerBadges.deleteBadgeByID);
 router.get('/:badgeID/requisitos', controllerBadges.getAllRequisitos);
 
 // Mostrar um requisito com um id de um badge com um id
-router.get('/:badgeId/requisitos/:requisitoId', controllerBadges.getRequisitoByID);
+router.get('/:badgeId/requisitos/:id', controllerBadges.getRequisitoByID);
 
 // Criar requisito num badge com um id
 router.post('/:badgeId/requisitos/create', controllerBadges.createRequisito);
 
 // Eliminar requisito num badge com um id
-router.delete('/:badgeId/requisitos/:requisitoId/delete', controllerBadges.deleteRequisitoByID);
+router.delete('/:badgeId/requisitos/delete/:id', controllerBadges.deleteRequisitoByID);
 
 // Atualizar requisito num badge com um id
 router.update('/:badgeId/requisitos/update/:id', controllerBadges.updateRequisitoByID);

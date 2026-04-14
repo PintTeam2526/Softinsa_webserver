@@ -18,12 +18,12 @@ router.put('/update/:id', controllerPedidos.updatePedido);
 router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
 
 // Avaliação do Talent Manager
-router.post('/:id/tm-review', controllerPedidos.tmReview);
+router.post('/tm-review/:id', controllerPedidos.tmReview);
 
 // Avaliação do Service Line Leader e do admin
-router.post('/:id/sl-review', controllerPedidos.slReview);
+router.post('/sl-review/:id', controllerPedidos.slReview);
 
 // Reenviar pedido
-router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
+router.post('/resubmit/:id', controllerPedidos.resubmitPedido);
 
 module.exports = router;
