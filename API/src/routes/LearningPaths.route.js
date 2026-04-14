@@ -1,23 +1,20 @@
 var express = require('express');
 var router = express.Router();
-var modeloLearningPaths = require('../controllers/LearningPaths.controller');
+var controllerLearningPaths = require('../controllers/LearningPaths.controller');
 
 // Mostrar todas as Learning Paths
-router.get('/show', async function(req, res) {
-    const resposta = await modeloLearningPaths.getAllLearningPaths();
-    res.json(resposta);
-});
+router.get('/get', controllerLearningPaths.getAllLearningPaths);
 
 // Mostrar uma Learning Path por ID
-router.get('/show/:id', modeloLearningPaths.getLearningPathByID);
+router.get('/get/:id', controllerLearningPaths.getLearningPathByID);
 
 // Criar Learning Path
-router.post('/create', modeloLearningPaths.createLearningPath);
+router.post('/create', controllerLearningPaths.createLearningPath);
 
 // Atualizar Learning Path
-router.put('/update/:id', modeloLearningPaths.updateLearningPath);
+router.put('/update/:id', controllerLearningPaths.updateLearningPath);
 
 // Apagar Learning Path
-router.delete('/delete/:id', modeloLearningPaths.deleteLearningPathByID);
+router.delete('/delete/:id', controllerLearningPaths.deleteLearningPathByID);
 
 module.exports = router;

@@ -1,29 +1,29 @@
 var express = require('express');
 var router = express.Router();
-var modeloPedidos = require('../controllers/Pedidos.controller');
+var controllerPedidos = require('../controllers/Pedidos.controller');
 
 // Mostrar todos os pedidos
-router.get('/show', modeloPedidos.getAllPedidos);
+router.get('/get', controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
-router.get('/show/:id', modeloPedidos.getPedidoByID);
+router.get('/get/:id', controllerPedidos.getPedidoByID);
 
 // Criar pedido
-router.post('/create', modeloPedidos.createPedido);
+router.post('/create', controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/update/:id', modeloPedidos.updatePedido);
+router.put('/update/:id', controllerPedidos.updatePedido);
 
 // Apagar pedido
-router.delete('/delete/:id', modeloPedidos.deletePedidoByID);
+router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
 
 // Avaliação do Talent Manager
-router.post('/:id/tm-review', modeloPedidos.tmReview);
+router.post('/:id/tm-review', controllerPedidos.tmReview);
 
-// Avaliação do Service Line Leader
-router.post('/:id/sl-review', modeloPedidos.slReview);
+// Avaliação do Service Line Leader e do admin
+router.post('/:id/sl-review', controllerPedidos.slReview);
 
 // Reenviar pedido
-router.post('/:id/resubmit', modeloPedidos.resubmitPedido);
+router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
 
 module.exports = router;

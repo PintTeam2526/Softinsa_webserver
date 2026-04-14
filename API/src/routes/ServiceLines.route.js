@@ -1,20 +1,20 @@
 var express = require('express');
 var router = express.Router();
-var modeloServiceLines = require('../controllers/ServiceLines.controller');
+var controllerServiceLines = require('../controllers/ServiceLines.controller');
 
 // Mostrar todas as service lines
-router.get('/show', modeloServiceLines.getAllServiceLines);
+router.get('/get', controllerServiceLines.getAllServiceLines);
 
 // Mostrar uma service line por ID
-router.get('/show/:id', modeloServiceLines.getServiceLineByID);
+router.get('/get/:id', controllerServiceLines.getServiceLineByID);
 
 // Criar service line
-router.post('/create', modeloServiceLines.createServiceLine);
+router.post('/create', controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/update/:id', modeloServiceLines.updateServiceLine);
+router.put('/update/:id', controllerServiceLines.updateServiceLine);
 
 // Apagar service line
-router.delete('/delete/:id', modeloServiceLines.deleteServiceLineByID);
+router.delete('/delete/:id', controllerServiceLines.deleteServiceLineByID);
 
 module.exports = router;
