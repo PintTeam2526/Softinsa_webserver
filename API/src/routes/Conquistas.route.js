@@ -8,7 +8,14 @@ router.get('/get', controllerConquistas.getAllConquistas);
 // Mostrar uma conquista por ID
 router.get('/get/:id', controllerConquistas.getConquistaByID);
 
-// Eliminar uma conquista
+// Adicionar conquistas
+router.post('/create', controllerConquistas.createConquista);
+
+// Atualizar uma conquista com determinado id
+router.put('/update/:id', controllerConquistas.updateConquistaByID);
+
+// Eliminar uma conquista por ID
 router.delete('/delete/:id', controllerConquistas.deleteConquistaByID);
+
 
 module.exports = router;

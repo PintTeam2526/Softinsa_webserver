@@ -14,7 +14,7 @@ router.post('/create', controllerAreas.createArea);
 // Atualizar uma area com determinado id
 router.put('/update/:id', controllerAreas.updateAreaByID);
 
-// Apagar uma area com determinado id
+// Eliminar uma area com determinado id
 router.delete('/delete/:id', controllerAreas.deleteAreaByID);
 
 
