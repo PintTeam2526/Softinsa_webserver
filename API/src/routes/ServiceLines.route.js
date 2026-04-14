@@ -12,7 +12,7 @@ router.get('/get/:id', controllerServiceLines.getServiceLineByID);
 router.post('/create', controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/update/:id', controllerServiceLines.updateServiceLine);
+router.put('/update/:id', controllerServiceLines.updateServiceLineByID);
 
 // Apagar service line
 router.delete('/delete/:id', controllerServiceLines.deleteServiceLineByID);

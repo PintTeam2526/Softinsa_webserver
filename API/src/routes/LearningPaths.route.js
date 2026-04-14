@@ -12,7 +12,7 @@ router.get('/get/:id', controllerLearningPaths.getLearningPathByID);
 router.post('/create', controllerLearningPaths.createLearningPath);
 
 // Atualizar Learning Path
-router.put('/update/:id', controllerLearningPaths.updateLearningPath);
+router.put('/update/:id', controllerLearningPaths.updateLearningPathByID);
 
 // Apagar Learning Path
 router.delete('/delete/:id', controllerLearningPaths.deleteLearningPathByID);

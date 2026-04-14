@@ -12,7 +12,7 @@ router.get('/get/:id', controllerPedidos.getPedidoByID);
 router.post('/create', controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/update/:id', controllerPedidos.updatePedido);
+router.put('/update/:id', controllerPedidos.updatePedidoByID);
 
 // Apagar pedido
 router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
