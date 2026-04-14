@@ -1,6 +1,6 @@
 // LIGAÇÃO À BASE DE DADOS COM SEQUELIZE
 
-const { Sequelize } = require('sequelize');
+const Sequelize = require('sequelize');
 require('dotenv').config();
 
 // Criar instância do Sequelize

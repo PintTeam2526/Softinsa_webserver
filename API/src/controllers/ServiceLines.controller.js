@@ -1,23 +1,44 @@
-const db = require('../models/database');
+const ServiceLines = require('../models/ServiceLines');
 
-class ModeloServiceLines {
-    
-    static async getAllServiceLines() {
-      const resultados = await db.query('SELECT * FROM Service_Lines');
-      return resultados;
-    }
+const controllers = {};
 
-    static async getServiceLineByID(id) {
-      const resultados = await db.query('SELECT * FROM Service_Lines WHERE id_area = $1', [id]);
-      return resultados;
-    }
+//Mostrar todas as SL
+controllers.getAllServiceLines = async (req, res) => {
+    const resultado = await ServiceLines.findAll(); 
+    res.json(resultado);
+};
 
-    static async deleteServiceLineByID(id) {
-      const resultados = await db.query('DELETE FROM Service_Lines WHERE id_area = $1', [id]);
-      return resultados;
-    }
+// Mostrar uma SL com determinado id
+controllers.getServiceLineById = async (req, res) => {
+    const id = req.params.id;
+    const resultado = await ServiceLines.findByPk(id);
+    res.json(resultado);
+};
+
+//Criar uma SL
+controllers.createServiceLine = async (req, res) => {
+    const resultado = await ServiceLines.create(req.body);
+    res.json(resultado);
+};
+
+//Apagar uma SL com determinado id
+controllers.deleteServiceLineById = async (req, res) => {
+    const id = req.params.id;
+    await ServiceLines.destroy({
+        where: { id_serviceline: id }
+    });
+    res.json({ message: 'Service Line eliminada' });
+};
+
+//Atualizar uma SL com determinado id 
+controllers.updateServiceLineById = async (req, res) => {
+    const id = req.params.id;
+    await ServiceLines.update(req.body, {
+        where: { id_serviceline: id }
+    });
+    res.json({ message: 'Service Line atualizada' });
+};
 
 
-}
 
-module.exports = ModeloServiceLines;
+module.exports = controllers;

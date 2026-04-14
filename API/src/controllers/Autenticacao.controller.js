@@ -1,11 +1,7 @@
-const Autenticacao = require('../models/Autenticacao');
+const Autenticacao = require('../models/User');
 
-//NÃO ESTÁ FEITO
-const controllers = {};
-controllers.funcao??? = async (req, res) => {
-    const resultado = await Autenticacao.funcao???(); 
-    res.json(resultado);
-};
+
 
 
 module.exports = controllers;
+
