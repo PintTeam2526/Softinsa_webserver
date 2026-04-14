@@ -1,20 +1,12 @@
 // OPCIONAL (VER SE PRECISAMOS)
-
 var express = require('express');
 var router = express.Router();
-var modeloDocumentos = require('../controllers/Documentos.controller');
+var controllerDocumentos = require('../controllers/Documentos.controller');
 
-//Adicionar um documento
-router.post('/create', function(req, res, next) {
-    res.send('Adicionar um documento');
-    //res.json({chave:'valor'});
-});
+// Adicionar um documento
+router.post('/create', controllerDocumentos.createDocumento);
 
-//Eliminar um documento com um determinado id
-router.delete('/delete/:id', function(req, res, next) {
-    res.send('Eliminar um documento com um determinado id');
-    //res.json({chave:'valor'});
-});
-
+// Eliminar um documento por ID
+router.delete('/delete/:id', controllerDocumentos.deleteDocumentoByID);
 
 module.exports = router;

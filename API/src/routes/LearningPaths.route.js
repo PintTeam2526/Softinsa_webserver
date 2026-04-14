@@ -2,38 +2,22 @@ var express = require('express');
 var router = express.Router();
 var modeloLearningPaths = require('../controllers/LearningPaths.controller');
 
-//Mostrar todas as Learning Paths
+// Mostrar todas as Learning Paths
 router.get('/show', async function(req, res) {
-    var resposta = await modeloLearningPaths.getAllLearningPaths();
-    res.json(resposta.rows);
+    const resposta = await modeloLearningPaths.getAllLearningPaths();
+    res.json(resposta);
 });
 
-//Mostrar um Learning Path com um determinado id
-router.get('/show/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloLearnindPaths.getLearningPathByID(id);
-    res.json(resposta.rows);   
-});
+// Mostrar uma Learning Path por ID
+router.get('/show/:id', modeloLearningPaths.getLearningPathByID);
 
-//Adicionar Learning Paths
-router.post('/create', function(req, res, next) {
-    res.send('Adicionar Learning Paths');
-    //res.json({chave:'valor'});
-});
+// Criar Learning Path
+router.post('/create', modeloLearningPaths.createLearningPath);
 
-//Atualizar um Learning Path com um determinado id
-router.put('/update/:id', function(req, res, next) {
-    res.send('Atualizar um Learning Path com um determinado id');
-    //res.json({chave:'valor'});  
-});
+// Atualizar Learning Path
+router.put('/update/:id', modeloLearningPaths.updateLearningPath);
 
-//Apagar um Learning Path com um determinado id
-router.delete('/delete/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloLearningPaths.deleteLearningPathByID(id);
-    res.json(resposta.rows); 
-});
-
-
+// Apagar Learning Path
+router.delete('/delete/:id', modeloLearningPaths.deleteLearningPathByID);
 
 module.exports = router;

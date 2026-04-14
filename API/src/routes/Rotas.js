@@ -1,6 +1,5 @@
 const express = require('express');
 
-var homepageRouter = require('../routes/Homepage.route');
 var autenticacaoRouter = require('../routes/Autenticacao.route');
 var gestaoRouter = require('../routes/Gestao.route');
 var utilizadoresRouter = require('../routes/Utilizadores.route');
@@ -15,7 +14,6 @@ var notificacoesRouter = require('../routes/Notificacoes.route');
 
 const router = express.Router();
 
-router.use('/', homepageRouter);
 router.use('/autenticacao', autenticacaoRouter);
 router.use('/gestao', gestaoRouter);
 router.use('/utilizadores', utilizadoresRouter);

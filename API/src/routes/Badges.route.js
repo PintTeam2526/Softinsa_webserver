@@ -1,50 +1,26 @@
 var express = require('express');
 var router = express.Router();
-var modeloBadges = require('../controllers/Badges.controller');
+var controllerBadges = require('../controllers/Badges.controller');
 
-//Mostrar todos os badges
-router.get('/show', async function(req, res) {
-    var resposta = await modeloBadges.getAllBadges();
-    res.json(resposta.rows);
-});
+// Mostrar todos os badges
+router.get('/get', controllerBadges.getAllBadges);
 
-//Mostrar um badge com um determinado id
-router.get('/show/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloBadges.getBadgeByID(id);
-    res.json(resposta.rows);  
-});
+// Mostrar um badge por ID
+router.get('/get/:id', controllerBadges.getBadgeByID);
 
-//Adicionar badges
-router.post('/create', function(req, res, next) {
-     res.send('Adicionar badges');
-    //res.json({chave:'valor'}); 
-});
+// Criar badge
+router.post('/create', controllerBadges.createBadge);
 
-//Atualizar um badge com um determinado id
-router.put('/update/:id', function(req, res, next) {
-     res.send('Atualizar um badge com um determinado id');
-    //res.json({chave:'valor'}); 
-});
+// Atualizar badge
+router.put('/update/:id', controllerBadges.updateBadge);
 
-//Eliminar um badge com um determinado id
-router.delete('/delete/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloBadges.deleteBadgeByID(id);
-    res.json(resposta.rows);  
-});
+// Apagar badge
+router.delete('/delete/:id', controllerBadges.deleteBadgeByID);
 
-//Mostrar um requisito com um determinado id associado a um badge com um determinado id
-router.get('/:id/requisitos/show/:id', function(req, res, next) {
-     res.send('Mostrar um requisito com um determinado id associado a um badge com um determinado id');
-    //res.json({chave:'valor'}); 
-});
+// Mostrar requisito de um badge
+router.get('/:badgeId/requisitos/:requisitoId', controllerBadges.getRequisito);
 
-//Criar um requisito associado a um badge com um determinado id
-router.post('/:id/requisitos/create', function(req, res, next) {
-     res.send('Criar um requisito associado a um badge com um determinado id');
-    //res.json({chave:'valor'}); 
-});
-
+// Criar requisito num badge
+router.post('/:badgeId/requisitos/create', controllerBadges.createRequisito);
 
 module.exports = router;

@@ -1,25 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var modeloConquistas = require('../controllers/Conquistas.controller');
+var controllerConquistas = require('../controllers/Conquistas.controller');
 
-//Mostrar todas as conquistas
-router.get('/show', async function(req, res) {
-    var resposta = await modeloConquistas.getAllConquistas();
-    res.json(resposta.rows);
-});
+// Mostrar todas as conquistas
+router.get('/show', controllerConquistas.getAllConquistas);
 
-//Mostrar uma conquista com determinado id
-router.get('/show/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloConquistas.getConquistaByID(id);
-    res.json(resposta.rows); 
-});
+// Mostrar uma conquista por ID
+router.get('/show/:id', controllerConquistas.getConquistaByID);
 
-//Eliminar uma conquista com um determinado id
-router.delete('/delete/:id', async function(req, res) {
-    var id = req.params.id;
-    var resposta = await modeloConquistas.deleteConquistaByID(id);
-    res.json(resposta.rows);  
-});
+// Eliminar uma conquista
+router.delete('/delete/:id', controllerConquistas.deleteConquistaByID);
 
 module.exports = router;

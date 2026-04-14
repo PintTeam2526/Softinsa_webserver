@@ -2,12 +2,9 @@
 
 var express = require('express');
 var router = express.Router();
-var modeloGestao = require('../controllers/Gestao.controller');
+var controllerGestao = require('../controllers/Gestao.controller');
 
-//
-router.get('/', function(req, res, next) {
-
-});
-
+// Exemplo: obter dados de gestão
+router.get('/', controllerGestao.getDados);
 
 module.exports = router;
