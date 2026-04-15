@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var controllerAutenticacao = require('../controllers/Autenticacao.controller');
+var middlewareAuth = require('../middleware/auth.middleware')
 
 // Registar um utilizador
 router.post('/register', controllerAutenticacao.register);
 
 // Autenticar um utilizador
-router.post('/login', controllerAutenticacao.login);
+router.post('/login', middlewareAuth ,controllerAutenticacao.login);
 
 // Obter utilizador autenticado
 router.get('/get-me', controllerAutenticacao.getAutenticacao);
