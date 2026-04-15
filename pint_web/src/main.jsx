@@ -7,9 +7,10 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 // Se baixares o template oficial, aqui importarias o ficheiro customizado:
 import './assets/scss/hope-ui.scss' 
+import Dashboard from './App'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <Dashboard />
   </React.StrictMode>,
 )
