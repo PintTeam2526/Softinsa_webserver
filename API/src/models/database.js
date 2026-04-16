@@ -28,4 +28,17 @@ async function connectDB() {
 
 connectDB();
 
+async function setup() {
+  try {
+    // Criar tabela (se não existir)
+    await sequelize.sync({alter: true}); 
+    console.log('Tabela criada!');
+
+  } catch (error) {
+    console.error('Erro:', error);
+  }
+}
+
+setup();
+
 module.exports = sequelize;

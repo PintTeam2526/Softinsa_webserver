@@ -6,7 +6,7 @@ var Utilizadores = sequelize.define('Utilizadores',
     ID_UTILIZADOR: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        autoIncrement: true
     },
     NOME_UTILIZADOR: {
         type: Sequelize.TEXT,
@@ -34,7 +34,7 @@ var Utilizadores = sequelize.define('Utilizadores',
     }
 },
 {
-    tableName: 'UTILIZADORES',
+    tableName: 'utilizadores',
     timestamps: true //guardar data e hora de cada alteração na tabela
 });
 

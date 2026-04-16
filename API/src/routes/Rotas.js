@@ -1,7 +1,7 @@
 const express = require('express');
 
 var autenticacaoRouter = require('../routes/Autenticacao.route');
-var gestaoRouter = require('../routes/Gestao.route');
+/*var gestaoRouter = require('../routes/Gestao.route');
 var utilizadoresRouter = require('../routes/Utilizadores.route');
 var badgesRouter = require('../routes/Badges.route');
 var areasRouter = require('../routes/Areas.route');
@@ -10,12 +10,12 @@ var learningPathsRouter = require('../routes/LearningPaths.route');
 var pedidosRouter = require('../routes/Pedidos.route');
 var conquistasRouter = require('../routes/Conquistas.route');
 var documentosRouter = require('../routes/Documentos.route');
-var notificacoesRouter = require('../routes/Notificacoes.route');
+var notificacoesRouter = require('../routes/Notificacoes.route');*/
 
 const router = express.Router();
 
 router.use('/autenticacao', autenticacaoRouter);
-router.use('/gestao', gestaoRouter);
+/*router.use('/gestao', gestaoRouter);
 router.use('/utilizadores', utilizadoresRouter);
 router.use('/badges', badgesRouter);
 router.use('/areas', areasRouter);
@@ -24,6 +24,6 @@ router.use('/learningPaths', learningPathsRouter);
 router.use('/pedidos', pedidosRouter);
 router.use('/conquistas', conquistasRouter);
 router.use('/documentos', documentosRouter);
-router.use('/notificacoes', notificacoesRouter);
+router.use('/notificacoes', notificacoesRouter);*/
 
 module.exports = router;
