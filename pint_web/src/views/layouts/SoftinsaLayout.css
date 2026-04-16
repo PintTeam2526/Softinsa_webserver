@@ -1,0 +1,14 @@
+.softinsa-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.softinsa-main-content {
+  background-color: #f6f7f9;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.softinsa-content-inner {
+  padding: 0;
+}
