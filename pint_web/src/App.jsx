@@ -1,7 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
 import DashboardView from './views/pages/DashboardView'
-import PlaceholderView from './views/pages/PlaceholderView'
+import SoftinsaUsers from './views/pages/admin/softinsa-users'
+import SoftinsaPedidos from './views/pages/admin/softinsa-pedidos'
+import SoftinsaSlas from './views/pages/admin/softinsa-slas'
+import SoftinsaRgpd from './views/pages/admin/softinsa-rgpd'
+import SoftinsaBadges from './views/pages/admin/softinsa-badges'
+import SoftinsaAreas from './views/pages/admin/softinsa-areas'
+import SoftinsaServiceLines from './views/pages/admin/softinsa-service-lines'
+import SoftinsaLearningPaths from './views/pages/admin/softinsa-learning-paths'
 
 function App() {
   return (
@@ -10,14 +17,14 @@ function App() {
 
       <Route path="/softinsa" element={<SoftinsaLayout />}>
         <Route index element={<DashboardView />} />
-        <Route path="utilizadores" element={<PlaceholderView title="Utilizadores" />} />
-        <Route path="pedidos" element={<PlaceholderView title="Pedidos" />} />
-        <Route path="slas" element={<PlaceholderView title="SLAs" />} />
-        <Route path="rgpd" element={<PlaceholderView title="RGPD" />} />
-        <Route path="badges" element={<PlaceholderView title="Badges" />} />
-        <Route path="areas" element={<PlaceholderView title="Areas" />} />
-        <Route path="service-lines" element={<PlaceholderView title="Service Lines" />} />
-        <Route path="learning-paths" element={<PlaceholderView title="Learning Paths" />} />
+        <Route path="utilizadores" element={<SoftinsaUsers />} />
+        <Route path="pedidos" element={<SoftinsaPedidos />} />
+        <Route path="slas" element={<SoftinsaSlas />} />
+        <Route path="rgpd" element={<SoftinsaRgpd />} />
+        <Route path="badges" element={<SoftinsaBadges />} />
+        <Route path="areas" element={<SoftinsaAreas />} />
+        <Route path="service-lines" element={<SoftinsaServiceLines />} />
+        <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/softinsa" replace />} />
