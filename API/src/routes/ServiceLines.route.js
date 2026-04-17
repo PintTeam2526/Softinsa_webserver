@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var controllerServiceLines = require('../controllers/ServiceLines.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 // Mostrar todas as service lines
 router.get('/get', controllerServiceLines.getAllServiceLines);
@@ -9,12 +10,12 @@ router.get('/get', controllerServiceLines.getAllServiceLines);
 router.get('/get/:id', controllerServiceLines.getServiceLineByID);
 
 // Criar service line
-router.post('/create', controllerServiceLines.createServiceLine);
+router.post('/create', authVerification,controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/update/:id', controllerServiceLines.updateServiceLineByID);
+router.put('/update/:id', authVerification,controllerServiceLines.updateServiceLineByID);
 
 // Apagar service line
-router.delete('/delete/:id', controllerServiceLines.deleteServiceLineByID);
+router.delete('/delete/:id',authVerification, controllerServiceLines.deleteServiceLineByID);
 
 module.exports = router;

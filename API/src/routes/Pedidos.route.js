@@ -1,29 +1,30 @@
 var express = require('express');
 var router = express.Router();
 var controllerPedidos = require('../controllers/Pedidos.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 // Mostrar todos os pedidos
-router.get('/get', controllerPedidos.getAllPedidos);
+router.get('/get',authVerification, controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
-router.get('/get/:id', controllerPedidos.getPedidoByID);
+router.get('/get/:id', authVerification,controllerPedidos.getPedidoByID);
 
 // Criar pedido
-router.post('/create', controllerPedidos.createPedido);
+router.post('/create', authVerification,controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/update/:id', controllerPedidos.updatePedidoByID);
+router.put('/update/:id', authVerification,controllerPedidos.updatePedidoByID);
 
 // Apagar pedido
-router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
+router.delete('/delete/:id', authVerification,controllerPedidos.deletePedidoByID);
 
 // Avaliação do Talent Manager
-router.post('/tm-review/:id', controllerPedidos.tmReview);
+router.post('/tm-review/:id', authVerification,controllerPedidos.tmReview);
 
 // Avaliação do Service Line Leader e do admin
-router.post('/sl-review/:id', controllerPedidos.slReview);
+router.post('/sl-review/:id',authVerification, controllerPedidos.slReview);
 
 // Reenviar pedido
-router.post('/resubmit/:id', controllerPedidos.resubmitPedido);
+router.post('/resubmit/:id', authVerification,controllerPedidos.resubmitPedido);
 
 module.exports = router;
