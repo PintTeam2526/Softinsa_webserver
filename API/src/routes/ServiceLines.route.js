@@ -6,15 +6,15 @@ var controllerServiceLines = require('../controllers/ServiceLines.controller');
 router.get('/get', controllerServiceLines.getAllServiceLines);
 
 // Mostrar uma service line por ID
-router.get('/get/:id', controllerServiceLines.getServiceLineByID);
+router.get('/:id/get', controllerServiceLines.getServiceLineByID);
 
 // Criar service line
 router.post('/create', controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/update/:id', controllerServiceLines.updateServiceLineByID);
+router.put('/:id/update', controllerServiceLines.updateServiceLineByID);
 
 // Apagar service line
-router.delete('/delete/:id', controllerServiceLines.deleteServiceLineByID);
+router.delete('/:id/delete', controllerServiceLines.deleteServiceLineByID);
 
 module.exports = router;

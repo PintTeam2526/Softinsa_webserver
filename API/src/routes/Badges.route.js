@@ -6,16 +6,16 @@ var controllerBadges = require('../controllers/Badges.controller');
 router.get('/get', controllerBadges.getAllBadges);
 
 // Mostrar um badge por ID
-router.get('/get/:id', controllerBadges.getBadgeByID);
+router.get('/:id/get', controllerBadges.getBadgeByID);
 
 // Adicionar badges
 router.post('/create', controllerBadges.createBadge);
 
 // Atualizar um badge
-router.put('/update/:id', controllerBadges.updateBadgeByID);
+router.put('/:id/update', controllerBadges.updateBadgeByID);
 
 // Eliminar um  badge
-router.delete('/delete/:id', controllerBadges.deleteBadgeByID);
+router.delete('/:id/delete', controllerBadges.deleteBadgeByID);
 
 
 //AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
@@ -30,10 +30,10 @@ router.get('/:badgeId/requisitos/:id', controllerBadges.getRequisitoByID);
 router.post('/:badgeId/requisitos/create', controllerBadges.createRequisito);
 
 // Eliminar requisito num badge com um id
-router.delete('/:badgeId/requisitos/delete/:id', controllerBadges.deleteRequisitoByID);
+router.delete('/:badgeId/requisitos/:id/delete', controllerBadges.deleteRequisitoByID);
 
 // Atualizar requisito num badge com um id
-router.update('/:badgeId/requisitos/update/:id', controllerBadges.updateRequisitoByID);
+router.update('/:badgeId/requisitos/:id/update', controllerBadges.updateRequisitoByID);
 
 
 
