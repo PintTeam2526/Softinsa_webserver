@@ -17,6 +17,9 @@ router.put('/update/:id', controllerBadges.updateBadgeByID);
 // Eliminar um  badge
 router.delete('/delete/:id', controllerBadges.deleteBadgeByID);
 
+
+//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
+
 // Mostrar todos os requisitos de um badge com um id
 router.get('/:badgeID/requisitos', controllerBadges.getAllRequisitos);
 

@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var controllerAutenticacao = require('../controllers/Autenticacao.controller');
 
+
+//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
+
+
 // Registar um utilizador
 router.post('/register', controllerAutenticacao.register);
 

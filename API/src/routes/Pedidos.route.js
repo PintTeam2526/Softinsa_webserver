@@ -17,6 +17,9 @@ router.put('/update/:id', controllerPedidos.updatePedidoByID);
 // Apagar pedido
 router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
 
+
+//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
+
 // Avaliação do Talent Manager
 router.post('/tm-review/:id', controllerPedidos.tmReview);
 
