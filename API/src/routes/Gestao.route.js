@@ -3,27 +3,27 @@ var router = express.Router();
 var controllerGestao = require('../controllers/Gestao.controller');
 
 // Buscar todas as SLA
-router.get('/get/sla', controllerGestao.getSLA);
+router.get('/sla/get', controllerGestao.getSLA);
 
 // Criar uma SLA
-router.post('/create/sla', controllerGestao.createSLA);
+router.post('/sla/create', controllerGestao.createSLA);
 
 // Atualizar uma SLA
-router.put('/update/sla/:id', controllerGestao.updateSLA);
+router.put('/sla/:id/update', controllerGestao.updateSLA);
 
 // Apagar uma SLA
-router.delete('/delete/rgpd/:id', controllerGestao.deleteSLA);
+router.delete('/rgpd/:id/delete', controllerGestao.deleteSLA);
 
 // Buscar todas as RGPD
-router.get('/get/rgpd', controllerGestao.getRGPD);
+router.get('/rgpd/get', controllerGestao.getRGPD);
 
 // Criar uma RGPD
-router.post('/create/rgpd', controllerGestao.createRGPD);
+router.post('/rgpd/create', controllerGestao.createRGPD);
 
 // Atualizar uma RGPD
-router.put('/update/rgpd/:id', controllerGestao.updateRGPD);
+router.put('/rgpd/:id/update', controllerGestao.updateRGPD);
 
 // Apagar uma RGPD
-router.delete('/delete/rgpd/:id', controllerGestao.deleteRGPD);
+router.delete('/rgpd/:id/delete', controllerGestao.deleteRGPD);
 
 module.exports = router;

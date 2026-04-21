@@ -6,24 +6,24 @@ var controllerPedidos = require('../controllers/Pedidos.controller');
 router.get('/get', controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
-router.get('/get/:id', controllerPedidos.getPedidoByID);
+router.get('/:id/get', controllerPedidos.getPedidoByID);
 
 // Criar pedido
 router.post('/create', controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/update/:id', controllerPedidos.updatePedidoByID);
+router.put('/:id/update', controllerPedidos.updatePedidoByID);
 
 // Apagar pedido
-router.delete('/delete/:id', controllerPedidos.deletePedidoByID);
+router.delete('/:id/delete', controllerPedidos.deletePedidoByID);
 
 // Avaliação do Talent Manager
-router.post('/tm-review/:id', controllerPedidos.tmReview);
+router.post('/:id/tm-review', controllerPedidos.tmReview);
 
 // Avaliação do Service Line Leader e do admin
-router.post('/sl-review/:id', controllerPedidos.slReview);
+router.post('/:id/sl-review', controllerPedidos.slReview);
 
 // Reenviar pedido
-router.post('/resubmit/:id', controllerPedidos.resubmitPedido);
+router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
 
 module.exports = router;

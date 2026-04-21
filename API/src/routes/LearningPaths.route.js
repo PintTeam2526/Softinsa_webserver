@@ -6,15 +6,15 @@ var controllerLearningPaths = require('../controllers/LearningPaths.controller')
 router.get('/get', controllerLearningPaths.getAllLearningPaths);
 
 // Mostrar uma Learning Path por ID
-router.get('/get/:id', controllerLearningPaths.getLearningPathByID);
+router.get('/:id/get', controllerLearningPaths.getLearningPathByID);
 
 // Criar Learning Path
 router.post('/create', controllerLearningPaths.createLearningPath);
 
 // Atualizar Learning Path
-router.put('/update/:id', controllerLearningPaths.updateLearningPathByID);
+router.put('/:id/update', controllerLearningPaths.updateLearningPathByID);
 
 // Apagar Learning Path
-router.delete('/delete/:id', controllerLearningPaths.deleteLearningPathByID);
+router.delete('/:id/delete', controllerLearningPaths.deleteLearningPathByID);
 
 module.exports = router;

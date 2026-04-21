@@ -6,16 +6,16 @@ var controllerConquistas = require('../controllers/Conquistas.controller');
 router.get('/get', controllerConquistas.getAllConquistas);
 
 // Mostrar uma conquista por ID
-router.get('/get/:id', controllerConquistas.getConquistaByID);
+router.get('/:id/get', controllerConquistas.getConquistaByID);
 
 // Adicionar conquistas
 router.post('/create', controllerConquistas.createConquista);
 
 // Atualizar uma conquista com determinado id
-router.put('/update/:id', controllerConquistas.updateConquistaByID);
+router.put('/:id/update', controllerConquistas.updateConquistaByID);
 
 // Eliminar uma conquista por ID
-router.delete('/delete/:id', controllerConquistas.deleteConquistaByID);
+router.delete('/:id/delete', controllerConquistas.deleteConquistaByID);
 
 
 module.exports = router;
