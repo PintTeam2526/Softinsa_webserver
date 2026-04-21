@@ -1,46 +1,46 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
 {
-    ID_NOTIFICACAOPEDIDOS: {
+    id_notificacaopedidos: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_PEDIDO_BADGE: {
+    id_pedido_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    JUSTIFICACAO: {
+    justificacao: {
         type: Sequelize.TEXT,
         allowNull: true
     },
-    DATA_ENVIO_NOTIFICACAO: {
+    data_envio_notificacao: {
         type: Sequelize.DATE,
         allowNull: false
     }
 },
 {
-    tableName: 'NOTIFICACOES_PEDIDOS',
+    tableName: 'Notificacoes_Pedidos',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'REFERENTE_FK',
-            fields: ['ID_PEDIDO_BADGE']
+            fields: ['id_pedido_badge']
         },
         {
             name: 'PERTENCE_FK',
-            fields: ['ID_UTILIZADOR', 'ID_CONSULTOR']
+            fields: ['id_utilizador', 'id_consultor']
         }
     ]
 });

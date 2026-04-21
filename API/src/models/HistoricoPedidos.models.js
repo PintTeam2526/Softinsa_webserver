@@ -1,58 +1,58 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var HistoricoPedidos = sequelize.define('HistoricoPedidos',
 {
-    ID_HISTORICO: {
+    id_historico: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_ESTADO: {
+    id_estado: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_PEDIDO_BADGE: {
+    id_pedido_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    PEDIDO: {
+    pedido: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    AVALIADOR: {
+    avaliador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    DATA: {
+    data: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    ESTADO_OBJETIVO: {
+    estado_objetivo: {
         type: Sequelize.TEXT,
         allowNull: false
     }
 },
 {
-    tableName: 'HISTORICO_PEDIDOS',
+    tableName: 'Historico_Pedidos',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POSSUI_11_FK',
-            fields: ['ID_PEDIDO_BADGE']
+            fields: ['id_pedido_badge']
         },
         {
             name: 'POSSUI_12_FK',
-            fields: ['ID_ESTADO']
+            fields: ['id_estado']
         },
         {
             name: 'ATUALIZA_FK',
-            fields: ['ID_UTILIZADOR']
+            fields: ['id_utilizador']
         }
     ]
 });

@@ -15,7 +15,10 @@ router.post('/create', controllerUtilizador.createUser);
 router.put('/update/:id', controllerUtilizador.updateUserByID);
 
 //Eliminar um utilizador com um determinado id
-router.delete('/delete/:id', controllerUtilizador.getUserByID);
+router.delete('/delete/:id', controllerUtilizador.deleteUserByID);
+
+
+//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
 
 //Adicionar um objetivo do consultor
 router.post('/create/objetivo/:id', controllerUtilizador.createObjetivo)

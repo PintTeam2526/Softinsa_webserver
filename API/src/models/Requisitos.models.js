@@ -1,38 +1,38 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Requisitos = sequelize.define('Requisitos',
 {
-    ID_REQUISITO: {
+    id_requisito: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_BADGE: {
+    id_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    NOME_REQUISITO: {
+    nome_requisito: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DESCRICAO_REQUISITO: {
+    descricao_requisito: {
         type: Sequelize.TEXT,
         allowNull: true
     },
-    IMAGEM_REQUISITO: {
+    imagem_requisito: {
         type: Sequelize.STRING(254),
         allowNull: true
     }
 },
 {
-    tableName: 'REQUISITOS',
+    tableName: 'Requisitos',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'TEM_FK',
-            fields: ['ID_BADGE']
+            fields: ['id_badge']
         }
     ]
 });

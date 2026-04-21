@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var controllerGestao = require('../controllers/Gestao.controller');
 
+
+//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
+
 // Buscar todas as SLA
 router.get('/get/sla', controllerGestao.getSLA);
 

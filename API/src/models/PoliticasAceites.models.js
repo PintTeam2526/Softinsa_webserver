@@ -1,31 +1,31 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var PoliticasAceites = sequelize.define('PoliticasAceites',
 {
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_POLITICA: {
+    id_politica: {
         type: Sequelize.TEXT,
         primaryKey: true,
         allowNull: false
     }
 },
 {
-    tableName: 'POLITICAS_ACEITES',
+    tableName: 'Politicas_Aceites',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POLITICAS_ACEITES_FK',
-            fields: ['ID_UTILIZADOR']
+            fields: ['id_utilizador']
         },
         {
             name: 'POLITICAS_ACEITES2_FK',
-            fields: ['ID_POLITICA']
+            fields: ['id_politica']
         }
     ]
 });

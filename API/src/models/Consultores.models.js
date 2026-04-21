@@ -1,63 +1,63 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Consultores = sequelize.define('Consultores',
 {
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    TOTAL_PONTOS: {
+    total_pontos: {
         type: Sequelize.INTEGER,
         allowNull: true
     },
-    ID_AREA: {
+    id_area: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    NOME_UTILIZADOR: {
+    nome_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    EMAIL_UTILIZADOR: {
+    email_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    PASSWORD_UTILIZADOR: {
+    password_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    USERNAME_UTILIZADOR: {
+    username_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    TIPO_UTILIZADOR: {
+    tipo_utilizador: {
         type: Sequelize.STRING(2),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    esatdo_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'CONSULTORES',
+    tableName: 'Consultores',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POSSUI_1_FK',
-            fields: ['ID_AREA']
+            fields: ['id_area']
         },
         {
             name: 'INHERITANCE_1_FK',
-            fields: ['ID_UTILIZADOR']
+            fields: ['id_utilizador']
         }
     ]
 });

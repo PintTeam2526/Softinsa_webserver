@@ -1,32 +1,32 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var LearningPaths = sequelize.define('LearningPaths',
 {
-    ID_LEARNINGPATH: {
+    id_learningpath: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    NOME_LEARNINGPATH: {
+    nome_learningpath: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DESCRICAO_LEARNINGPATH: {
+    descricao_learningpath: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    IMAGEM_LEARNING_PATH: {
+    imagem_learningpath: {
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'LEARNING_PATHS',
+    tableName: 'Learning_Paths',
     timestamps: true //guardar data e hora de cada alteração na tabela
 });
 

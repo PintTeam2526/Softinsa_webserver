@@ -1,50 +1,50 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var BadgesConcluidos = sequelize.define('BadgesConcluidos',
 {
-    DATA_CONCLUSAO: {
+    data_conclusao: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    DATACONCLUSAO_BADGE: {
+    dataconclusao_badge: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    ID_BADGE_CONCLUIDO: {
+    id_badge_concluido: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_BADGE: {
+    id_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    URL_VALIDACAO: {
+    url_validacao: {
         type: Sequelize.TEXT,
         allowNull: false
     }
 },
 {
-    tableName: 'BADGES_CONCLUIDOS',
+    tableName: 'Badges_Concluidos',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'CONCLUIR_FK',
-            fields: ['ID_UTILIZADOR', 'ID_CONSULTOR']
+            fields: ['id_utilizador', 'id_consultor']
         },
         {
             name: 'POSSUI_8_FK',
-            fields: ['ID_BADGE']
+            fields: ['id_badge']
         }
     ]
 });

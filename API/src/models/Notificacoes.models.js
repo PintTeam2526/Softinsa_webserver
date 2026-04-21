@@ -1,26 +1,26 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Notificacoes = sequelize.define('Notificacoes',
 {
-    ID_NOTIFICACAO: {
+    id_notificacao: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    MENSAGEM: {
+    mensagem: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DATA_ENVIO: {
+    cata_envio: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    LIDA: {
+    lida: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }

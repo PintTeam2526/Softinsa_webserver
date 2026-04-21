@@ -1,46 +1,46 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Documentacoes = sequelize.define('Documentacoes',
 {
-    ID_DOCUMENTACAO: {
+    id_documentacao: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_PEDIDO_BADGE: {
+    id_pedido_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    DOCUMENTACAO: {
+    documentacao: {
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    VALIDADO: {
+    validacao: {
         type: Sequelize.BOOLEAN,
         allowNull: true
     }
 },
 {
-    tableName: 'DOCUMENTACOES',
+    tableName: 'Documentacoes',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POSSUI_FK',
-            fields: ['ID_PEDIDO_BADGE']
+            fields: ['id_pedido_badge']
         },
         {
             name: 'APRESENTA_FK',
-            fields: ['ID_UTILIZADOR', 'ID_CONSULTOR']
+            fields: ['id_utilizador', 'id_consultor']
         }
     ]
 });

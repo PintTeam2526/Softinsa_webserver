@@ -1,4 +1,6 @@
 const Utilizadores = require('../models/Utilizadores');
+const Objetivos = require('../models/Objetivos');
+const Notificacoes = require('../models/Notificacoes');
 
 const controllers = {};
 
@@ -39,6 +41,49 @@ controllers.updateUtilizadorById = async (req, res) => {
     res.json({ message: 'Utilizador atualizado' });
 };
 
+//Adicionar um objetivo do consultor
+controllers.createObjetivo = async (req, res) => {
+    const idUtilizador = req.params.id;
+    const resultado = await Objetivos.create({
+        ...req.body, //... serve para copiar tudo o que está dentro do objeto
+        id_utilizador: idUtilizador
+    });
+    res.json(resultado);
+};
+
+//Apagar um objetivo do consultor
+controllers.deleteObjetivoById = async (req, res) => {
+    const id = req.params.id;
+    const idUtilizador = req.params.id;
+    await Objetivos.destroy({
+        where: {
+            id_objetivo: id,
+            id_utilizador: idUtilizador
+        }
+    });
+    res.json({ message: 'Objetivo eliminado' });
+};
+
+// Listar notificações de um utilizador
+controllers.getAllNotificacoes = async (req, res) => {
+    const idUtilizador = req.params.id;
+    const resultado = await Notificacoes.findAll({
+        where: {
+            id_utilizador: idUtilizador
+        }
+    });
+    res.json(resultado);
+};
+
+// Enviar uma notificação
+controllers.createNotificacao = async (req, res) => {
+    const idUtilizador = req.params.id;
+    const resultado = await Notificacoes.create({
+        ...req.body, //... serve para copiar tudo o que está dentro do objeto
+        id_utilizador: idUtilizador
+    });
+    res.json(resultado);
+};
 
 
 module.exports = controllers;

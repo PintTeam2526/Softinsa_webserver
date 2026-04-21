@@ -1,54 +1,54 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Objetivos = sequelize.define('Objetivos',
 {
-    ID_OBJETIVO: {
+    id_objetivo: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_BADGE: {
+    id_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    DATA_LIMITE_CONCLUSAO: {
+    data_limite_conclusao: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    NOME_OBJETIVO: {
+    nome_objetivo: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DATA_CONCLUSAO_OBJETIVO: {
+    data_conclusao_objetivo: {
         type: Sequelize.DATE,
         allowNull: false
     },
-    ESTADO_OBJETIVO: {
+    estado_objetivo: {
         type: Sequelize.TEXT,
         allowNull: false
     }
 },
 {
-    tableName: 'OBJETIVOS',
+    tableName: 'Objetivos',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'CRIA_FK',
-            fields: ['ID_UTILIZADOR', 'ID_CONSULTOR']
+            fields: ['id_utilizador', 'id_consultor']
         },
         {
             name: 'POSSUI_5_FK',
-            fields: ['ID_BADGE']
+            fields: ['id_badge']
         }
     ]
 });
