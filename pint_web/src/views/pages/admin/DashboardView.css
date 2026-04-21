@@ -21,6 +21,13 @@
   line-height: 1.2;
 }
 
+.softinsa-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .softinsa-summary-card {
   border: 0;
   border-radius: 8px;
@@ -92,6 +99,11 @@
 @media (max-width: 992px) {
   .softinsa-dashboard-page {
     padding: 0 16px 20px;
+  }
+
+  .softinsa-summary-grid {
+    gap: 12px;
+    margin-bottom: 16px;
   }
 
   .softinsa-dashboard-hero {

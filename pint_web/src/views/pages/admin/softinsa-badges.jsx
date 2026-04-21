@@ -207,8 +207,12 @@ const SoftinsaBadges = memo(() => {
   );
 
   const totalPages = Math.max(1, Math.ceil(filteredBadges.length / cardsPerPage));
+  const currentPageClamped = Math.min(currentPage, totalPages);
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const paginatedBadges = filteredBadges.slice((currentPage - 1) * cardsPerPage, currentPage * cardsPerPage);
+  const paginatedBadges = filteredBadges.slice(
+    (currentPageClamped - 1) * cardsPerPage,
+    currentPageClamped * cardsPerPage
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -238,12 +242,6 @@ const SoftinsaBadges = memo(() => {
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isFilterOpen, isRequirementModalOpen]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -562,15 +560,15 @@ const SoftinsaBadges = memo(() => {
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(previousPage - 1, 1));
+    setCurrentPage((previousPage) => Math.max(Math.min(previousPage, totalPages) - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(previousPage + 1, totalPages));
+    setCurrentPage((previousPage) => Math.min(Math.min(previousPage, totalPages) + 1, totalPages));
   };
 
   const handlePageSelect = (page) => {
-    setCurrentPage(page);
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
   return (
@@ -722,9 +720,9 @@ const SoftinsaBadges = memo(() => {
         <div className="softinsa-badges-pagination" aria-label="Paginação">
           <button
             type="button"
-            className={`softinsa-badges-page-link${currentPage === 1 ? " is-disabled" : ""}`}
+            className={`softinsa-badges-page-link${currentPageClamped === 1 ? " is-disabled" : ""}`}
             onClick={handlePreviousPage}
-            disabled={currentPage === 1}
+            disabled={currentPageClamped === 1}
           >
             Anterior
           </button>
@@ -733,7 +731,7 @@ const SoftinsaBadges = memo(() => {
             <button
               key={pageNumber}
               type="button"
-              className={`softinsa-badges-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
+              className={`softinsa-badges-page-btn${currentPageClamped === pageNumber ? " is-active" : ""}`}
               onClick={() => handlePageSelect(pageNumber)}
             >
               {pageNumber}
@@ -742,9 +740,9 @@ const SoftinsaBadges = memo(() => {
 
           <button
             type="button"
-            className={`softinsa-badges-page-link${currentPage === totalPages ? " is-disabled" : ""}`}
+            className={`softinsa-badges-page-link${currentPageClamped === totalPages ? " is-disabled" : ""}`}
             onClick={handleNextPage}
-            disabled={currentPage === totalPages}
+            disabled={currentPageClamped === totalPages}
           >
             Próximo
           </button>

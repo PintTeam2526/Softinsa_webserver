@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
-import DashboardView from './views/pages/DashboardView'
+import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/softinsa-users'
 import SoftinsaPedidos from './views/pages/admin/softinsa-pedidos'
 import SoftinsaSlas from './views/pages/admin/softinsa-slas'

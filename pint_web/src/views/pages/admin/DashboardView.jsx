@@ -7,7 +7,7 @@ import {
   HiOutlineViewGrid,
 } from 'react-icons/hi'
 import { MdOutlineMiscellaneousServices } from 'react-icons/md'
-import { useDashboardController } from '../../controllers/dashboard.controller'
+import { useDashboardController } from '../../../controllers/dashboard.controller'
 import './DashboardView.css'
 
 const learningPathChartOptions = {
@@ -130,12 +130,12 @@ function DashboardView() {
   return (
     <section className="softinsa-dashboard-page">
       <div className="softinsa-dashboard-hero">
-        <h1>Ola, {user.name}!</h1>
+        <h1>Olá, {user.name}!</h1>
       </div>
 
-      <Row className="g-3 mb-4">
+      <div className="softinsa-summary-grid">
         {metrics.map((metric) => (
-          <Col key={metric.label} xxl={2} xl={3} md={4} sm={6}>
+          <div key={metric.label}>
             <Card className="softinsa-summary-card">
               <Card.Body className="softinsa-summary-card-body">
                 <span className="softinsa-summary-icon-shell">
@@ -148,9 +148,9 @@ function DashboardView() {
                 </div>
               </Card.Body>
             </Card>
-          </Col>
+          </div>
         ))}
-      </Row>
+      </div>
 
       <Card className="softinsa-chart-card mb-4">
         <Card.Header className="softinsa-chart-card-header">

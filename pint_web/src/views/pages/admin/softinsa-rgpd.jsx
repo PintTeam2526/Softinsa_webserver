@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 import "./softinsa-rgpd.css";
 
 const ACCEPTANCE_STORAGE_KEY = "softinsa.rgpd.acceptance";
@@ -128,31 +128,27 @@ const SoftinsaRgpd = memo(() => {
   const [editingTermId, setEditingTermId] = useState(null);
   const [formData, setFormData] = useState(getDefaultTermForm());
 
-  const [acceptance, setAcceptance] = useState(null);
-  const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
+  const [acceptance, setAcceptance] = useState(() => {
+    try {
+      const storedAcceptance = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
+      if (!storedAcceptance) {
+        return null;
+      }
+
+      const parsedAcceptance = JSON.parse(storedAcceptance);
+      return parsedAcceptance && typeof parsedAcceptance === "object" ? parsedAcceptance : null;
+    } catch (error) {
+      console.error("Nao foi possivel carregar estado de aceitação RGPD:", error);
+      localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
+      return null;
+    }
+  });
   const [consentChecks, setConsentChecks] = useState({});
   const [consentError, setConsentError] = useState("");
 
   const isTermModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
-
-  useEffect(() => {
-    try {
-      const storedAcceptance = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
-      if (!storedAcceptance) {
-        return;
-      }
-
-      const parsedAcceptance = JSON.parse(storedAcceptance);
-      if (parsedAcceptance && typeof parsedAcceptance === "object") {
-        setAcceptance(parsedAcceptance);
-      }
-    } catch (error) {
-      console.error("Nao foi possivel carregar estado de aceitação RGPD:", error);
-      localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
-    }
-  }, []);
 
   const mandatoryTerms = useMemo(() => terms.filter((term) => term.mandatory), [terms]);
 
@@ -174,26 +170,17 @@ const SoftinsaRgpd = memo(() => {
     return Boolean(acceptance && acceptance.version === consentVersion);
   }, [acceptance, consentVersion, mandatoryTerms.length]);
 
-  useEffect(() => {
-    if (mandatoryTerms.length === 0) {
-      setIsConsentModalOpen(false);
-      return;
-    }
+  const isConsentModalOpen = mandatoryTerms.length > 0 && !hasAcceptedCurrentVersion;
 
-    if (!hasAcceptedCurrentVersion) {
-      setConsentChecks((previousChecks) => {
-        const nextChecks = {};
+  const normalizedConsentChecks = useMemo(() => {
+    const nextChecks = {};
 
-        mandatoryTerms.forEach((term) => {
-          nextChecks[term.id] = Boolean(previousChecks[term.id]);
-        });
+    mandatoryTerms.forEach((term) => {
+      nextChecks[term.id] = Boolean(consentChecks[term.id]);
+    });
 
-        return nextChecks;
-      });
-      setConsentError("");
-      setIsConsentModalOpen(true);
-    }
-  }, [hasAcceptedCurrentVersion, mandatoryTerms]);
+    return nextChecks;
+  }, [consentChecks, mandatoryTerms]);
 
   const filteredTerms = terms.filter((term) => {
     const searchableTerm = normalizeSearchValue(`${term.name} ${term.description}`);
@@ -201,16 +188,14 @@ const SoftinsaRgpd = memo(() => {
   });
 
   const totalPages = Math.max(1, Math.ceil(filteredTerms.length / entriesPerPage));
+  const currentPageClamped = Math.min(currentPage, totalPages);
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const paginatedTerms = filteredTerms.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
+  const paginatedTerms = filteredTerms.slice(
+    (currentPageClamped - 1) * entriesPerPage,
+    currentPageClamped * entriesPerPage
+  );
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
-
-  const allMandatoryChecked = mandatoryTerms.every((term) => Boolean(consentChecks[term.id]));
+  const allMandatoryChecked = mandatoryTerms.every((term) => Boolean(normalizedConsentChecks[term.id]));
 
   const acceptedAtLabel = acceptance && acceptance.acceptedAt ? formatDateTimeLabel(acceptance.acceptedAt) : "";
 
@@ -282,15 +267,15 @@ const SoftinsaRgpd = memo(() => {
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(previousPage - 1, 1));
+    setCurrentPage((previousPage) => Math.max(Math.min(previousPage, totalPages) - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(previousPage + 1, totalPages));
+    setCurrentPage((previousPage) => Math.min(Math.min(previousPage, totalPages) + 1, totalPages));
   };
 
   const handlePageSelect = (page) => {
-    setCurrentPage(page);
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
   const handleConsentCheckChange = (termId, checked) => {
@@ -319,7 +304,6 @@ const SoftinsaRgpd = memo(() => {
     localStorage.setItem(ACCEPTANCE_STORAGE_KEY, JSON.stringify(nextAcceptance));
     setAcceptance(nextAcceptance);
     setConsentError("");
-    setIsConsentModalOpen(false);
   };
 
   const handleRejectTerms = () => {
@@ -337,7 +321,6 @@ const SoftinsaRgpd = memo(() => {
     localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
     setAcceptance(null);
     setConsentError("");
-    setIsConsentModalOpen(true);
   };
 
   return (
@@ -454,9 +437,9 @@ const SoftinsaRgpd = memo(() => {
           <div className="softinsa-rgpd-pagination" aria-label="Paginacao">
             <button
               type="button"
-              className={`softinsa-rgpd-page-link${currentPage === 1 ? " is-disabled" : ""}`}
+              className={`softinsa-rgpd-page-link${currentPageClamped === 1 ? " is-disabled" : ""}`}
               onClick={handlePreviousPage}
-              disabled={currentPage === 1}
+              disabled={currentPageClamped === 1}
             >
               Anterior
             </button>
@@ -465,7 +448,7 @@ const SoftinsaRgpd = memo(() => {
               <button
                 key={pageNumber}
                 type="button"
-                className={`softinsa-rgpd-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
+                className={`softinsa-rgpd-page-btn${currentPageClamped === pageNumber ? " is-active" : ""}`}
                 onClick={() => handlePageSelect(pageNumber)}
               >
                 {pageNumber}
@@ -474,9 +457,9 @@ const SoftinsaRgpd = memo(() => {
 
             <button
               type="button"
-              className={`softinsa-rgpd-page-link${currentPage === totalPages ? " is-disabled" : ""}`}
+              className={`softinsa-rgpd-page-link${currentPageClamped === totalPages ? " is-disabled" : ""}`}
               onClick={handleNextPage}
-              disabled={currentPage === totalPages}
+              disabled={currentPageClamped === totalPages}
             >
               Proximo
             </button>
@@ -552,7 +535,7 @@ const SoftinsaRgpd = memo(() => {
                 <label className="softinsa-rgpd-consent-item" key={term.id}>
                   <input
                     type="checkbox"
-                    checked={Boolean(consentChecks[term.id])}
+                    checked={Boolean(normalizedConsentChecks[term.id])}
                     onChange={(event) => handleConsentCheckChange(term.id, event.target.checked)}
                   />
                   <span>

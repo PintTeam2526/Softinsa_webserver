@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { availableLanguages, initialNotificationItems } from '../models/topbar.model'
 
 export function useTopbarController() {
@@ -13,20 +13,20 @@ export function useTopbarController() {
   const notificationWrapRef = useRef(null)
   const profileWrapRef = useRef(null)
 
-  function resetNotificationsState() {
+  const resetNotificationsState = useCallback(() => {
     setIsNotificationComposerOpen(false)
     setExpandedNotificationId(null)
     setNotificationBroadcastMessage('')
-  }
+  }, [])
 
-  function closeNotifications() {
+  const closeNotifications = useCallback(() => {
     setIsNotificationsOpen(false)
     resetNotificationsState()
-  }
+  }, [resetNotificationsState])
 
-  function closeProfileMenu() {
+  const closeProfileMenu = useCallback(() => {
     setIsProfileMenuOpen(false)
-  }
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -60,7 +60,7 @@ export function useTopbarController() {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
-  }, [])
+  }, [closeNotifications, closeProfileMenu])
 
   function toggleNotifications() {
     setIsNotificationsOpen((previousValue) => !previousValue)
