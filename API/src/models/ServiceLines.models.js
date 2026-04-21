@@ -1,54 +1,54 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var ServiceLines = sequelize.define('ServiceLines',
 {
-    ID_SERVICELINE: {
+    id_serviceline: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: true
     },
-    ID_SERVICE_LINE_LIDER: {
+    id_service_line_lider: {
         type: Sequelize.INTEGER,
         allowNull: true
     },
-    ID_LEARNINGPATH: {
+    id_learningpath: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    NOME_SERVICELINE: {
+    nome_serviceline: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DESCRICAO_SERVICELINE: {
+    descricao_serviceline: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    IMAGEM_SERVICE_LINE: {
+    imagem_serviceline: {
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'SERVICE_LINES',
+    tableName: 'Service_Lines',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POSSUI_2_FK',
-            fields: ['ID_LEARNINGPATH']
+            fields: ['id_learningpath']
         },
         {
             name: 'POSSUI_10_FK',
-            fields: ['ID_UTILIZADOR', 'ID_SERVICE_LINE_LIDER']
+            fields: ['id_utilizador', 'id_service_line_lider']
         }
     ]
 });

@@ -1,34 +1,34 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var NotificacoesAdmin = sequelize.define('NotificacoesAdmin',
 {
-    ID_NOTIFICACAOADMIN: {
+    id_notificacaoadmin: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_ADMINISTRADOR: {
+    id_administrador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    NOTIFICACAO: {
+    notificacao: {
         type: Sequelize.TEXT,
         allowNull: true
     }
 },
 {
-    tableName: 'NOTIFICACOES_ADMIN',
+    tableName: 'Notificacoes_Admin',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'ENVIA_FK',
-            fields: ['ID_UTILIZADOR', 'ID_ADMINISTRADOR']
+            fields: ['id_utilizador', 'id_administrador']
         }
     ]
 });

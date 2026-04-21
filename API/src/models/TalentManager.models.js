@@ -1,51 +1,51 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var TalentManager = sequelize.define('TalentManager',
 {
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_TALENT_MANAGER: {
+    id_talent_manager: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    NOME_UTILIZADOR: {
+    nome_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    EMAIL_UTILIZADOR: {
+    email_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    PASSWORD_UTILIZADOR: {
+    password_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    USERNAME_UTILIZADOR: {
+    username_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    TIPO_UTILIZADOR: {
+    tipo_utilizador: {
         type: Sequelize.STRING(2),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'TALENT_MANAGER',
+    tableName: 'Talent_Manager',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'INHERITANCE_2_FK',
-            fields: ['ID_UTILIZADOR']
+            fields: ['id_utilizador']
         }
     ]
 });

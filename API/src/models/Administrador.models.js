@@ -1,51 +1,51 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Administrador = sequelize.define('Administrador',
 {
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_ADMINISTRADOR: {
+    id_administrador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    NOME_UTILIZADOR: {
+    nome_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    EMAIL_UTILIZADOR: {
+    email_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    PASSWORD_UTILIZADOR: {
+    password_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    USERNAME_UTILIZADOR: {
+    username_utilizador: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    TIPO_UTILIZADOR: {
+    tipo_utilizador: {
         type: Sequelize.STRING(2),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'ADMINISTRADOR',
+    tableName: 'Administrador',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'INHERITANCE_4_FK',
-            fields: ['ID_UTILIZADOR']
+            fields: ['id_utilizador']
         }
     ]
 });

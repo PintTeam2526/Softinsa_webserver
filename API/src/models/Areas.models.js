@@ -1,30 +1,30 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Areas = sequelize.define('Areas',
 {
-    ID_AREA: {
+    id_area: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_SERVICELINE: {
+    id_serviceline: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    NOME_AREA: {
+    nome_area: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DESCRICAO_AREA: {
+    descricao_area: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    IMAGEM_AREA: {
+    imagem_area: {
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
@@ -36,7 +36,7 @@ var Areas = sequelize.define('Areas',
     indexes: [
         {
             name: 'POSSUI_3_FK',
-            fields: ['ID_SERVICELINE']
+            fields: ['id_serviceline']
         }
     ]
 });

@@ -1,74 +1,74 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var PedidosBadge = sequelize.define('PedidosBadge',
 {
-    ID_PEDIDO_BADGE: {
+    id_pedido_badge: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    CON_ID_UTILIZADOR: {
+    con_id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_CONSULTOR: {
+    id_consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    TAL_ID_UTILIZADOR: {
+    tal_id_utilizaddor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_TALENT_MANAGER: {
+    id_talent_manager: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_UTILIZADOR: {
+    id_utilizador: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_SERVICE_LINE_LIDER: {
+    id_service_line_lider: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_BADGE: {
+    id_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    CONSULTOR: {
+    consultor: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    BADGE: {
+    badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ESTADO_ATUAL: {
+    estado_atual: {
         type: Sequelize.INTEGER,
         allowNull: false
     }
 },
 {
-    tableName: 'PEDIDOS_BADGE',
+    tableName: 'Pedidos_Badge',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'EFETUA_FK',
-            fields: ['CON_ID_UTILIZADOR', 'ID_CONSULTOR']
+            fields: ['con_id_utilizador', 'id_consultor']
         },
         {
             name: 'REFERENTE_2_FK',
-            fields: ['ID_BADGE']
+            fields: ['id_badge']
         },
         {
             name: 'VALIDA_FK',
-            fields: ['TAL_ID_UTILIZADOR', 'ID_TALENT_MANAGER']
+            fields: ['tal_id_utilizador', 'id_talent_manager']
         },
         {
             name: 'VALIDA_2_FK',
-            fields: ['ID_UTILIZADOR', 'ID_SERVICE_LINE_LIDER']
+            fields: ['id_utilizador', 'id_service_line_lider']
         }
     ]
 });

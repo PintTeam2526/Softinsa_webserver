@@ -1,90 +1,90 @@
 var Sequelize = require('sequelize');
-var sequelize = require('./database');
+var sequelize = require('../database');
 
 var Badges = sequelize.define('Badges',
 {
-    ID_BADGE: {
+    id_badge: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
     },
-    ID_AREA: {
+    id_area: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ID_BADGE_CONCLUIDO: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-    },
-    ID_OBJETIVO: {
+    id_badge_concluido: {
         type: Sequelize.INTEGER,
         allowNull: true
     },
-    NOME_BADGE: {
+    id_objetivo: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+    },
+    nome_badge: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    DESCRICAO_BADGE: {
+    descricao_badge: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    PONTOS_BADGE: {
+    pontos_badge: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    PAGO: {
+    pago: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     },
-    NIVEL_BADGE: {
+    nivel_badge: {
         type: Sequelize.STRING(10),
         allowNull: false
     },
-    IMAGEM_BADGE: {
+    imagem_badge: {
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    SLA: {
+    sla: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    VALIDADE: {
+    validade: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    AREA: {
+    area: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    SERVICE_LINE: {
+    service_line: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    LEARNING_PATH: {
+    learning_path: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    ESTADO_A_I_: {
+    estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
 },
 {
-    tableName: 'BADGES',
+    tableName: 'Badges',
     timestamps: true, //guardar data e hora de cada alteração na tabela
 
     indexes: [
         {
             name: 'POSSUI_4_FK',
-            fields: ['ID_AREA']
+            fields: ['id_area']
         },
         {
             name: 'POSSUI_6_FK',
-            fields: ['ID_OBJETIVO']
+            fields: ['id_objetivo']
         },
         {
             name: 'POSSUI_7_FK',
-            fields: ['ID_BADGE_CONCLUIDO']
+            fields: ['id_badge_concluido']
         }
     ]
 });
