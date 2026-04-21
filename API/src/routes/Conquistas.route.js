@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var controllerConquistas = require('../controllers/Conquistas.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 // Mostrar todas as conquistas
 router.get('/get', controllerConquistas.getAllConquistas);
@@ -9,7 +10,7 @@ router.get('/get', controllerConquistas.getAllConquistas);
 router.get('/:id/get', controllerConquistas.getConquistaByID);
 
 // Adicionar conquistas
-router.post('/create', controllerConquistas.createConquista);
+router.post('/create', authVerification,controllerConquistas.createConquista);
 
 // Atualizar uma conquista com determinado id
 router.put('/:id/update', controllerConquistas.updateConquistaByID);

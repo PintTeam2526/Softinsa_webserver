@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var controllerPedidos = require('../controllers/Pedidos.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 // Mostrar todos os pedidos
-router.get('/get', controllerPedidos.getAllPedidos);
+router.get('/get',authVerification, controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
 router.get('/:id/get', controllerPedidos.getPedidoByID);
 
 // Criar pedido
-router.post('/create', controllerPedidos.createPedido);
+router.post('/create', authVerification,controllerPedidos.createPedido);
 
 // Atualizar pedido
 router.put('/:id/update', controllerPedidos.updatePedidoByID);

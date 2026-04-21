@@ -6,7 +6,7 @@ var Utilizadores = sequelize.define('Utilizadores',
     id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        autoIncrement: true
     },
     nome_utilizador: {
         type: Sequelize.TEXT,

@@ -1,5 +1,105 @@
-const Autenticacao = require('../models/User');
+const User = require('../models/Utilizadores.models');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
+
+const controllers = {};
+
+controllers.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const users = await User.findAll();
+console.log(users);
+    // Procurar utilizador na BD
+    const user = await User.findOne({
+        where: { EMAIL_UTILIZADOR: email }
+    });
+
+    console.log("BODY:", req.body);
+   console.log("EMAIL:", email);
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Utilizador não encontrado' });
+    }
+
+    // Verificar password
+    const isMatch = await bcrypt.compare(password, user.PASSWORD_UTILIZADOR);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Password incorreta' });
+    }
+
+    // Criar token
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    // Resposta
+    return res.json({
+      token,
+      user: {
+        id: user.ID_UTILIZADOR,
+        email: user.EMAIL_UTILIZADOR,
+        role: user.TIPO_UTILIZADOR
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Erro no servidor', error });
+  }
+};
+
+controllers.register = async (req, res) => {
+  try {
+    const { nome, email, password } = req.body;
+
+    // 🔍 verificar se já existe
+    const existingUser = await User.findOne({
+      where: { EMAIL_UTILIZADOR: email }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email já existe' });
+    }
+
+    // 🔐 hash da password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 👤 criar user
+    const user = await User.create({
+      NOME_UTILIZADOR: nome,
+      EMAIL_UTILIZADOR: email,
+      PASSWORD_UTILIZADOR: hashedPassword,
+      USERNAME_UTILIZADOR: email, // ou outro valor
+      TIPO_UTILIZADOR: 'CO',
+      ESTADO_A_I_: true
+    });
+
+    return res.status(201).json({
+      message: 'Conta criada com sucesso',
+      user: {
+        id: user.ID_UTILIZADOR,
+        email: user.EMAIL_UTILIZADOR,
+        role: user.TIPO_UTILIZADOR
+      }
+    });
+
+  } catch (error) {
+    console.error(error); // 👈 importante para debug
+    return res.status(500).json({ message: 'Erro no servidor', error });
+  }
+};
+
+controllers.getAutenticacao = async (req, res) => {};
+controllers.updateUser = async (req, res) => {};
+controllers.deleteUser = async (req, res) => {};
 
 
 

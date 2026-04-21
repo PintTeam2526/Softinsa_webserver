@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var controllerGestao = require('../controllers/Gestao.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 
 //AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------

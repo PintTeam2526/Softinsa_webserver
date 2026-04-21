@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var controllerServiceLines = require('../controllers/ServiceLines.controller');
+var authVerification = require('../middleware/requireAuth.middleware')
 
 // Mostrar todas as service lines
 router.get('/get', controllerServiceLines.getAllServiceLines);
@@ -9,7 +10,7 @@ router.get('/get', controllerServiceLines.getAllServiceLines);
 router.get('/:id/get', controllerServiceLines.getServiceLineByID);
 
 // Criar service line
-router.post('/create', controllerServiceLines.createServiceLine);
+router.post('/create', authVerification,controllerServiceLines.createServiceLine);
 
 // Atualizar service line
 router.put('/:id/update', controllerServiceLines.updateServiceLineByID);

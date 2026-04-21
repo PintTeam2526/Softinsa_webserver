@@ -40,5 +40,4 @@ controllers.updateConquistaById = async (req, res) => {
 };
 
 
-
 module.exports = controllers;
