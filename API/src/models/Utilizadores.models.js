@@ -1,12 +1,13 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
 
 var Utilizadores = sequelize.define('Utilizadores',
 {
     id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        allowNull: false,
     },
     nome_utilizador: {
         type: Sequelize.TEXT,
@@ -34,8 +35,7 @@ var Utilizadores = sequelize.define('Utilizadores',
     }
 },
 {
-    tableName: 'Utilizadores',
-    timestamps: true //guardar data e hora de cada alteração na tabela
+    timestamps: false
 });
 
 module.exports = Utilizadores;

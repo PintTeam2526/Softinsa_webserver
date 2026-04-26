@@ -1,20 +1,22 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Administrador = require('./Administradores.models');
 
 var NotificacoesAdmin = sequelize.define('NotificacoesAdmin',
 {
-    id_notificacaoadmin: {
+    id_notificacao_admin: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
-    },
-    id_utilizador: {
-        type: Sequelize.INTEGER,
+        autoIncrement: true,
         allowNull: false
     },
     id_administrador: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Administrador,
+            key: 'id_administrador'
+        },
     },
     notificacao: {
         type: Sequelize.TEXT,
@@ -22,15 +24,9 @@ var NotificacoesAdmin = sequelize.define('NotificacoesAdmin',
     }
 },
 {
-    tableName: 'Notificacoes_Admin',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'ENVIA_FK',
-            fields: ['id_utilizador', 'id_administrador']
-        }
-    ]
+    timestamps: false
 });
+
+NotificacoesAdmin.belongsTo(Administrador);
 
 module.exports = NotificacoesAdmin;

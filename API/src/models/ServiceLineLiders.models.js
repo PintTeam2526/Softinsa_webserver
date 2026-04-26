@@ -1,9 +1,9 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Utilizador = require('./Utilizadores.models');
-var Area = require('./Areas.models');
+var ServiceLine = require('./ServiceLines.models');
 
-var Consultores = sequelize.define('Consultores',
+var ServiceLineLiders = sequelize.define('ServiceLineLiders',
 {
     id_utilizador: {
         type: Sequelize.INTEGER,
@@ -13,22 +13,18 @@ var Consultores = sequelize.define('Consultores',
             key: 'id_utilizador'
         },
     },
-     id_consultor: {
+     id_service_line_lider: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
     },
-    total_pontos: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-    },
-    id_area: {
+    id_service_line: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: Area,
-            key: 'id_area'
+            model: ServiceLine,
+            key: 'id_service_line'
         },
     },
 },
@@ -39,7 +35,10 @@ var Consultores = sequelize.define('Consultores',
 });
 
 
-Consultores.belongsTo(Utilizador);
-Consultores.belongsTo(Area);
+ServiceLineLiders.belongsTo(Utilizador);
+ServiceLineLiders.belongsTo(ServiceLine);
 
-module.exports = Consultores;
+module.exports = ServiceLineLiders;
+
+
+

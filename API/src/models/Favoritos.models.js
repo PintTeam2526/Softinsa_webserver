@@ -1,38 +1,36 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Consultor = require('./Consultores.models');
+var Badge = require('./Badges.models');
 
 var Favoritos = sequelize.define('Favoritos',
 {
-    id_utilizador: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        allowNull: false
-    },
     id_consultor: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Consultor,
+            key: 'id_consultor'
+        },
     },
     id_badge: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Badge,
+            key: 'id_badge'
+        },
     }
 },
-{
-    tableName: 'Favoritos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
 
-    indexes: [
-        {
-            name: 'FAVORITOS_FK',
-            fields: ['id_utilizador', 'id_consultor']
-        },
-        {
-            name: 'FAVORITOS2_FK',
-            fields: ['id_badge']
-        }
-    ]
+
+{
+    timestamps: false
 });
+
+Favoritos.belongsTo(Consultor);
+Favoritos.belongsTo(Badge);
 
 module.exports = Favoritos;

@@ -1,31 +1,38 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Consultor = require('./Consultores.models');
+var Badge = require('./Badges.models');
 
 var BadgesConcluidos = sequelize.define('BadgesConcluidos',
 {
-    data_conclusao: {
-        type: Sequelize.DATE,
-        allowNull: false
-    },
-    dataconclusao_badge: {
-        type: Sequelize.DATE,
-        allowNull: false
-    },
     id_badge_concluido: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
     id_badge: {
         type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    id_utilizador: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Badge,
+            key: 'id_badge'
+        },
     },
     id_consultor: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: Consultor,
+            key: 'id_consultor'
+        },
+    },
+    data_limite_conclusao: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    data_conclusao: {
+        type: Sequelize.DATE,
         allowNull: false
     },
     url_validacao: {
@@ -33,20 +40,13 @@ var BadgesConcluidos = sequelize.define('BadgesConcluidos',
         allowNull: false
     }
 },
-{
-    tableName: 'Badges_Concluidos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
 
-    indexes: [
-        {
-            name: 'CONCLUIR_FK',
-            fields: ['id_utilizador', 'id_consultor']
-        },
-        {
-            name: 'POSSUI_8_FK',
-            fields: ['id_badge']
-        }
-    ]
+
+{
+    timestamps: false
 });
+
+BadgesConcluidos.belongsTo(Consultor);
+BadgesConcluidos.belongsTo(Badge);
 
 module.exports = BadgesConcluidos;

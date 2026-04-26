@@ -1,20 +1,22 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Administrador = require('./Administradores.models');
 
 var Politicas = sequelize.define('Politicas',
 {
     id_politica: {
-        type: Sequelize.TEXT,
-        primaryKey: true,
-        allowNull: false
-    },
-    id_utilizador: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
     id_administrador: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Administrador,
+            key: 'id_administrador'
+        },
     },
     nome_politica: {
         type: Sequelize.TEXT,
@@ -26,15 +28,9 @@ var Politicas = sequelize.define('Politicas',
     }
 },
 {
-    tableName: 'Politicas',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'CRIAR_FK',
-            fields: ['id_utilizador', 'id_administrador']
-        }
-    ]
+    timestamps: false
 });
+
+Politicas.belongsTo(Administrador);
 
 module.exports = Politicas;

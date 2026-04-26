@@ -1,16 +1,22 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var ServiceLine = require('./ServiceLines.models');
 
 var Areas = sequelize.define('Areas',
 {
     id_area: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
-    id_serviceline: {
+    id_service_line: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: ServiceLine,
+            key: 'id_service_line'
+        },
     },
     nome_area: {
         type: Sequelize.TEXT,
@@ -21,24 +27,23 @@ var Areas = sequelize.define('Areas',
         allowNull: false
     },
     imagem_area: {
-        type: Sequelize.STRING(254),
+        type: Sequelize.TEXT,
         allowNull: false
     },
     estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
+    },
+    data_insercao: {
+        type: Sequelize.TEXT,
+        allowNull: false
     }
 },
 {
-    tableName: 'AREAS',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'POSSUI_3_FK',
-            fields: ['id_serviceline']
-        }
-    ]
+    timestamps: false
 });
+
+
+Areas.belongsTo(ServiceLine);
 
 module.exports = Areas;

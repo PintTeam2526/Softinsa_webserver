@@ -1,24 +1,22 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var LearningPath = require('./LearningPaths.models');
 
 var ServiceLines = sequelize.define('ServiceLines',
 {
-    id_serviceline: {
+    id_service_line: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
-    id_utilizador: {
+    id_learning_path: {
         type: Sequelize.INTEGER,
-        allowNull: true
-    },
-    id_service_line_lider: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-    },
-    id_learningpath: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: LearningPath,
+            key: 'id_learning_path'
+        },
     },
     nome_serviceline: {
         type: Sequelize.TEXT,
@@ -29,28 +27,23 @@ var ServiceLines = sequelize.define('ServiceLines',
         allowNull: false
     },
     imagem_serviceline: {
-        type: Sequelize.STRING(254),
+        type: Sequelize.TEXT,
         allowNull: false
     },
     estado_A_I_: {
         type: Sequelize.BOOLEAN,
         allowNull: false
+    },
+    data_insercao: {
+        type: Sequelize.TEXT,
+        allowNull: false
     }
 },
 {
-    tableName: 'Service_Lines',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'POSSUI_2_FK',
-            fields: ['id_learningpath']
-        },
-        {
-            name: 'POSSUI_10_FK',
-            fields: ['id_utilizador', 'id_service_line_lider']
-        }
-    ]
+    timestamps: false
 });
+
+
+ServiceLines.belongsTo(LearningPath);
 
 module.exports = ServiceLines;

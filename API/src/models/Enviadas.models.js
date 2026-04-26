@@ -1,33 +1,34 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Utilizador = require('./Utilizadores.models');
+var NotificacaoAdmin = require('./NotificacoesAdmin.models');
 
 var Enviadas = sequelize.define('Enviadas',
 {
     id_notificacaoadmin: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: NotificacaoAdmin,
+            key: 'id_notificacao_admin'
+        },
     },
     id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Utilizador,
+            key: 'id_utilizador'
+        },
     }
 },
 {
-    tableName: 'Enviadas',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'ENVIADAS_FK',
-            fields: ['id_notificacaoadmin']
-        },
-        {
-            name: 'ENVIADAS2_FK',
-            fields: ['id_utilizador']
-        }
-    ]
+    timestamps: false
 });
+
+Enviadas.belongsTo(Utilizador);
+Enviadas.belongsTo(NotificacaoAdmin);
 
 module.exports = Enviadas;

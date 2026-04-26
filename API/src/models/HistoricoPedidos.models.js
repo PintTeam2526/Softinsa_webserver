@@ -1,32 +1,40 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var PedidoBadge = require('./PedidosBadge.models');
+var Utilizador = require('./Utilizadores.models');
+var Estado = require('./Estados.models');
 
 var HistoricoPedidos = sequelize.define('HistoricoPedidos',
 {
     id_historico: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
     id_estado: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Estado,
+            key: 'id_estado'
+        },
     },
-    id_utilizador: {
+    id_utilizador_avaliador: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Utilizador,
+            key: 'id_utilizador'
+        },
     },
     id_pedido_badge: {
         type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    pedido: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    avaliador: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: PedidoBadge,
+            key: 'id_pedido_badge'
+        },
     },
     data: {
         type: Sequelize.DATE,
@@ -38,23 +46,11 @@ var HistoricoPedidos = sequelize.define('HistoricoPedidos',
     }
 },
 {
-    tableName: 'Historico_Pedidos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'POSSUI_11_FK',
-            fields: ['id_pedido_badge']
-        },
-        {
-            name: 'POSSUI_12_FK',
-            fields: ['id_estado']
-        },
-        {
-            name: 'ATUALIZA_FK',
-            fields: ['id_utilizador']
-        }
-    ]
+    timestamps: false
 });
+
+HistoricoPedidos.belongsTo(PedidoBadge);
+HistoricoPedidos.belongsTo(Utilizador);
+HistoricoPedidos.belongsTo(Estado);
 
 module.exports = HistoricoPedidos;

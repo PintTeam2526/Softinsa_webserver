@@ -25,7 +25,7 @@ controllers.createServiceLine = async (req, res) => {
 controllers.deleteServiceLineById = async (req, res) => {
     const id = req.params.id;
     await ServiceLines.destroy({
-        where: { id_serviceline: id }
+        where: { id_service_line: id }
     });
     res.json({ message: 'Service Line eliminada' });
 };
@@ -34,7 +34,7 @@ controllers.deleteServiceLineById = async (req, res) => {
 controllers.updateServiceLineById = async (req, res) => {
     const id = req.params.id;
     await ServiceLines.update(req.body, {
-        where: { id_serviceline: id }
+        where: { id_service_line: id }
     });
     res.json({ message: 'Service Line atualizada' });
 };

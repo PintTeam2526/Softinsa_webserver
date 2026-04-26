@@ -1,9 +1,8 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Utilizador = require('./Utilizadores.models');
-var Area = require('./Areas.models');
 
-var Consultores = sequelize.define('Consultores',
+var TalentManagers = sequelize.define('TalentManagers',
 {
     id_utilizador: {
         type: Sequelize.INTEGER,
@@ -13,23 +12,11 @@ var Consultores = sequelize.define('Consultores',
             key: 'id_utilizador'
         },
     },
-     id_consultor: {
+     id_talent_manager: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
-    },
-    total_pontos: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-    },
-    id_area: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Area,
-            key: 'id_area'
-        },
     },
 },
 
@@ -39,7 +26,6 @@ var Consultores = sequelize.define('Consultores',
 });
 
 
-Consultores.belongsTo(Utilizador);
-Consultores.belongsTo(Area);
+TalentManagers.belongsTo(Utilizador);
 
-module.exports = Consultores;
+module.exports = TalentManagers;

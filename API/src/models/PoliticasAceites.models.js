@@ -1,33 +1,34 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Utilizador = require('./Utilizadores.models');
+var Politica = require('./Potilicas.models');
 
 var PoliticasAceites = sequelize.define('PoliticasAceites',
 {
     id_utilizador: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Utilizador,
+            key: 'id_utilizador'
+        },
     },
     id_politica: {
-        type: Sequelize.TEXT,
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Politica,
+            key: 'id_politica'
+        },
     }
 },
 {
-    tableName: 'Politicas_Aceites',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'POLITICAS_ACEITES_FK',
-            fields: ['id_utilizador']
-        },
-        {
-            name: 'POLITICAS_ACEITES2_FK',
-            fields: ['id_politica']
-        }
-    ]
+    timestamps: false
 });
+
+PoliticasAceites.belongsTo(Utilizador);
+PoliticasAceites.belongsTo(Politica);
 
 module.exports = PoliticasAceites;

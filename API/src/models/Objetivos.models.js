@@ -1,24 +1,31 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Consultor = require('./Consultores.models');
+var Badge = require('./Badges.models');
 
 var Objetivos = sequelize.define('Objetivos',
 {
     id_objetivo: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
+        autoIncrement: true,
+        allowNull: false,
     },
     id_badge: {
         type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    id_utilizador: {
-        type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Badge,
+            key: 'id_badge'
+        },
     },
     id_consultor: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Consultor,
+            key: 'id_consultor'
+        },
     },
     data_limite_conclusao: {
         type: Sequelize.DATE,
@@ -30,7 +37,7 @@ var Objetivos = sequelize.define('Objetivos',
     },
     data_conclusao_objetivo: {
         type: Sequelize.DATE,
-        allowNull: false
+        allowNull: true
     },
     estado_objetivo: {
         type: Sequelize.TEXT,
@@ -38,19 +45,10 @@ var Objetivos = sequelize.define('Objetivos',
     }
 },
 {
-    tableName: 'Objetivos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'CRIA_FK',
-            fields: ['id_utilizador', 'id_consultor']
-        },
-        {
-            name: 'POSSUI_5_FK',
-            fields: ['id_badge']
-        }
-    ]
+    timestamps: false
 });
+
+Objetivos.belongsTo(Consultor);
+Objetivos.belongsTo(Badge);
 
 module.exports = Objetivos;

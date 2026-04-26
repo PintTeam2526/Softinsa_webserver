@@ -1,24 +1,31 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Consultor = require('./Consultores.models');
+var PedidoBadge = require('./PedidosBadge.models');
 
 var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
 {
-    id_notificacaopedidos: {
+    id_notificacao_pedido: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false
-    },
-    id_utilizador: {
-        type: Sequelize.INTEGER,
+        autoIncrement: true,
         allowNull: false
     },
     id_consultor: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Consultor,
+            key: 'id_consultor'
+        },
     },
     id_pedido_badge: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: PedidoBadge,
+            key: 'id_pedido_badge'
+        },
     },
     justificacao: {
         type: Sequelize.TEXT,
@@ -30,19 +37,10 @@ var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
     }
 },
 {
-    tableName: 'Notificacoes_Pedidos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
-
-    indexes: [
-        {
-            name: 'REFERENTE_FK',
-            fields: ['id_pedido_badge']
-        },
-        {
-            name: 'PERTENCE_FK',
-            fields: ['id_utilizador', 'id_consultor']
-        }
-    ]
+    timestamps: false
 });
+
+NotificacoesPedidos.belongsTo(Consultor);
+NotificacoesPedidos.belongsTo(PedidoBadge);
 
 module.exports = NotificacoesPedidos;

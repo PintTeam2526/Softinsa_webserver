@@ -1,16 +1,22 @@
 var Sequelize = require('sequelize');
-var sequelize = require('../database');
+var sequelize = require('../../database');
+var Badge = require('./Badges.models');
 
 var Requisitos = sequelize.define('Requisitos',
 {
     id_requisito: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false
     },
     id_badge: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Badge,
+            key: 'id_badge'
+        },
     },
     nome_requisito: {
         type: Sequelize.TEXT,
@@ -21,20 +27,24 @@ var Requisitos = sequelize.define('Requisitos',
         allowNull: true
     },
     imagem_requisito: {
-        type: Sequelize.STRING(254),
+        type: Sequelize.TEXT,
         allowNull: true
+    },
+    data_insercao: {
+        type: Sequelize.DATE,
+        allowNull: false
+    },
+    estado_A_I_: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
     }
 },
-{
-    tableName: 'Requisitos',
-    timestamps: true, //guardar data e hora de cada alteração na tabela
 
-    indexes: [
-        {
-            name: 'TEM_FK',
-            fields: ['id_badge']
-        }
-    ]
+
+{
+    timestamps: false
 });
+
+Requisitos.belongsTo(Badge);
 
 module.exports = Requisitos;
