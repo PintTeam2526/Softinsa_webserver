@@ -1,0 +1,7 @@
+@import './SoftinsaTopbar.css';
+
+.softinsa-shell-profile-btn {
+	display: inline-flex;
+	text-decoration: none;
+	color: inherit;
+}

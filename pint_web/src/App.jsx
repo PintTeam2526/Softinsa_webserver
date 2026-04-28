@@ -9,6 +9,15 @@ import SoftinsaBadges from './views/pages/admin/softinsa-badges'
 import SoftinsaAreas from './views/pages/admin/softinsa-areas'
 import SoftinsaServiceLines from './views/pages/admin/softinsa-service-lines'
 import SoftinsaLearningPaths from './views/pages/admin/softinsa-learning-paths'
+import AccessGatewayView from './views/pages/shared/accessGatewayView'
+import SLLHomeView from './views/pages/SLL/SLLHomeView'
+import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
+import SLLBadgesView from './views/pages/SLL/SLLBadgesView'
+import SLLMinhaEquipaView from './views/pages/SLL/SLLMinhaEquipaView'
+import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
+import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
+import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
+import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
 import ConsultorHomeView from './views/pages/consultor/consultorHomeView'
 import ConsultorBadgesView from './views/pages/consultor/consultorBadgesView'
 import ConsultorBadgesListsView from './views/pages/consultor/consultorBadgesListsView'
@@ -22,7 +31,16 @@ import ConsultorPerfilPublicoView from './views/pages/consultor/consultorPerfilP
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/softinsa" replace />} />
+      <Route path="/" element={<AccessGatewayView />} />
+      <Route path="/acesso" element={<AccessGatewayView />} />
+      <Route path="/sll" element={<SLLHomeView />} />
+      <Route path="/sll/certificados" element={<SLLCertificadosView />} />
+      <Route path="/sll/badges" element={<SLLBadgesView />} />
+      <Route path="/sll/equipa" element={<SLLMinhaEquipaView />} />
+      <Route path="/sll/relatorios" element={<SLLRelatoriosView />} />
+      <Route path="/sll/historico" element={<SLLHistoricoView />} />
+      <Route path="/sll/pendentes" element={<SLLPendentesView />} />
+      <Route path="/sll/perfil-publico" element={<SLLPerfilPublicoView />} />
 
       <Route path="/softinsa" element={<SoftinsaLayout />}>
         <Route index element={<DashboardView />} />
@@ -49,7 +67,7 @@ function App() {
         <Route path="mensagens" element={<ConsultorMessagesView />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/softinsa" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

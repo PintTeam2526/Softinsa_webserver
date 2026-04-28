@@ -1,0 +1,237 @@
+.sll-sidebar-shell {
+  --sll-sidebar-open-width: clamp(13.5rem, 22vw, 17.3125rem);
+  --sll-sidebar-collapsed-width: clamp(4.5rem, 6vw, 5.25rem);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: var(--sll-sidebar-open-width);
+  height: 100vh;
+  height: 100dvh;
+  flex-shrink: 0;
+  align-self: flex-start;
+  overflow: visible;
+  transition: width 0.25s ease;
+}
+
+.sll-sidebar-panel {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(17, 38, 146, 0.05);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.sll-sidebar-shell.is-collapsed {
+  width: var(--sll-sidebar-collapsed-width);
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-panel {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sll-sidebar-header {
+  height: 76px;
+  padding: 24px clamp(12px, 2.2vw, 32px) 16px;
+  display: flex;
+  align-items: center;
+}
+
+.sll-sidebar-logo-pill {
+  width: min(184px, 100%);
+  height: 49px;
+  border-radius: 50px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-sidebar-top-line {
+  width: 100%;
+  height: 1px;
+  background: #e9ecef;
+}
+
+.sll-sidebar-sections {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-sidebar-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sll-sidebar-title {
+  width: 100%;
+  padding: 8px clamp(10px, 1.5vw, 16px) 8px clamp(16px, 2.2vw, 32px);
+  color: #adb5bd;
+  font-family: Inter, sans-serif;
+  font-size: clamp(14px, 0.95vw, 16px);
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.sll-sidebar-item {
+  width: calc(100% - clamp(16px, 2vw, 24px));
+  min-height: 44px;
+  border: 0;
+  border-radius: 4px;
+  padding: 8px clamp(12px, 1.8vw, 24px);
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.3vw, 16px);
+  text-decoration: none;
+  color: #8a92a6;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sll-sidebar-item:hover {
+  background: #f6f7f9;
+}
+
+.sll-sidebar-item.active {
+  background: #39639c;
+  color: #ffffff;
+}
+
+.sll-sidebar-item-text {
+  color: #8a92a6;
+  font-family: Inter, sans-serif;
+  font-size: clamp(14px, 0.95vw, 16px);
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sll-sidebar-item.active .sll-sidebar-item-text {
+  color: #ffffff;
+}
+
+.sll-sidebar-icon-wrap {
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sll-sidebar-icon {
+  width: 40px;
+  height: 40px;
+  display: block;
+  flex-shrink: 0;
+  transform: scale(1.35);
+  transform-origin: center;
+  color: currentColor;
+}
+
+.sll-sidebar-divider {
+  width: calc(100% - clamp(40px, 6vw, 52px));
+  height: 1px;
+  background: #e9ecef;
+  margin-top: 8px;
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-header {
+  height: auto;
+  padding: 16px 0 8px;
+  justify-content: center;
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-logo-pill,
+.sll-sidebar-shell.is-collapsed .sll-sidebar-title,
+.sll-sidebar-shell.is-collapsed .sll-sidebar-item-text,
+.sll-sidebar-shell.is-collapsed .sll-sidebar-divider,
+.sll-sidebar-shell.is-collapsed .sll-sidebar-top-line {
+  display: none;
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-sections {
+  padding-top: 12px;
+  gap: 12px;
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-item {
+  width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  justify-content: center;
+  gap: 0;
+  border-radius: 10px;
+}
+
+.sll-sidebar-toggle {
+  position: absolute;
+  left: auto;
+  right: -15px;
+  top: 22px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 33px;
+  background: #39639c;
+  box-shadow: 0 2px 4px rgba(138, 146, 166, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 40;
+  transition: right 0.25s ease;
+  color: #ffffff;
+}
+
+.sll-sidebar-toggle-arrow {
+  width: 18px;
+  height: 18px;
+  display: block;
+  transform-origin: center;
+  transform: rotate(0deg);
+  transition: transform 0.25s ease;
+}
+
+.sll-sidebar-shell.is-collapsed .sll-sidebar-toggle-arrow {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 992px) {
+  .sll-sidebar-shell {
+    --sll-sidebar-open-width: 12.5rem;
+  }
+
+  .sll-sidebar-item {
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sll-sidebar-shell {
+    --sll-sidebar-open-width: 11rem;
+    --sll-sidebar-collapsed-width: 4.25rem;
+  }
+
+  .sll-sidebar-header {
+    padding-top: 16px;
+  }
+
+  .sll-sidebar-logo-pill {
+    height: 44px;
+  }
+}

@@ -8,12 +8,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 12px;
 }
 
 .softinsa-shell-topbar-search {
   flex: 1;
-  max-width: 760px;
+  max-width: none;
   min-width: 0;
   border: 1px solid #e9ecef;
   border-radius: 4px;
@@ -42,7 +42,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
