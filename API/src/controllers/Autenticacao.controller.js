@@ -13,7 +13,7 @@ controllers.login = async (req, res) => {
 console.log(users);
     // Procurar utilizador na BD
     const user = await User.findOne({
-        where: { EMAIL_UTILIZADOR: email }
+        where: { email_utilizador: email }
     });
 
     console.log("BODY:", req.body);
@@ -24,7 +24,7 @@ console.log(users);
     }
 
     // Verificar password
-    const isMatch = await bcrypt.compare(password, user.PASSWORD_UTILIZADOR);
+    const isMatch = await bcrypt.compare(password, user.password_utilizador);
 
     if (!isMatch) {
       return res.status(400).json({ message: 'Password incorreta' });
@@ -45,9 +45,9 @@ console.log(users);
     return res.json({
       token,
       user: {
-        id: user.ID_UTILIZADOR,
-        email: user.EMAIL_UTILIZADOR,
-        role: user.TIPO_UTILIZADOR
+        id: user.id_utilizador,
+        email: user.email_utilizador,
+        role: user.tipo_utilizador
       }
     });
 
@@ -62,7 +62,7 @@ controllers.register = async (req, res) => {
 
     // 🔍 verificar se já existe
     const existingUser = await User.findOne({
-      where: { EMAIL_UTILIZADOR: email }
+      where: { email_utilizador: email }
     });
 
     if (existingUser) {
@@ -74,20 +74,21 @@ controllers.register = async (req, res) => {
 
     // 👤 criar user
     const user = await User.create({
-      NOME_UTILIZADOR: nome,
-      EMAIL_UTILIZADOR: email,
-      PASSWORD_UTILIZADOR: hashedPassword,
-      USERNAME_UTILIZADOR: email, // ou outro valor
-      TIPO_UTILIZADOR: 'CO',
-      ESTADO_A_I_: true
+      nome_utilizador: nome,
+      email_utilizador: email,
+      password_utilizador: hashedPassword,
+      username_utilizador: email, // ou outro valor
+      tipo_utilizador: 'CO',
+      imagem_utilizador: 'img3',
+      estado_a_i: true
     });
 
     return res.status(201).json({
       message: 'Conta criada com sucesso',
       user: {
-        id: user.ID_UTILIZADOR,
-        email: user.EMAIL_UTILIZADOR,
-        role: user.TIPO_UTILIZADOR
+        id: user.id_utilizador,
+        email: user.email_utilizador,
+        role: user.tipo_utilizador
       }
     });
 

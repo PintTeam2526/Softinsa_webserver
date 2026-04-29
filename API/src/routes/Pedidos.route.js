@@ -7,27 +7,27 @@ var authVerification = require('../middleware/requireAuth.middleware')
 router.get('/get',authVerification, controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
-router.get('/:id/get', controllerPedidos.getPedidoByID);
+router.get('/:id/get', controllerPedidos.getPedidoById);
 
 // Criar pedido
 router.post('/create', authVerification,controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/:id/update', controllerPedidos.updatePedidoByID);
+router.put('/:id/update', controllerPedidos.updatePedidoById);
 
 // Apagar pedido
-router.delete('/:id/delete', controllerPedidos.deletePedidoByID);
+router.delete('/:id/delete', controllerPedidos.deletePedidoById);
 
 
 //AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
 
 // Avaliação do Talent Manager
-router.post('/:id/tm-review', controllerPedidos.tmReview);
+//router.post('/:id/tm-review', controllerPedidos.tmReview);
 
 // Avaliação do Service Line Leader e do admin
-router.post('/:id/sl-review', controllerPedidos.slReview);
+//router.post('/:id/sl-review', controllerPedidos.slReview);
 
 // Reenviar pedido
-router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
+//router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
 
 module.exports = router;

@@ -5,7 +5,7 @@ var TalentManager = require('./TalentManagers.models');
 var ServiceLineLider = require('./ServiceLineLiders.models');
 var Badge = require('./Badges.models');
 
-var PedidosBadge = sequelize.define('PedidosBadge',
+var PedidosBadges = sequelize.define('PedidosBadges',
 {
     id_pedido_badge: {
         type: Sequelize.INTEGER,
@@ -56,9 +56,9 @@ var PedidosBadge = sequelize.define('PedidosBadge',
     timestamps: false
 });
 
-PedidosBadge.belongsTo(Consultor);
-PedidosBadge.belongsTo(TalentManager);
-PedidosBadge.belongsTo(ServiceLineLider);
-PedidosBadge.belongsTo(Badge);
+PedidosBadges.belongsTo(Consultor);
+PedidosBadges.belongsTo(TalentManager);
+PedidosBadges.belongsTo(ServiceLineLider);
+PedidosBadges.belongsTo(Badge);
 
-module.exports = PedidosBadge;
+module.exports = PedidosBadges;

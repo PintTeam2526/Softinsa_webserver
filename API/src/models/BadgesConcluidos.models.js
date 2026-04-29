@@ -31,7 +31,7 @@ var BadgesConcluidos = sequelize.define('BadgesConcluidos',
         type: Sequelize.DATE,
         allowNull: false
     },
-    data_conclusao: {
+    data_conclusao_badge: {
         type: Sequelize.DATE,
         allowNull: false
     },

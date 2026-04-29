@@ -1,4 +1,4 @@
-const Pedidos = require('../models/Pedidos');
+const Pedidos = require('../models/PedidosBadge.models');
 
 const controllers = {};
 

@@ -1,4 +1,6 @@
-const Conquistas = require('../models/Conquistas');
+//VER SE VAMOS USAR PORQUE NÃO EXISTE TABELA CONQUISTAS NA BD
+/*
+const Conquistas = require('../models/Conquistas.models');
 
 const controllers = {};
 
@@ -41,3 +43,4 @@ controllers.updateConquistaById = async (req, res) => {
 
 
 module.exports = controllers;
+*/

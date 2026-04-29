@@ -1,6 +1,6 @@
-const Utilizadores = require('../models/Utilizadores');
-const Objetivos = require('../models/Objetivos');
-const Notificacoes = require('../models/Notificacoes');
+const Utilizadores = require('../models/Utilizadores.models');
+const Objetivos = require('../models/Objetivos.models');
+const Notificacoes = require('../models/NotificacoesPedidos.models');
 
 const controllers = {};
 

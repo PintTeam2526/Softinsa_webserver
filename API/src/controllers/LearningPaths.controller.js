@@ -1,4 +1,4 @@
-const LearningPaths = require('../models/LearningPaths');
+const LearningPaths = require('../models/LearningPaths.models');
 
 const controllers = {};
 

@@ -1,4 +1,4 @@
-const Areas = require('../models/Areas');
+const Areas = require('../models/Areas.models');
 
 const controllers = {};
 

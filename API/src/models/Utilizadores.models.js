@@ -29,7 +29,11 @@ var Utilizadores = sequelize.define('Utilizadores',
         type: Sequelize.STRING(2),
         allowNull: false
     },
-    estado_A_I_: {
+    imagem_utilizador: {
+        type: Sequelize.TEXT,
+        allowNull: false
+    },
+    estado_a_i: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     }
