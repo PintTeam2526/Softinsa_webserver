@@ -1,33 +1,53 @@
 var express = require('express');
 var router = express.Router();
+
 var controllerPedidos = require('../controllers/Pedidos.controller');
-var authVerification = require('../middleware/requireAuth.middleware')
+var authVerification = require('../middleware/requireAuth.middleware');
+
+/* =====================================================
+   CONSULTAS
+===================================================== */
 
 // Mostrar todos os pedidos
-router.get('/get',authVerification, controllerPedidos.getAllPedidos);
+router.get('/get', authVerification, controllerPedidos.getAllPedidos);
 
 // Mostrar pedido por ID
-router.get('/:id/get', controllerPedidos.getPedidoByID);
+router.get('/:id/get', authVerification, controllerPedidos.getPedidoById);
+
+// Histórico do pedido
+router.get('/:id/historico', authVerification, controllerPedidos.getHistoricoPedido);
+
+/* =====================================================
+   CONSULTOR
+===================================================== */
 
 // Criar pedido
-router.post('/create', authVerification,controllerPedidos.createPedido);
+router.post('/create', authVerification, controllerPedidos.createPedido);
 
-// Atualizar pedido
-router.put('/:id/update', controllerPedidos.updatePedidoByID);
+// Reenviar pedido após devolução
+router.post('/:id/resubmit', authVerification, controllerPedidos.resubmeterPedido);
 
-// Apagar pedido
-router.delete('/:id/delete', controllerPedidos.deletePedidoByID);
+/* =====================================================
+   TALENT MANAGER
+===================================================== */
 
+// Aprovar pedido
+router.put('/:id/tm/aprovar', authVerification, controllerPedidos.aprovarTM);
 
-//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
+// Devolver pedido ao consultor
+router.put('/:id/tm/devolver', authVerification, controllerPedidos.devolverTM);
 
-// Avaliação do Talent Manager
-router.post('/:id/tm-review', controllerPedidos.tmReview);
+/* =====================================================
+   SERVICE LINE LEADER
+===================================================== */
 
-// Avaliação do Service Line Leader e do admin
-router.post('/:id/sl-review', controllerPedidos.slReview);
+// Aprovar pedido final
+router.put('/:id/sl/aprovar', authVerification, controllerPedidos.aprovarSL);
 
-// Reenviar pedido
-router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
+// Devolver pedido ao consultor
+router.put('/:id/sl/devolver', authVerification, controllerPedidos.devolverSL);
+
+// Rejeitar pedido
+router.put('/:id/sl/rejeitar', authVerification, controllerPedidos.rejeitarSL);
 
 module.exports = router;

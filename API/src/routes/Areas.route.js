@@ -10,7 +10,7 @@ router.get('/get', controllerAreas.getAllAreas);
 router.get('/:id/get', controllerAreas.getAreaByID);   
 
 // Adicionar areas
-router.post('/create', authVerification,controllerAreas.createArea);
+router.post('/create',controllerAreas.createArea);
 
 // Atualizar uma area com determinado id
 router.put('/:id/update', controllerAreas.updateAreaByID);

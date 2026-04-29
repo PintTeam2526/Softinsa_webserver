@@ -2,43 +2,196 @@ const ServiceLines = require('../models/ServiceLines');
 
 const controllers = {};
 
-//Mostrar todas as SL
+// Mostrar todas as Service Lines
 controllers.getAllServiceLines = async (req, res) => {
-    const resultado = await ServiceLines.findAll(); 
-    res.json(resultado);
+    try {
+        const isAdmin = req.user?.role === "admin";
+
+        const whereClause = isAdmin ? {} : { estado_A_I_: true };
+
+        const resultado = await ServiceLines.findAll({
+            where: whereClause
+        });
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao buscar Service Lines",
+            erro: error.message
+        });
+    }
 };
 
-// Mostrar uma SL com determinado id
+// Mostrar Service Line por ID
 controllers.getServiceLineById = async (req, res) => {
-    const id = req.params.id;
-    const resultado = await ServiceLines.findByPk(id);
-    res.json(resultado);
+    try {
+        const isAdmin = req.user?.role === "admin";
+        const id = req.params.id;
+
+        const resultado = await ServiceLines.findByPk(id);
+
+        if (!resultado) {
+            return res.status(404).json({
+                mensagem: "Service Line não existe"
+            });
+        }
+
+        if (resultado.estado_A_I_ === false && !isAdmin) {
+            return res.status(401).json({
+                mensagem: "Utilizador não autorizado"
+            });
+        }
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao buscar Service Line",
+            erro: error.message
+        });
+    }
 };
 
-//Criar uma SL
+// Criar Service Line
 controllers.createServiceLine = async (req, res) => {
-    const resultado = await ServiceLines.create(req.body);
-    res.json(resultado);
+    try {
+        const isAdmin = req.user?.role === "admin";
+
+        if (!isAdmin) {
+            return res.status(401).json({
+                mensagem: "Utilizador não autorizado"
+            });
+        }
+
+        const {
+            id_service_line,
+            id_learning_path,
+            nome_serviceline,
+            descricao_serviceline,
+            imagem_serviceline,
+            estado_A_I_
+        } = req.body;
+
+        await ServiceLines.create({
+            id_service_line,
+            id_learning_path,
+            nome_serviceline,
+            descricao_serviceline,
+            imagem_serviceline,
+            estado_A_I_,
+            data_insercao: new Date().toISOString().split('T')[0] // DATA ATUAL
+        });
+
+        return res.status(201).json({
+            mensagem: "Service Line criada com sucesso"
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao criar Service Line",
+            erro: error.message
+        });
+    }
 };
 
-//Apagar uma SL com determinado id
+// Eliminar Service Line (soft delete)
 controllers.deleteServiceLineById = async (req, res) => {
-    const id = req.params.id;
-    await ServiceLines.destroy({
-        where: { id_service_line: id }
-    });
-    res.json({ message: 'Service Line eliminada' });
+    try {
+        const isAdmin = req.user?.role === "admin";
+
+        if (!isAdmin) {
+            return res.status(401).json({
+                mensagem: "Utilizador não autorizado"
+            });
+        }
+
+        const id = req.params.id;
+
+        const resultado = await ServiceLines.findByPk(id);
+
+        if (!resultado) {
+            return res.status(404).json({
+                mensagem: "Service Line não existe"
+            });
+        }
+
+        resultado.estado_A_I_ = false;
+
+        await resultado.save();
+
+        return res.status(200).json({
+            mensagem: "Service Line eliminada com sucesso"
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao eliminar Service Line",
+            erro: error.message
+        });
+    }
 };
 
-//Atualizar uma SL com determinado id 
+// Atualizar Service Line
 controllers.updateServiceLineById = async (req, res) => {
-    const id = req.params.id;
-    await ServiceLines.update(req.body, {
-        where: { id_service_line: id }
-    });
-    res.json({ message: 'Service Line atualizada' });
+    try {
+        const isAdmin = req.user?.role === "admin";
+
+        if (!isAdmin) {
+            return res.status(401).json({
+                mensagem: "Utilizador não autorizado"
+            });
+        }
+
+        const id = req.params.id;
+
+        const serviceLine = await ServiceLines.findByPk(id);
+
+        if (!serviceLine) {
+            return res.status(404).json({
+                mensagem: "Service Line não existe"
+            });
+        }
+
+        const {
+            id_learning_path,
+            nome_serviceline,
+            descricao_serviceline,
+            imagem_serviceline,
+            estado_A_I_
+        } = req.body;
+
+        serviceLine.id_learning_path = id_learning_path ?? serviceLine.id_learning_path;
+        serviceLine.nome_serviceline = nome_serviceline ?? serviceLine.nome_serviceline;
+        serviceLine.descricao_serviceline = descricao_serviceline ?? serviceLine.descricao_serviceline;
+        serviceLine.imagem_serviceline = imagem_serviceline ?? serviceLine.imagem_serviceline;
+        serviceLine.estado_A_I_ = estado_A_I_ ?? serviceLine.estado_A_I_;
+
+        serviceLine.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
+
+        await serviceLine.save();
+
+        return res.status(200).json({
+            mensagem: "Service Line atualizada com sucesso",
+            dados: serviceLine
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao atualizar Service Line",
+            erro: error.message
+        });
+    }
 };
-
-
 
 module.exports = controllers;

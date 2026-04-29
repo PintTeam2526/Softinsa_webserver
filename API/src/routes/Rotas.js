@@ -1,10 +1,11 @@
 const express = require('express');
 
 var autenticacaoRouter = require('../routes/Autenticacao.route');
+var areasRouter = require('../routes/Areas.route');
 /*var gestaoRouter = require('../routes/Gestao.route');
 var utilizadoresRouter = require('../routes/Utilizadores.route');
 var badgesRouter = require('../routes/Badges.route');
-var areasRouter = require('../routes/Areas.route');
+
 var serviceLinesRouter = require('../routes/ServiceLines.route');
 var learningPathsRouter = require('../routes/LearningPaths.route');
 var pedidosRouter = require('../routes/Pedidos.route');
@@ -15,10 +16,11 @@ var notificacoesRouter = require('../routes/Notificacoes.route');*/
 const router = express.Router();
 
 router.use('/autenticacao', autenticacaoRouter);
+router.use('/areas', areasRouter);
 /*router.use('/gestao', gestaoRouter);
 router.use('/utilizadores', utilizadoresRouter);
 router.use('/badges', badgesRouter);
-router.use('/areas', areasRouter);
+
 router.use('/serviceLines', serviceLinesRouter);
 router.use('/learningPaths', learningPathsRouter);
 router.use('/pedidos', pedidosRouter);
