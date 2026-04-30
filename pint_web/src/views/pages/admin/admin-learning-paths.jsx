@@ -1,29 +1,31 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-learning-paths.css";
 
-// TODO: Replace all mock data and local options with API data (learning paths and statuses).
-const learningPathsRows = [
-  {
-    id: 1,
-    name: "Jornada Técnica",
-    description: "",
-    serviceLines: 3,
-    areas: 15,
-    badges: 60,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 2,
-    name: "Power Skills",
-    description: "",
-    serviceLines: 3,
-    areas: 8,
-    badges: 40,
-    status: "Ativo",
-    iconFileName: "",
-  },
-];
+import {
+  getLearningPaths,
+  createLearningPath,
+  updateLearningPath,
+} from "../../controllers/learningPathsController";
+
+import { mapLearningPath } from "../../models/learningPathModel";
+
+const [learningPaths, setLearningPaths] = useState([]);
+
+useEffect(() => {
+  const fetchLearningPaths = async () => {
+    try {
+      const data = await getLearningPaths();
+
+      const mappedData = data.map(mapLearningPath);
+
+      setLearningPaths(mappedData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchLearningPaths();
+}, []);
 
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -261,7 +263,7 @@ const SoftinsaLearningPaths = memo(() => {
     setEditingLearningPathId(null);
   };
 
-  const handleSubmitLearningPath = (event) => {
+  const handleSubmitLearningPath = async (event) => {
     event.preventDefault();
 
     const sanitizedName = formData.name.trim();
@@ -278,27 +280,35 @@ const SoftinsaLearningPaths = memo(() => {
       iconFileName: formData.iconFileName,
     };
 
-    if (isEditMode && editingLearningPathId !== null) {
-      setLearningPaths((previousLearningPaths) =>
-        previousLearningPaths.map((item) =>
-          item.id === editingLearningPathId
-            ? {
-                ...item,
-                ...payload,
-              }
-            : item
-        )
-      );
-    } else {
-      setLearningPaths((previousLearningPaths) => {
-        const nextId =
-          previousLearningPaths.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), 0) + 1;
-        return [{ id: nextId, serviceLines: 0, areas: 0, badges: 0, ...payload }, ...previousLearningPaths];
-      });
-      setCurrentPage(1);
-    }
+    try {
+      if (isEditMode && editingLearningPathId !== null) {
+        const updatedLearningPath = await updateLearningPath(
+          editingLearningPathId,
+          payload
+        );
 
-    handleCloseModal();
+        setLearningPaths((previousLearningPaths) =>
+          previousLearningPaths.map((item) =>
+            item.id === editingLearningPathId
+              ? mapLearningPath(updatedLearningPath)
+              : item
+          )
+        );
+      } else {
+        const createdLearningPath = await createLearningPath(payload);
+
+        setLearningPaths((previousLearningPaths) => [
+          mapLearningPath(createdLearningPath),
+          ...previousLearningPaths,
+        ]);
+
+        setCurrentPage(1);
+      }
+
+      handleCloseModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleToggleFilter = () => {
