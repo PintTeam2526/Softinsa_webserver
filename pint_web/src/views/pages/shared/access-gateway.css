@@ -1,0 +1,158 @@
+.access-gateway-page {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.2rem, 2.5vw, 2.2rem);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(57, 99, 156, 0.18) 0%, rgba(57, 99, 156, 0) 42%),
+    radial-gradient(circle at 92% 84%, rgba(48, 193, 206, 0.2) 0%, rgba(48, 193, 206, 0) 40%),
+    linear-gradient(135deg, #f5f8fc 0%, #e7edf6 52%, #dde6f2 100%);
+}
+
+.access-gateway-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.55) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.55) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.access-gateway-panel {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  border-radius: 28px;
+  padding: clamp(1.3rem, 2.6vw, 2.2rem);
+  background: rgba(250, 252, 255, 0.9);
+  border: 1px solid rgba(56, 92, 148, 0.18);
+  box-shadow: 0 24px 58px rgba(18, 36, 59, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.access-gateway-eyebrow {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  color: #335888;
+}
+
+.access-gateway-panel h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+  line-height: 1.2;
+  color: #1b2a40;
+}
+
+.access-gateway-lead {
+  margin: 0.85rem 0 0;
+  max-width: 720px;
+  color: #4a5f79;
+  line-height: 1.55;
+}
+
+.access-gateway-grid {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.access-gateway-card {
+  border-radius: 20px;
+  padding: 1.2rem;
+  background: #fff;
+  border: 1px solid rgba(63, 93, 131, 0.2);
+  box-shadow: 0 10px 24px rgba(29, 44, 66, 0.09);
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+}
+
+.access-gateway-card-badge {
+  margin: 0;
+  width: fit-content;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.64rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #173356;
+  background: rgba(57, 99, 156, 0.12);
+}
+
+.access-gateway-card h2 {
+  margin: 0.9rem 0 0;
+  font-size: 1.3rem;
+  color: #1f2f45;
+}
+
+.access-gateway-card-summary {
+  margin-top: 0.65rem;
+  margin-bottom: 0;
+  color: #445a75;
+  line-height: 1.52;
+  flex-grow: 1;
+}
+
+.access-gateway-card-link {
+  margin-top: 1.15rem;
+  width: fit-content;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.93rem;
+  padding: 0.62rem 0.95rem;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.access-gateway-card-admin .access-gateway-card-link {
+  color: #fff;
+  background: linear-gradient(120deg, #2f5a8e, #1f4170);
+  box-shadow: 0 10px 16px rgba(33, 67, 109, 0.28);
+}
+
+.access-gateway-card-consultor .access-gateway-card-link {
+  color: #0c4c54;
+  background: linear-gradient(120deg, #b7f0f4, #7adce2);
+  box-shadow: 0 10px 16px rgba(35, 120, 126, 0.22);
+}
+
+.access-gateway-card-sll .access-gateway-card-link {
+  color: #ffffff;
+  background: linear-gradient(120deg, #1e5ecc, #1a3d87);
+  box-shadow: 0 10px 16px rgba(33, 67, 109, 0.24);
+}
+
+.access-gateway-card-link:hover,
+.access-gateway-card-link:focus-visible {
+  transform: translateY(-2px);
+}
+
+.access-gateway-card-link:focus-visible {
+  outline: 2px solid #1f4975;
+  outline-offset: 2px;
+}
+
+@media (max-width: 860px) {
+  .access-gateway-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .access-gateway-panel {
+    border-radius: 20px;
+  }
+
+  .access-gateway-card {
+    min-height: 220px;
+  }
+}

@@ -1,0 +1,112 @@
+.softinsa-dashboard-page {
+  padding: 0 24px 24px;
+  font-family: 'Inter', sans-serif;
+}
+
+.softinsa-dashboard-hero {
+  min-height: 120px;
+  border-radius: 0 0 1rem 1rem;
+  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%);
+  display: flex;
+  align-items: center;
+  padding: 20px 40px;
+  margin: 0 -24px 24px;
+}
+
+.softinsa-dashboard-hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(28px, 2.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.softinsa-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.softinsa-summary-card {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(17, 38, 146, 0.05);
+  min-height: 117px;
+}
+
+.softinsa-summary-card-body {
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.softinsa-summary-icon-shell {
+  width: 68px;
+  height: 68px;
+  border: 1px solid #e9ecef;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.softinsa-summary-icon {
+  width: 24px;
+  height: 24px;
+  color: #39639c;
+}
+
+.softinsa-summary-content p {
+  margin: 0;
+  color: #8a92a6;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.softinsa-summary-content h5 {
+  margin: 8px 0 0;
+  color: #232d42;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.softinsa-chart-card {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+}
+
+.softinsa-chart-card-header {
+  padding: 24px 24px 0;
+  border-bottom: 0;
+  align-items: center;
+  background: transparent;
+}
+
+.softinsa-chart-card-header h5 {
+  color: #232d42;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.75;
+}
+
+@media (max-width: 992px) {
+  .softinsa-dashboard-page {
+    padding: 0 16px 20px;
+  }
+
+  .softinsa-summary-grid {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .softinsa-dashboard-hero {
+    margin: 0 -16px 16px;
+  }
+}

@@ -6,13 +6,7 @@ Plataforma de badges para a Softinsa
 
 ## Roadmap
 
-- Fazer as rotas 
-
-- Ligar a base de dados
-
-- Validar as informações 
-
-- Fazer as interfaces 
+- Fazer as interfaces
 
 
 
@@ -21,7 +15,6 @@ Plataforma de badges para a Softinsa
 Para executar o projeto usa este comando:
 
 ```bash
-  npm install //apenas na primeira vez
-  npm start
+  npm npm run dev
 ```
 

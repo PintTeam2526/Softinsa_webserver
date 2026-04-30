@@ -2,3 +2,4 @@
 /WebServer/node_modules
 /API/node_modules
 API/package-lock.json
+pint_web/package-lock.json

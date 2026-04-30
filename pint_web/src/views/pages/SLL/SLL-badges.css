@@ -1,0 +1,374 @@
+.sll-badges-page {
+  min-height: 100%;
+  display: flex;
+  background: #ffffff;
+  color: #232d42;
+}
+
+.sll-badges-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sll-badges-content {
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sll-badges-hero {
+  position: relative;
+  min-height: 155px;
+  height: 155px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1184 155" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="0" y="0" height="100%" width="100%" fill="url(%23grad)" opacity="1"/><defs><radialGradient id="grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="10" gradientTransform="matrix(0.000015204 23.394 -42.961 0.0000060493 592 77.5)"><stop stop-color="rgba(59,138,255,1)" offset="0"/><stop stop-color="rgba(30,105,217,1)" offset="0.5"/><stop stop-color="rgba(15,88,198,1)" offset="0.75"/><stop stop-color="rgba(0,72,178,1)" offset="1"/></radialGradient></defs></svg>');
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
+}
+
+.sll-badges-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sll-badges-hero-circle {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+}
+
+.sll-badges-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+  transform: rotate(90deg);
+}
+
+.sll-badges-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+  transform: rotate(90deg);
+}
+
+.sll-badges-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+  transform: rotate(90deg);
+}
+
+.sll-badges-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+  transform: rotate(90deg);
+}
+
+.sll-badges-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+  transform: rotate(90deg);
+}
+
+.sll-badges-hero-copy {
+  position: absolute;
+  left: 50px;
+  top: 35px;
+  z-index: 1;
+  color: #ffffff;
+}
+
+.sll-badges-hero-copy h1 {
+  margin: 0 0 4px;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sll-badges-search {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #adb5bd;
+  background: #ffffff;
+}
+
+.sll-badges-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #232d42;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.sll-badges-search input::placeholder {
+  color: #adb5bd;
+}
+
+.sll-badges-export-btn {
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 20px;
+  background: #39639c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 2px rgba(58, 87, 232, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sll-badges-export-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(35, 45, 66, 0.16);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.sll-badges-export-modal {
+  width: min(100%, 357px);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sll-badges-export-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.sll-badges-export-field label {
+  color: #495057;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.sll-badges-export-select-wrap {
+  position: relative;
+}
+
+.sll-badges-export-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid #8a92a6;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.sll-badges-export-select-wrap select {
+  width: 100%;
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 2px rgba(108, 117, 125, 0.3);
+  padding: 4px 34px 4px 16px;
+  color: #8a92a6;
+  font-size: 13px;
+  line-height: 1.5;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.sll-badges-export-select-wrap select:focus {
+  outline: 1px solid rgba(58, 87, 232, 0.35);
+  outline-offset: 1px;
+}
+
+.sll-badges-export-confirm {
+  height: 48px;
+  border: 0;
+  border-radius: 8px;
+  background: #39639c;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sll-badges-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sll-badges-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #39639c;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.sll-badges-summary {
+  display: none;
+}
+
+.sll-badges-summary p {
+  margin: 0;
+}
+
+.sll-badges-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sll-badges-group h2 {
+  margin: 0 0 12px;
+  color: #39639c;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.sll-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sll-badges-card {
+  border: 1px solid #f1f3f5;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 10px 8px 12px;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+}
+
+.sll-badges-card-image-wrap {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+.sll-badges-card-image {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  display: block;
+}
+
+.sll-badges-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 68px;
+}
+
+.sll-badges-card-copy h3 {
+  margin: 0;
+  color: #001f4d;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.sll-badges-card-copy p {
+  margin: 0;
+  color: #8a92a6;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.sll-badges-card-meta {
+  margin-top: auto;
+  color: #8a92a6;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+@media (max-width: 1320px) {
+  .sll-badges-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .sll-badges-page {
+    flex-direction: column;
+  }
+
+  .sll-badges-content {
+    padding: 16px 18px 20px;
+  }
+
+  .sll-badges-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sll-badges-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .sll-badges-hero-copy h1 {
+    font-size: 30px;
+  }
+
+  .sll-badges-hero-copy p {
+    font-size: 18px;
+  }
+
+  .sll-badges-grid {
+    grid-template-columns: 1fr;
+  }
+}

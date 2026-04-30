@@ -1,0 +1,781 @@
+.softinsa-service-lines-page {
+  padding: 0 24px 24px;
+  font-family: "Inter", sans-serif;
+}
+
+.softinsa-service-lines-hero {
+  min-height: 155px;
+  border-radius: 0 0 1rem 1rem;
+  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 35px 41px;
+  margin: 0 -24px 18px;
+}
+
+.softinsa-service-lines-hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(32px, 2.3vw, 40px);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.softinsa-service-lines-hero p {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(16px, 1.4vw, 23px);
+  line-height: 1.3;
+  font-weight: 500;
+  max-width: 900px;
+}
+
+.softinsa-service-lines-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.softinsa-service-lines-search {
+  height: 42px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.softinsa-service-lines-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #8a92a6;
+  font-size: 14px;
+  line-height: 1.4;
+  background: transparent;
+}
+
+.softinsa-service-lines-search input::placeholder {
+  color: #adb5bd;
+}
+
+.softinsa-service-lines-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  color: currentColor;
+}
+
+.softinsa-service-lines-filter-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.softinsa-service-lines-filter-btn,
+.softinsa-service-lines-add-btn,
+.softinsa-service-lines-edit-btn,
+.softinsa-service-lines-export-btn,
+.softinsa-service-lines-page-btn,
+.softinsa-service-lines-page-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.softinsa-service-lines-filter-btn {
+  height: 42px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #adb5bd;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-filter-btn[aria-expanded="true"] {
+  border-color: #3a57e8;
+  color: #8a92a6;
+}
+
+.softinsa-service-lines-add-btn {
+  height: 42px;
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 20px;
+  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.softinsa-service-lines-filter-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(359px, calc(100vw - 40px));
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.softinsa-service-lines-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.softinsa-service-lines-filter-field label {
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.softinsa-service-lines-select-wrap {
+  position: relative;
+  min-width: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.softinsa-service-lines-select-wrap select {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #8a92a6;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 400;
+  text-align: left;
+  text-align-last: left;
+  appearance: none;
+  padding: 4px 34px 4px 16px;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-select-wrap select:focus,
+.softinsa-service-lines-entries-select:focus,
+.softinsa-service-lines-modal-field input:focus,
+.softinsa-service-lines-modal-field textarea:focus,
+.softinsa-service-lines-search input:focus {
+  outline: none;
+}
+
+.softinsa-service-lines-select-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 10px;
+  color: #8a92a6;
+  pointer-events: none;
+}
+
+.softinsa-service-lines-filter-actions {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.softinsa-service-lines-filter-submit {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 600;
+  padding: 11px 18px;
+  cursor: pointer;
+  background: #39639c;
+  color: #ffffff;
+}
+
+.softinsa-service-lines-clear-filter-inline {
+  border: 1px solid rgba(58, 87, 232, 0.3);
+  border-radius: 999px;
+  background: rgba(58, 87, 232, 0.12);
+  color: #2d42b2;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+  padding: 4px 12px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.softinsa-service-lines-table-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.softinsa-service-lines-entries-select-wrap {
+  position: relative;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+  overflow: hidden;
+}
+
+.softinsa-service-lines-entries-select {
+  height: 42px;
+  min-width: 80px;
+  border: 0;
+  background: transparent;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 400;
+  appearance: none;
+  padding: 10px 30px 10px 16px;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-entries-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.softinsa-service-lines-table-card {
+  border-radius: 8px;
+  border: 1px solid #eeeeee;
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  overflow: hidden;
+}
+
+.softinsa-service-lines-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.softinsa-service-lines-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.softinsa-service-lines-table thead tr {
+  background: #f5f6fa;
+}
+
+.softinsa-service-lines-table th {
+  padding: 12px 10px;
+  color: #8a92a6;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.softinsa-service-lines-table tbody tr {
+  border-top: 1px solid #eeeeee;
+}
+
+.softinsa-service-lines-table td {
+  padding: 12px 10px;
+  color: #8a92a6;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.softinsa-service-lines-empty-row td {
+  color: #8a92a6;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 20px 12px;
+}
+
+.softinsa-service-lines-edit-btn {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-pencil-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.softinsa-service-lines-table-footer {
+  border-top: 1px solid #eeeeee;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.softinsa-service-lines-export-btn {
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 3px 20px;
+  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-pagination {
+  display: inline-flex;
+  align-items: center;
+}
+
+.softinsa-service-lines-page-link {
+  color: #3a57e8;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-page-link.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.softinsa-service-lines-page-btn {
+  width: 35px;
+  height: 38px;
+  border: 1px solid #dee2e6;
+  color: #3a57e8;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-page-btn.is-active {
+  background: #3a57e8;
+  color: #ffffff;
+}
+
+.softinsa-service-lines-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(35, 45, 66, 0.22);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 76px 16px 24px;
+}
+
+.softinsa-service-lines-modal {
+  width: min(1100px, calc(100vw - 32px));
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+}
+
+.softinsa-service-lines-export-alert {
+  width: min(400px, calc(100vw - 32px));
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.softinsa-service-lines-modal-header,
+.softinsa-service-lines-export-alert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.softinsa-service-lines-modal-header {
+  margin-bottom: 20px;
+}
+
+.softinsa-service-lines-modal-header h2 {
+  margin: 0;
+  color: #39639c;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.softinsa-service-lines-export-alert-header h3 {
+  margin: 0;
+  color: #39639c;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.softinsa-service-lines-modal-close {
+  border: 0;
+  background: transparent;
+  width: 30px;
+  height: 30px;
+  color: #8a92a6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.softinsa-service-lines-close-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.softinsa-service-lines-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.softinsa-service-lines-modal-row-top {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.softinsa-service-lines-modal-row-bottom {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) auto;
+  align-items: end;
+  gap: 16px;
+}
+
+.softinsa-service-lines-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.softinsa-service-lines-modal-field label {
+  color: #232d42;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.softinsa-service-lines-modal-field input,
+.softinsa-service-lines-modal-field textarea {
+  width: 100%;
+  border: 0.8px solid #e9ecef;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #232d42;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  padding: 6px 12px;
+}
+
+.softinsa-service-lines-modal-field input {
+  min-height: 22px;
+}
+
+.softinsa-service-lines-modal-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.softinsa-service-lines-file-field {
+  display: inline-flex;
+  align-items: stretch;
+  width: 100%;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.softinsa-service-lines-file-choose,
+.softinsa-service-lines-file-name {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 1px solid #eeeeee;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.softinsa-service-lines-file-choose {
+  border-radius: 4px 0 0 4px;
+  background: #ffffff;
+}
+
+.softinsa-service-lines-file-name {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+  background: #e9ecef;
+  min-width: 180px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.softinsa-service-lines-modal-submit {
+  border: 0;
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 24px;
+  cursor: pointer;
+  min-width: 123px;
+  height: 44px;
+}
+
+.softinsa-service-lines-export-alert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.softinsa-service-lines-export-alert-body h4 {
+  margin: 0;
+  color: #232d42;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.softinsa-service-lines-export-alert-body p {
+  margin: 0;
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.softinsa-service-lines-export-option {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.softinsa-service-lines-export-radio {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #3a57e8;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.softinsa-service-lines-export-radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3a57e8;
+  opacity: 0;
+}
+
+.softinsa-service-lines-export-radio.is-active::after {
+  opacity: 1;
+}
+
+.softinsa-service-lines-export-alert-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.softinsa-service-lines-export-cancel,
+.softinsa-service-lines-export-confirm {
+  border: 0;
+  border-radius: 4px;
+  padding: 8px 24px;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.softinsa-service-lines-export-cancel {
+  background: rgba(58, 87, 232, 0.2);
+  color: #2d42b2;
+}
+
+.softinsa-service-lines-export-confirm {
+  background: #3a57e8;
+  color: #ffffff;
+}
+
+.softinsa-service-lines-export-confirm.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+  .softinsa-service-lines-modal-row-top {
+    grid-template-columns: 1fr;
+  }
+
+  .softinsa-service-lines-modal-row-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .softinsa-service-lines-modal-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 991px) {
+  .softinsa-service-lines-page {
+    padding: 0 16px 20px;
+  }
+
+  .softinsa-service-lines-hero {
+    margin: 0 -16px 14px;
+    padding: 28px 24px;
+  }
+
+  .softinsa-service-lines-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .softinsa-service-lines-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .softinsa-service-lines-table-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .softinsa-service-lines-export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .softinsa-service-lines-pagination {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .softinsa-service-lines-modal,
+  .softinsa-service-lines-export-alert {
+    width: min(1100px, calc(100vw - 20px));
+  }
+}
+
+@media (max-width: 640px) {
+  .softinsa-service-lines-search {
+    min-width: 100%;
+  }
+
+  .softinsa-service-lines-modal {
+    padding: 18px;
+  }
+
+  .softinsa-service-lines-modal-header h2 {
+    font-size: 24px;
+  }
+
+  .softinsa-service-lines-export-alert-header h3 {
+    font-size: 30px;
+  }
+
+  .softinsa-service-lines-file-choose,
+  .softinsa-service-lines-file-name {
+    font-size: 14px;
+    padding: 0 12px;
+  }
+
+  .softinsa-service-lines-export-alert-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .softinsa-service-lines-export-cancel,
+  .softinsa-service-lines-export-confirm {
+    width: 100%;
+  }
+}

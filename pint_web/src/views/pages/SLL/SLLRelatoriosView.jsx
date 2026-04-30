@@ -1,0 +1,234 @@
+import { useState } from 'react'
+import SLLSidebar from '../../components/SLLSidebar'
+import SLLTopbar from '../../components/SLLTopbar'
+import './SLL-relatorios.css'
+
+const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/901de158-ab76-4bac-939b-e28c5ba4d3f3'
+const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/fde63e1b-f95f-4921-9475-40d777666c21'
+const heroEllipse3 = 'https://www.figma.com/api/mcp/asset/29e6a8c1-471e-4904-99a0-c2f5bc7d2b5c'
+const heroEllipse4 = 'https://www.figma.com/api/mcp/asset/dc515aa2-10a0-42d2-8d4e-87b80646056d'
+const heroEllipse5 = 'https://www.figma.com/api/mcp/asset/d6364d03-cbf4-4509-84d3-1924ba92bdee'
+const infoIcon = 'https://www.figma.com/api/mcp/asset/e9cb1122-307c-4ebc-938d-34bf0718335c'
+const calendarIcon = 'https://www.figma.com/api/mcp/asset/3d4c9dd9-6d87-4575-baf8-e93232ba25fd'
+const selectArrow = 'https://www.figma.com/api/mcp/asset/3ccd3cf8-7fc5-47f6-9509-a387af5d81f7'
+
+const summaryCards = [
+  { label: 'Total de Badges', value: '248' },
+  { label: 'Badges Aprovados', value: '186' },
+  { label: 'Badges Rejeitados', value: '38' },
+  { label: 'Taxa de Aprovação', value: '75%' },
+]
+
+const areaChartSegments = [
+  { value: 34, color: '#1e3a5f' },
+  { value: 29, color: '#39639c' },
+  { value: 37, color: '#7a9ccd' },
+]
+
+const levelChartSegments = [
+  { value: 40, color: '#1e3a5f' },
+  { value: 33, color: '#39639c' },
+  { value: 27, color: '#7a9ccd' },
+]
+
+const areaChartLabels = [
+  { text: 'LowCode (Outsystems) 34%', tone: 'is-dark', className: 'is-top-right' },
+  { text: 'DevSecOps & IT Automation 29%', tone: 'is-medium', className: 'is-left' },
+  { text: 'Sourcing & Talent Management\n37%', tone: 'is-light', className: 'is-bottom-right' },
+]
+
+const levelChartLabels = [
+  { text: 'Junior 40%', tone: 'is-dark', className: 'is-top-right' },
+  { text: 'Intermédio 33%', tone: 'is-medium', className: 'is-left' },
+  { text: 'Senior 27%', tone: 'is-light', className: 'is-bottom-right' },
+]
+
+const reportRows = [
+  { area: 'LowCode (Outsystems)', junior: 32, intermediate: 28, senior: 25, total: 85 },
+  { area: 'DevSecOps & IT Automation', junior: 28, intermediate: 24, senior: 20, total: 72 },
+  { area: 'Sourcing & Talent Management', junior: 38, intermediate: 30, senior: 23, total: 91 },
+]
+
+function buildConicGradient(segments) {
+  let current = 0
+
+  return segments
+    .map((segment) => {
+      const start = current
+      current += segment.value
+      return `${segment.color} ${start}% ${current}%`
+    })
+    .join(', ')
+}
+
+function PieChartCard({ title, segments, labels }) {
+  return (
+    <article className="sll-relatorios-chart-card">
+      <h3>{title}</h3>
+
+      <div className="sll-relatorios-chart-visual" aria-hidden="true">
+        <div className="sll-relatorios-pie" style={{ background: `conic-gradient(${buildConicGradient(segments)})` }} />
+        <div className="sll-relatorios-pie-hole" />
+
+        {labels.map((label) => (
+          <span key={label.text} className={`sll-relatorios-chart-label ${label.className} ${label.tone}`}>
+            {label.text}
+          </span>
+        ))}
+      </div>
+    </article>
+  )
+}
+
+function StatCard({ label, value }) {
+  return (
+    <article className="sll-relatorios-stat-card">
+      <p>{label}</p>
+      <strong>{value}</strong>
+    </article>
+  )
+}
+
+function SLLRelatoriosView() {
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+
+  return (
+    <div className="sll-relatorios-page">
+      <SLLSidebar />
+
+      <main className="sll-relatorios-main">
+        <SLLTopbar />
+
+        <div className="sll-relatorios-content">
+          <section className="sll-relatorios-hero" aria-label="Relatórios e Estatísticas">
+            <div className="sll-relatorios-hero-art" aria-hidden="true">
+              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-5" src={heroEllipse5} alt="" />
+              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-4" src={heroEllipse4} alt="" />
+              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-3" src={heroEllipse3} alt="" />
+              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-2" src={heroEllipse2} alt="" />
+              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-1" src={heroEllipse1} alt="" />
+            </div>
+
+            <div className="sll-relatorios-hero-copy">
+              <h1>Relatórios e Estatísticas</h1>
+              <p>Cria relatórios de badges atribuídos em função da área e do período</p>
+            </div>
+          </section>
+
+          <section className="sll-relatorios-filters-card" aria-label="Filtros para Relatórios">
+            <div className="sll-relatorios-filters-heading">
+              <h2>Filtros para Relatórios</h2>
+
+              <div className="sll-relatorios-filters-help">
+                <img src={infoIcon} alt="" aria-hidden="true" />
+                <p>Selecione os filtros e clique em "Gerar Relatório"</p>
+              </div>
+            </div>
+
+            <div className="sll-relatorios-filters-row">
+              <div className="sll-relatorios-field">
+                <label>Área</label>
+                <div className="sll-relatorios-select-wrap">
+                  <select defaultValue="">
+                    <option value="" disabled>
+                      Selecione a área
+                    </option>
+                    <option>LowCode (Outsystems)</option>
+                    <option>DevSecOps & IT Automation</option>
+                    <option>Sourcing & Talent Management</option>
+                  </select>
+                  <img src={selectArrow} alt="" aria-hidden="true" className="sll-relatorios-select-arrow" />
+                </div>
+              </div>
+
+              <div className="sll-relatorios-field">
+                <label>Data início</label>
+                <div className="sll-relatorios-date-input">
+                  <span aria-hidden="true">
+                    <img src={calendarIcon} alt="" />
+                  </span>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(event) => setStartDate(event.target.value)}
+                    aria-label="Data início"
+                  />
+                </div>
+              </div>
+
+              <div className="sll-relatorios-field">
+                <label>Data fim</label>
+                <div className="sll-relatorios-date-input">
+                  <span aria-hidden="true">
+                    <img src={calendarIcon} alt="" />
+                  </span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                    aria-label="Data fim"
+                  />
+                </div>
+              </div>
+
+              <button type="button" className="sll-relatorios-generate-btn">
+                Gerar Relatório
+              </button>
+            </div>
+          </section>
+
+          <section className="sll-relatorios-summary-grid" aria-label="Resumo de relatórios">
+            {summaryCards.map((card) => (
+              <StatCard key={card.label} label={card.label} value={card.value} />
+            ))}
+          </section>
+
+          <section className="sll-relatorios-charts-grid" aria-label="Distribuição de badges">
+            <PieChartCard
+              title="Distribuição de Badges Aprovados por Área"
+              segments={areaChartSegments}
+              labels={areaChartLabels}
+            />
+            <PieChartCard
+              title="Distribuição de Badges Aprovados por Nível"
+              segments={levelChartSegments}
+              labels={levelChartLabels}
+            />
+          </section>
+
+          <section className="sll-relatorios-table-card" aria-label="Detalhes por Área e Nível">
+            <h2>Detalhes por Área e Nível</h2>
+
+            <div className="sll-relatorios-table-wrap">
+              <table className="sll-relatorios-table">
+                <thead>
+                  <tr>
+                    <th>Área</th>
+                    <th>Junior</th>
+                    <th>Intermédio</th>
+                    <th>Senior</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportRows.map((row) => (
+                    <tr key={row.area}>
+                      <td>{row.area}</td>
+                      <td>{row.junior}</td>
+                      <td>{row.intermediate}</td>
+                      <td>{row.senior}</td>
+                      <td className="is-total">{row.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default SLLRelatoriosView
