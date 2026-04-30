@@ -1,0 +1,365 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Graphic Side */
+.login-graphic-side {
+  flex: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 138, 255, 1) 0%,
+    rgba(30, 105, 217, 1) 50%,
+    rgba(15, 88, 198, 1) 75%,
+    rgba(0, 72, 178, 1) 100%
+  );
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50%;
+}
+
+.login-big-circles {
+  position: absolute;
+  width: 1546px;
+  height: 1514.89px;
+  left: -354px;
+  top: 87px;
+  pointer-events: none;
+}
+
+.login-circles-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: multiply;
+}
+
+.login-circles-container:nth-child(1) {
+  width: 1546px;
+  height: 1514.89px;
+  left: 0;
+  top: 0;
+}
+
+.login-circles-container:nth-child(2) {
+  width: 1197.74px;
+  height: 1172.679px;
+  left: 0;
+  top: 170.11px;
+}
+
+.login-circles-container:nth-child(3) {
+  width: 1017.128px;
+  height: 996.388px;
+  left: 68.59px;
+  top: 315.42px;
+}
+
+.login-circles-container:nth-child(4) {
+  width: 746.643px;
+  height: 746.643px;
+  left: 114.93px;
+  top: 407.02px;
+}
+
+.login-circles-container:nth-child(5) {
+  width: 593.685px;
+  height: 593.685px;
+  left: 173.7px;
+  top: 439.86px;
+}
+
+.login-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: rotate(90deg);
+  display: block;
+}
+
+/* Form Side */
+.login-form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #ffffff;
+  min-width: 50%;
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #000000;
+  margin: 0;
+  text-align: center;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #8a92a6;
+  margin: 0;
+  padding: 0;
+}
+
+.login-input {
+  height: 2.75rem;
+  padding: 0 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #000000;
+  transition: all 0.2s ease;
+}
+
+.login-input:focus {
+  outline: none;
+  box-shadow: 0px 2px 8px rgba(58, 87, 232, 0.3);
+  border: 1px solid rgba(58, 87, 232, 0.5);
+}
+
+.login-input::placeholder {
+  color: #d0d5dd;
+}
+
+/* Form Actions */
+.login-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #8a92a6;
+  border-radius: 2px;
+  background-color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0px 4px 4px rgba(0, 16, 41, 0.1);
+}
+
+.login-checkbox {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.login-checkbox:checked + .login-checkbox-tick {
+  display: flex;
+}
+
+.login-checkbox-tick {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.login-checkbox-tick img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.login-checkbox-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #8a92a6;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-forgot-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: transparent;
+  text-decoration: none;
+  cursor: default;
+}
+
+/* Login Button */
+.login-button {
+  padding: 0.5rem 1.5rem;
+  background-color: #3a57e8;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 2.75rem;
+}
+
+.login-button:hover {
+  background-color: #2940c0;
+  box-shadow: 0px 4px 12px rgba(58, 87, 232, 0.3);
+  transform: translateY(-1px);
+}
+
+.login-button:active {
+  background-color: #1f2d99;
+  transform: translateY(0);
+}
+
+/* Recover Password */
+.login-recover-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+}
+
+.login-recover-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #3a57e8;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.login-recover-link:hover {
+  color: #2940c0;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .login-graphic-side {
+    min-width: 40%;
+  }
+
+  .login-form-side {
+    min-width: 60%;
+  }
+
+  .login-big-circles {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-graphic-side {
+    min-width: 100%;
+    min-height: 300px;
+  }
+
+  .login-form-side {
+    min-width: 100%;
+    padding: 1.5rem;
+  }
+
+  .login-big-circles {
+    transform: scale(0.6);
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+  }
+
+  .login-form-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-side {
+    padding: 1rem;
+  }
+
+  .login-form-content {
+    gap: 1rem;
+  }
+
+  .login-form {
+    gap: 1rem;
+  }
+
+  .login-title {
+    font-size: 1.25rem;
+  }
+
+  .login-input {
+    height: 2.5rem;
+    font-size: 0.875rem;
+  }
+
+  .login-button {
+    min-height: 2.5rem;
+  }
+
+  .login-big-circles {
+    transform: scale(0.4);
+  }
+}

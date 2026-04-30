@@ -27,11 +27,13 @@ import ConsultorMessagesView from './views/pages/consultor/consultorMessagesView
 import ConsultorConquistasView from './views/pages/consultor/consultorConquistasView'
 import ConsultorOutrasAreasView from './views/pages/consultor/consultorOutrasAreasView'
 import ConsultorPerfilPublicoView from './views/pages/consultor/consultorPerfilPublicoView'
+import LoginView from './views/pages/auth/LoginView'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<AccessGatewayView />} />
+      <Route path="/" element={<LoginView />} />
+      <Route path="/login" element={<LoginView />} />
       <Route path="/acesso" element={<AccessGatewayView />} />
       <Route path="/sll" element={<SLLHomeView />} />
       <Route path="/sll/certificados" element={<SLLCertificadosView />} />
