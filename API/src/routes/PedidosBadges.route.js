@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var controllerPedidos = require('../controllers/Pedidos.controller');
+var controllerPedidos = require('../controllers/PedidosBadges.controller');
 var authVerification = require('../middleware/requireAuth.middleware');
 
 /* =====================================================
@@ -15,7 +15,7 @@ router.get('/get', authVerification, controllerPedidos.getAllPedidos);
 router.get('/:id/get', authVerification, controllerPedidos.getPedidoById);
 
 // Histórico do pedido
-router.get('/:id/historico', authVerification, controllerPedidos.getHistoricoPedido);
+//router.get('/:id/historico', authVerification, controllerPedidos.getHistoricoPedido);
 
 /* =====================================================
    CONSULTOR
@@ -25,10 +25,10 @@ router.get('/:id/historico', authVerification, controllerPedidos.getHistoricoPed
 router.post('/create', authVerification, controllerPedidos.createPedido);
 
 // Atualizar pedido
-router.put('/:id/update', controllerPedidos.updatePedidoById);
+//router.put('/:id/update', controllerPedidos.updatePedidoById);
 
 // Apagar pedido
-router.delete('/:id/delete', controllerPedidos.deletePedidoById);
+//router.delete('/:id/delete', controllerPedidos.deletePedidoById);
 
 
 // Avaliação do Talent Manager

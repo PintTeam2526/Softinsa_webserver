@@ -1,7 +1,7 @@
-const Pedidos = require("../models/Pedidos");
-const HistoricoPedidos = require("../models/HistoricoPedidos");
-const NotificacoesPedidos = require("../models/NotificacoesPedidos");
-const BadgesConcluidos = require("../models/BadgesConcluidos");
+const Pedidos = require("../models/PedidosBadges.models");
+const HistoricoPedidos = require("../models/HistoricoPedidos.models");
+const NotificacoesPedidos = require("../models/NotificacoesPedidos.models");
+const BadgesConcluidos = require("../models/BadgesConcluidos.models");
 
 const controllers = {};
 
@@ -141,17 +141,19 @@ controllers.createPedido = async (req, res) => {
     }
 };
 
+
 /* =====================================================
    TALENT MANAGER
 ===================================================== */
-
-controllers.aprovarTM = async (req, res) => {
+controllers.tmReview = async (req, res) => {
     try {
         if (!isTM(req) && !isAdmin(req)) {
             return res.status(403).json({
                 mensagem: "Sem permissão"
             });
         }
+
+        const { acao } = req.body; // "aprovar" ou "devolver"
 
         const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -161,73 +163,50 @@ controllers.aprovarTM = async (req, res) => {
             });
         }
 
-        pedido.estado_atual = 5;
+        let estado;
+        let mensagemHistorico;
+        let mensagemNotificacao;
+        let mensagemResposta;
+
+        if (acao === "aprovar") {
+            estado = 5;
+            mensagemHistorico = "Aprovado pelo Talent Manager";
+            mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
+            mensagemResposta = "Pedido aprovado";
+        } else if (acao === "devolver") {
+            estado = 3;
+            mensagemHistorico = "Devolvido pelo Talent Manager";
+            mensagemNotificacao = "Pedido devolvido pelo Talent Manager.";
+            mensagemResposta = "Pedido devolvido";
+        } else {
+            return res.status(400).json({
+                mensagem: "Ação inválida. Use 'aprovar' ou 'devolver'"
+            });
+        }
+
+        pedido.estado_atual = estado;
         await pedido.save();
 
         await criarHistorico(
             pedido.id_pedido_badge,
-            5,
+            estado,
             req.user.id,
-            "Aprovado pelo Talent Manager"
+            mensagemHistorico
         );
 
         await criarNotificacao(
             pedido.id_consultor,
             pedido.id_pedido_badge,
-            "Pedido aprovado pelo Talent Manager."
+            mensagemNotificacao
         );
 
         return res.status(200).json({
-            mensagem: "Pedido aprovado"
+            mensagem: mensagemResposta
         });
 
     } catch (error) {
         return res.status(500).json({
-            mensagem: "Erro ao aprovar pedido",
-            erro: error.message
-        });
-    }
-};
-
-controllers.devolverTM = async (req, res) => {
-    try {
-        if (!isTM(req) && !isAdmin(req)) {
-            return res.status(403).json({
-                mensagem: "Sem permissão"
-            });
-        }
-
-        const pedido = await Pedidos.findByPk(req.params.id);
-
-        if (!pedido) {
-            return res.status(404).json({
-                mensagem: "Pedido não existe"
-            });
-        }
-
-        pedido.estado_atual = 3;
-        await pedido.save();
-
-        await criarHistorico(
-            pedido.id_pedido_badge,
-            3,
-            req.user.id,
-            "Devolvido pelo Talent Manager"
-        );
-
-        await criarNotificacao(
-            pedido.id_consultor,
-            pedido.id_pedido_badge,
-            "Pedido devolvido pelo Talent Manager."
-        );
-
-        return res.status(200).json({
-            mensagem: "Pedido devolvido"
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            mensagem: "Erro ao devolver pedido",
+            mensagem: "Erro ao processar pedido",
             erro: error.message
         });
     }
@@ -237,13 +216,15 @@ controllers.devolverTM = async (req, res) => {
    SERVICE LINE LIDER
 ===================================================== */
 
-controllers.aprovarSL = async (req, res) => {
+controllers.slReview = async (req, res) => {
     try {
         if (!isSL(req) && !isAdmin(req)) {
             return res.status(403).json({
                 mensagem: "Sem permissão"
             });
         }
+
+        const { acao } = req.body; // "aprovar", "devolver", "rejeitar"
 
         const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -253,45 +234,84 @@ controllers.aprovarSL = async (req, res) => {
             });
         }
 
-        pedido.estado_atual = 8;
+        const acoes = {
+            aprovar: {
+                estado: 8,
+                historico: "Aprovado final",
+                notificacao: "Pedido aprovado. Badge atribuído.",
+                resposta: "Pedido aprovado com sucesso"
+            },
+            devolver: {
+                estado: 6,
+                historico: "Devolvido pelo Service Line Líder",
+                notificacao: "Pedido devolvido pelo Service Line Líder.",
+                resposta: "Pedido devolvido"
+            },
+            rejeitar: {
+                estado: 7,
+                historico: "Pedido rejeitado",
+                notificacao: "Pedido rejeitado.",
+                resposta: "Pedido rejeitado"
+            }
+        };
+
+        const config = acoes[acao];
+
+        if (!config) {
+            return res.status(400).json({
+                mensagem: "Ação inválida. Use 'aprovar', 'devolver' ou 'rejeitar'"
+            });
+        }
+
+        // Atualizar estado
+        pedido.estado_atual = config.estado;
         await pedido.save();
 
-        await BadgesConcluidos.create({
-            id_badge: pedido.id_badge,
-            id_consultor: pedido.id_consultor,
-            data_limite_conclusao: new Date(),
-            data_conclusao: new Date(),
-            url_validacao: "Interno"
-        });
+        // 🔥 Lógica extra apenas para aprovação
+        if (acao === "aprovar") {
+            await BadgesConcluidos.create({
+                id_badge: pedido.id_badge,
+                id_consultor: pedido.id_consultor,
+                data_limite_conclusao: new Date(),
+                data_conclusao: new Date(),
+                url_validacao: "Interno"
+            });
+        }
 
+        // Histórico
         await criarHistorico(
             pedido.id_pedido_badge,
-            8,
+            config.estado,
             req.user.id,
-            "Aprovado final"
+            config.historico
         );
 
+        // Notificação
         await criarNotificacao(
             pedido.id_consultor,
             pedido.id_pedido_badge,
-            "Pedido aprovado. Badge atribuído."
+            config.notificacao
         );
 
         return res.status(200).json({
-            mensagem: "Pedido aprovado com sucesso"
+            mensagem: config.resposta
         });
 
     } catch (error) {
         return res.status(500).json({
-            mensagem: "Erro ao aprovar pedido",
+            mensagem: "Erro ao processar pedido",
             erro: error.message
         });
     }
 };
 
-controllers.devolverSL = async (req, res) => {
+/* =====================================================
+   CONSULTOR 
+===================================================== */
+
+controllers.resubmitPedido = async (req, res) => {
     try {
-        if (!isSL(req) && !isAdmin(req)) {
+        if (!isConsultor(req) && !isAdmin(req)) {
             return res.status(403).json({
                 mensagem: "Sem permissão"
             });
@@ -305,73 +325,41 @@ controllers.devolverSL = async (req, res) => {
             });
         }
 
-        pedido.estado_atual = 6;
+        // 🔒 Garantir que só pode reenviar se foi devolvido
+        const estadosPermitidos = [3, 6]; // devolvido TM ou SL
+
+        if (!estadosPermitidos.includes(pedido.estado_atual)) {
+            return res.status(400).json({
+                mensagem: "Pedido não pode ser reenviado neste estado"
+            });
+        }
+
+        // 🔄 Atualizar estado (volta para TM)
+        pedido.estado_atual = 2;
         await pedido.save();
 
+        // 📝 Histórico
         await criarHistorico(
             pedido.id_pedido_badge,
-            6,
+            2,
             req.user.id,
-            "Devolvido pelo Service Line Líder"
+            "Pedido reenviado pelo consultor"
         );
 
+        // 🔔 Notificação (podes adaptar para TM/SL se quiseres)
         await criarNotificacao(
             pedido.id_consultor,
             pedido.id_pedido_badge,
-            "Pedido devolvido pelo Service Line Líder."
+            "Pedido reenviado para nova avaliação."
         );
 
         return res.status(200).json({
-            mensagem: "Pedido devolvido"
+            mensagem: "Pedido reenviado com sucesso"
         });
 
     } catch (error) {
         return res.status(500).json({
-            mensagem: "Erro ao devolver pedido",
-            erro: error.message
-        });
-    }
-};
-
-controllers.rejeitarSL = async (req, res) => {
-    try {
-        if (!isSL(req) && !isAdmin(req)) {
-            return res.status(403).json({
-                mensagem: "Sem permissão"
-            });
-        }
-
-        const pedido = await Pedidos.findByPk(req.params.id);
-
-        if (!pedido) {
-            return res.status(404).json({
-                mensagem: "Pedido não existe"
-            });
-        }
-
-        pedido.estado_atual = 7;
-        await pedido.save();
-
-        await criarHistorico(
-            pedido.id_pedido_badge,
-            7,
-            req.user.id,
-            "Pedido rejeitado"
-        );
-
-        await criarNotificacao(
-            pedido.id_consultor,
-            pedido.id_pedido_badge,
-            "Pedido rejeitado."
-        );
-
-        return res.status(200).json({
-            mensagem: "Pedido rejeitado"
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            mensagem: "Erro ao rejeitar pedido",
+            mensagem: "Erro ao reenviar pedido",
             erro: error.message
         });
     }

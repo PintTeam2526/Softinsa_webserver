@@ -7,7 +7,7 @@ controllers.getAllServiceLines = async (req, res) => {
     try {
         const isAdmin = req.user?.role === "admin";
 
-        const whereClause = isAdmin ? {} : { estado_A_I_: true };
+        const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await ServiceLines.findAll({
             where: whereClause
@@ -74,7 +74,7 @@ controllers.createServiceLine = async (req, res) => {
             nome_serviceline,
             descricao_serviceline,
             imagem_serviceline,
-            estado_A_I_
+            estado_a_i
         } = req.body;
 
         await ServiceLines.create({
@@ -83,7 +83,7 @@ controllers.createServiceLine = async (req, res) => {
             nome_serviceline,
             descricao_serviceline,
             imagem_serviceline,
-            estado_A_I_,
+            estado_a_i,
             data_insercao: new Date().toISOString().split('T')[0] // DATA ATUAL
         });
 
@@ -122,7 +122,7 @@ controllers.deleteServiceLineById = async (req, res) => {
             });
         }
 
-        resultado.estado_A_I_ = false;
+        resultado.estado_a_i = false;
 
         await resultado.save();
 
@@ -173,7 +173,7 @@ controllers.updateServiceLineById = async (req, res) => {
         serviceLine.nome_serviceline = nome_serviceline ?? serviceLine.nome_serviceline;
         serviceLine.descricao_serviceline = descricao_serviceline ?? serviceLine.descricao_serviceline;
         serviceLine.imagem_serviceline = imagem_serviceline ?? serviceLine.imagem_serviceline;
-        serviceLine.estado_A_I_ = estado_A_I_ ?? serviceLine.estado_A_I_;
+        serviceLine.estado_a_i = estado_A_I_ ?? serviceLine.estado_A_I_;
 
         serviceLine.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 

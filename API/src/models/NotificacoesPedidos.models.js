@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Consultor = require('./Consultores.models');
-var PedidoBadge = require('./PedidosBadge.models');
+var PedidoBadge = require('./PedidosBadges.models');
 
 var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
 {

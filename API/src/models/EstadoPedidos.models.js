@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
-var PedidoBadge = require('./PedidosBadge.models');
+var PedidoBadge = require('./PedidosBadges.models');
 var Estado = require('./Estados.models');
 
 var EstadoPedidos = sequelize.define('EstadoPedidos',
