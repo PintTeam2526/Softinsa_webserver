@@ -9,24 +9,6 @@ import {
 
 import { mapLearningPath } from "../../../models/learningPathModel";
 
-const [learningPaths, setLearningPaths] = useState([]);
-
-useEffect(() => {
-  const fetchLearningPaths = async () => {
-    try {
-      const data = await getLearningPaths();
-
-      const mappedData = data.map(mapLearningPath);
-
-      setLearningPaths(mappedData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  fetchLearningPaths();
-}, []);
-
 const statusOptions = ["Ativo", "Inativo"];
 
 const getDefaultFilterDraft = () => ({
@@ -159,7 +141,7 @@ function FileSelector({ fileName, onChange, ariaLabel }) {
 }
 
 const SoftinsaLearningPaths = memo(() => {
-  const [learningPaths, setLearningPaths] = useState(learningPathsRows);
+  const [learningPaths, setLearningPaths] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -172,6 +154,22 @@ const SoftinsaLearningPaths = memo(() => {
   const [editingLearningPathId, setEditingLearningPathId] = useState(null);
   const [formData, setFormData] = useState(getDefaultLearningPathForm());
   const filterWrapRef = useRef(null);
+
+  useEffect(() => {
+    const fetchLearningPaths = async () => {
+      try {
+        const data = await getLearningPaths();
+
+        const mappedData = data.map(mapLearningPath);
+
+        setLearningPaths(mappedData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchLearningPaths();
+  }, []);
 
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
