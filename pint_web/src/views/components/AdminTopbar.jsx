@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { topbarProfile } from '../../models/topbar.model'
 import { useTopbarController } from '../../controllers/topbar.controller'
-import './SoftinsaTopbar.css'
+import './AdminTopbar.css'
 
 function SearchIcon() {
   return (
@@ -193,7 +193,7 @@ function ProfileLanguageDropdown({ languages, selectedLanguage, onLanguageChange
   )
 }
 
-const SoftinsaTopbar = memo(() => {
+const AdminTopbar = memo(() => {
   const {
     notificationWrapRef,
     profileWrapRef,
@@ -279,4 +279,4 @@ const SoftinsaTopbar = memo(() => {
   )
 })
 
-export default SoftinsaTopbar
+export default AdminTopbar

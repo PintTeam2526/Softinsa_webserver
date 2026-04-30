@@ -1,24 +1,24 @@
 export const sidebarSections = [
   {
     title: 'Home',
-    items: [{ text: 'Dashboard', icon: 'dashboard', to: '/softinsa', end: true }],
+    items: [{ text: 'Dashboard', icon: 'dashboard', to: '/admin', end: true }],
   },
   {
     title: 'Gestao',
     items: [
-      { text: 'Utilizadores', icon: 'users', to: '/softinsa/utilizadores' },
-      { text: 'Pedidos', icon: 'pedidos', to: '/softinsa/pedidos' },
-      { text: 'SLAs', icon: 'slas', to: '/softinsa/slas' },
-      { text: 'RGPD', icon: 'rgpd', to: '/softinsa/rgpd' },
+      { text: 'Utilizadores', icon: 'users', to: '/admin/utilizadores' },
+      { text: 'Pedidos', icon: 'pedidos', to: '/admin/pedidos' },
+      { text: 'SLAs', icon: 'slas', to: '/admin/slas' },
+      { text: 'RGPD', icon: 'rgpd', to: '/admin/rgpd' },
     ],
   },
   {
     title: 'Estrutura',
     items: [
-      { text: 'Badges', icon: 'badges', to: '/softinsa/badges' },
-      { text: 'Areas', icon: 'areas', to: '/softinsa/areas' },
-      { text: 'Service Lines', icon: 'service-lines', to: '/softinsa/service-lines' },
-      { text: 'Learning Paths', icon: 'learning-paths', to: '/softinsa/learning-paths' },
+      { text: 'Badges', icon: 'badges', to: '/admin/badges' },
+      { text: 'Areas', icon: 'areas', to: '/admin/areas' },
+      { text: 'Service Lines', icon: 'service-lines', to: '/admin/service-lines' },
+      { text: 'Learning Paths', icon: 'learning-paths', to: '/admin/learning-paths' },
     ],
   },
 ]

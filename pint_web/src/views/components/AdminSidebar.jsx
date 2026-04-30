@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useSidebarController } from '../../controllers/sidebar.controller'
-import './SoftinsaSidebar.css'
+import './AdminSidebar.css'
 
 function MenuTitle({ text }) {
   return (
@@ -281,7 +281,7 @@ function SidebarIcon({ type }) {
   return <BadgesIcon />
 }
 
-function MenuItem({ text, icon, to = '/softinsa', end = false }) {
+function MenuItem({ text, icon, to = '/admin', end = false }) {
   return (
     <NavLink
       to={to}
