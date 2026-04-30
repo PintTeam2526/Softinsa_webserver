@@ -9,15 +9,11 @@ controllers.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const users = await User.findAll();
-console.log(users);
     // Procurar utilizador na BD
     const user = await User.findOne({
         where: { email_utilizador: email }
     });
 
-    console.log("BODY:", req.body);
-   console.log("EMAIL:", email);
     
     if (!user) {
       return res.status(400).json({ message: 'Utilizador não encontrado' });
@@ -33,19 +29,17 @@ console.log(users);
     // Criar token
     const token = jwt.sign(
       {
-        id: user.id,
-        email: user.email,
-        role: user.role
+        email: user.email_utilizador,
+        role: user.tipo_utilizador
       },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
 
     // Resposta
-    return res.json({
+    return res.status(200).json({
       token,
       user: {
-        id: user.id_utilizador,
         email: user.email_utilizador,
         role: user.tipo_utilizador
       }
