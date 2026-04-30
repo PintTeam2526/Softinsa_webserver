@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import "./softinsa-areas.css";
+import "./admin-areas.css";
 
 // TODO: Replace all mock data and local options with API data (areas, service lines, learning paths, and statuses).
 const areasRows = [

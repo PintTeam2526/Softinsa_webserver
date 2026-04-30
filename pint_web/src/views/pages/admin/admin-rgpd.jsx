@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useState } from "react";
-import "./softinsa-rgpd.css";
+import "./admin-rgpd.css";
 
 const ACCEPTANCE_STORAGE_KEY = "softinsa.rgpd.acceptance";
 

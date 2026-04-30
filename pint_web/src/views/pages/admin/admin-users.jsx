@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import "./softinsa-users.css";
+import "./admin-users.css";
 
 const userAvatarVasco = "https://www.figma.com/api/mcp/asset/54902fd0-73ae-42f2-b5e5-a9d96163e1e2";
 const userAvatarPedro = "https://www.figma.com/api/mcp/asset/3bf143d4-10b8-4921-898a-988ff5c7cd4b";

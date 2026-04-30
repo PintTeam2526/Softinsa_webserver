@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import "./softinsa-service-lines.css";
+import "./admin-service-lines.css";
 
 // TODO: Replace all mock data and local options with API data (service lines, learning paths, badges, and statuses).
 const serviceLinesRows = [

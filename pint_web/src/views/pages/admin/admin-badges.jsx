@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
-import "./softinsa-badges.css";
+import "./admin-badges.css";
 
 const badgeJuniorCitizenDeveloper = "https://www.figma.com/api/mcp/asset/8ac1b8c7-eccc-423b-8373-e25bf82c55b4";
 

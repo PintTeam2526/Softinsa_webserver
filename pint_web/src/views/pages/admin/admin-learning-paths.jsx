@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import "./softinsa-learning-paths.css";
+import "./admin-learning-paths.css";
 
 // TODO: Replace all mock data and local options with API data (learning paths and statuses).
 const learningPathsRows = [

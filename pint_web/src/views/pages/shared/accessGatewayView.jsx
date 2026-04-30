@@ -4,7 +4,7 @@ import './access-gateway.css'
 const portalOptions = [
   {
     id: 'admin',
-    to: '/softinsa',
+    to: '/admin',
     badge: 'Portal de Gestao',
     title: 'Entrar como Admin',
     summary:

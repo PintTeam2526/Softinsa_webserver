@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import "./softinsa-slas.css";
+import "./admin-slas.css";
 
 // TODO: Replace all mock data and local options with API data (SLAs, statuses, and responsible teams).
 const slasRows = [
