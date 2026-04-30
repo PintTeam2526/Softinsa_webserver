@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
 import DashboardView from './views/pages/admin/DashboardView'
-import AdminUsers from './views/pages/admin/admin-users'
-import AdminPedidos from './views/pages/admin/admin-pedidos'
-import AdminSlas from './views/pages/admin/admin-slas'
-import AdminRgpd from './views/pages/admin/admin-rgpd'
-import AdminBadges from './views/pages/admin/admin-badges'
-import AdminAreas from './views/pages/admin/admin-areas'
-import AdminServiceLines from './views/pages/admin/admin-service-lines'
-import AdminLearningPaths from './views/pages/admin/admin-learning-paths'
+import SoftinsaUsers from './views/pages/admin/softinsa-users'
+import SoftinsaPedidos from './views/pages/admin/softinsa-pedidos'
+import SoftinsaSlas from './views/pages/admin/softinsa-slas'
+import SoftinsaRgpd from './views/pages/admin/softinsa-rgpd'
+import SoftinsaBadges from './views/pages/admin/softinsa-badges'
+import SoftinsaAreas from './views/pages/admin/softinsa-areas'
+import SoftinsaServiceLines from './views/pages/admin/softinsa-service-lines'
+import SoftinsaLearningPaths from './views/pages/admin/softinsa-learning-paths'
 import AccessGatewayView from './views/pages/shared/accessGatewayView'
 import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
 import SLLHomeView from './views/pages/SLL/SLLHomeView'
@@ -28,13 +28,11 @@ import ConsultorMessagesView from './views/pages/consultor/consultorMessagesView
 import ConsultorConquistasView from './views/pages/consultor/consultorConquistasView'
 import ConsultorOutrasAreasView from './views/pages/consultor/consultorOutrasAreasView'
 import ConsultorPerfilPublicoView from './views/pages/consultor/consultorPerfilPublicoView'
-import LoginView from './views/pages/auth/LoginView'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LoginView />} />
-      <Route path="/login" element={<LoginView />} />
+      <Route path="/" element={<AccessGatewayView />} />
       <Route path="/acesso" element={<AccessGatewayView />} />
       <Route path="/talent-manager" element={<TalentManagerHomeView />} />
       <Route path="/sll" element={<SLLHomeView />} />
@@ -46,16 +44,16 @@ function App() {
       <Route path="/sll/pendentes" element={<SLLPendentesView />} />
       <Route path="/sll/perfil-publico" element={<SLLPerfilPublicoView />} />
 
-      <Route path="/admin" element={<SoftinsaLayout />}>
+      <Route path="/softinsa" element={<SoftinsaLayout />}>
         <Route index element={<DashboardView />} />
-        <Route path="utilizadores" element={<AdminUsers />} />
-        <Route path="pedidos" element={<AdminPedidos />} />
-        <Route path="slas" element={<AdminSlas />} />
-        <Route path="rgpd" element={<AdminRgpd />} />
-        <Route path="badges" element={<AdminBadges />} />
-        <Route path="areas" element={<AdminAreas />} />
-        <Route path="service-lines" element={<AdminServiceLines />} />
-        <Route path="learning-paths" element={<AdminLearningPaths />} />
+        <Route path="utilizadores" element={<SoftinsaUsers />} />
+        <Route path="pedidos" element={<SoftinsaPedidos />} />
+        <Route path="slas" element={<SoftinsaSlas />} />
+        <Route path="rgpd" element={<SoftinsaRgpd />} />
+        <Route path="badges" element={<SoftinsaBadges />} />
+        <Route path="areas" element={<SoftinsaAreas />} />
+        <Route path="service-lines" element={<SoftinsaServiceLines />} />
+        <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
       </Route>
 
       <Route path="/consultor" element={<SoftinsaLayout />}>

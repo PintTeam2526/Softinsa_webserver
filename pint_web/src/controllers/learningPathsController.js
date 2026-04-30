@@ -1,13 +1,17 @@
-import axios from "axios";
-
 const API_URL = "http://localhost:3000/api/learningPaths/get";
 
 export const getLearningPaths = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error(`Falha ao obter learning paths: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
     console.log("RESPONSE:", response);
-    console.log("DATA:", response.data);
-    return response.data;
+    console.log("DATA:", data);
+    return data;
   } catch (error) {
     console.error("Erro ao obter learning paths", error);
     throw error;
@@ -16,8 +20,19 @@ export const getLearningPaths = async () => {
 
 /*export const createLearningPath = async (payload) => {
   try {
-    const response = await axios.post(API_URL, payload);
-    return response.data;
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Falha ao criar learning path: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
   } catch (error) {
     console.error("Erro ao criar learning path", error);
     throw error;
@@ -26,8 +41,19 @@ export const getLearningPaths = async () => {
 
 export const updateLearningPath = async (id, payload) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, payload);
-    return response.data;
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Falha ao atualizar learning path: ${response.status} ${response.statusText}`);
+    }
+
+    return await response.json();
   } catch (error) {
     console.error("Erro ao atualizar learning path", error);
     throw error;
