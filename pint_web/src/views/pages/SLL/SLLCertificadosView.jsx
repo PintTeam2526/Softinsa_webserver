@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { FaSearch, FaUpload } from 'react-icons/fa'
+import { jsPDF } from 'jspdf'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-certificados.css'
@@ -63,24 +64,20 @@ function SLLCertificadosView() {
   }
 
   function downloadPdf() {
-    const payload = [
-      'Certificado de Badges',
-      `Consultor: ${previewConsultant.name}`,
-      `Badge: ${previewBadge.name}`,
-      `Área: ${previewConsultant.area}`,
-      `Service Line: ${previewConsultant.serviceLine}`,
-      `Learning Path: ${previewConsultant.learningPath}`,
-    ].join('\n')
+    const documentPdf = new jsPDF()
 
-    const blob = new Blob([payload], { type: 'application/pdf;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = 'certificado-badge.pdf'
-    document.body.appendChild(anchor)
-    anchor.click()
-    anchor.remove()
-    URL.revokeObjectURL(url)
+    documentPdf.setFontSize(18)
+    documentPdf.text('Certificado de Badges', 20, 24)
+
+    documentPdf.setFontSize(12)
+    documentPdf.text(`Consultor: ${previewConsultant.name}`, 20, 42)
+    documentPdf.text(`Badge: ${previewBadge.name}`, 20, 52)
+    documentPdf.text(`Área: ${previewConsultant.area}`, 20, 62)
+    documentPdf.text(`Service Line: ${previewConsultant.serviceLine}`, 20, 72)
+    documentPdf.text(`Learning Path: ${previewConsultant.learningPath}`, 20, 82)
+    documentPdf.text(`Email: ${previewConsultant.email}`, 20, 92)
+
+    documentPdf.save('certificado-badge.pdf')
   }
 
   return (

@@ -29,6 +29,15 @@ const portalOptions = [
       'Acompanha alertas, pedidos pendentes, desempenho da equipa e progresso global da service line.',
     cta: 'Ir para Service Line Leader',
   },
+  {
+    id: 'talent-manager',
+    to: '/talent-manager',
+    badge: 'Portal de Talentos',
+    title: 'Entrar como Talent Manager',
+    summary:
+      'Gere pedidos pendentes, notificações, validade de badges e acompanhamento da equipa a partir do dashboard.',
+    cta: 'Ir para Talent Manager',
+  },
 ]
 
 function AccessCard({ option }) {

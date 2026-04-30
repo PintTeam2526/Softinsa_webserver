@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaDownload, FaFileAlt, FaFilter, FaSearch, FaStar } from 'react-icons/fa'
 import SLLSidebar from '../../components/SLLSidebar'
+import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-pendentes.css'
 
@@ -14,6 +15,7 @@ const pendingRequests = [
   {
     title: 'Data Analytics - Sénior',
     consultant: 'Maria Santos',
+    area: 'Data',
     deadline: 'Tempo limite de resposta termina em 5 dias',
     avatar: 'DA',
     avatarTone: 'primary',
@@ -27,6 +29,7 @@ const pendingRequests = [
   {
     title: 'Cloud Architecture - Intermédio',
     consultant: 'João Silva',
+    area: 'Cloud',
     deadline: 'Tempo limite de resposta termina em 10 dias',
     avatar: 'CA',
     avatarTone: 'secondary',
@@ -40,6 +43,7 @@ const pendingRequests = [
   {
     title: 'Agile Leadership - Júnior',
     consultant: 'Pedro Costa',
+    area: 'Agile',
     deadline: 'Tempo limite de resposta termina em 10 dias',
     avatar: 'AL',
     avatarTone: 'dark',
@@ -112,9 +116,9 @@ function PendingRequestCard({ request }) {
       </div>
 
       <div className="sll-pending-card-actions">
-        <button type="button" className="sll-pending-action is-return">Devolver</button>
-        <button type="button" className="sll-pending-action is-reject">Rejeitar</button>
-        <button type="button" className="sll-pending-action is-accept">Aceitar</button>
+        <button type="button" className="sll-pending-action is-return" onClick={() => request.onAction('return')}>Devolver</button>
+        <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>Rejeitar</button>
+        <button type="button" className="sll-pending-action is-accept" onClick={() => request.onAction('accept')}>Aceitar</button>
       </div>
     </article>
   )
@@ -122,7 +126,55 @@ function PendingRequestCard({ request }) {
 
 function SLLPendentesView() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [draftArea, setDraftArea] = useState('')
+  const [appliedArea, setAppliedArea] = useState('')
+  const [requests, setRequests] = useState(pendingRequests)
+  const [currentPage, setCurrentPage] = useState(1)
   const filterPopoverRef = useRef(null)
+
+  const areaOptions = useMemo(() => [...new Set(requests.map((request) => request.area))], [requests])
+
+  const filteredRequests = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+
+    return requests.filter((request) => {
+      const searchableText = [
+        request.title,
+        request.consultant,
+        request.area,
+        request.deadline,
+        request.avatar,
+        ...request.requirements,
+        ...request.documents,
+      ]
+        .join(' ')
+        .toLowerCase()
+
+      const matchesSearch = !normalizedSearch || searchableText.includes(normalizedSearch)
+      const matchesArea = !appliedArea || request.area === appliedArea
+
+      return matchesSearch && matchesArea
+    })
+  }, [appliedArea, requests, searchTerm])
+
+  const requestsPerPage = 2
+
+  const totalPages = Math.max(1, Math.ceil(filteredRequests.length / requestsPerPage))
+
+  const paginatedRequests = useMemo(() => {
+    const startIndex = (currentPage - 1) * requestsPerPage
+
+    return filteredRequests.slice(startIndex, startIndex + requestsPerPage)
+  }, [currentPage, filteredRequests])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [appliedArea, searchTerm])
+
+  useEffect(() => {
+    setCurrentPage((previousPage) => Math.min(previousPage, totalPages))
+  }, [totalPages])
 
   useEffect(() => {
     function handleDocumentClick(event) {
@@ -135,6 +187,34 @@ function SLLPendentesView() {
 
     return () => document.removeEventListener('mousedown', handleDocumentClick)
   }, [])
+
+  useEffect(() => {
+    if (isFilterOpen) {
+      setDraftArea(appliedArea)
+    }
+  }, [appliedArea, isFilterOpen])
+
+  function applyFilter() {
+    setAppliedArea(draftArea)
+    setIsFilterOpen(false)
+  }
+
+  function handleRequestAction(requestTitle, action) {
+    setRequests((currentRequests) => currentRequests.filter((request) => request.title !== requestTitle))
+
+    if (action === 'accept') {
+      // Accepted items leave the pending queue.
+      return
+    }
+
+    if (action === 'reject') {
+      return
+    }
+
+    if (action === 'return') {
+      return
+    }
+  }
 
   return (
     <div className="sll-pending-page">
@@ -162,7 +242,12 @@ function SLLPendentesView() {
           <section className="sll-pending-toolbar" aria-label="Pesquisar pedidos">
             <label className="sll-pending-search">
               <FaSearch aria-hidden="true" />
-              <input type="text" placeholder="Pesquisar por nome do consultor ou badge..." />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome do consultor ou badge..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
             </label>
 
             <div className="sll-pending-filter-popover-wrap" ref={filterPopoverRef}>
@@ -181,13 +266,23 @@ function SLLPendentesView() {
                 <div className="sll-pending-filter-popover" role="dialog" aria-label="FiltroPedidosPendentes">
                   <div className="sll-pending-filter-field">
                     <label>Área</label>
-                    <button type="button" className="sll-pending-filter-select">
-                      <span>Selecione a Área</span>
-                      <span className="sll-pending-filter-select-arrow" aria-hidden="true" />
-                    </button>
+                    <div className="sll-pending-filter-select-wrap">
+                      <select
+                        className="sll-pending-filter-select"
+                        value={draftArea}
+                        onChange={(event) => setDraftArea(event.target.value)}
+                      >
+                        <option value="">Selecione a Área</option>
+                        {areaOptions.map((area) => (
+                          <option key={area} value={area}>
+                            {area}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
-                  <button type="button" className="sll-pending-filter-apply" onClick={() => setIsFilterOpen(false)}>
+                  <button type="button" className="sll-pending-filter-apply" onClick={applyFilter}>
                     Filtrar
                   </button>
                 </div>
@@ -196,20 +291,27 @@ function SLLPendentesView() {
           </section>
 
           <section className="sll-pending-list" aria-label="Lista de pedidos pendentes">
-            {pendingRequests.map((request) => (
-              <PendingRequestCard key={request.title} request={request} />
+            {paginatedRequests.map((request) => (
+              <PendingRequestCard
+                key={request.title}
+                request={{
+                  ...request,
+                  onAction: (action) => handleRequestAction(request.title, action),
+                }}
+              />
             ))}
           </section>
 
-          <div className="sll-pending-pagination" aria-label="Paginação">
-            <button type="button">«</button>
-            <button type="button">‹</button>
-            <button type="button" className="is-active">1</button>
-            <button type="button">2</button>
-            <button type="button">3</button>
-            <button type="button">›</button>
-            <button type="button">»</button>
-          </div>
+          <SLLPagination
+            className="sll-pending-pagination"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            firstContent="«"
+            previousContent="‹"
+            nextContent="›"
+            lastContent="»"
+          />
         </div>
       </main>
     </div>

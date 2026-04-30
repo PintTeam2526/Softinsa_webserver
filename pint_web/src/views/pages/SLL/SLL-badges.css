@@ -219,6 +219,49 @@
   outline-offset: 1px;
 }
 
+.sll-badges-export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-badges-export-option {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sll-badges-export-option-toggle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50px;
+  border: 1px solid #3a57e8;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.sll-badges-export-option-toggle.is-selected {
+  padding: 4px;
+}
+
+.sll-badges-export-option-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3a57e8;
+  display: block;
+}
+
 .sll-badges-export-confirm {
   height: 48px;
   border: 0;

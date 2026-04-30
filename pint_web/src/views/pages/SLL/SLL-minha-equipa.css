@@ -539,6 +539,11 @@
   cursor: pointer;
 }
 
+.sll-team-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .sll-team-pagination button + button {
   border-left: 0;
 }

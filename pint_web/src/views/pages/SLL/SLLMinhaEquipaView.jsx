@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaFilter, FaTimes, FaUpload } from 'react-icons/fa'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
+import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-minha-equipa.css'
 
@@ -52,8 +56,9 @@ function ExportFormatOption({ label, selected, onClick }) {
 function SLLMinhaEquipaView() {
   const [showFilter, setShowFilter] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const [selectedExportFormat, setSelectedExportFormat] = useState('excel')
-  const [filteredMembers, setFilteredMembers] = useState(teamMembers)
   const [draftFilters, setDraftFilters] = useState({
     dateFrom: '',
     dateTo: '',
@@ -65,6 +70,43 @@ function SLLMinhaEquipaView() {
     area: '',
   })
   const filterRef = useRef(null)
+
+  const filteredMembers = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+
+    return teamMembers.filter((member) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        [member.rank, member.name, member.area, String(member.badges), String(member.points), String(member.progress)]
+          .join(' ')
+          .toLowerCase()
+          .includes(normalizedSearch)
+
+      const matchesDateFrom = !appliedFilters.dateFrom || member.joinedDate >= appliedFilters.dateFrom
+      const matchesDateTo = !appliedFilters.dateTo || member.joinedDate <= appliedFilters.dateTo
+      const matchesArea = !appliedFilters.area || member.area === appliedFilters.area
+
+      return matchesSearch && matchesDateFrom && matchesDateTo && matchesArea
+    })
+  }, [appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, searchTerm])
+
+  const membersPerPage = 6
+
+  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / membersPerPage))
+
+  const paginatedMembers = useMemo(() => {
+    const startIndex = (currentPage - 1) * membersPerPage
+
+    return filteredMembers.slice(startIndex, startIndex + membersPerPage)
+  }, [currentPage, filteredMembers])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, searchTerm])
+
+  useEffect(() => {
+    setCurrentPage((previousPage) => Math.min(previousPage, totalPages))
+  }, [totalPages])
 
   useEffect(() => {
     function onDoc(e) {
@@ -83,18 +125,6 @@ function SLLMinhaEquipaView() {
     }
   }, [showFilter, appliedFilters])
 
-  useEffect(() => {
-    const nextMembers = teamMembers.filter((member) => {
-      const matchesDateFrom = !appliedFilters.dateFrom || member.joinedDate >= appliedFilters.dateFrom
-      const matchesDateTo = !appliedFilters.dateTo || member.joinedDate <= appliedFilters.dateTo
-      const matchesArea = !appliedFilters.area || member.area === appliedFilters.area
-
-      return matchesDateFrom && matchesDateTo && matchesArea
-    })
-
-    setFilteredMembers(nextMembers)
-  }, [appliedFilters])
-
   function updateDraftFilter(field, value) {
     setDraftFilters((previousFilters) => ({
       ...previousFilters,
@@ -112,21 +142,37 @@ function SLLMinhaEquipaView() {
   }
 
   function handleExport() {
+    if (selectedExportFormat === 'pdf') {
+      const documentPdf = new jsPDF({ orientation: 'landscape' })
+
+      documentPdf.setFontSize(16)
+      documentPdf.text('A minha equipa', 14, 16)
+
+      autoTable(documentPdf, {
+        startY: 24,
+        head: [['Ranking', 'Nome', 'Área', 'Badges', 'Pontos', 'Progresso']],
+        body: filteredMembers.map((member) => [
+          member.rank,
+          member.name,
+          member.area,
+          member.badges,
+          member.points,
+          `${member.progress}%`,
+        ]),
+        styles: { fontSize: 10 },
+      })
+
+      documentPdf.save('minha-equipa.pdf')
+      closeExportModal()
+      return
+    }
+
     const headers = ['Ranking', 'Nome', 'Área', 'Badges', 'Pontos', 'Progresso']
     const rows = filteredMembers.map((member) => [member.rank, member.name, member.area, member.badges, member.points, `${member.progress}%`])
-    const csv = [headers.join(',')]
-      .concat(rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')))
-      .join('\n')
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = selectedExportFormat === 'pdf' ? 'minha-equipa.pdf' : 'minha-equipa.xlsx'
-    document.body.appendChild(anchor)
-    anchor.click()
-    anchor.remove()
-    URL.revokeObjectURL(url)
+    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows])
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Equipa')
+    XLSX.writeFile(workbook, 'minha-equipa.xlsx')
     closeExportModal()
   }
 
@@ -156,7 +202,12 @@ function SLLMinhaEquipaView() {
           <section className="sll-team-toolbar" aria-label="Ações da equipa">
             <label className="sll-team-search">
               <span className="sll-team-search-icon" aria-hidden="true">⌕</span>
-              <input type="text" placeholder="Pesquisar por nome do consultor..." />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome do consultor..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
             </label>
 
             <div className="sll-team-toolbar-actions">
@@ -240,7 +291,7 @@ function SLLMinhaEquipaView() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredMembers.map((member) => (
+                  {paginatedMembers.map((member) => (
                     <tr key={`${member.rank}-${member.name}`}>
                       <td className="sll-team-rank">{member.rank}</td>
                       <td className="sll-team-name">{member.name}</td>
@@ -256,15 +307,16 @@ function SLLMinhaEquipaView() {
               </table>
             </div>
 
-            <div className="sll-team-pagination" aria-label="Paginação">
-              <button type="button">«</button>
-              <button type="button">‹</button>
-              <button type="button" className="is-active">1</button>
-              <button type="button">2</button>
-              <button type="button">3</button>
-              <button type="button">›</button>
-              <button type="button">»</button>
-            </div>
+            <SLLPagination
+              className="sll-team-pagination"
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              firstContent="«"
+              previousContent="‹"
+              nextContent="›"
+              lastContent="»"
+            />
           </section>
 
           {showExport ? (

@@ -10,6 +10,7 @@ import AdminAreas from './views/pages/admin/admin-areas'
 import AdminServiceLines from './views/pages/admin/admin-service-lines'
 import AdminLearningPaths from './views/pages/admin/admin-learning-paths'
 import AccessGatewayView from './views/pages/shared/accessGatewayView'
+import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
 import SLLHomeView from './views/pages/SLL/SLLHomeView'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
 import SLLBadgesView from './views/pages/SLL/SLLBadgesView'
@@ -35,6 +36,7 @@ function App() {
       <Route path="/" element={<LoginView />} />
       <Route path="/login" element={<LoginView />} />
       <Route path="/acesso" element={<AccessGatewayView />} />
+      <Route path="/talent-manager" element={<TalentManagerHomeView />} />
       <Route path="/sll" element={<SLLHomeView />} />
       <Route path="/sll/certificados" element={<SLLCertificadosView />} />
       <Route path="/sll/badges" element={<SLLBadgesView />} />

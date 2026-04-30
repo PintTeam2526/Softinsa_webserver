@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaFilter, FaInfoCircle, FaSearch, FaTimes, FaUpload } from 'react-icons/fa'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
+import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-historico.css'
 
@@ -14,6 +18,10 @@ const statusIcon = 'https://www.figma.com/api/mcp/asset/50899ec1-1a34-4798-a970-
 const arrowLeft = 'https://www.figma.com/api/mcp/asset/7315348a-d9ea-4bf2-b35d-9f82401ef90d'
 const arrowDown = 'https://www.figma.com/api/mcp/asset/0b7d86ac-4082-4a48-b7b4-c5180e2aea0a'
 const arrowRight = 'https://www.figma.com/api/mcp/asset/0559697f-9730-4978-b1a5-9ef225585149'
+
+function getStatusClass(status) {
+  return status.toLowerCase().replaceAll(' ', '-')
+}
 
 const filterOptions = {
   areas: ['Tecnologia', 'Consultoria', 'Operações'],
@@ -33,21 +41,81 @@ const historyRequests = [
     learningPath: 'Agile Leadership',
   },
   {
+    title: 'Leadership Essentials - Pleno',
+    consultant: 'Inês Rocha',
+    approvedAt: 'Aprovado em 10 Nov 2024',
+    status: 'Aprovado',
+    approvedDate: '2024-11-10',
+    area: 'Consultoria',
+    serviceLine: 'Advisory',
+    learningPath: 'Agile Leadership',
+  },
+  {
+    title: 'Operations Coaching - Sénior',
+    consultant: 'Tiago Mendes',
+    approvedAt: 'Aprovado em 01 Out 2024',
+    status: 'Aprovado',
+    approvedDate: '2024-10-01',
+    area: 'Operações',
+    serviceLine: 'Managed Services',
+    learningPath: 'Data Strategy',
+  },
+  {
     title: 'Cloud Fundamentals - Intermédio',
     consultant: 'Ana Martins',
-    approvedAt: 'Aprovado em 14 Out 2024',
-    status: 'Aprovado',
+    approvedAt: 'Rejeitado em 14 Out 2024',
+    status: 'Rejeitado',
     approvedDate: '2024-10-14',
     area: 'Tecnologia',
     serviceLine: 'Delivery',
     learningPath: 'Cloud Fundamentals',
   },
   {
+    title: 'Cyber Security - Sénior',
+    consultant: 'Carla Gomes',
+    approvedAt: 'Rejeitado em 05 Nov 2024',
+    status: 'Rejeitado',
+    approvedDate: '2024-11-05',
+    area: 'Tecnologia',
+    serviceLine: 'Delivery',
+    learningPath: 'Cloud Fundamentals',
+  },
+  {
+    title: 'Architecture Review - Júnior',
+    consultant: 'Bruno Pinto',
+    approvedAt: 'Rejeitado em 19 Dez 2024',
+    status: 'Rejeitado',
+    approvedDate: '2024-12-19',
+    area: 'Consultoria',
+    serviceLine: 'Advisory',
+    learningPath: 'Agile Leadership',
+  },
+  {
     title: 'Data Strategy - Sénior',
     consultant: 'Rui Silva',
-    approvedAt: 'Aprovado em 03 Dez 2024',
-    status: 'Aprovado',
+    approvedAt: 'Em progresso desde 03 Dez 2024',
+    status: 'Em progresso',
     approvedDate: '2024-12-03',
+    area: 'Operações',
+    serviceLine: 'Managed Services',
+    learningPath: 'Data Strategy',
+  },
+  {
+    title: 'Digital Transformation - Pleno',
+    consultant: 'Marta Lopes',
+    approvedAt: 'Em progresso desde 11 Nov 2024',
+    status: 'Em progresso',
+    approvedDate: '2024-11-11',
+    area: 'Consultoria',
+    serviceLine: 'Advisory',
+    learningPath: 'Agile Leadership',
+  },
+  {
+    title: 'Data Governance - Sénior',
+    consultant: 'Nuno Costa',
+    approvedAt: 'Em progresso desde 27 Dez 2024',
+    status: 'Em progresso',
+    approvedDate: '2024-12-27',
     area: 'Operações',
     serviceLine: 'Managed Services',
     learningPath: 'Data Strategy',
@@ -55,7 +123,7 @@ const historyRequests = [
 ]
 
 function HistoryBadge({ status }) {
-  return <span className={`sll-history-status-badge is-${status.toLowerCase()}`}>{status}</span>
+  return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{status}</span>
 }
 
 function HistoryRequestCard({ request }) {
@@ -75,7 +143,7 @@ function HistoryRequestCard({ request }) {
         </div>
       </div>
 
-      <div className="sll-history-card-status">
+      <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
         <HistoryBadge status={request.status} />
         <div className="sll-history-progress">
           <span className="is-track" />
@@ -100,7 +168,9 @@ function ExportFormatOption({ label, value, selected, onClick }) {
 function SLLHistoricoView() {
   const [showExport, setShowExport] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
-  const [filteredRequests, setFilteredRequests] = useState(historyRequests)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [activeTab, setActiveTab] = useState('Aprovado')
+  const [currentPage, setCurrentPage] = useState(1)
   const [selectedExportFormat, setSelectedExportFormat] = useState('excel')
   const [draftFilters, setDraftFilters] = useState({
     dateFrom: '',
@@ -118,6 +188,51 @@ function SLLHistoricoView() {
   })
 
   const filterRef = useRef(null)
+
+  const filteredRequests = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+
+    return historyRequests.filter((request) => {
+      const searchableText = [
+        request.title,
+        request.consultant,
+        request.approvedAt,
+        request.area,
+        request.serviceLine,
+        request.learningPath,
+      ]
+        .join(' ')
+        .toLowerCase()
+
+      const matchesSearch = !normalizedSearch || searchableText.includes(normalizedSearch)
+      const matchesTab = request.status === activeTab
+      const matchesDateFrom = !appliedFilters.dateFrom || request.approvedDate >= appliedFilters.dateFrom
+      const matchesDateTo = !appliedFilters.dateTo || request.approvedDate <= appliedFilters.dateTo
+      const matchesArea = !appliedFilters.area || request.area === appliedFilters.area
+      const matchesServiceLine = !appliedFilters.serviceLine || request.serviceLine === appliedFilters.serviceLine
+      const matchesLearningPath = !appliedFilters.learningPath || request.learningPath === appliedFilters.learningPath
+
+      return matchesSearch && matchesTab && matchesDateFrom && matchesDateTo && matchesArea && matchesServiceLine && matchesLearningPath
+    })
+  }, [activeTab, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm])
+
+  const requestsPerPage = 2
+
+  const totalPages = Math.max(1, Math.ceil(filteredRequests.length / requestsPerPage))
+
+  const paginatedRequests = useMemo(() => {
+    const startIndex = (currentPage - 1) * requestsPerPage
+
+    return filteredRequests.slice(startIndex, startIndex + requestsPerPage)
+  }, [currentPage, filteredRequests])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [activeTab, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm])
+
+  useEffect(() => {
+    setCurrentPage((previousPage) => Math.min(previousPage, totalPages))
+  }, [totalPages])
   useEffect(() => {
     function onDoc(e) {
       if (showFilter && filterRef.current && !filterRef.current.contains(e.target)) {
@@ -133,20 +248,6 @@ function SLLHistoricoView() {
       setDraftFilters(appliedFilters)
     }
   }, [showFilter, appliedFilters])
-
-  useEffect(() => {
-    const out = historyRequests.filter((request) => {
-      const matchesDateFrom = !appliedFilters.dateFrom || request.approvedDate >= appliedFilters.dateFrom
-      const matchesDateTo = !appliedFilters.dateTo || request.approvedDate <= appliedFilters.dateTo
-      const matchesArea = !appliedFilters.area || request.area === appliedFilters.area
-      const matchesServiceLine = !appliedFilters.serviceLine || request.serviceLine === appliedFilters.serviceLine
-      const matchesLearningPath = !appliedFilters.learningPath || request.learningPath === appliedFilters.learningPath
-
-      return matchesDateFrom && matchesDateTo && matchesArea && matchesServiceLine && matchesLearningPath
-    })
-
-    setFilteredRequests(out)
-  }, [appliedFilters])
 
   function updateDraftFilter(field, value) {
     setDraftFilters((previousFilters) => ({
@@ -165,18 +266,34 @@ function SLLHistoricoView() {
   }
 
   function handleExport() {
+    if (selectedExportFormat === 'pdf') {
+      const documentPdf = new jsPDF()
+
+      documentPdf.setFontSize(16)
+      documentPdf.text('Histórico de pedidos', 14, 16)
+
+      autoTable(documentPdf, {
+        startY: 24,
+        head: [['Título', 'Consultor', 'Estado', 'Aprovado em']],
+        body: filteredRequests.map((request) => [
+          request.title,
+          request.consultant,
+          request.status,
+          request.approvedAt,
+        ]),
+        styles: { fontSize: 10 },
+      })
+
+      documentPdf.save('historico_export.pdf')
+      closeExportModal()
+      return
+    }
+
     const rows = filteredRequests.map((r) => ({ title: r.title, consultant: r.consultant, status: r.status, approvedAt: r.approvedAt }))
-    const headers = ['title', 'consultant', 'status', 'approvedAt']
-    const csv = [headers.join(',')].concat(rows.map((r) => headers.map((h) => `"${(r[h]||'').replace(/"/g,'""')}"`).join(','))).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = selectedExportFormat === 'pdf' ? 'historico_export.pdf' : 'historico_export.xlsx'
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(url)
+    const worksheet = XLSX.utils.json_to_sheet(rows)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Historico')
+    XLSX.writeFile(workbook, 'historico_export.xlsx')
     closeExportModal()
   }
 
@@ -205,9 +322,15 @@ function SLLHistoricoView() {
 
           <section className="sll-history-toolbar" aria-label="Filtros do histórico">
             <div className="sll-history-tabs" role="tablist" aria-label="Estado dos pedidos">
-              <button type="button" className="is-active">Aprovados</button>
-              <button type="button">Rejeitados</button>
-              <button type="button">Em progresso</button>
+              <button type="button" className={`sll-history-tab-button ${activeTab === 'Aprovado' ? 'is-active is-approved' : ''}`} onClick={() => setActiveTab('Aprovado')}>
+                Aprovados
+              </button>
+              <button type="button" className={`sll-history-tab-button ${activeTab === 'Rejeitado' ? 'is-active is-rejected' : ''}`} onClick={() => setActiveTab('Rejeitado')}>
+                Rejeitados
+              </button>
+              <button type="button" className={`sll-history-tab-button ${activeTab === 'Em progresso' ? 'is-active is-progress' : ''}`} onClick={() => setActiveTab('Em progresso')}>
+                Em progresso
+              </button>
               <button type="button" className="sll-history-info-btn" aria-label="Mais informação">
                 <FaInfoCircle aria-hidden="true" />
               </button>
@@ -222,7 +345,12 @@ function SLLHistoricoView() {
           <section className="sll-history-search-row" aria-label="Pesquisar histórico">
             <label className="sll-history-search">
               <FaSearch aria-hidden="true" />
-              <input type="text" placeholder="Pesquisar por nome do consultor ou badge..." />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome do consultor ou badge..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
             </label>
 
             <div className="sll-history-filter-popover-wrap" ref={filterRef}>
@@ -318,7 +446,7 @@ function SLLHistoricoView() {
           </section>
 
           <section className="sll-history-list" aria-label="Lista do histórico">
-            {filteredRequests.map((request) => (
+            {paginatedRequests.map((request) => (
               <HistoryRequestCard key={`${request.title}-${request.consultant}`} request={request} />
             ))}
           </section>
@@ -371,23 +499,16 @@ function SLLHistoricoView() {
             </div>
           ) : null}
 
-          <div className="sll-history-pagination" aria-label="Paginação">
-            <button type="button">
-              <img src={arrowLeft} alt="" aria-hidden="true" />
-            </button>
-            <button type="button">
-              <img src={arrowDown} alt="" aria-hidden="true" />
-            </button>
-            <button type="button" className="is-active">1</button>
-            <button type="button">2</button>
-            <button type="button">3</button>
-            <button type="button">
-              <img src={arrowDown} alt="" aria-hidden="true" />
-            </button>
-            <button type="button">
-              <img src={arrowRight} alt="" aria-hidden="true" />
-            </button>
-          </div>
+          <SLLPagination
+            className="sll-history-pagination"
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            firstContent={<img src={arrowLeft} alt="" aria-hidden="true" />}
+            previousContent={<img src={arrowDown} alt="" aria-hidden="true" />}
+            nextContent={<img src={arrowDown} alt="" aria-hidden="true" />}
+            lastContent={<img src={arrowRight} alt="" aria-hidden="true" />}
+          />
         </div>
       </main>
     </div>

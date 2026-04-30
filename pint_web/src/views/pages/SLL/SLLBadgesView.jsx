@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 import { FaSearch, FaUpload } from 'react-icons/fa'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-badges.css'
@@ -67,11 +70,31 @@ function BadgeCard({ badge }) {
 }
 
 function SLLBadgesView() {
-  const badgeCount = useMemo(() => badgeGroups.reduce((sum, group) => sum + group.badges.length, 0), [])
+  const [searchTerm, setSearchTerm] = useState('')
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [selectedArea, setSelectedArea] = useState('')
+  const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
 
   const areaOptions = badgeGroups.map((group) => group.title.replace('Área: ', ''))
+
+  const filteredBadgeGroups = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+
+    return badgeGroups
+      .map((group) => ({
+        ...group,
+        badges: group.badges.filter((badge) => {
+          const searchableText = [group.title, badge.name, badge.level].join(' ').toLowerCase()
+          return !normalizedSearch || searchableText.includes(normalizedSearch)
+        }),
+      }))
+      .filter((group) => group.badges.length > 0)
+  }, [searchTerm])
+
+  const filteredBadgeCount = useMemo(
+    () => filteredBadgeGroups.reduce((sum, group) => sum + group.badges.length, 0),
+    [filteredBadgeGroups]
+  )
 
   const selectedGroup = badgeGroups.find((group) => group.title.replace('Área: ', '') === selectedArea)
   const badgesToExport = selectedGroup ? [selectedGroup] : badgeGroups
@@ -85,24 +108,54 @@ function SLLBadgesView() {
   }
 
   function exportBadges() {
-    const headers = ['Area', 'Badge', 'Level', 'Points']
     const rows = badgesToExport.flatMap((group) =>
-      group.badges.map((badge) => [group.title.replace('Área: ', ''), badge.name, badge.level, '550'])
+      group.badges.map((badge) => ({
+        Area: group.title.replace('Área: ', ''),
+        Badge: badge.name,
+        Level: badge.level,
+        Points: 550,
+      }))
     )
-    const csv = [headers.join(',')]
-      .concat(rows.map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(',')))
-      .join('\n')
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = 'sll-badges.csv'
-    document.body.appendChild(anchor)
-    anchor.click()
-    anchor.remove()
-    URL.revokeObjectURL(url)
+    if (selectedExportFormat === 'pdf') {
+      const documentPdf = new jsPDF({ orientation: 'landscape' })
+
+      documentPdf.setFontSize(16)
+      documentPdf.text('Badges', 14, 16)
+
+      autoTable(documentPdf, {
+        startY: 24,
+        head: [['Área', 'Badge', 'Level', 'Points']],
+        body: rows.map((row) => [row.Area, row.Badge, row.Level, row.Points]),
+        styles: { fontSize: 10 },
+      })
+
+      documentPdf.save('sll-badges.pdf')
+      closeExportDialog()
+      return
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(rows)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Badges')
+    XLSX.writeFile(workbook, 'sll-badges.xlsx')
     closeExportDialog()
+  }
+
+  function ExportFormatOption({ label, value }) {
+    return (
+      <button
+        type="button"
+        className={`sll-badges-export-option${selectedExportFormat === value ? ' is-selected' : ''}`}
+        onClick={() => setSelectedExportFormat(value)}
+        aria-pressed={selectedExportFormat === value}
+      >
+        <span className={`sll-badges-export-option-toggle${selectedExportFormat === value ? ' is-selected' : ''}`} aria-hidden="true">
+          {selectedExportFormat === value ? <span className="sll-badges-export-option-dot" /> : null}
+        </span>
+        <span>{label}</span>
+      </button>
+    )
   }
 
   return (
@@ -124,14 +177,19 @@ function SLLBadgesView() {
 
             <div className="sll-badges-hero-copy">
               <h1>Badges</h1>
-              <p>{badgeCount} badges disponíveis</p>
+              <p>{filteredBadgeCount} badges disponíveis</p>
             </div>
           </section>
 
           <section className="sll-badges-toolbar" aria-label="Pesquisa e exportação de badges">
             <label className="sll-badges-search">
               <FaSearch aria-hidden="true" />
-              <input type="text" placeholder="Search..." />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
             </label>
 
             <button type="button" className="sll-badges-export-btn" onClick={openExportDialog}>
@@ -141,7 +199,7 @@ function SLLBadgesView() {
           </section>
 
           <section className="sll-badges-groups" aria-label="Lista de badges">
-            {badgeGroups.map((group) => (
+            {filteredBadgeGroups.map((group) => (
               <div key={group.title} className="sll-badges-group">
                 <h2>{group.title}</h2>
 
@@ -174,6 +232,14 @@ function SLLBadgesView() {
                         </option>
                       ))}
                     </select>
+                  </div>
+                </div>
+
+                <div className="sll-badges-export-field">
+                  <label>Formato</label>
+                  <div className="sll-badges-export-options">
+                    <ExportFormatOption label="Excel (.xlsx)" value="xlsx" />
+                    <ExportFormatOption label="PDF (.pdf)" value="pdf" />
                   </div>
                 </div>
 

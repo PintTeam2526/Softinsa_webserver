@@ -122,7 +122,7 @@
   gap: 8px;
 }
 
-.sll-history-tabs button {
+.sll-history-tab-button {
   height: 32px;
   border-radius: 7px;
   border: 0.8px solid #e9ecef;
@@ -136,9 +136,25 @@
   box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
 }
 
-.sll-history-tabs button.is-active {
+.sll-history-tab-button.is-active {
   background: #39639c;
   color: #ffffff;
+}
+
+.sll-history-tab-button.is-active.is-rejected {
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.sll-history-tab-button.is-active.is-progress {
+  background: #f0ad4e;
+  border-color: #f0ad4e;
+  color: #ffffff;
+}
+
+.sll-history-tab-button.is-active.is-approved {
+  background: #1aa053;
+  border-color: #1aa053;
 }
 
 .sll-history-info-btn {
@@ -557,6 +573,14 @@
   color: #1aa053;
 }
 
+.sll-history-status-badge.is-rejeitado {
+  color: #dc3545;
+}
+
+.sll-history-status-badge.is-em-progresso {
+  color: #f0ad4e;
+}
+
 .sll-history-progress {
   position: relative;
   height: 10px;
@@ -580,6 +604,14 @@
   background: #1aa053;
 }
 
+.sll-history-card-status.is-rejeitado .sll-history-progress .is-fill {
+  background: #dc3545;
+}
+
+.sll-history-card-status.is-em-progresso .sll-history-progress .is-fill {
+  background: #f0ad4e;
+}
+
 .sll-history-pagination {
   display: flex;
   align-items: center;
@@ -598,6 +630,11 @@
   place-items: center;
   cursor: pointer;
   padding: 0;
+}
+
+.sll-history-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .sll-history-pagination button:first-child {
