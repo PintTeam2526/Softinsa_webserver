@@ -281,7 +281,7 @@ function SidebarIcon({ type }) {
   return <BadgesIcon />
 }
 
-function MenuItem({ text, icon, to = '/admin', end = false }) {
+function MenuItem({ text, icon, to = '/softinsa', end = false }) {
   return (
     <NavLink
       to={to}

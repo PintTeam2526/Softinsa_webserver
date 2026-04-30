@@ -64,18 +64,94 @@ function SLLCertificadosView() {
   }
 
   function downloadPdf() {
-    const documentPdf = new jsPDF()
+    const documentPdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+    const pageWidth = documentPdf.internal.pageSize.getWidth()
+    const pageHeight = documentPdf.internal.pageSize.getHeight()
+    const cardWidth = 262
+    const cardHeight = 170
+    const cardX = (pageWidth - cardWidth) / 2
+    const cardY = 16
+    const centerX = pageWidth / 2
 
+    documentPdf.setFillColor(248, 250, 252)
+    documentPdf.rect(0, 0, pageWidth, pageHeight, 'F')
+
+    documentPdf.setDrawColor(224, 182, 43)
+    documentPdf.setFillColor(255, 255, 255)
+    documentPdf.roundedRect(cardX, cardY, cardWidth, cardHeight, 3, 3, 'FD')
+
+    documentPdf.setFillColor(63, 106, 167)
+    documentPdf.roundedRect(cardX, cardY, cardWidth, 24, 3, 3, 'F')
+    documentPdf.rect(cardX, cardY + 20, cardWidth, 4, 'F')
+
+    documentPdf.setTextColor(255, 255, 255)
+    documentPdf.setFont('helvetica', 'bold')
+    documentPdf.setFontSize(22)
+    const logoY = cardY + 15
+    const logoText = 'SOFTINSA'
+    const logoWidth = documentPdf.getTextWidth(logoText)
+    const logoStartX = centerX - logoWidth / 2
+
+    documentPdf.text(logoText, centerX, logoY, { align: 'center' })
+
+    const softWidth = documentPdf.getTextWidth('SOF')
+    const tiWidth = documentPdf.getTextWidth('TI')
+    const tiStartX = logoStartX + softWidth
+
+    documentPdf.setTextColor(37, 194, 214)
+    documentPdf.text('TI', tiStartX + tiWidth / 2, logoY, { align: 'center' })
+
+    documentPdf.setTextColor(37, 67, 109)
+    documentPdf.setFont('helvetica', 'bold')
+    documentPdf.setFontSize(21)
+    documentPdf.text('CERTIFICADO DE CONQUISTA', centerX, cardY + 39, { align: 'center' })
+
+    documentPdf.setDrawColor(146, 174, 215)
+    documentPdf.setLineWidth(0.5)
+    documentPdf.line(centerX - 28, cardY + 46, centerX + 28, cardY + 46)
+
+    documentPdf.setTextColor(138, 146, 166)
+    documentPdf.setFont('helvetica', 'normal')
+    documentPdf.setFontSize(10)
+    documentPdf.text('Certifica-se que', centerX, cardY + 59, { align: 'center' })
+
+    documentPdf.setTextColor(63, 106, 167)
+    documentPdf.setFont('helvetica', 'bold')
     documentPdf.setFontSize(18)
-    documentPdf.text('Certificado de Badges', 20, 24)
+    documentPdf.text(previewConsultant.name.toUpperCase(), centerX, cardY + 70, { align: 'center' })
 
-    documentPdf.setFontSize(12)
-    documentPdf.text(`Consultor: ${previewConsultant.name}`, 20, 42)
-    documentPdf.text(`Badge: ${previewBadge.name}`, 20, 52)
-    documentPdf.text(`Área: ${previewConsultant.area}`, 20, 62)
-    documentPdf.text(`Service Line: ${previewConsultant.serviceLine}`, 20, 72)
-    documentPdf.text(`Learning Path: ${previewConsultant.learningPath}`, 20, 82)
-    documentPdf.text(`Email: ${previewConsultant.email}`, 20, 92)
+    documentPdf.setTextColor(138, 146, 166)
+    documentPdf.setFont('helvetica', 'normal')
+    documentPdf.setFontSize(10)
+    documentPdf.text('conquistou com sucesso o badge', centerX, cardY + 82, { align: 'center' })
+
+    documentPdf.setTextColor(37, 67, 109)
+    documentPdf.setFont('helvetica', 'bold')
+    documentPdf.setFontSize(15)
+    const badgeLines = documentPdf.splitTextToSize(previewBadge.name, 95)
+    documentPdf.text(badgeLines, centerX, cardY + 94, { align: 'center' })
+
+    documentPdf.setTextColor(75, 85, 99)
+    documentPdf.setFont('helvetica', 'normal')
+    documentPdf.setFontSize(9)
+    documentPdf.text(`Nível: Junior | Área: ${previewConsultant.area}`, centerX, cardY + 110, { align: 'center' })
+    documentPdf.text(`Service Line: ${previewConsultant.serviceLine}`, centerX, cardY + 118, { align: 'center' })
+
+    documentPdf.setTextColor(138, 146, 166)
+    documentPdf.setFontSize(9)
+    documentPdf.text('Emitido em 15 de março de 2024', centerX, cardY + 131, { align: 'center' })
+
+    documentPdf.setDrawColor(138, 146, 166)
+    documentPdf.setLineWidth(0.4)
+    documentPdf.line(centerX - 48, cardY + 145, centerX + 48, cardY + 145)
+
+    documentPdf.setTextColor(138, 146, 166)
+    documentPdf.setFont('helvetica', 'italic')
+    documentPdf.setFontSize(8)
+    documentPdf.text('Service Line Leader', centerX, cardY + 151, { align: 'center' })
+    documentPdf.setFont('helvetica', 'normal')
+    documentPdf.setFontSize(8)
+    documentPdf.text('Softinsa - Sistemas de Informacao', centerX, cardY + 158, { align: 'center' })
 
     documentPdf.save('certificado-badge.pdf')
   }
@@ -156,39 +232,35 @@ function SLLCertificadosView() {
                   </div>
                 ) : (
                   <div className="sll-certificates-preview-canvas">
-                    <div className="sll-certificates-preview-header">
-                      <div>
-                        <p className="sll-certificates-preview-kicker">Certificado de Badges</p>
-                        <h3>{previewConsultant.name}</h3>
+                    <div className="sll-certificates-certificate">
+                      <div className="sll-certificates-certificate-topbar" aria-hidden="true">
+                        <span className="sll-certificates-certificate-logo">SOF<span>TI</span>NSA</span>
                       </div>
 
-                      <span className="sll-certificates-preview-points">{previewConsultant.points} pontos</span>
-                    </div>
+                      <div className="sll-certificates-certificate-body">
+                        <h3>CERTIFICADO DE CONQUISTA</h3>
+                        <span className="sll-certificates-certificate-rule" aria-hidden="true" />
 
-                    <div className="sll-certificates-preview-body">
-                      <div className="sll-certificates-preview-avatar-wrap">
-                        <img src={profileAvatar} alt={previewConsultant.name} />
+                        <p className="sll-certificates-certificate-kicker">Certifica-se que</p>
+                        <p className="sll-certificates-certificate-name">{previewConsultant.name.toUpperCase()}</p>
+                        <p className="sll-certificates-certificate-copy">conquistou com sucesso o badge</p>
+                        <p className="sll-certificates-certificate-badge">{previewBadge.name}</p>
+
+                        <p className="sll-certificates-certificate-meta">
+                          Nível: Junior | Área: {previewConsultant.area}
+                        </p>
+                        <p className="sll-certificates-certificate-meta">
+                          Service Line: {previewConsultant.serviceLine}
+                        </p>
+
+                        <p className="sll-certificates-certificate-date">
+                          Emitido em 15 de março de 2024
+                        </p>
+
+                        <div className="sll-certificates-certificate-signature-rule" aria-hidden="true" />
+                        <p className="sll-certificates-certificate-signature">Service Line Leader</p>
+                        <p className="sll-certificates-certificate-company">Softinsa - Sistemas de Informacao</p>
                       </div>
-
-                      <div className="sll-certificates-preview-info">
-                        <p><strong>Consultor:</strong> {previewConsultant.name}</p>
-                        <p><strong>Badge:</strong> {previewBadge.name}</p>
-                        <p><strong>Área:</strong> {previewConsultant.area}</p>
-                        <p><strong>Service Line:</strong> {previewConsultant.serviceLine}</p>
-                        <p><strong>Learning Path:</strong> {previewConsultant.learningPath}</p>
-                        <p><strong>Email:</strong> {previewConsultant.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="sll-certificates-preview-badges">
-                      {badges.map((badge) => (
-                        <BadgeOption
-                          key={badge.id}
-                          badge={badge}
-                          selected={badge.id === selectedBadgeId}
-                          onClick={() => setSelectedBadgeId(badge.id)}
-                        />
-                      ))}
                     </div>
                   </div>
                 )}
