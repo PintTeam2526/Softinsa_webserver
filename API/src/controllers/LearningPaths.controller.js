@@ -5,14 +5,15 @@ const controllers = {};
 // Mostrar todas as Learning Paths
 controllers.getAllLearningPaths = async (req, res) => {
     try {
+
         const isAdmin = req.user?.role === "admin";
 
-        const whereClause = isAdmin ? {} : { estado_A_I_: true };
+        const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await LearningPaths.findAll({
             where: whereClause
         });
-
+        console.log("Learning paths")
         return res.status(200).json(resultado);
 
     } catch (error) {
@@ -73,7 +74,7 @@ controllers.createLearningPath = async (req, res) => {
             nome_learning_path,
             descricao_learning_path,
             imagem_learning_path,
-            estado_A_I_
+            estado_a_i
         } = req.body;
 
         await LearningPaths.create({
@@ -81,7 +82,7 @@ controllers.createLearningPath = async (req, res) => {
             nome_learning_path,
             descricao_learning_path,
             imagem_learning_path,
-            estado_A_I_,
+            estado_a_i,
             data_insercao: new Date().toISOString().split('T')[0] // YYYY-MM-DD
         });
 
@@ -163,7 +164,7 @@ controllers.updateLearningPathById = async (req, res) => {
             nome_learning_path,
             descricao_learning_path,
             imagem_learning_path,
-            estado_A_I_
+            estado_a_i
         } = req.body;
 
         learningPath.nome_learning_path = nome_learning_path ?? learningPath.nome_learning_path;

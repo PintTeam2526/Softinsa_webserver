@@ -3,11 +3,12 @@ import "./admin-learning-paths.css";
 
 import {
   getLearningPaths,
-  createLearningPath,
-  updateLearningPath,
+  //createLearningPath,
+  //updateLearningPath,
 } from "../../../controllers/learningPathsController";
 
 import { mapLearningPath } from "../../../models/learningPathModel";
+
 
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -196,6 +197,8 @@ const SoftinsaLearningPaths = memo(() => {
         setIsFilterOpen(false);
       }
     };
+
+
 
     const handleEscape = (event) => {
       if (event.key === "Escape") {
@@ -539,12 +542,12 @@ const SoftinsaLearningPaths = memo(() => {
             <tbody>
               {paginatedLearningPaths.length > 0 ? (
                 paginatedLearningPaths.map((learningPathItem) => (
-                  <tr key={learningPathItem.id}>
-                    <td>{learningPathItem.name}</td>
+                  <tr key={learningPathItem.id_learning_path}>
+                    <td>{learningPathItem.nome_learning_path}</td>
                     <td>{learningPathItem.serviceLines}</td>
                     <td>{learningPathItem.areas}</td>
                     <td>{learningPathItem.badges}</td>
-                    <td>{learningPathItem.status}</td>
+                    <td>{learningPathItem.estado_a_i ? "Ativo" : "Inativo"}</td>
                     <td>
                       <button
                         type="button"
