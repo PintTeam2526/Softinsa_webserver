@@ -5,9 +5,9 @@ import {
   getLearningPaths,
   createLearningPath,
   updateLearningPath,
-} from "../../controllers/learningPathsController";
+} from "../../../controllers/learningPathsController";
 
-import { mapLearningPath } from "../../models/learningPathModel";
+import { mapLearningPath } from "../../../models/learningPathModel";
 
 const [learningPaths, setLearningPaths] = useState([]);
 
