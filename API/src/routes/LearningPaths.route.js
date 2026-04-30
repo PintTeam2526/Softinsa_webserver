@@ -7,15 +7,15 @@ var authVerification = require('../middleware/requireAuth.middleware')
 router.get('/get', controllerLearningPaths.getAllLearningPaths);
 
 // Mostrar uma Learning Path por ID
-router.get('/:id/get', controllerLearningPaths.getLearningPathByID);
+router.get('/:id/get', controllerLearningPaths.getLearningPathById);
 
 // Criar Learning Path
 router.post('/create',authVerification, controllerLearningPaths.createLearningPath);
 
 // Atualizar Learning Path
-router.put('/:id/update', controllerLearningPaths.updateLearningPathByID);
+router.put('/:id/update', controllerLearningPaths.updateLearningPathById);
 
 // Apagar Learning Path
-router.delete('/:id/delete', controllerLearningPaths.deleteLearningPathByID);
+router.delete('/:id/delete', controllerLearningPaths.deleteLearningPathById);
 
 module.exports = router;

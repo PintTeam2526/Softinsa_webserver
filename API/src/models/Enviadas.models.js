@@ -5,7 +5,7 @@ var NotificacaoAdmin = require('./NotificacoesAdmin.models');
 
 var Enviadas = sequelize.define('Enviadas',
 {
-    id_notificacaoadmin: {
+    id_notificacao_admin: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false,

@@ -1,4 +1,4 @@
-const ServiceLines = require('../models/ServiceLines');
+const ServiceLines = require('../models/ServiceLines.models');
 
 const controllers = {};
 

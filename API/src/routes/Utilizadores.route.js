@@ -4,39 +4,40 @@ var controllerUtilizador = require('../controllers/Utilizadores.controller')
 var authVerification = require('../middleware/requireAuth.middleware')
 
 //Mostrar todos os utilizadores
-router.get('/get', authVerification,controllerUtilizador.getAllUsers);
+router.get('/get', authVerification,controllerUtilizador.getAllUtilizadores);
 
 //Mostrar um utilizador com um determinado id
-router.get('/:id/get', controllerUtilizador.getUserByID);
+router.get('/:id/get', controllerUtilizador.getUtilizadorById);
 
 //Adicionar um utilizador
-router.post('/create', authVerification,controllerUtilizador.createUser);
+router.post('/create', authVerification,controllerUtilizador.createUtilizador);
 
 //Atualizar um utilizador com um determinado id
-router.put('/:id/update', controllerUtilizador.updateUserByID);
+router.put('/:id/update', controllerUtilizador.updateUtilizadorById);
 
 //Mostrar os badges de um utilizador
-router.get('/:id/badges', controllerUtilizador.getAllUsersBadges);
+//router.get('/:id/badges', controllerUtilizador.getAllUsersBadges);
+//ENDPOINT NÃO IMPLEMENTADO
 
 //Eliminar um utilizador com um determinado id
-router.delete('/:id/delete', controllerUtilizador.getUserByID);
+router.delete('/:id/delete', controllerUtilizador.deleteUtilizadorById);
 
 //Adicionar um objetivo do consultor
 router.post('/:id/objetivo/create', controllerUtilizador.createObjetivo)
 
 //Apagar um objetivo do consultor
-router.delete('/:id/objetivo/delete', controllerUtilizador.deleteObjetivos);
+router.delete('/:id/objetivo/delete', controllerUtilizador.deleteObjetivoById);
 
 // Listar notificações
-router.get('/notificacoes', authVerification,controllerUtilizador.getAllNotificacoes);
+router.get('/:idUtilizador/notificacoes', authVerification,controllerUtilizador.getAllNotificacoes);
 
 // Enviar uma notificação
-router.post('/notificacoes/create', authVerification,controllerUtilizador.createNotificacao);
+router.post('/:idUtilizador/notificacoes/create', authVerification,controllerUtilizador.createNotificacao);
 
 
 // Mostrar dados da dashboard
-router.get('/:id/dashboard', controllerUtilizador.getDashboard );
-
+//router.get('/:id/dashboard', controllerUtilizador.getDashboard );
+//ENDPOINT NÃO IMPLEMENTADO
 
 
 module.exports = router;

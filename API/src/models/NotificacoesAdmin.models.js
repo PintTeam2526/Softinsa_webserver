@@ -2,7 +2,7 @@ var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Administrador = require('./Administradores.models');
 
-var NotificacoesAdmin = sequelize.define('NotificacoesAdmin',
+var NotificacoesAdmins = sequelize.define('NotificacoesAdmins',
 {
     id_notificacao_admin: {
         type: Sequelize.INTEGER,
@@ -27,6 +27,6 @@ var NotificacoesAdmin = sequelize.define('NotificacoesAdmin',
     timestamps: false
 });
 
-NotificacoesAdmin.belongsTo(Administrador);
+NotificacoesAdmins.belongsTo(Administrador);
 
-module.exports = NotificacoesAdmin;
+module.exports = NotificacoesAdmins;

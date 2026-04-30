@@ -30,12 +30,12 @@ var Areas = sequelize.define('Areas',
         type: Sequelize.TEXT,
         allowNull: false
     },
-    estado_A_I_: {
+    estado_a_i: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     },
     data_insercao: {
-        type: Sequelize.TEXT,
+        type: Sequelize.DATE,
         allowNull: false
     }
 },

@@ -1,4 +1,4 @@
-const Badges = require('../models/Badges');
+const Badges = require('../models/Badges.models');
 
 const controllers = {};
 

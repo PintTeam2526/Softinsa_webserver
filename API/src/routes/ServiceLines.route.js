@@ -7,15 +7,15 @@ var authVerification = require('../middleware/requireAuth.middleware')
 router.get('/get', controllerServiceLines.getAllServiceLines);
 
 // Mostrar uma service line por ID
-router.get('/:id/get', controllerServiceLines.getServiceLineByID);
+router.get('/:id/get', controllerServiceLines.getServiceLineById);
 
 // Criar service line
 router.post('/create', authVerification,controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/:id/update', controllerServiceLines.updateServiceLineByID);
+router.put('/:id/update', controllerServiceLines.updateServiceLineById);
 
 // Apagar service line
-router.delete('/:id/delete', controllerServiceLines.deleteServiceLineByID);
+router.delete('/:id/delete', controllerServiceLines.deleteServiceLineById);
 
 module.exports = router;

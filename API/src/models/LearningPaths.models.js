@@ -21,13 +21,13 @@ var LearningPaths = sequelize.define('LearningPaths',
         type: Sequelize.TEXT,
         allowNull: false
     },
-    estado_A_I_: {
+    estado_a_i: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
         allowNull: false
     },
     data_insercao: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.DATE,
         allowNull: false
     }
 },

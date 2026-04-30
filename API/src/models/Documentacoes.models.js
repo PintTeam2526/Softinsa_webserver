@@ -31,7 +31,7 @@ var Documentacoes = sequelize.define('Documentacoes',
         type: Sequelize.STRING(254),
         allowNull: false
     },
-    validacao: {
+    validado: {
         type: Sequelize.BOOLEAN,
         allowNull: true
     }

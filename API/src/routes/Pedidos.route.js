@@ -24,30 +24,20 @@ router.get('/:id/historico', authVerification, controllerPedidos.getHistoricoPed
 // Criar pedido
 router.post('/create', authVerification, controllerPedidos.createPedido);
 
-// Reenviar pedido após devolução
-router.post('/:id/resubmit', authVerification, controllerPedidos.resubmeterPedido);
+// Atualizar pedido
+router.put('/:id/update', controllerPedidos.updatePedidoById);
 
-/* =====================================================
-   TALENT MANAGER
-===================================================== */
+// Apagar pedido
+router.delete('/:id/delete', controllerPedidos.deletePedidoById);
 
-// Aprovar pedido
-router.put('/:id/tm/aprovar', authVerification, controllerPedidos.aprovarTM);
 
-// Devolver pedido ao consultor
-router.put('/:id/tm/devolver', authVerification, controllerPedidos.devolverTM);
+// Avaliação do Talent Manager
+router.post('/:id/tm-review', controllerPedidos.tmReview);
 
-/* =====================================================
-   SERVICE LINE LEADER
-===================================================== */
+// Avaliação do Service Line Leader e do admin
+router.post('/:id/sl-review', controllerPedidos.slReview);
 
-// Aprovar pedido final
-router.put('/:id/sl/aprovar', authVerification, controllerPedidos.aprovarSL);
-
-// Devolver pedido ao consultor
-router.put('/:id/sl/devolver', authVerification, controllerPedidos.devolverSL);
-
-// Rejeitar pedido
-router.put('/:id/sl/rejeitar', authVerification, controllerPedidos.rejeitarSL);
+// Reenviar pedido
+router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
 
 module.exports = router;

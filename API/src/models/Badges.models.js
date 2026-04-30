@@ -50,7 +50,7 @@ var Badges = sequelize.define('Badges',
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    estado_A_I_: {
+    estado_a_i: {
         type: Sequelize.BOOLEAN,
         allowNull: false
     },
