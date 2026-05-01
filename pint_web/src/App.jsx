@@ -34,7 +34,7 @@ function App() {
     <Routes>
       <Route path="/" element={<AccessGatewayView />} />
       <Route path="/acesso" element={<AccessGatewayView />} />
-      <Route path="/talent-manager" element={<TalentManagerHomeView />} />
+      <Route path="/talent-manager/*" element={<TalentManagerHomeView />} />
       <Route path="/sll" element={<SLLHomeView />} />
       <Route path="/sll/certificados" element={<SLLCertificadosView />} />
       <Route path="/sll/badges" element={<SLLBadgesView />} />

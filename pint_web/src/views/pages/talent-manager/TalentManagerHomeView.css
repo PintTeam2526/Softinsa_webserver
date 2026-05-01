@@ -569,6 +569,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+.tm-placeholder-panel {
+  margin: 24px;
+  padding: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+}
+
+.tm-placeholder-panel h1 {
+  margin: 0;
+  color: #232d42;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.tm-placeholder-panel p {
+  margin: 12px 0 0;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+}
   gap: 24px;
   color: #232d42;
 }
