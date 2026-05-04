@@ -1,6 +1,6 @@
 import './TalentManagerPerfilPublicoView.css'
 import { useMemo } from 'react'
-import '../SLL/SLL-perfil-publico.css'
+import './TalentManagerPerfilPublicoView.css'
 
 const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import '../SLL/SLL-relatorios.css'
+import './TalentManagerRelatoriosView.css'
 
 const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/901de158-ab76-4bac-939b-e28c5ba4d3f3'
 const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/fde63e1b-f95f-4921-9475-40d777666c21'

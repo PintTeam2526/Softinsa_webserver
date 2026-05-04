@@ -6,7 +6,8 @@
 
 .tm-badges-banner {
   position: relative;
-  min-height: 133px;
+  min-height: 155px;
+  height: 155px;
   overflow: hidden;
   border-radius: 0 0 16px 16px;
   background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
@@ -69,8 +70,8 @@
 
 .tm-badges-banner-copy {
   position: absolute;
-  left: 31px;
-  top: 23px;
+  left: 50px;
+  top: 35px;
   z-index: 1;
 }
 

@@ -25,9 +25,7 @@
   height: 155px;
   overflow: hidden;
   border-radius: 0 0 16px 16px;
-  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1184 155" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="0" y="0" height="100%" width="100%" fill="url(%23grad)" opacity="1"/><defs><radialGradient id="grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="10" gradientTransform="matrix(0.000015204 23.394 -42.961 0.0000060493 592 77.5)"><stop stop-color="rgba(59,138,255,1)" offset="0"/><stop stop-color="rgba(30,105,217,1)" offset="0.5"/><stop stop-color="rgba(15,88,198,1)" offset="0.75"/><stop stop-color="rgba(0,72,178,1)" offset="1"/></radialGradient></defs></svg>');
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
   box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
 }
 
@@ -477,7 +475,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 980px) {
   .sll-relatorios-page {
     flex-direction: column;
   }

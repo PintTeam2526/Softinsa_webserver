@@ -663,7 +663,7 @@
   }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 768px) {
   .sll-homepage {
     flex-direction: column;
   }
