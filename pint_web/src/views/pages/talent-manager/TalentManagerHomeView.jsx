@@ -7,6 +7,7 @@ import TalentManagerBadgesView from './TalentManagerBadgesView'
 import TalentManagerCertificadosView from './TalentManagerCertificadosView'
 import TalentManagerConsultoresView from './TalentManagerConsultoresView'
 import TalentManagerRelatoriosView from './TalentManagerRelatoriosView'
+import TalentManagerPerfilPublicoView from './TalentManagerPerfilPublicoView'
 import './TalentManagerHomeView.css'
 
 function TalentManagerHomeView() {
@@ -16,6 +17,7 @@ function TalentManagerHomeView() {
         <Route index element={<TalentManagerDashboardView />} />
         <Route path="pedidos" element={<TalentManagerPedidosView />} />
         <Route path="historico" element={<TalentManagerHistoricoView />} />
+        <Route path="perfil-publico" element={<TalentManagerPerfilPublicoView />} />
         <Route path="badges" element={<TalentManagerBadgesView />} />
         <Route path="certificados" element={<TalentManagerCertificadosView />} />
         <Route path="consultores" element={<TalentManagerConsultoresView />} />

@@ -199,7 +199,7 @@ const TalentManagerTopbar = memo(() => {
           ) : null}
         </div>
 
-        <Link to="/talent-manager" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+        <Link to="/talent-manager/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
           <div className="softinsa-shell-profile-wrap">
             <img src={tmTopbarProfile.avatar} alt={tmTopbarProfile.name} className="softinsa-shell-profile-avatar" />
             <span className="softinsa-shell-profile-meta">

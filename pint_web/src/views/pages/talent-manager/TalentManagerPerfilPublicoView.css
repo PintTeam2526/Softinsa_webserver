@@ -1,0 +1,7 @@
+/* Placeholder CSS for TalentManagerPerfilPublicoView.
+   The view reuses SLL styles in ../SLL/SLL-perfil-publico.css.
+   Add TM-specific overrides here as needed. */
+
+.tm-profile-viewport {
+  /* example variable for future TM-specific tweaks */
+}
