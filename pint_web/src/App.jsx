@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
+import ConsultorLayout from './views/layouts/ConsultorLayout'
 import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/admin-users'
 import SoftinsaPedidos from './views/pages/admin/admin-pedidos'
@@ -19,15 +20,8 @@ import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
 import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
 import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
-import ConsultorHomeView from './views/pages/consultor/consultorHomeView'
-import ConsultorBadgesView from './views/pages/consultor/consultorBadgesView'
-import ConsultorBadgesListsView from './views/pages/consultor/consultorBadgesListsView'
-import ConsultorPedidosView from './views/pages/consultor/consultorPedidosView'
-import ConsultorObjetivosView from './views/pages/consultor/consultorObjetivosView'
-import ConsultorMessagesView from './views/pages/consultor/consultorMessagesView'
-import ConsultorConquistasView from './views/pages/consultor/consultorConquistasView'
-import ConsultorOutrasAreasView from './views/pages/consultor/consultorOutrasAreasView'
-import ConsultorPerfilPublicoView from './views/pages/consultor/consultorPerfilPublicoView'
+import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
+import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 function App() {
   return (
@@ -56,17 +50,26 @@ function App() {
         <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
       </Route>
 
-      <Route path="/consultor" element={<SoftinsaLayout />}>
-        <Route index element={<ConsultorHomeView />} />
-        <Route path="pedidos" element={<ConsultorPedidosView />} />
-        <Route path="listas-badges" element={<ConsultorBadgesListsView />} />
-        <Route path="objetivos" element={<ConsultorObjetivosView />} />
-        <Route path="conquistas" element={<ConsultorConquistasView />} />
-        <Route path="outras-areas" element={<ConsultorOutrasAreasView />} />
+      <Route path="/consultor" element={<ConsultorLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<ConsultorDashboardView />} />
+        <Route path="home" element={<ConsultorDashboardView />} />
+        <Route path="area/lowcode" element={<ConsultorDashboardView />} />
+        <Route path="service-line/hybrid-cloud" element={<ConsultorDashboardView />} />
+        <Route path="learning-path/jornada-tecnica" element={<ConsultorDashboardView />} />
+        <Route path="pedidos" element={<ConsultorDashboardView />} />
+        <Route path="badges/pedidos" element={<ConsultorDashboardView />} />
+        <Route path="listas-badges" element={<ConsultorDashboardView />} />
+        <Route path="badges/listas-badges" element={<ConsultorDashboardView />} />
+        <Route path="objetivos" element={<ConsultorDashboardView />} />
+        <Route path="badges/objetivos" element={<ConsultorDashboardView />} />
+        <Route path="conquistas" element={<ConsultorDashboardView />} />
+        <Route path="badges/conquistas" element={<ConsultorDashboardView />} />
+        <Route path="outras-areas" element={<ConsultorDashboardView />} />
+        <Route path="badges/outras-areas" element={<ConsultorDashboardView />} />
         <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
-        {/* paginas a mais -> ver se dá para reaproveitar*/}
-        <Route path="badges" element={<ConsultorBadgesView />} />
-        <Route path="mensagens" element={<ConsultorMessagesView />} />
+        <Route path="badges" element={<ConsultorDashboardView />} />
+        <Route path="mensagens" element={<ConsultorDashboardView />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

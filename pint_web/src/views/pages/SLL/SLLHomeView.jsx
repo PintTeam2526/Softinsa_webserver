@@ -13,12 +13,12 @@ import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-home.css'
 
 const heroArt = {
-  circle1: 'https://www.figma.com/api/mcp/asset/44d621a5-5f77-49f8-97ab-d9acc1d9112c',
-  circle2: 'https://www.figma.com/api/mcp/asset/0031c923-79a2-4f81-a561-192a0c6849b0',
-  circle3: 'https://www.figma.com/api/mcp/asset/b0852dd2-c31a-4830-be65-d3c6b37c002f',
-  circle4: 'https://www.figma.com/api/mcp/asset/8919d2e8-f08e-4e6d-9567-3137bf5a3772',
-  circle5: 'https://www.figma.com/api/mcp/asset/92d686ed-3af6-4a87-90b1-e7a92d4cf489',
-}
+ heroCircle1 : 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422',
+ heroCircle2 : 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a',
+ heroCircle3 : 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3',
+ heroCircle4 : 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7',
+ heroCircle5 : 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc',
+} 
 
 const pendingRequests = [
   {

@@ -1,127 +1,111 @@
-import React, { useState } from 'react'
-import { Container } from 'react-bootstrap'
-import './consultor-perfil-publico.css'
+import { useMemo } from 'react'
+import './ConsultorPerfilPublicoView.css'
 
-// Image constants
-const imgBearedGuy02Min1 = 'http://localhost:3845/assets/7ffed3a9c0dc8d07848a7a822fc8ff982d8e671f.png'
-const imgSearch = 'http://localhost:3845/assets/735ec776c0c41c37329638609b923cf1e0925bef.svg'
-const imgVectorPoints = 'http://localhost:3845/assets/31d386521a9921b9a382c98e6eb906f33b7940d7.svg'
-const imgAccept = 'http://localhost:3845/assets/faeada7168a0eb04471bed13f552a9f1c1293299.svg'
-const imgEmail = 'http://localhost:3845/assets/79171258a1c348778e3c9c1867b59d301c68f3e1.svg'
-const imgBadgesIcon = 'http://localhost:3845/assets/c379d967a0dea9cfcfd0228c02ae3cf24f808423.svg'
+const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
+const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
+const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
+const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
+const heroCircle1 = 'https://www.figma.com/api/mcp/asset/288fce76-e128-4294-99a0-2da910fa598e'
+const heroCircle2 = 'https://www.figma.com/api/mcp/asset/72189645-88a7-49c5-9d57-6e68bd098b5b'
+const heroCircle3 = 'https://www.figma.com/api/mcp/asset/cdd091b5-b5e5-4ef4-8207-d871d25984d9'
+const heroCircle4 = 'https://www.figma.com/api/mcp/asset/95830a8c-9cec-42b8-9e1c-40587c2a28eb'
+const heroCircle5 = 'https://www.figma.com/api/mcp/asset/5736997c-a9f9-48f5-b679-0a4d5b6a8abc'
+const pointsIcon = 'https://www.figma.com/api/mcp/asset/04bde155-b1b0-4e83-a0ac-bbe66455a2ac'
+const badgesIcon = 'https://www.figma.com/api/mcp/asset/82b97222-c9bc-455b-8ec3-a10e2b83a611'
+const emailIcon = 'https://www.figma.com/api/mcp/asset/f04e06a5-1254-43d1-8f09-ba10e5880272'
+const badgesHeaderIcon = 'https://www.figma.com/api/mcp/asset/deafc32c-7998-4d73-9605-1647183ccd65'
 
-// Sample badge images
-const imgBadge1 = 'http://localhost:3845/assets/34092422fec34f7138cd22f625b67823940cf58f.png'
-const imgBadge2 = 'http://localhost:3845/assets/b383293a5bd03592c863205896c17eff5a3db066.png'
-const imgBadge3 = 'http://localhost:3845/assets/24c4166e10b0ee7c2ea132bb91b450e18b799b6b.png'
-
-const BadgeItem = ({ image, name, date }) => (
-  <div className="perfil-badge-item">
-    <div className="perfil-badge-image">
-      <img src={image} alt={name} />
-    </div>
-    <p className="perfil-badge-name">{name}</p>
-    <p className="perfil-badge-date">{date}</p>
-  </div>
-)
-
-const badgesData = [
-  { id: 1, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 2, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 3, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 },
-  { id: 4, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 5, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 6, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 },
-  { id: 7, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 8, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 9, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 }
+const badges = [
+  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
+  { image: badgeTeamLeader, name: 'Team Lider Beginner', date: '31/12/2025' },
+  { image: badgeDevOps, name: 'DevOps Intermidiate', date: '31/12/2025' },
+  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
 ]
 
-function ConsultorPerfilPublicoView() {
-  const [searchValue, setSearchValue] = useState('')
+function BadgeItem({ image, name, date }) {
+  return (
+    <div className="sll-profile-badge-item">
+      <div className="sll-profile-badge-image">
+        <img src={image} alt={name} />
+      </div>
+      <p>{name}</p>
+      <span>{date}</span>
+    </div>
+  )
+}
 
-  const handleSearch = (e) => {
-    setSearchValue(e.target.value)
-  }
+function ConsultorPerfilPublicoView() {
+  const profileStats = useMemo(
+    () => [
+      { icon: pointsIcon, label: '550 Pontos' },
+      { icon: badgesIcon, label: '9 Badges Obtidos' },
+      { icon: emailIcon, label: 'antoniopt@gmail.com' },
+    ],
+    [],
+  )
 
   return (
-    <div className="perfil-publico-page">
-      {/* Banner */}
-      <div className="perfil-banner">
-        <div className="perfil-banner-content">
-          <h1 className="perfil-banner-title">Perfil Público</h1>
-          <p className="perfil-banner-subtitle">Estamos aqui para te ajudar a melhorar o currículo</p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="perfil-container">
-        {/* Search Bar */}
-        <div className="perfil-search-wrapper">
-          <div className="perfil-search">
-            <img src={imgSearch} alt="search" className="perfil-search-icon" />
-            <input
-              type="text"
-              placeholder="Pesquisar nome do consultor…"
-              value={searchValue}
-              onChange={handleSearch}
-              className="perfil-search-input"
-            />
-          </div>
-        </div>
-
-        {/* Profile Card */}
-        <div className="perfil-profile-card">
-          <div className="perfil-profile-left">
-            <div className="perfil-profile-image">
-              <img src={imgBearedGuy02Min1} alt="profile" />
+    <div className="sll-profile-page">
+      <main className="sll-profile-main">
+        <div className="sll-profile-scroll">
+          <section className="sll-profile-hero" aria-label="Perfil público consultor">
+            <div className="sll-profile-hero-art" aria-hidden="true">
+              <img className="sll-profile-hero-circle sll-profile-hero-circle-5" src={heroCircle5} alt="" />
+              <img className="sll-profile-hero-circle sll-profile-hero-circle-4" src={heroCircle4} alt="" />
+              <img className="sll-profile-hero-circle sll-profile-hero-circle-3" src={heroCircle3} alt="" />
+              <img className="sll-profile-hero-circle sll-profile-hero-circle-2" src={heroCircle2} alt="" />
+              <img className="sll-profile-hero-circle sll-profile-hero-circle-1" src={heroCircle1} alt="" />
             </div>
-            <div className="perfil-profile-info">
-              <div className="perfil-profile-header">
-                <h2 className="perfil-profile-name">António Portugal</h2>
-                <div className="perfil-profile-role">
-                  <span className="perfil-role-divider">—</span>
-                  <span>Consultor</span>
-                </div>
+
+            <div className="sll-profile-hero-copy">
+              <h1>Perfis Públicos</h1>
+              <p>Estamos aqui para te ajudar a melhorar o currículo</p>
+            </div>
+          </section>
+
+          <section className="sll-profile-card">
+            <div className="sll-profile-card-main">
+              <div className="sll-profile-avatar">
+                <img src={profileAvatar} alt="António Portugal" />
               </div>
-              <p className="perfil-profile-detail">Área: LowCode (Outsystems)</p>
-              <p className="perfil-profile-detail">Service Line: Hybrid Cloud</p>
-              <p className="perfil-profile-detail">Learning Path: Jornada Técnica</p>
-            </div>
-          </div>
 
-          <div className="perfil-profile-divider"></div>
+              <div className="sll-profile-copy">
+                <div className="sll-profile-name-row">
+                  <h2>António Portugal</h2>
+                  <span className="sll-profile-role-pill">Consultor</span>
+                </div>
+                <p>Área: LowCode (Outsystems)</p>
+                <p>Service Line: Hybrid Cloud</p>
+                <p>Learning Path: Jornada Técnica</p>
+              </div>
+            </div>
 
-          <div className="perfil-profile-right">
-            <div className="perfil-profile-stat">
-              <img src={imgVectorPoints} alt="points" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">550 Pontos</p>
+            <div className="sll-profile-divider" />
+
+            <div className="sll-profile-stats">
+              {profileStats.map((stat) => (
+                <div key={stat.label} className="sll-profile-stat-item">
+                  <img src={stat.icon} alt={stat.label} />
+                  <span>{stat.label}</span>
+                </div>
+              ))}
             </div>
-            <div className="perfil-profile-stat">
-              <img src={imgAccept} alt="badges" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">9 Badges Obtidos</p>
+          </section>
+
+          <section className="sll-profile-badges-card">
+            <div className="sll-profile-badges-header">
+              <img src={badgesHeaderIcon} alt="Badges" />
+              <h3>Badges Obtidos</h3>
             </div>
-            <div className="perfil-profile-stat">
-              <img src={imgEmail} alt="email" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">antoniopt@gmail.com</p>
+
+            <div className="sll-profile-badges-grid">
+              {badges.map((badge, index) => (
+                <BadgeItem key={`${badge.name}-${index}`} image={badge.image} name={badge.name} date={badge.date} />
+              ))}
             </div>
-          </div>
+          </section>
         </div>
-
-        {/* Badges Section */}
-        <div className="perfil-badges-card">
-          <div className="perfil-badges-header">
-            <img src={imgBadgesIcon} alt="badges" className="perfil-badges-header-icon" />
-            <h3 className="perfil-badges-title">Badges Obtidos</h3>
-          </div>
-
-          <div className="perfil-badges-grid">
-            {badgesData.map((badge) => (
-              <BadgeItem key={badge.id} image={badge.image} name={badge.name} date={badge.date} />
-            ))}
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   )
 }

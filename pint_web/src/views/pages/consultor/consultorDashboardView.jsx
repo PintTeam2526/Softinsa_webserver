@@ -1,197 +1,198 @@
-import Chart from 'react-apexcharts'
-import { Card, Col, Row } from 'react-bootstrap'
-import {
-  HiOutlineAcademicCap,
-  HiOutlineBadgeCheck,
-  HiOutlineUserGroup,
-  HiOutlineViewGrid,
-} from 'react-icons/hi'
-import { MdOutlineMiscellaneousServices } from 'react-icons/md'
-import { useDashboardController } from '../../../controllers/dashboard.controller'
-import './DashboardView.css'
+import './consultor-DashboardView.css'
 
-const learningPathChartOptions = {
-  chart: {
-    type: 'radialBar',
-    sparkline: { enabled: true },
-    toolbar: { show: false },
-  },
-  colors: ['#3A57E8', '#85F4FA'],
-  plotOptions: {
-    radialBar: {
-      startAngle: -90,
-      endAngle: 270,
-      hollow: {
-        margin: 0,
-        size: '60%',
-        background: 'transparent',
-      },
-      track: {
-        background: '#E9ECEF',
-        strokeWidth: '100%',
-        margin: 8,
-      },
-      dataLabels: {
-        show: false,
-      },
-    },
-  },
-  stroke: {
-    lineCap: 'round',
-  },
-  labels: ['Jornada Tecnica', 'Power Skills'],
-}
-
-const learningPathChartSeries = [82, 66]
-
-const badgesBarChartOptions = {
-  chart: {
-    type: 'bar',
-    toolbar: { show: false },
-    stacked: true,
-  },
-  colors: ['#3A57E8', '#85F4FA'],
-  plotOptions: {
-    bar: {
-      borderRadius: 8,
-      borderRadiusApplication: 'end',
-      borderRadiusWhenStacked: 'last',
-      columnWidth: '22%',
-      dataLabels: { position: 'top' },
-    },
-  },
-  dataLabels: { enabled: false },
-  legend: { show: false },
-  xaxis: {
-    categories: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-    axisBorder: { show: false },
-    axisTicks: { show: false },
-    labels: {
-      style: { colors: '#232D42', fontSize: '13px', fontWeight: 400 },
-    },
-  },
-  yaxis: {
-    min: 0,
-    max: 100,
-    tickAmount: 4,
-    labels: {
-      formatter: (value) => `${Math.round(value)}%`,
-      style: { colors: '#232D42', fontSize: '13px', fontWeight: 400 },
-    },
-  },
-  grid: {
-    borderColor: '#E9ECEF',
-    strokeDashArray: 0,
-    xaxis: { lines: { show: false } },
-  },
-  tooltip: {
-    shared: true,
-    intersect: false,
-    y: {
-      formatter: (value) => `${Math.round(value)}%`,
-    },
-  },
-}
-
-const badgesBarChartSeries = [
+const metricCards = [
   {
-    name: 'Jornada Tecnica',
-    data: [22, 38, 29, 41, 29, 46, 29, 22, 32, 29, 32, 22],
+    title: 'Área',
+    value: '50%',
+    icon: 'https://www.figma.com/api/mcp/asset/0acf49db-3b4d-4ec3-82fc-8650f2c3a4aa',
+    widthClass: 'is-area',
   },
   {
-    name: 'Power Skills',
-    data: [19, 33, 26, 35, 26, 40, 26, 19, 28, 26, 28, 19],
+    title: 'Service Line',
+    value: '40%',
+    icon: 'https://www.figma.com/api/mcp/asset/0a69b3ea-1f1d-4eb9-9831-ecf67dc039b0',
+    widthClass: 'is-service-line',
+  },
+  {
+    title: 'Learning Path',
+    value: '25%',
+    icon: 'https://www.figma.com/api/mcp/asset/fe338133-f0f4-4325-91ea-9c78fd1547c2',
+    widthClass: 'is-learning-path',
   },
 ]
 
-function MetricIcon({ icon }) {
-  if (icon === 'users') {
-    return <HiOutlineUserGroup className="softinsa-summary-icon" />
-  }
+const recommendedBadges = [
+  {
+    image: 'https://www.figma.com/api/mcp/asset/81dd147b-a305-4898-9278-57a77240bbb0',
+    name: 'Citzen Developer',
+    subtitle: 'LowCode(Outsystems)',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/43c06d2e-6900-4930-b272-5c2b4dd6a02c',
+    name: 'Team Lider Beginner',
+    subtitle: 'Talent Management',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
+    name: 'DevOps Intermidiate',
+    subtitle: 'DevOps',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
+    name: 'DevOps Intermidiate',
+    subtitle: 'DevOps',
+  },
+]
 
-  if (icon === 'service-lines') {
-    return <MdOutlineMiscellaneousServices className="softinsa-summary-icon" />
-  }
+const myBadges = [
+  {
+    image: 'https://www.figma.com/api/mcp/asset/81dd147b-a305-4898-9278-57a77240bbb0',
+    name: 'Citzen Developer',
+    status: 'Expirado',
+    statusIcon: '📅',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/43c06d2e-6900-4930-b272-5c2b4dd6a02c',
+    name: 'Team Lider Beginner',
+    status: 'Devolvido',
+    statusIcon: '↩',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
+    name: 'DevOps Intermidiate',
+    status: 'Em Análise',
+    statusIcon: 'i',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
+    name: 'DevOps Intermidiate',
+    status: 'Aceite',
+    statusIcon: '✓',
+  },
+  {
+    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
+    name: 'DevOps Intermidiate',
+    status: 'Recusado',
+    statusIcon: '×',
+  },
+]
 
-  if (icon === 'areas') {
-    return <HiOutlineViewGrid className="softinsa-summary-icon" />
-  }
+function DashboardAction({ icon, title, subtitle, value, type }) {
+  return (
+    <article className={`consultor-dashboard-metric ${type}`}>
+      <img src={icon} alt="" aria-hidden="true" className="consultor-dashboard-metric-icon" />
 
-  if (icon === 'learning-paths') {
-    return <HiOutlineAcademicCap className="softinsa-summary-icon" />
-  }
+      <div className="consultor-dashboard-metric-copy">
+        <h3>{title}</h3>
+        <p>{subtitle}</p>
+      </div>
 
-  return <HiOutlineBadgeCheck className="softinsa-summary-icon" />
+      {value ? <strong className="consultor-dashboard-metric-value">{value}</strong> : null}
+    </article>
+  )
+}
+
+function BadgeRow({ badge, isLarge = false }) {
+  return (
+    <div className={`consultor-dashboard-badge-row${isLarge ? ' is-my-badge' : ''}`}>
+      <img
+        src={badge.image}
+        alt={badge.name}
+        className={`consultor-dashboard-badge-image${isLarge ? ' consultor-dashboard-badge-image--large' : ''}`}
+      />
+
+      <div className={`consultor-dashboard-badge-copy${isLarge ? ' consultor-dashboard-badge-copy--my-badge' : ''}`}>
+        <h4>{badge.name}</h4>
+        <p>
+          {isLarge ? badge.status : badge.subtitle}
+          {isLarge ? (
+            <span className="consultor-dashboard-badge-status-icon" aria-hidden="true">
+              {badge.statusIcon}
+            </span>
+          ) : null}
+        </p>
+      </div>
+
+      {!isLarge ? <span className="consultor-dashboard-badge-action">↗</span> : null}
+    </div>
+  )
 }
 
 function DashboardView() {
-  const { user, metrics, chartOptions, chartSeries } = useDashboardController()
-
   return (
-    <section className="softinsa-dashboard-page">
-      <div className="softinsa-dashboard-hero">
-        <h1>Ola, {user.name}!</h1>
-      </div>
+    <section className="consultor-dashboard-page">
+      <header className="consultor-dashboard-hero">
+        <div className="consultor-dashboard-hero-overlay" aria-hidden="true" />
 
-      <Row className="g-3 mb-4">
-        {metrics.map((metric) => (
-          <Col key={metric.label} xxl={2} xl={3} md={4} sm={6}>
-            <Card className="softinsa-summary-card">
-              <Card.Body className="softinsa-summary-card-body">
-                <span className="softinsa-summary-icon-shell">
-                  <MetricIcon icon={metric.icon} />
-                </span>
+        <div className="consultor-dashboard-hero-copy">
+          <h1>Olá, António Portugal!</h1>
+          <p>Estamos aqui para te ajudar a melhorar o currículo</p>
+        </div>
+      </header>
 
-                <div className="softinsa-summary-content">
-                  <p>{metric.label}</p>
-                  <h5>{metric.value}</h5>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
+      <section className="consultor-dashboard-summary" aria-label="Métricas">
+        {metricCards.map((metric) => (
+          <article key={metric.title} className={`consultor-dashboard-summary-card ${metric.widthClass}`}>
+            <img src={metric.icon} alt="" aria-hidden="true" className="consultor-dashboard-summary-icon" />
+
+            <div className="consultor-dashboard-summary-copy">
+              <h2>{metric.title}</h2>
+              <p>{metric.value}</p>
+            </div>
+          </article>
         ))}
-      </Row>
+      </section>
 
-      <Card className="softinsa-chart-card mb-4">
-        <Card.Header className="softinsa-chart-card-header">
-          <h5 className="mb-0">Badges obtidos</h5>
-        </Card.Header>
+      <section className="consultor-dashboard-alerts" aria-label="Alertas">
+        <DashboardAction
+          type="is-message"
+          icon="https://www.figma.com/api/mcp/asset/705c415b-1097-4e95-a2b7-0ef4fd0115bc"
+          title="Tem mensagens por ler"
+          subtitle="Acede agora às notificações, para ver mais"
+        />
 
-        <Card.Body className="pt-2">
-          <Chart options={chartOptions} series={chartSeries} type="area" height={300} />
-        </Card.Body>
-      </Card>
+        <DashboardAction
+          type="is-objective"
+          icon="https://www.figma.com/api/mcp/asset/ab6ae11b-d4be-4e95-9473-111119786903"
+          title="Objetivo Por Completar"
+          subtitle="3 dias até o próximo objetivo expirar"
+        />
 
-      <Row className="g-4">
-        <Col xl={4} lg={5}>
-          <Card className="softinsa-chart-card h-100">
-            <Card.Header className="softinsa-chart-card-header">
-              <h5 className="mb-0">Badges por Learning Path</h5>
-            </Card.Header>
+        <DashboardAction
+          type="is-points"
+          icon="https://www.figma.com/api/mcp/asset/c6080d40-1dd3-42d1-a061-18034566db9c"
+          title="Pontuação total"
+          subtitle="Não pares por aqui, candidata-te a mais badges"
+          value="550"
+        />
+      </section>
 
-            <Card.Body>
-              <Chart
-                options={learningPathChartOptions}
-                series={learningPathChartSeries}
-                type="radialBar"
-                height={250}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
+      <section className="consultor-dashboard-bottom-grid" aria-label="Badges">
+        <article className="consultor-dashboard-card">
+          <header className="consultor-dashboard-card-header">
+            <h2>Badges Recomendados</h2>
+          </header>
 
-        <Col xl={8} lg={7}>
-          <Card className="softinsa-chart-card h-100">
-            <Card.Header className="softinsa-chart-card-header">
-              <h5 className="mb-0">Badges</h5>
-            </Card.Header>
+          <div className="consultor-dashboard-card-body">
+            {recommendedBadges.map((badge) => (
+              <BadgeRow key={`${badge.name}-${badge.subtitle}`} badge={badge} />
+            ))}
+          </div>
+        </article>
 
-            <Card.Body>
-              <Chart options={badgesBarChartOptions} series={badgesBarChartSeries} type="bar" height={250} />
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+        <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
+          <header className="consultor-dashboard-card-header consultor-dashboard-card-header--with-action">
+            <h2>Os meus badges</h2>
+            <span className="consultor-dashboard-card-chevron">›</span>
+          </header>
+
+          <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
+            {myBadges.map((badge) => (
+              <BadgeRow key={`${badge.name}-${badge.status}`} badge={badge} isLarge />
+            ))}
+          </div>
+        </article>
+      </section>
     </section>
   )
 }

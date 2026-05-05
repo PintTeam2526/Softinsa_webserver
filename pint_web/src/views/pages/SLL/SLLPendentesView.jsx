@@ -5,11 +5,11 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-pendentes.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/288fce76-e128-4294-99a0-2da910fa598e'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/72189645-88a7-49c5-9d57-6e68bd098b5b'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/cdd091b5-b5e5-4ef4-8207-d871d25984d9'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/95830a8c-9cec-42b8-9e1c-40587c2a28eb'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/5736997c-a9f9-48f5-b679-0a4d5b6a8abc'
+const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
+const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
+const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
+const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
+const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 
 const pendingRequests = [
   {
