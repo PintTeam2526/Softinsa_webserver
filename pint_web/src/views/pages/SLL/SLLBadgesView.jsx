@@ -10,11 +10,11 @@ import './SLL-badges.css'
 const profileBadgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
 const profileBadgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
 const profileBadgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/b98ac891-52b5-4f87-9c29-5a058ffc308e'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/231bc4b5-58b9-4c12-a9e6-ebef268288bf'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/660eaa88-89e1-4d74-a182-154bda36148d'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c3ff47c5-98fe-4ec6-98c9-aebd9afb0845'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/6b88aaa6-d112-4bef-b80f-69e6c4a821bb'
+const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
+const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
+const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
+const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
+const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 
 const badgeGroups = [
   {
