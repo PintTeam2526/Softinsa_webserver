@@ -7,11 +7,11 @@ const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
 const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
 const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
-const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/7c07a289-6ec6-49e2-955f-4dd9f9188a76'
-const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/efa7cf7c-a875-499d-86f3-d8d3f2d9df26'
-const heroEllipse3 = 'https://www.figma.com/api/mcp/asset/7fa466ca-70d0-4457-ba36-37876b930bf3'
-const heroEllipse4 = 'https://www.figma.com/api/mcp/asset/1e3d09b1-88c7-40f0-9657-4a1a3bf616b0'
-const heroEllipse5 = 'https://www.figma.com/api/mcp/asset/89345bfb-8506-421d-a585-9bd652a610b7'
+const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
+const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
+const heroEllipse3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
+const heroEllipse4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
+const heroEllipse5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 
 const consultants = [
   { id: 'antonio', name: 'António Portugal', role: 'Consultor', area: 'LowCode (Outsystems)', serviceLine: 'Hybrid Cloud', learningPath: 'Jornada Técnica', points: 550, email: 'antoniopt@gmail.com' },

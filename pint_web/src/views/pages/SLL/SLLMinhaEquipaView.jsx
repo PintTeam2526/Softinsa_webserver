@@ -8,11 +8,11 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-minha-equipa.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/ab6de3d1-1dec-4e65-9f70-f570146f6bfe'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/3a3993a6-61c7-4ac4-a799-e406a5adfc72'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/2e4079e6-0254-4d38-b3f4-0516979e370f'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/d7448094-dd4e-4577-bbd2-3d2c97e79027'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/af057a0a-5f36-4ba7-9024-f71677cacaa0'
+const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
+const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
+const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
+const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
+const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 
 const filterOptions = {
   areas: ['Outsystems', 'Data', 'Cloud'],

@@ -1,5 +1,6 @@
 import { FaBell, FaClipboardList } from 'react-icons/fa'
 
+
 const heroCircle5 = 'https://www.figma.com/api/mcp/asset/739430e1-57f7-4057-8b30-e4e9ac3df7a9'
 const heroCircle4 = 'https://www.figma.com/api/mcp/asset/31ef0c85-37c3-4902-831e-06a6e32c1a31'
 const heroCircle3 = 'https://www.figma.com/api/mcp/asset/fb86f390-2b2f-4a33-87ed-0360cd912651'
