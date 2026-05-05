@@ -21,6 +21,7 @@ import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
 import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
+import ConsultorPedidosView from './views/pages/consultor/consultorPedidosView'
 import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 function App() {
@@ -57,8 +58,8 @@ function App() {
         <Route path="area/lowcode" element={<ConsultorDashboardView />} />
         <Route path="service-line/hybrid-cloud" element={<ConsultorDashboardView />} />
         <Route path="learning-path/jornada-tecnica" element={<ConsultorDashboardView />} />
-        <Route path="pedidos" element={<ConsultorDashboardView />} />
-        <Route path="badges/pedidos" element={<ConsultorDashboardView />} />
+        <Route path="pedidos" element={<ConsultorPedidosView />} />
+        <Route path="badges/pedidos" element={<ConsultorPedidosView />} />
         <Route path="listas-badges" element={<ConsultorDashboardView />} />
         <Route path="badges/listas-badges" element={<ConsultorDashboardView />} />
         <Route path="objetivos" element={<ConsultorDashboardView />} />
