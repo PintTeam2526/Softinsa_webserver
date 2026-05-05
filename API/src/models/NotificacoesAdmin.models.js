@@ -27,6 +27,6 @@ var NotificacoesAdmins = sequelize.define('NotificacoesAdmins',
     timestamps: false
 });
 
-NotificacoesAdmins.belongsTo(Administrador);
+NotificacoesAdmins.belongsTo(Administrador, { foreignKey: 'id_administrador' });
 
 module.exports = NotificacoesAdmins;

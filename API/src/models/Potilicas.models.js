@@ -31,6 +31,6 @@ var Politicas = sequelize.define('Politicas',
     timestamps: false
 });
 
-Politicas.belongsTo(Administrador);
+Politicas.belongsTo(Administrador, { foreignKey: 'id_administrador' });
 
 module.exports = Politicas;

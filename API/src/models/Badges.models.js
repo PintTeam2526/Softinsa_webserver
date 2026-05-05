@@ -66,7 +66,7 @@ var Badges = sequelize.define('Badges',
 });
 
 
-Badges.belongsTo(Area);
+Badges.belongsTo(Area, { foreignKey: 'id_area' });
 
 module.exports = Badges;
 

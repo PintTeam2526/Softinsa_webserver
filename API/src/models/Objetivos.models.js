@@ -48,7 +48,7 @@ var Objetivos = sequelize.define('Objetivos',
     timestamps: false
 });
 
-Objetivos.belongsTo(Consultor);
-Objetivos.belongsTo(Badge);
+Objetivos.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+Objetivos.belongsTo(Badge, { foreignKey: 'id_badge' });
 
 module.exports = Objetivos;

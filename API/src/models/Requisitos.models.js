@@ -45,6 +45,6 @@ var Requisitos = sequelize.define('Requisitos',
     timestamps: false
 });
 
-Requisitos.belongsTo(Badge);
+Requisitos.belongsTo(Badge, { foreignKey: 'id_badge' });
 
 module.exports = Requisitos;

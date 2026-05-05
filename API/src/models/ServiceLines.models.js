@@ -44,6 +44,6 @@ var ServiceLines = sequelize.define('ServiceLines',
 });
 
 
-ServiceLines.belongsTo(LearningPath);
+ServiceLines.belongsTo(LearningPath, { foreignKey: 'id_learning_path' });
 
 module.exports = ServiceLines;

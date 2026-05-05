@@ -20,14 +20,6 @@ var HistoricoPedidos = sequelize.define('HistoricoPedidos',
             key: 'id_estado'
         },
     },
-    id_utilizador_avaliador: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Utilizador,
-            key: 'id_utilizador'
-        },
-    },
     id_pedido_badge: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -49,8 +41,7 @@ var HistoricoPedidos = sequelize.define('HistoricoPedidos',
     timestamps: false
 });
 
-HistoricoPedidos.belongsTo(PedidoBadge);
-HistoricoPedidos.belongsTo(Utilizador);
-HistoricoPedidos.belongsTo(Estado);
+HistoricoPedidos.belongsTo(PedidoBadge, { foreignKey: 'id_pedido_badge' });
+HistoricoPedidos.belongsTo(Estado, { foreignKey: 'id_estado' });
 
 module.exports = HistoricoPedidos;

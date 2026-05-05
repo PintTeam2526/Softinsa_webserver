@@ -39,7 +39,7 @@ var Consultores = sequelize.define('Consultores',
 });
 
 
-Consultores.belongsTo(Utilizador);
-Consultores.belongsTo(Area);
+Consultores.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
+Consultores.belongsTo(Area, { foreignKey: 'id_area' });
 
 module.exports = Consultores;

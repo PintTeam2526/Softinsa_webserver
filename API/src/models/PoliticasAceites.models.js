@@ -28,7 +28,7 @@ var PoliticasAceites = sequelize.define('PoliticasAceites',
     timestamps: false
 });
 
-PoliticasAceites.belongsTo(Utilizador);
-PoliticasAceites.belongsTo(Politica);
+PoliticasAceites.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
+PoliticasAceites.belongsTo(Politica, { foreignKey: 'id_politica' });
 
 module.exports = PoliticasAceites;

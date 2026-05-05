@@ -40,7 +40,7 @@ var Documentacoes = sequelize.define('Documentacoes',
     timestamps: false
 });
 
-Documentacoes.belongsTo(Consultor);
-Documentacoes.belongsTo(PedidoBadge);
+Documentacoes.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+Documentacoes.belongsTo(PedidoBadge, { foreignKey: 'id_pedido_badge' });
 
 module.exports = Documentacoes;

@@ -24,7 +24,7 @@ var Administradores = sequelize.define('Administradores',
 });
 
 
-Administradores.belongsTo(Utilizador);
+Administradores.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
 
 module.exports = Administradores;
 
