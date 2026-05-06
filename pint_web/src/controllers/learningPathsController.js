@@ -9,8 +9,6 @@ export const getLearningPaths = async () => {
     }
 
     const data = await response.json();
-    console.log("RESPONSE:", response);
-    console.log("DATA:", data);
     return data;
   } catch (error) {
     console.error("Erro ao obter learning paths", error);
