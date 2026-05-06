@@ -11,10 +11,10 @@ controllers.login = async (req, res) => {
 
     // Procurar utilizador na BD
     const user = await User.findOne({
-        where: { email_utilizador: email }
+      where: { email_utilizador: email }
     });
 
-    
+
     if (!user) {
       return res.status(400).json({ message: 'Utilizador não encontrado' });
     }
@@ -29,11 +29,12 @@ controllers.login = async (req, res) => {
     // Criar token
     const token = jwt.sign(
       {
+        id: user.id_utilizador,
         email: user.email_utilizador,
         role: user.tipo_utilizador
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: "1d" }
     );
 
     // Resposta
@@ -92,9 +93,9 @@ controllers.register = async (req, res) => {
   }
 };
 
-controllers.getAutenticacao = async (req, res) => {};
-controllers.updateUser = async (req, res) => {};
-controllers.deleteUser = async (req, res) => {};
+controllers.getAutenticacao = async (req, res) => { };
+controllers.updateUser = async (req, res) => { };
+controllers.deleteUser = async (req, res) => { };
 
 
 

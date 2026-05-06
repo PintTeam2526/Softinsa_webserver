@@ -1,7 +1,9 @@
+const Sequelize = require("sequelize");
 const Pedidos = require("../models/PedidosBadges.models");
 const HistoricoPedidos = require("../models/HistoricoPedidos.models");
 const NotificacoesPedidos = require("../models/NotificacoesPedidos.models");
 const BadgesConcluidos = require("../models/BadgesConcluidos.models");
+const TalentManager = require("../models/TalentManagers.models");
 
 const controllers = {};
 
@@ -10,19 +12,19 @@ const controllers = {};
 ===================================================== */
 
 function isAdmin(req) {
-    return req.user?.role === "admin";
+    return req.user?.role === "A";
 }
 
 function isTM(req) {
-    return req.user?.role === "talent_manager";
+    return req.user?.role === "TM";
 }
 
 function isSL(req) {
-    return req.user?.role === "service_line_lider";
+    return req.user?.role === "SL";
 }
 
 function isConsultor(req) {
-    return req.user?.role === "consultor";
+    return req.user?.role === "CO";
 }
 
 async function criarHistorico(idPedido, idEstado, idUser, texto) {
@@ -44,23 +46,65 @@ async function criarNotificacao(idConsultor, idPedido, texto) {
     });
 }
 
+async function escolherTalentManager() {
+    const tms = await TalentManager.findAll();
+
+    let melhorTM = null;
+    let menorCarga = Infinity;
+
+    for (const tm of tms) {
+        const carga = await Pedidos.count({
+            where: {
+                id_talent_manager: tm.id_talent_manager,
+                estado_atual: {
+                    [Sequelize.Op.notIn]: [7, 8] // rejeitado / concluído
+                }
+            }
+        });
+
+        if (carga < menorCarga) {
+            menorCarga = carga;
+            melhorTM = tm;
+        }
+    }
+
+    return melhorTM;
+}
+
 /* =====================================================
    GET TODOS PEDIDOS
 ===================================================== */
 
 controllers.getAllPedidos = async (req, res) => {
     try {
+        console.log("REQ USER:", req.user);
+
         if (req.user.role === "guest") {
             return res.status(401).json({
                 mensagem: "Utilizador não autenticado"
             });
         }
 
-        const pedidos = await Pedidos.findAll();
+        let whereClause = {};
+
+        if (isConsultor(req)) {
+            console.log("É consultor");
+            console.log("ID:", req.user.id);
+
+            whereClause.id_consultor = req.user.id;
+        }
+
+        const pedidos = await Pedidos.findAll({
+            where: whereClause
+        });
+
+        console.log("Filtro aplicado:", whereClause);
 
         return res.status(200).json(pedidos);
 
     } catch (error) {
+        console.log("ERRO:", error);
+
         return res.status(500).json({
             mensagem: "Erro ao buscar pedidos",
             erro: error.message
@@ -110,11 +154,44 @@ controllers.createPedido = async (req, res) => {
             });
         }
 
+        const { id_consultor, id_badge } = req.body;
+
+        // 🔍 1. Verificar se o consultor já tem um pedido ativo para este badge
+        const pedidoExistente = await Pedidos.findOne({
+            where: {
+                id_consultor: id_consultor,
+                id_badge: id_badge,
+                estado_atual: {
+                    [Sequelize.Op.notIn]: [7, 8] // 7: Rejeitado, 8: Concluído
+                }
+            }
+        });
+
+        if (pedidoExistente) {
+            return res.status(400).json({
+                mensagem: "Já possui um pedido em análise ou aberto para este badge."
+            });
+        }
+
+        // 🤖 2. Escolher Talent Manager
+        const tm = await escolherTalentManager();
+
+        if (!tm) {
+            return res.status(500).json({
+                mensagem: "Nenhum Talent Manager disponível"
+            });
+        }
+
+        // 📝 3. Criar o pedido
         const pedido = await Pedidos.create({
-            ...req.body,
+            id_consultor,
+            id_talent_manager: tm.id_talent_manager,
+            id_service_line_lider: 1, // Definido como 1 conforme o teu código original
+            id_badge,
             estado_atual: 1
         });
 
+        // 📜 4. Histórico e Notificação
         await criarHistorico(
             pedido.id_pedido_badge,
             1,
@@ -123,9 +200,9 @@ controllers.createPedido = async (req, res) => {
         );
 
         await criarNotificacao(
-            pedido.id_consultor,
+            tm.id_talent_manager,
             pedido.id_pedido_badge,
-            "Pedido criado com sucesso."
+            "Novo pedido atribuído automaticamente."
         );
 
         return res.status(201).json({
@@ -364,5 +441,7 @@ controllers.resubmitPedido = async (req, res) => {
         });
     }
 };
+
+
 
 module.exports = controllers;

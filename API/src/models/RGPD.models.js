@@ -18,17 +18,13 @@ var Politicas = sequelize.define('Politicas',
             key: 'id_administrador'
         },
     },
-    nome_politica: {
-        type: Sequelize.TEXT,
-        allowNull: false
-    },
-    descricao_politica: {
+    politica: {
         type: Sequelize.TEXT,
         allowNull: false
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 Politicas.belongsTo(Administrador, { foreignKey: 'id_administrador' });
