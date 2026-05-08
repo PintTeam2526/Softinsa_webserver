@@ -1,98 +1,126 @@
+import {
+  HiOutlineArrowPath,
+  HiOutlineBell,
+  HiOutlineFlag,
+  HiOutlineTrophy,
+  HiOutlineCalendarDays,
+  HiOutlineArrowUturnLeft,
+  HiOutlineInformationCircle,
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlineChevronRight,
+} from 'react-icons/hi2'
 import './consultor-DashboardView.css'
+import avtar1 from '../../../assets/images/avatars/avtar_1.png'
+import avtar2 from '../../../assets/images/avatars/avtar_2.png'
+import avtar3 from '../../../assets/images/avatars/avtar_3.png'
+import avtar4 from '../../../assets/images/avatars/avtar_4.png'
+import avtar5 from '../../../assets/images/avatars/avtar_5.png'
+
 
 const metricCards = [
+  { title: 'Área', value: '50%', widthClass: 'is-area' },
+  { title: 'Service Line', value: '40%', widthClass: 'is-service-line' },
+  { title: 'Learning Path', value: '25%', widthClass: 'is-learning-path' },
+]
+
+const alertCards = [
   {
-    title: 'Área',
-    value: '50%',
-    icon: 'https://www.figma.com/api/mcp/asset/0acf49db-3b4d-4ec3-82fc-8650f2c3a4aa',
-    widthClass: 'is-area',
+    type: 'is-message',
+    Icon: HiOutlineBell,
+    title: 'Tem mensagens por ler',
+    subtitle: 'Acede agora às notificações, para ver mais',
   },
   {
-    title: 'Service Line',
-    value: '40%',
-    icon: 'https://www.figma.com/api/mcp/asset/0a69b3ea-1f1d-4eb9-9831-ecf67dc039b0',
-    widthClass: 'is-service-line',
+    type: 'is-objective',
+    Icon: HiOutlineFlag,
+    title: 'Objetivo Por Completar',
+    subtitleHighlight: '3 dias',
+    subtitle: 'até o próximo objetivo expirar',
   },
   {
-    title: 'Learning Path',
-    value: '25%',
-    icon: 'https://www.figma.com/api/mcp/asset/fe338133-f0f4-4325-91ea-9c78fd1547c2',
-    widthClass: 'is-learning-path',
+    type: 'is-points',
+    Icon: HiOutlineTrophy,
+    title: 'Pontuação total',
+    subtitle: 'Não pares por aqui, candidata-te a mais badges',
+    value: '550',
   },
 ]
 
 const recommendedBadges = [
-  {
-    image: 'https://www.figma.com/api/mcp/asset/81dd147b-a305-4898-9278-57a77240bbb0',
-    name: 'Citzen Developer',
-    subtitle: 'LowCode(Outsystems)',
-  },
-  {
-    image: 'https://www.figma.com/api/mcp/asset/43c06d2e-6900-4930-b272-5c2b4dd6a02c',
-    name: 'Team Lider Beginner',
-    subtitle: 'Talent Management',
-  },
-  {
-    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
-    name: 'DevOps Intermidiate',
-    subtitle: 'DevOps',
-  },
-  {
-    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
-    name: 'DevOps Intermidiate',
-    subtitle: 'DevOps',
-  },
+  { image: avtar1, name: 'Citizen Developer', subtitle: 'LowCode(Outsystems)' },
+  { image: avtar2, name: 'Team Lider Beginner', subtitle: 'Talent Management' },
+  { image: avtar3, name: 'DevOps Intermediate', subtitle: 'DevOps' },
+  { image: avtar4, name: 'DevOps Intermediate', subtitle: 'DevOps' },
 ]
 
 const myBadges = [
   {
-    image: 'https://www.figma.com/api/mcp/asset/81dd147b-a305-4898-9278-57a77240bbb0',
-    name: 'Citzen Developer',
+    image: avtar1,
+    name: 'Citizen Developer',
     status: 'Expirado',
-    statusIcon: '📅',
+    Icon: HiOutlineCalendarDays,
+    statusClass: 'is-expired',
   },
   {
-    image: 'https://www.figma.com/api/mcp/asset/43c06d2e-6900-4930-b272-5c2b4dd6a02c',
+    image: avtar2,
     name: 'Team Lider Beginner',
     status: 'Devolvido',
-    statusIcon: '↩',
+    Icon: HiOutlineArrowUturnLeft,
+    statusClass: 'is-returned',
   },
   {
-    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
-    name: 'DevOps Intermidiate',
+    image: avtar3,
+    name: 'DevOps Intermediate',
     status: 'Em Análise',
-    statusIcon: 'i',
+    Icon: HiOutlineInformationCircle,
+    statusClass: 'is-analysis',
   },
   {
-    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
-    name: 'DevOps Intermidiate',
+    image: avtar4,
+    name: 'DevOps Intermediate',
     status: 'Aceite',
-    statusIcon: '✓',
+    Icon: HiOutlineCheckCircle,
+    statusClass: 'is-accepted',
   },
   {
-    image: 'https://www.figma.com/api/mcp/asset/6d114912-0649-40f4-8a19-8ca69f1cbfad',
-    name: 'DevOps Intermidiate',
+    image: avtar5,
+    name: 'DevOps Intermediate',
     status: 'Recusado',
-    statusIcon: '×',
+    Icon: HiOutlineXCircle,
+    statusClass: 'is-refused',
   },
 ]
 
-function DashboardAction({ icon, title, subtitle, value, type }) {
+function AlertCard({ type, Icon, title, subtitle, subtitleHighlight, value }) {
   return (
     <article className={`consultor-dashboard-metric ${type}`}>
-      <img src={icon} alt="" aria-hidden="true" className="consultor-dashboard-metric-icon" />
+      <div className="consultor-dashboard-metric-icon-tile">
+        <Icon className="consultor-dashboard-metric-icon" aria-hidden="true" />
+      </div>
 
       <div className="consultor-dashboard-metric-copy">
         <h3>{title}</h3>
-        <p>{subtitle}</p>
+        <p>
+          {subtitleHighlight && (
+            <span className="consultor-dashboard-metric-highlight">{subtitleHighlight} </span>
+          )}
+          {subtitle}
+        </p>
       </div>
 
-      {value ? <strong className="consultor-dashboard-metric-value">{value}</strong> : null}
+      {value ? (
+        <strong className="consultor-dashboard-metric-value">{value}</strong>
+      ) : (
+        <HiOutlineChevronRight className="consultor-dashboard-metric-chevron" aria-hidden="true" />
+      )}
     </article>
   )
 }
 
 function BadgeRow({ badge, isLarge = false }) {
+  const StatusIcon = badge.Icon
+
   return (
     <div className={`consultor-dashboard-badge-row${isLarge ? ' is-my-badge' : ''}`}>
       <img
@@ -103,17 +131,19 @@ function BadgeRow({ badge, isLarge = false }) {
 
       <div className={`consultor-dashboard-badge-copy${isLarge ? ' consultor-dashboard-badge-copy--my-badge' : ''}`}>
         <h4>{badge.name}</h4>
-        <p>
-          {isLarge ? badge.status : badge.subtitle}
-          {isLarge ? (
-            <span className="consultor-dashboard-badge-status-icon" aria-hidden="true">
-              {badge.statusIcon}
-            </span>
-          ) : null}
-        </p>
+        {isLarge ? (
+          <p className={`consultor-dashboard-badge-status ${badge.statusClass}`}>
+            {badge.status}
+            {StatusIcon && <StatusIcon className="consultor-dashboard-badge-status-icon" aria-hidden="true" />}
+          </p>
+        ) : (
+          <p>{badge.subtitle}</p>
+        )}
       </div>
 
-      {!isLarge ? <span className="consultor-dashboard-badge-action">↗</span> : null}
+      {!isLarge && (
+        <HiOutlineChevronRight className="consultor-dashboard-badge-action" aria-hidden="true" />
+      )}
     </div>
   )
 }
@@ -122,7 +152,13 @@ function DashboardView() {
   return (
     <section className="consultor-dashboard-page">
       <header className="consultor-dashboard-hero">
-        <div className="consultor-dashboard-hero-overlay" aria-hidden="true" />
+        <div className="consultor-dashboard-hero-art" aria-hidden="true">
+          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-5" />
+          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-4" />
+          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-3" />
+          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-2" />
+          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-1" />
+        </div>
 
         <div className="consultor-dashboard-hero-copy">
           <h1>Olá, António Portugal!</h1>
@@ -133,38 +169,19 @@ function DashboardView() {
       <section className="consultor-dashboard-summary" aria-label="Métricas">
         {metricCards.map((metric) => (
           <article key={metric.title} className={`consultor-dashboard-summary-card ${metric.widthClass}`}>
-            <img src={metric.icon} alt="" aria-hidden="true" className="consultor-dashboard-summary-icon" />
-
             <div className="consultor-dashboard-summary-copy">
               <h2>{metric.title}</h2>
               <p>{metric.value}</p>
             </div>
+            <HiOutlineArrowPath className="consultor-dashboard-summary-icon" aria-hidden="true" />
           </article>
         ))}
       </section>
 
       <section className="consultor-dashboard-alerts" aria-label="Alertas">
-        <DashboardAction
-          type="is-message"
-          icon="https://www.figma.com/api/mcp/asset/705c415b-1097-4e95-a2b7-0ef4fd0115bc"
-          title="Tem mensagens por ler"
-          subtitle="Acede agora às notificações, para ver mais"
-        />
-
-        <DashboardAction
-          type="is-objective"
-          icon="https://www.figma.com/api/mcp/asset/ab6ae11b-d4be-4e95-9473-111119786903"
-          title="Objetivo Por Completar"
-          subtitle="3 dias até o próximo objetivo expirar"
-        />
-
-        <DashboardAction
-          type="is-points"
-          icon="https://www.figma.com/api/mcp/asset/c6080d40-1dd3-42d1-a061-18034566db9c"
-          title="Pontuação total"
-          subtitle="Não pares por aqui, candidata-te a mais badges"
-          value="550"
-        />
+        {alertCards.map((alert) => (
+          <AlertCard key={alert.type} {...alert} />
+        ))}
       </section>
 
       <section className="consultor-dashboard-bottom-grid" aria-label="Badges">
@@ -174,8 +191,8 @@ function DashboardView() {
           </header>
 
           <div className="consultor-dashboard-card-body">
-            {recommendedBadges.map((badge) => (
-              <BadgeRow key={`${badge.name}-${badge.subtitle}`} badge={badge} />
+            {recommendedBadges.map((badge, i) => (
+              <BadgeRow key={i} badge={badge} />
             ))}
           </div>
         </article>
@@ -183,12 +200,12 @@ function DashboardView() {
         <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
           <header className="consultor-dashboard-card-header consultor-dashboard-card-header--with-action">
             <h2>Os meus badges</h2>
-            <span className="consultor-dashboard-card-chevron">›</span>
+            <HiOutlineChevronRight className="consultor-dashboard-card-chevron" aria-hidden="true" />
           </header>
 
           <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
-            {myBadges.map((badge) => (
-              <BadgeRow key={`${badge.name}-${badge.status}`} badge={badge} isLarge />
+            {myBadges.map((badge, i) => (
+              <BadgeRow key={i} badge={badge} isLarge />
             ))}
           </div>
         </article>

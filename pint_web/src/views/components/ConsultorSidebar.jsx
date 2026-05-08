@@ -15,7 +15,16 @@ import {
 } from 'react-icons/hi2'
 import './ConsultorSidebar.css'
 
-const softinsaLogo = 'https://www.figma.com/api/mcp/asset/fe338133-f0f4-4325-91ea-9c78fd1547c2'
+function SoftinsaLogo() {
+  return (
+    <svg viewBox="0 0 184 49" xmlns="http://www.w3.org/2000/svg" className="consultor-sidebar-logo-image" aria-label="Softinsa">
+      <rect width="184" height="49" rx="24.5" fill="white" />
+      <text x="92" y="32" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontSize="18" fontWeight="700" letterSpacing="2" fill="#39639c">
+        SOFTINSA
+      </text>
+    </svg>
+  )
+}
 
 const storageKey = 'consultor-sidebar-collapsed'
 
@@ -144,9 +153,15 @@ function ConsultorSidebar() {
         </button>
 
         <div className="consultor-sidebar-header">
-          <div className="consultor-sidebar-logo-pill" aria-label="Softinsa">
-            <img src={softinsaLogo} alt="Softinsa" className="consultor-sidebar-logo-image" />
-          </div>
+          {!isCollapsed ? (
+            <div className="consultor-sidebar-logo-pill">
+              <SoftinsaLogo />
+            </div>
+          ) : (
+            <div className="consultor-sidebar-logo-icon" aria-label="Softinsa">
+              <span>S</span>
+            </div>
+          )}
         </div>
 
         <div className="consultor-sidebar-top-line" />

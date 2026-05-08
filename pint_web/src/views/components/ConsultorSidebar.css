@@ -46,13 +46,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .consultor-sidebar-logo-image {
   width: 184px;
   height: 49px;
-  object-fit: contain;
   display: block;
+}
+
+.consultor-sidebar-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #39639c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .consultor-sidebar-top-line {
