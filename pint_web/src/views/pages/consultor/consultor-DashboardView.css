@@ -4,31 +4,74 @@
   color: #232d42;
 }
 
+/* ── HERO ──────────────────────────────────────────────── */
 .consultor-dashboard-hero {
   position: relative;
-  min-height: 155px;
+  height: 155px;
   margin: 0 -24px 24px;
-  padding: 35px 50px;
-  border-radius: 0 0 16px 16px;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, #3b8aff 0%, #1e69d9 50%, #0f58c6 75%, #0048b2 100%);
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
 }
 
-.consultor-dashboard-hero-overlay {
+.consultor-dashboard-hero-art {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 18% 45%, rgba(255, 255, 255, 0.1) 0 12%, transparent 13%),
-    radial-gradient(circle at 72% 10%, rgba(255, 255, 255, 0.08) 0 16%, transparent 17%),
-    radial-gradient(circle at 90% 50%, rgba(255, 255, 255, 0.05) 0 20%, transparent 21%);
-  opacity: 0.9;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Círculos brancos com posições exactas do Figma — opacity 0.75 + inner shadow azul-escuro */
+.consultor-dashboard-hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
+  transform: rotate(90deg);
+}
+
+.consultor-dashboard-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-dashboard-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-dashboard-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-dashboard-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-dashboard-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
 }
 
 .consultor-dashboard-hero-copy {
-  position: relative;
+  position: absolute;
+  left: 50px;
+  top: 35px;
   z-index: 1;
-  max-width: 600px;
-  color: #ffffff;
 }
 
 .consultor-dashboard-hero-copy h1 {
@@ -36,6 +79,7 @@
   font-size: clamp(28px, 2.8vw, 40px);
   font-weight: 700;
   line-height: 1;
+  color: #ffffff;
 }
 
 .consultor-dashboard-hero-copy p {
@@ -43,8 +87,10 @@
   font-size: clamp(18px, 1.6vw, 23px);
   font-weight: 500;
   line-height: 1.3;
+  color: rgba(255, 255, 255, 0.85);
 }
 
+/* ── METRIC SUMMARY CARDS ──────────────────────────────── */
 .consultor-dashboard-summary {
   display: flex;
   justify-content: center;
@@ -53,13 +99,14 @@
 }
 
 .consultor-dashboard-summary-card {
-  position: relative;
   height: 117px;
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
 }
 
 .consultor-dashboard-summary-card.is-area {
@@ -74,17 +121,7 @@
   width: 322px;
 }
 
-.consultor-dashboard-summary-icon {
-  position: absolute;
-  left: 17px;
-  top: 24px;
-  width: 68px;
-  height: 68px;
-  object-fit: contain;
-}
-
 .consultor-dashboard-summary-copy {
-  margin-left: 116px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -105,6 +142,14 @@
   color: #8a92a6;
 }
 
+.consultor-dashboard-summary-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+/* ── ALERT CARDS ───────────────────────────────────────── */
 .consultor-dashboard-alerts {
   display: flex;
   flex-direction: column;
@@ -123,11 +168,33 @@
   gap: 20px;
 }
 
-.consultor-dashboard-metric-icon {
-  width: 70px;
-  height: 70px;
+.consultor-dashboard-metric-icon-tile {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
   flex-shrink: 0;
-  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consultor-dashboard-metric-icon {
+  width: 32px;
+  height: 32px;
+  color: #ffffff;
+}
+
+/* cores exactas extraídas do Figma */
+.consultor-dashboard-metric.is-message .consultor-dashboard-metric-icon-tile {
+  background: #3699ff;
+}
+
+.consultor-dashboard-metric.is-objective .consultor-dashboard-metric-icon-tile {
+  background: rgba(192, 50, 33, 0.8);
+}
+
+.consultor-dashboard-metric.is-points .consultor-dashboard-metric-icon-tile {
+  background: #39639c;
 }
 
 .consultor-dashboard-metric-copy {
@@ -140,6 +207,7 @@
   font-size: 28px;
   font-weight: 700;
   line-height: 1.3;
+  color: #232d42;
 }
 
 .consultor-dashboard-metric-copy p {
@@ -150,6 +218,11 @@
   color: #8a92a6;
 }
 
+.consultor-dashboard-metric-highlight {
+  color: #232d42;
+  font-weight: 500;
+}
+
 .consultor-dashboard-metric-value {
   flex-shrink: 0;
   color: #39639c;
@@ -158,6 +231,14 @@
   line-height: 1;
 }
 
+.consultor-dashboard-metric-chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+/* ── BOTTOM GRID ───────────────────────────────────────── */
 .consultor-dashboard-bottom-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 455px;
@@ -170,6 +251,7 @@
   background: #ffffff;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 24px;
+  border-radius: 8px;
 }
 
 .consultor-dashboard-card-header {
@@ -191,9 +273,10 @@
 }
 
 .consultor-dashboard-card-chevron {
-  font-size: 40px;
-  line-height: 1;
+  width: 24px;
+  height: 24px;
   color: #8a92a6;
+  flex-shrink: 0;
 }
 
 .consultor-dashboard-card-body {
@@ -206,6 +289,7 @@
   gap: 18px;
 }
 
+/* ── BADGE ROWS ────────────────────────────────────────── */
 .consultor-dashboard-badge-row {
   display: flex;
   align-items: center;
@@ -258,52 +342,49 @@
   line-height: 1.75;
 }
 
-.consultor-dashboard-badge-copy--my-badge p {
+.consultor-dashboard-badge-status {
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 16px;
   line-height: 1.75;
-}
-
-.consultor-dashboard-badge-action {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #8a92a6;
-  font-size: 20px;
+  font-weight: 400;
 }
 
 .consultor-dashboard-badge-status-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
-.consultor-dashboard-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 0 2px;
-  font-size: 12px;
-  color: #232d42;
+.consultor-dashboard-badge-status.is-expired {
+  color: #f59e0b;
 }
 
-.consultor-dashboard-footer-links {
-  display: flex;
-  gap: 24px;
-  color: #232d42;
+.consultor-dashboard-badge-status.is-returned {
+  color: #8a92a6;
 }
 
-.consultor-dashboard-footer p {
-  margin: 0;
+.consultor-dashboard-badge-status.is-analysis {
+  color: #3b82f6;
 }
 
+.consultor-dashboard-badge-status.is-accepted {
+  color: #10b981;
+}
+
+.consultor-dashboard-badge-status.is-refused {
+  color: #ef4444;
+}
+
+.consultor-dashboard-badge-action {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width: 1280px) {
   .consultor-dashboard-summary {
     gap: 24px;
@@ -327,7 +408,6 @@
 
   .consultor-dashboard-hero {
     margin-inline: -16px;
-    padding-inline: 24px;
   }
 
   .consultor-dashboard-summary {

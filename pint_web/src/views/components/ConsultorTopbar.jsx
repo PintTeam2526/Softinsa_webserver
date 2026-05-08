@@ -1,12 +1,13 @@
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTopbarController } from '../../controllers/topbar.controller'
+import avatarImg from '../../assets/images/avatars/01.png'
 import './ConsultorTopbar.css'
 
-const sllTopbarProfile = {
-  name: 'Austin Robertson',
-  role: 'Service Line Lider',
-  avatar: 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856',
+const consultorTopbarProfile = {
+  name: 'António Portugal',
+  role: 'Consultor · 550 pontos',
+  avatar: avatarImg,
 }
 
 function SearchIcon() {
@@ -227,13 +228,13 @@ const ConsultorTopbar = memo(() => {
         <Link to="/consultor/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
           <div className="softinsa-shell-profile-wrap">
             <img
-              src={sllTopbarProfile.avatar}
-              alt={sllTopbarProfile.name}
+              src={consultorTopbarProfile.avatar}
+              alt={consultorTopbarProfile.name}
               className="softinsa-shell-profile-avatar"
             />
             <span className="softinsa-shell-profile-meta">
-              <span className="softinsa-shell-profile-name">{sllTopbarProfile.name}</span>
-              <span className="softinsa-shell-profile-role">{sllTopbarProfile.role}</span>
+              <span className="softinsa-shell-profile-name">{consultorTopbarProfile.name}</span>
+              <span className="softinsa-shell-profile-role">{consultorTopbarProfile.role}</span>
             </span>
           </div>
         </Link>
