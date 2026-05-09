@@ -84,18 +84,18 @@ const badgeSets = {
   ],
 }
 
-function BadgeCard({ icon, title, level, onClick }) {
+function BadgeCard({ icon, title, level, onClick, cp }) {
   return (
-    <button type="button" className="tm-badges-card" onClick={onClick}>
-      <div className="tm-badges-card-icon">
+    <button type="button" className={`${cp}-card`} onClick={onClick}>
+      <div className={`${cp}-card-icon`}>
         <img alt="" src={icon} />
       </div>
 
-      <div className="tm-badges-card-copy">
-        <div className="tm-badges-card-title">{title}</div>
-        <div className="tm-badges-card-level">{level}</div>
-        <div className="tm-badges-card-points">
-          <span className="tm-badges-card-points-icon" aria-hidden="true" />
+      <div className={`${cp}-card-copy`}>
+        <div className={`${cp}-card-title`}>{title}</div>
+        <div className={`${cp}-card-level`}>{level}</div>
+        <div className={`${cp}-card-points`}>
+          <span className={`${cp}-card-points-icon`} aria-hidden="true" />
           <span>550 Pontos</span>
         </div>
       </div>
@@ -103,45 +103,51 @@ function BadgeCard({ icon, title, level, onClick }) {
   )
 }
 
-function BadgeMenuItem({ title, detail, icon, active = false, onClick }) {
+function BadgeMenuItem({ title, detail, icon, active = false, onClick, cp }) {
   return (
-    <button type="button" className={`tm-badges-menu-item${active ? ' is-active' : ''}`} onClick={onClick}>
-      <div className="tm-badges-menu-item-main">
-        <div className="tm-badges-menu-icon">
+    <button type="button" className={`${cp}-menu-item${active ? ' is-active' : ''}`} onClick={onClick}>
+      <div className={`${cp}-menu-item-main`}>
+        <div className={`${cp}-menu-icon`}>
           <img alt="" src={icon} />
         </div>
 
-        <div className="tm-badges-menu-copy">
-          <div className="tm-badges-menu-title">{title}</div>
-          <div className="tm-badges-menu-detail">{detail}</div>
+        <div className={`${cp}-menu-copy`}>
+          <div className={`${cp}-menu-title`}>{title}</div>
+          <div className={`${cp}-menu-detail`}>{detail}</div>
         </div>
       </div>
 
-      <div className={`tm-badges-menu-chevron${active ? ' is-open' : ''}`} aria-hidden="true">
+      <div className={`${cp}-menu-chevron${active ? ' is-open' : ''}`} aria-hidden="true">
         <img alt="" src={imgChevron} />
       </div>
     </button>
   )
 }
 
-function ExportFormatOption({ label, value, selected, onSelect }) {
+function ExportFormatOption({ label, value, selected, onSelect, cp }) {
   return (
-    <button type="button" className="tm-badges-export-option" onClick={() => onSelect(value)} aria-pressed={selected}>
-      <span className={`tm-badges-export-option-toggle${selected ? ' is-selected' : ''}`} aria-hidden="true">
-        {selected ? <span className="tm-badges-export-option-dot" /> : null}
+    <button type="button" className={`${cp}-export-option`} onClick={() => onSelect(value)} aria-pressed={selected}>
+      <span className={`${cp}-export-option-toggle${selected ? ' is-selected' : ''}`} aria-hidden="true">
+        {selected ? <span className={`${cp}-export-option-dot`} /> : null}
       </span>
       <span>{label}</span>
     </button>
   )
 }
 
-function TalentManagerBadgesView() {
+function TalentManagerBadgesView({
+  heroTitle = 'Badges',
+  heroSubtitle = '80 badges disponíveis',
+  showExportButton = true,
+  classPrefix = 'tm-badges',
+} = {}) {
   const [showExport, setShowExport] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState(null)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
   const [activeTab, setActiveTab] = useState('Jornada Técnica')
   const [openSection, setOpenSection] = useState('hybrid')
 
+  const cp = classPrefix
   const tabs = ['Jornada Técnica', 'Power Skills']
 
   const exportRows = Object.entries(badgeSets).flatMap(([areaName, groups]) =>
@@ -194,30 +200,30 @@ function TalentManagerBadgesView() {
   }
 
   return (
-    <div className="tm-badges-page">
-      <section className="tm-badges-banner">
-        <div className="tm-badges-banner-art" aria-hidden="true">
-          <img className="tm-badges-banner-circle tm-badges-banner-circle-5" src={imgEllipse5} alt="" />
-          <img className="tm-badges-banner-circle tm-badges-banner-circle-4" src={imgEllipse4} alt="" />
-          <img className="tm-badges-banner-circle tm-badges-banner-circle-3" src={imgEllipse3} alt="" />
-          <img className="tm-badges-banner-circle tm-badges-banner-circle-2" src={imgEllipse2} alt="" />
-          <img className="tm-badges-banner-circle tm-badges-banner-circle-1" src={imgEllipse1} alt="" />
+    <div className={`${cp}-page`}>
+      <section className={`${cp}-banner`}>
+        <div className={`${cp}-banner-art`} aria-hidden="true">
+          <img className={`${cp}-banner-circle ${cp}-banner-circle-5`} src={imgEllipse5} alt="" />
+          <img className={`${cp}-banner-circle ${cp}-banner-circle-4`} src={imgEllipse4} alt="" />
+          <img className={`${cp}-banner-circle ${cp}-banner-circle-3`} src={imgEllipse3} alt="" />
+          <img className={`${cp}-banner-circle ${cp}-banner-circle-2`} src={imgEllipse2} alt="" />
+          <img className={`${cp}-banner-circle ${cp}-banner-circle-1`} src={imgEllipse1} alt="" />
         </div>
 
-        <div className="tm-badges-banner-copy">
-          <h1>Badges</h1>
-          <p>80 badges disponíveis</p>
+        <div className={`${cp}-banner-copy`}>
+          <h1>{heroTitle}</h1>
+          <p>{heroSubtitle}</p>
         </div>
       </section>
 
-      <section className="tm-badges-content" aria-label="Badges">
-        <div className="tm-badges-toolbar">
-          <div className="tm-badges-tabs" role="tablist" aria-label="Categorias de badges">
+      <section className={`${cp}-content`} aria-label="Badges">
+        <div className={`${cp}-toolbar`}>
+          <div className={`${cp}-tabs`} role="tablist" aria-label="Categorias de badges">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
-                className={`tm-badges-tab${activeTab === tab ? ' is-active' : ''}`}
+                className={`${cp}-tab${activeTab === tab ? ' is-active' : ''}`}
                 role="tab"
                 aria-selected={activeTab === tab}
                 onClick={() => setActiveTab(tab)}
@@ -227,37 +233,39 @@ function TalentManagerBadgesView() {
             ))}
           </div>
 
-          <button type="button" className="tm-badges-export-btn" onClick={() => setShowExport(true)}>
-            <FaUpload aria-hidden="true" className="tm-badges-export-icon" />
-            <span>Exportar</span>
-          </button>
+          {showExportButton ? (
+            <button type="button" className={`${cp}-export-btn`} onClick={() => setShowExport(true)}>
+              <FaUpload aria-hidden="true" className={`${cp}-export-icon`} />
+              <span>Exportar</span>
+            </button>
+          ) : null}
         </div>
 
         {showExport ? (
-          <div className="tm-badges-export-backdrop" role="presentation" onClick={closeExportModal}>
-            <div className="tm-badges-export-modal" role="dialog" aria-modal="true" aria-label="Exportar badges" onClick={(event) => event.stopPropagation()}>
-              <div className="tm-badges-export-header">
+          <div className={`${cp}-export-backdrop`} role="presentation" onClick={closeExportModal}>
+            <div className={`${cp}-export-modal`} role="dialog" aria-modal="true" aria-label="Exportar badges" onClick={(event) => event.stopPropagation()}>
+              <div className={`${cp}-export-header`}>
                 <h2>Exportar</h2>
-                <button type="button" className="tm-badges-export-close" onClick={closeExportModal} aria-label="Fechar exportação">
+                <button type="button" className={`${cp}-export-close`} onClick={closeExportModal} aria-label="Fechar exportação">
                   <FaTimes aria-hidden="true" />
                 </button>
               </div>
 
-              <div className="tm-badges-export-body">
+              <div className={`${cp}-export-body`}>
                 <h3>Formato de exportação</h3>
                 <p>Escolha o formato que pretende descarregar.</p>
 
-                <div className="tm-badges-export-options">
-                  <ExportFormatOption label="Excel (.xlsx)" value="xlsx" selected={selectedExportFormat === 'xlsx'} onSelect={setSelectedExportFormat} />
-                  <ExportFormatOption label="PDF (.pdf)" value="pdf" selected={selectedExportFormat === 'pdf'} onSelect={setSelectedExportFormat} />
+                <div className={`${cp}-export-options`}>
+                  <ExportFormatOption cp={cp} label="Excel (.xlsx)" value="xlsx" selected={selectedExportFormat === 'xlsx'} onSelect={setSelectedExportFormat} />
+                  <ExportFormatOption cp={cp} label="PDF (.pdf)" value="pdf" selected={selectedExportFormat === 'pdf'} onSelect={setSelectedExportFormat} />
                 </div>
               </div>
 
-              <div className="tm-badges-export-actions">
-                <button type="button" className="tm-badges-export-cancel" onClick={closeExportModal}>
+              <div className={`${cp}-export-actions`}>
+                <button type="button" className={`${cp}-export-cancel`} onClick={closeExportModal}>
                   Cancelar
                 </button>
-                <button type="button" className="tm-badges-export-confirm" onClick={handleExport}>
+                <button type="button" className={`${cp}-export-confirm`} onClick={handleExport}>
                   Exportar
                 </button>
               </div>
@@ -265,34 +273,35 @@ function TalentManagerBadgesView() {
           </div>
         ) : null}
 
-        <div className="tm-badges-areas-card">
-          <div className="tm-badges-area-section is-open">
-            <button type="button" className="tm-badges-area-trigger" onClick={() => toggleSection('hybrid')} aria-expanded={openSection === 'hybrid'}>
-              <div className="tm-badges-area-trigger-main">
-                <div className="tm-badges-area-icon">
+        <div className={`${cp}-areas-card`}>
+          <div className={`${cp}-area-section is-open`}>
+            <button type="button" className={`${cp}-area-trigger`} onClick={() => toggleSection('hybrid')} aria-expanded={openSection === 'hybrid'}>
+              <div className={`${cp}-area-trigger-main`}>
+                <div className={`${cp}-area-icon`}>
                   <img alt="" src={imgIcon} />
                 </div>
 
-                <div className="tm-badges-area-trigger-copy">
+                <div className={`${cp}-area-trigger-copy`}>
                   <strong>Hybrid Cloud</strong>
                   <span>3 áreas • 15 badges</span>
                 </div>
               </div>
 
-              <div className={`tm-badges-area-chevron${openSection === 'hybrid' ? ' is-open' : ''}`} aria-hidden="true">
+              <div className={`${cp}-area-chevron${openSection === 'hybrid' ? ' is-open' : ''}`} aria-hidden="true">
                 <img alt="" src={imgChevron} />
               </div>
             </button>
 
             {openSection === 'hybrid' ? (
-              <div className="tm-badges-area-body">
+              <div className={`${cp}-area-body`}>
                 {badgeSets.hybrid.map((section) => (
-                  <div key={section.title} className="tm-badges-badge-group">
-                    <div className="tm-badges-badge-group-title">{section.title}</div>
-                    <div className="tm-badges-badge-grid">
+                  <div key={section.title} className={`${cp}-badge-group`}>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
                           key={`${section.title}-${badge.title}-${badge.level}`}
+                          cp={cp}
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
@@ -306,10 +315,11 @@ function TalentManagerBadgesView() {
             ) : null}
           </div>
 
-          <div className="tm-badges-divider" aria-hidden="true" />
+          <div className={`${cp}-divider`} aria-hidden="true" />
 
-          <div className="tm-badges-area-section">
+          <div className={`${cp}-area-section`}>
             <BadgeMenuItem
+              cp={cp}
               title="Application Ops."
               detail="2 áreas • 12 badges"
               icon={imgCategory}
@@ -318,14 +328,15 @@ function TalentManagerBadgesView() {
             />
 
             {openSection === 'applicationOps' ? (
-              <div className="tm-badges-area-body">
+              <div className={`${cp}-area-body`}>
                 {badgeSets.applicationOps.map((section) => (
-                  <div key={section.title} className="tm-badges-badge-group">
-                    <div className="tm-badges-badge-group-title">{section.title}</div>
-                    <div className="tm-badges-badge-grid">
+                  <div key={section.title} className={`${cp}-badge-group`}>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
                           key={`${section.title}-${badge.title}-${badge.level}`}
+                          cp={cp}
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
@@ -339,10 +350,11 @@ function TalentManagerBadgesView() {
             ) : null}
           </div>
 
-          <div className="tm-badges-divider" aria-hidden="true" />
+          <div className={`${cp}-divider`} aria-hidden="true" />
 
-          <div className="tm-badges-area-section">
+          <div className={`${cp}-area-section`}>
             <BadgeMenuItem
+              cp={cp}
               title="Sourc. & Talent Manag."
               detail="1 áreas • 6 badges"
               icon={imgGroup2}
@@ -351,14 +363,15 @@ function TalentManagerBadgesView() {
             />
 
             {openSection === 'sourcTalentManag' ? (
-              <div className="tm-badges-area-body">
+              <div className={`${cp}-area-body`}>
                 {badgeSets.sourcTalentManag.map((section) => (
-                  <div key={section.title} className="tm-badges-badge-group">
-                    <div className="tm-badges-badge-group-title">{section.title}</div>
-                    <div className="tm-badges-badge-grid">
+                  <div key={section.title} className={`${cp}-badge-group`}>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
                           key={`${section.title}-${badge.title}-${badge.level}`}
+                          cp={cp}
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
@@ -373,52 +386,52 @@ function TalentManagerBadgesView() {
           </div>
 
           {selectedBadge ? (
-            <div className="tm-badges-detail-backdrop" role="presentation" onClick={closeBadgeModal}>
-              <div className="tm-badges-detail-modal" role="dialog" aria-modal="true" aria-label="Detalhes do badge" onClick={(event) => event.stopPropagation()}>
-                <div className="tm-badges-detail-top">
-                  <div className="tm-badges-detail-badge-wrap">
-                    <img alt="" src={selectedBadge.icon || imgModalBadge} className="tm-badges-detail-badge" />
+            <div className={`${cp}-detail-backdrop`} role="presentation" onClick={closeBadgeModal}>
+              <div className={`${cp}-detail-modal`} role="dialog" aria-modal="true" aria-label="Detalhes do badge" onClick={(event) => event.stopPropagation()}>
+                <div className={`${cp}-detail-top`}>
+                  <div className={`${cp}-detail-badge-wrap`}>
+                    <img alt="" src={selectedBadge.icon || imgModalBadge} className={`${cp}-detail-badge`} />
                   </div>
 
-                  <button type="button" className="tm-badges-detail-close" onClick={closeBadgeModal} aria-label="Fechar detalhes">
+                  <button type="button" className={`${cp}-detail-close`} onClick={closeBadgeModal} aria-label="Fechar detalhes">
                     <FaTimes aria-hidden="true" />
                   </button>
                 </div>
 
-                <div className="tm-badges-detail-copy">
-                  <div className="tm-badges-detail-title">{selectedBadge.title}</div>
-                  <div className="tm-badges-detail-points">
+                <div className={`${cp}-detail-copy`}>
+                  <div className={`${cp}-detail-title`}>{selectedBadge.title}</div>
+                  <div className={`${cp}-detail-points`}>
                     <img alt="" src={imgReqPoints} />
                     <span>100 Pontos</span>
                   </div>
-                  <div className="tm-badges-detail-special">
+                  <div className={`${cp}-detail-special`}>
                     <img alt="" src={imgReqSpecial} />
                     <span>Badge Especial</span>
                   </div>
                 </div>
 
-                <div className="tm-badges-detail-section">
+                <div className={`${cp}-detail-section`}>
                   <h3>Descrição:</h3>
                   <p>Badge de referência com os requisitos necessários para conquista.</p>
                 </div>
 
-                <div className="tm-badges-detail-section">
+                <div className={`${cp}-detail-section`}>
                   <h3>Requisitos para o conquistar:</h3>
-                  <div className="tm-badges-detail-req-list">
-                    <div className="tm-badges-detail-req-item">
-                      <div className="tm-badges-detail-req-text">
+                  <div className={`${cp}-detail-req-list`}>
+                    <div className={`${cp}-detail-req-item`}>
+                      <div className={`${cp}-detail-req-text`}>
                         <strong>Requisito 1</strong>
                         <p>Criar um relatório avançado que contenha visualizações interativas</p>
                       </div>
                     </div>
-                    <div className="tm-badges-detail-req-item">
-                      <div className="tm-badges-detail-req-text">
+                    <div className={`${cp}-detail-req-item`}>
+                      <div className={`${cp}-detail-req-text`}>
                         <strong>Requisito 2</strong>
                         <p>Criar um relatório avançado que contenha visualizações interativas</p>
                       </div>
                     </div>
-                    <div className="tm-badges-detail-req-item">
-                      <div className="tm-badges-detail-req-text">
+                    <div className={`${cp}-detail-req-item`}>
+                      <div className={`${cp}-detail-req-text`}>
                         <strong>Requisito 3</strong>
                         <p>Criar um relatório avançado que contenha visualizações interativas</p>
                       </div>
