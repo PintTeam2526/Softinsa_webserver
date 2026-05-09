@@ -38,20 +38,19 @@
 }
 
 .consultor-sidebar-logo-pill {
-  width: min(184px, 100%);
-  height: 49px;
-  border-radius: 50px;
-  background: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: min(204px, 100%);
+  height: 69px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .consultor-sidebar-logo-image {
-  width: 184px;
-  height: 49px;
+  width: 100%;
+  max-width: 204px;
+  height: auto;
   display: block;
 }
 
@@ -166,22 +165,33 @@
 }
 
 .consultor-sidebar-shell.is-collapsed .consultor-sidebar-header {
+  height: auto;
   padding: 16px 0 8px;
 }
 
 .consultor-sidebar-shell.is-collapsed .consultor-sidebar-logo-pill,
 .consultor-sidebar-shell.is-collapsed .consultor-sidebar-title,
-.consultor-sidebar-shell.is-collapsed .consultor-sidebar-divider {
+.consultor-sidebar-shell.is-collapsed .consultor-sidebar-divider,
+.consultor-sidebar-shell.is-collapsed .consultor-sidebar-top-line {
   display: none;
 }
 
+.consultor-sidebar-shell.is-collapsed .consultor-sidebar-sections {
+  padding-top: 12px;
+  gap: 12px;
+}
+
 .consultor-sidebar-shell.is-collapsed .consultor-sidebar-items {
-  padding: 0 8px;
+  padding: 0;
+  align-items: center;
 }
 
 .consultor-sidebar-shell.is-collapsed .consultor-sidebar-item {
+  width: 44px;
+  min-height: 44px;
+  padding: 10px;
   justify-content: center;
-  padding: 8px;
+  border-radius: 8px;
 }
 
 .consultor-sidebar-toggle {
@@ -199,7 +209,7 @@
   justify-content: center;
   padding: 0;
   cursor: pointer;
-  z-index: 40;
+  z-index: 50;
   color: #ffffff;
 }
 

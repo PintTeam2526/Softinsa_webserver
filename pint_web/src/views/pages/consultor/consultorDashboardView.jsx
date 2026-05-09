@@ -1,15 +1,12 @@
 import {
-  HiOutlineArrowPath,
-  HiOutlineBell,
-  HiOutlineFlag,
-  HiOutlineTrophy,
   HiOutlineCalendarDays,
-  HiOutlineArrowUturnLeft,
-  HiOutlineInformationCircle,
+  HiOutlineDocumentText,
+  HiOutlineClock,
   HiOutlineCheckCircle,
   HiOutlineXCircle,
   HiOutlineChevronRight,
 } from 'react-icons/hi2'
+import { HiBell, HiFlag, HiStar } from 'react-icons/hi2'
 import './consultor-DashboardView.css'
 import avtar1 from '../../../assets/images/avatars/avtar_1.png'
 import avtar2 from '../../../assets/images/avatars/avtar_2.png'
@@ -19,28 +16,28 @@ import avtar5 from '../../../assets/images/avatars/avtar_5.png'
 
 
 const metricCards = [
-  { title: 'Área', value: '50%', widthClass: 'is-area' },
-  { title: 'Service Line', value: '40%', widthClass: 'is-service-line' },
-  { title: 'Learning Path', value: '25%', widthClass: 'is-learning-path' },
+  { title: 'Área',          percent: 50, widthClass: 'is-area' },
+  { title: 'Service Line',  percent: 40, widthClass: 'is-service-line' },
+  { title: 'Learning Path', percent: 25, widthClass: 'is-learning-path' },
 ]
 
 const alertCards = [
   {
     type: 'is-message',
-    Icon: HiOutlineBell,
+    Icon: HiBell,
     title: 'Tem mensagens por ler',
     subtitle: 'Acede agora às notificações, para ver mais',
   },
   {
     type: 'is-objective',
-    Icon: HiOutlineFlag,
+    Icon: HiFlag,
     title: 'Objetivo Por Completar',
     subtitleHighlight: '3 dias',
     subtitle: 'até o próximo objetivo expirar',
   },
   {
     type: 'is-points',
-    Icon: HiOutlineTrophy,
+    Icon: HiStar,
     title: 'Pontuação total',
     subtitle: 'Não pares por aqui, candidata-te a mais badges',
     value: '550',
@@ -66,14 +63,14 @@ const myBadges = [
     image: avtar2,
     name: 'Team Lider Beginner',
     status: 'Devolvido',
-    Icon: HiOutlineArrowUturnLeft,
+    Icon: HiOutlineDocumentText,
     statusClass: 'is-returned',
   },
   {
     image: avtar3,
     name: 'DevOps Intermediate',
     status: 'Em Análise',
-    Icon: HiOutlineInformationCircle,
+    Icon: HiOutlineClock,
     statusClass: 'is-analysis',
   },
   {
@@ -91,6 +88,46 @@ const myBadges = [
     statusClass: 'is-refused',
   },
 ]
+
+function DonutChart({ percent }) {
+  const size = 68
+  const stroke = 8
+  const radius = (size - stroke) / 2
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference * (1 - Math.min(Math.max(percent, 0), 100) / 100)
+
+  return (
+    <svg
+      className="consultor-dashboard-summary-donut"
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      role="img"
+      aria-label={`${percent}% completo`}
+    >
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="#e9ecef"
+        strokeWidth={stroke}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke="#39639c"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+    </svg>
+  )
+}
 
 function AlertCard({ type, Icon, title, subtitle, subtitleHighlight, value }) {
   return (
@@ -171,9 +208,9 @@ function DashboardView() {
           <article key={metric.title} className={`consultor-dashboard-summary-card ${metric.widthClass}`}>
             <div className="consultor-dashboard-summary-copy">
               <h2>{metric.title}</h2>
-              <p>{metric.value}</p>
+              <p>{metric.percent}%</p>
             </div>
-            <HiOutlineArrowPath className="consultor-dashboard-summary-icon" aria-hidden="true" />
+            <DonutChart percent={metric.percent} />
           </article>
         ))}
       </section>

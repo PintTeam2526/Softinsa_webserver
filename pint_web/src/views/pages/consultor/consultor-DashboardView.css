@@ -149,6 +149,13 @@
   color: #8a92a6;
 }
 
+.consultor-dashboard-summary-donut {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  display: block;
+}
+
 /* ── ALERT CARDS ───────────────────────────────────────── */
 .consultor-dashboard-alerts {
   display: flex;
