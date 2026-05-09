@@ -20,7 +20,11 @@ import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
 import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
-import ConsultorPedidosView from './views/pages/consultor/consultorPedidosView'
+import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
+import ConsultorObjetivosView from './views/pages/consultor/ConsultorObjetivosView'
+import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistasView'
+import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'
+import ConsultorListaBadgesView from './views/pages/consultor/ConsultorListaBadgesView'
 import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 function App() {
@@ -58,14 +62,14 @@ function App() {
         <Route path="learning-path/jornada-tecnica" element={<ConsultorDashboardView />} />
         <Route path="pedidos" element={<ConsultorPedidosView />} />
         <Route path="badges/pedidos" element={<ConsultorPedidosView />} />
-        <Route path="listas-badges" element={<ConsultorDashboardView />} />
-        <Route path="badges/listas-badges" element={<ConsultorDashboardView />} />
-        <Route path="objetivos" element={<ConsultorDashboardView />} />
-        <Route path="badges/objetivos" element={<ConsultorDashboardView />} />
-        <Route path="conquistas" element={<ConsultorDashboardView />} />
-        <Route path="badges/conquistas" element={<ConsultorDashboardView />} />
-        <Route path="outras-areas" element={<ConsultorDashboardView />} />
-        <Route path="badges/outras-areas" element={<ConsultorDashboardView />} />
+        <Route path="listas-badges" element={<ConsultorListaBadgesView />} />
+        <Route path="badges/listas-badges" element={<ConsultorListaBadgesView />} />
+        <Route path="objetivos" element={<ConsultorObjetivosView />} />
+        <Route path="badges/objetivos" element={<ConsultorObjetivosView />} />
+        <Route path="conquistas" element={<ConsultorConquistasView />} />
+        <Route path="badges/conquistas" element={<ConsultorConquistasView />} />
+        <Route path="outras-areas" element={<ConsultorOutrasAreasView />} />
+        <Route path="badges/outras-areas" element={<ConsultorOutrasAreasView />} />
         <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
         <Route path="badges" element={<ConsultorDashboardView />} />
         <Route path="mensagens" element={<ConsultorDashboardView />} />
