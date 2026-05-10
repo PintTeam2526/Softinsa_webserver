@@ -235,29 +235,31 @@
   margin-top: 1px;
   position: relative;
   border-radius: 0 0 16px 16px;
-  min-height: 120px;
-  height: 120px;
+  min-height: 155px;
+  height: 155px;
   overflow: hidden;
   padding: 0;
   color: #ffffff;
-  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1173 155" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="0" y="0" height="100%" width="100%" fill="url(%23grad)" opacity="1"/><defs><radialGradient id="grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="10" gradientTransform="matrix(0.000015063 23.394 -42.562 0.0000060493 586.5 77.5)"><stop stop-color="rgba(59,138,255,1)" offset="0"/><stop stop-color="rgba(30,105,217,1)" offset="0.5"/><stop stop-color="rgba(15,88,198,1)" offset="0.75"/><stop stop-color="rgba(0,72,178,1)" offset="1"/></radialGradient></defs></svg>');
-  background-size: cover;
-  background-repeat: no-repeat;
-  box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
+  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
 }
 
 .sll-hero-art {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .sll-hero-circle {
   position: absolute;
-  display: block;
-  max-width: none;
-  user-select: none;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
+  transform: rotate(90deg);
   pointer-events: none;
+  user-select: none;
 }
 
 .sll-hero-circle-5 {
@@ -265,8 +267,6 @@
   height: 2112.615px;
   left: -194px;
   top: -233px;
-  transform: rotate(90deg);
-  mix-blend-mode: multiply;
 }
 
 .sll-hero-circle-4 {
@@ -274,8 +274,6 @@
   height: 1635.378px;
   left: -194px;
   top: 5.62px;
-  transform: rotate(90deg);
-  mix-blend-mode: multiply;
 }
 
 .sll-hero-circle-3 {
@@ -283,35 +281,29 @@
   height: 1389.529px;
   left: -100px;
   top: 206.88px;
-  transform: rotate(90deg);
-  mix-blend-mode: multiply;
 }
 
 .sll-hero-circle-2 {
   width: 1041.243px;
   height: 1041.243px;
   left: -33.72px;
-  top: 34px;
-  transform: rotate(90deg);
-  mix-blend-mode: multiply;
+  top: 334.62px;
 }
 
 .sll-hero-circle-1 {
   width: 827.933px;
   height: 827.933px;
   left: 48.23px;
-  top: 80px;
-  transform: rotate(90deg);
-  mix-blend-mode: multiply;
+  top: 380.42px;
 }
 
 .sll-hero-copy {
   position: absolute;
   left: 50px;
-  top: 20px;
+  top: 35px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   z-index: 1;
 }
 

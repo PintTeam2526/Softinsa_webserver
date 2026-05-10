@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { FaSearch, FaUpload } from 'react-icons/fa'
+import { FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'

@@ -467,27 +467,9 @@
   color: transparent;
 }
 
-@media (max-width: 1320px) {
-  .sll-relatorios-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .sll-relatorios-charts-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
-  .sll-relatorios-page {
-    flex-direction: column;
-  }
-
   .sll-relatorios-content {
     padding: 16px 18px 20px;
-  }
-
-  .sll-relatorios-summary-grid {
-    grid-template-columns: 1fr;
   }
 
   .sll-relatorios-filters-row {
