@@ -147,6 +147,13 @@ const navigationSections = [
         icon: IconArea,
         to: '/consultor/area/lowcode',
         hasDropdown: true,
+        subItems: [
+          { text: 'Citizen Developer', to: '/consultor/area/lowcode/citizen-developer' },
+          { text: 'Low-Code Builder', to: '/consultor/area/lowcode/low-code-builder' },
+          { text: 'Application Creator', to: '/consultor/area/lowcode/application-creator' },
+          { text: 'Full-Stack Low-Code', to: '/consultor/area/lowcode/full-stack-low-code' },
+          { text: 'Elite OutSystems', to: '/consultor/area/lowcode/elite-outsystems' },
+        ],
       },
     ],
   },
@@ -158,6 +165,13 @@ const navigationSections = [
         icon: IconServiceLine,
         to: '/consultor/service-line/hybrid-cloud',
         hasDropdown: true,
+        subItems: [
+          { text: 'Cloud Practitioner', to: '/consultor/service-line/hybrid-cloud/cloud-practitioner' },
+          { text: 'Cloud Associate', to: '/consultor/service-line/hybrid-cloud/cloud-associate' },
+          { text: 'Cloud Specialist', to: '/consultor/service-line/hybrid-cloud/cloud-specialist' },
+          { text: 'Senior Cloud Engineer', to: '/consultor/service-line/hybrid-cloud/senior-cloud-engineer' },
+          { text: 'Cloud Architect', to: '/consultor/service-line/hybrid-cloud/cloud-architect' },
+        ],
       },
     ],
   },
@@ -169,6 +183,13 @@ const navigationSections = [
         icon: IconLearningPath,
         to: '/consultor/learning-path/jornada-tecnica',
         hasDropdown: true,
+        subItems: [
+          { text: 'Trainee', to: '/consultor/learning-path/jornada-tecnica/trainee' },
+          { text: 'Junior', to: '/consultor/learning-path/jornada-tecnica/junior' },
+          { text: 'Mid-level', to: '/consultor/learning-path/jornada-tecnica/mid-level' },
+          { text: 'Senior', to: '/consultor/learning-path/jornada-tecnica/senior' },
+          { text: 'Tech Lead', to: '/consultor/learning-path/jornada-tecnica/tech-lead' },
+        ],
       },
     ],
   },
@@ -204,13 +225,20 @@ const navigationSections = [
   },
 ]
 
-function SidebarItem({ item, collapsed }) {
+function SidebarItem({ item, collapsed, isOpen, onToggle }) {
   const Icon = item.icon
+
+  const handleClick = () => {
+    if (item.subItems && onToggle) {
+      onToggle()
+    }
+  }
 
   return (
     <NavLink
       to={item.to}
       end={item.end}
+      onClick={handleClick}
       className={({ isActive }) =>
         `consultor-sidebar-item${isActive ? ' active' : ''}${collapsed ? ' is-collapsed' : ''}`
       }
@@ -229,9 +257,32 @@ function SidebarItem({ item, collapsed }) {
       ) : null}
 
       {!collapsed && item.hasDropdown ? (
-        <HiOutlineChevronRight className="consultor-sidebar-item-chevron" aria-hidden="true" />
+        <HiOutlineChevronRight
+          className={`consultor-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
+          aria-hidden="true"
+        />
       ) : null}
     </NavLink>
+  )
+}
+
+function SidebarSubItems({ items }) {
+  return (
+    <ul className="consultor-sidebar-subitems">
+      {items.map((subItem) => (
+        <li key={subItem.to}>
+          <NavLink
+            to={subItem.to}
+            className={({ isActive }) =>
+              `consultor-sidebar-subitem${isActive ? ' active' : ''}`
+            }
+          >
+            <span className="consultor-sidebar-subitem-bullet" aria-hidden="true" />
+            <span className="consultor-sidebar-subitem-text">{subItem.text}</span>
+          </NavLink>
+        </li>
+      ))}
+    </ul>
   )
 }
 
@@ -243,6 +294,12 @@ function ConsultorSidebar() {
 
     return window.localStorage.getItem(storageKey) === 'true'
   })
+
+  const [openDropdowns, setOpenDropdowns] = useState({})
+
+  const toggleDropdown = (key) => {
+    setOpenDropdowns((previous) => ({ ...previous, [key]: !previous[key] }))
+  }
 
   useEffect(() => {
     window.localStorage.setItem(storageKey, String(isCollapsed))
@@ -288,9 +345,23 @@ function ConsultorSidebar() {
               {!isCollapsed ? <div className="consultor-sidebar-title">{section.title}</div> : null}
 
               <div className="consultor-sidebar-items">
-                {section.items.map((item) => (
-                  <SidebarItem key={item.to} item={item} collapsed={isCollapsed} />
-                ))}
+                {section.items.map((item) => {
+                  const isOpen = Boolean(openDropdowns[item.to])
+                  const showSubItems =
+                    !isCollapsed && item.subItems && item.subItems.length > 0 && isOpen
+
+                  return (
+                    <div key={item.to} className="consultor-sidebar-item-group">
+                      <SidebarItem
+                        item={item}
+                        collapsed={isCollapsed}
+                        isOpen={isOpen}
+                        onToggle={() => toggleDropdown(item.to)}
+                      />
+                      {showSubItems ? <SidebarSubItems items={item.subItems} /> : null}
+                    </div>
+                  )
+                })}
               </div>
 
               {!isCollapsed ? <div className="consultor-sidebar-divider" /> : null}

@@ -140,12 +140,21 @@ function TalentManagerBadgesView({
   heroSubtitle = '80 badges disponíveis',
   showExportButton = true,
   classPrefix = 'tm-badges',
+  onBadgeClick = null,
 } = {}) {
   const [showExport, setShowExport] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState(null)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
   const [activeTab, setActiveTab] = useState('Jornada Técnica')
   const [openSection, setOpenSection] = useState('hybrid')
+
+  function handleBadgeClick(badge) {
+    if (onBadgeClick) {
+      onBadgeClick(badge)
+      return
+    }
+    setSelectedBadge(badge)
+  }
 
   const cp = classPrefix
   const tabs = ['Jornada Técnica', 'Power Skills']
@@ -305,7 +314,7 @@ function TalentManagerBadgesView({
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
-                          onClick={() => setSelectedBadge(badge)}
+                          onClick={() => handleBadgeClick(badge)}
                         />
                       ))}
                     </div>
@@ -340,7 +349,7 @@ function TalentManagerBadgesView({
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
-                          onClick={() => setSelectedBadge(badge)}
+                          onClick={() => handleBadgeClick(badge)}
                         />
                       ))}
                     </div>
@@ -375,7 +384,7 @@ function TalentManagerBadgesView({
                           icon={badge.icon}
                           title={badge.title}
                           level={badge.level}
-                          onClick={() => setSelectedBadge(badge)}
+                          onClick={() => handleBadgeClick(badge)}
                         />
                       ))}
                     </div>

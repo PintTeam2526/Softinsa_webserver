@@ -1,0 +1,448 @@
+.consultor-badge-page {
+  padding: 0 24px 24px;
+  font-family: Inter, sans-serif;
+  color: #232d42;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── HERO ──────────────────────────────────────────────── */
+.consultor-badge-hero {
+  position: relative;
+  height: 155px;
+  margin: 0 -24px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
+}
+
+.consultor-badge-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.consultor-badge-hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
+  transform: rotate(90deg);
+}
+
+.consultor-badge-hero-circle-5 { width: 2156px;     height: 2112.615px; left: -194px;   top: -233px; }
+.consultor-badge-hero-circle-4 { width: 1670.328px; height: 1635.378px; left: -194px;   top: 5.62px; }
+.consultor-badge-hero-circle-3 { width: 1418.453px; height: 1389.529px; left: -100px;   top: 206.88px; }
+.consultor-badge-hero-circle-2 { width: 1041.243px; height: 1041.243px; left: -33.72px; top: 334.62px; }
+.consultor-badge-hero-circle-1 { width: 827.933px;  height: 827.933px;  left: 48.23px;  top: 380.42px; }
+
+.consultor-badge-hero-copy {
+  position: absolute;
+  left: 50px;
+  top: 35px;
+  z-index: 1;
+  max-width: calc(100% - 100px);
+}
+
+.consultor-badge-hero-copy h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.consultor-badge-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: clamp(14px, 1.3vw, 19px);
+  font-weight: 500;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.consultor-badge-hero-meta span {
+  white-space: nowrap;
+}
+
+/* ── TOP ROW ───────────────────────────────────────────── */
+.consultor-badge-top-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── CARDS BASE ────────────────────────────────────────── */
+.consultor-badge-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consultor-badge-card-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+/* ── BADGE INFO CARD ───────────────────────────────────── */
+.consultor-badge-info-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultor-badge-info-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-badge-info-level {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+.consultor-badge-info-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+}
+
+.consultor-badge-info-description {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consultor-badge-info-description-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-badge-info-description-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8a92a6;
+}
+
+.consultor-badge-info-image {
+  width: 196px;
+  height: 196px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.consultor-badge-info-status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+  margin-top: 4px;
+}
+
+.consultor-badge-info-status-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+.consultor-badge-info-status-row svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+.consultor-badge-info-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.consultor-badge-info-fav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 18px;
+  border-radius: 20px;
+  border: 0;
+  background: #39639c;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.consultor-badge-info-fav-btn:hover {
+  background: #2c4f80;
+}
+
+.consultor-badge-info-fav-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── DEVOLUCOES CARD ───────────────────────────────────── */
+.consultor-badge-devolucoes-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consultor-badge-devolucoes-field label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.consultor-badge-devolucoes-field-value {
+  min-height: 21px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #495057;
+}
+
+.consultor-badge-devolucoes-field-value.is-motivo {
+  font-size: 12px;
+  color: #8a92a6;
+  line-height: 1.6;
+}
+
+.consultor-badge-devolucoes-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.consultor-badge-devolucoes-upload-label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.consultor-badge-upload-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 30px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.consultor-badge-upload-btn {
+  flex-shrink: 0;
+  width: 121px;
+  border: 0;
+  background: #ffffff;
+  color: #232d42;
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-right: 1px solid #e9ecef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.consultor-badge-upload-btn:hover {
+  background: #f5f6fa;
+}
+
+.consultor-badge-upload-btn:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-badge-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.consultor-badge-upload-name {
+  flex: 1 1 auto;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #8a92a6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultor-badge-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.consultor-badge-primary-btn {
+  height: 38px;
+  padding: 0 24px;
+  border-radius: 20px;
+  border: 0;
+  background: #39639c;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.consultor-badge-primary-btn:hover {
+  background: #2c4f80;
+}
+
+/* ── REQUISITOS CARD ───────────────────────────────────── */
+.consultor-badge-req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.consultor-badge-req-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.consultor-badge-req-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #39639c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.consultor-badge-req-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.consultor-badge-req-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-badge-req-section-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-badge-req-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8a92a6;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .consultor-badge-top-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .consultor-badge-page {
+    padding-inline: 16px;
+  }
+
+  .consultor-badge-hero {
+    margin-inline: -16px;
+  }
+
+  .consultor-badge-card {
+    padding: 20px;
+  }
+
+  .consultor-badge-info-header h2,
+  .consultor-badge-info-level,
+  .consultor-badge-card-title {
+    font-size: 22px;
+  }
+
+  .consultor-badge-info-body {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: left;
+  }
+
+  .consultor-badge-info-image {
+    width: 140px;
+    height: 140px;
+  }
+
+  .consultor-badge-info-status {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .consultor-badge-hero-copy {
+    left: 24px;
+    top: 28px;
+  }
+
+  .consultor-badge-hero-meta {
+    gap: 12px;
+    font-size: 13px;
+  }
+}
