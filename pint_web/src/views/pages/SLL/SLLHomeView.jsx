@@ -12,14 +12,6 @@ import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-home.css'
 
-const heroArt = {
- heroCircle1 : 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422',
- heroCircle2 : 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a',
- heroCircle3 : 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3',
- heroCircle4 : 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7',
- heroCircle5 : 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc',
-} 
-
 const pendingRequests = [
   {
     title: 'Cloud Architecture - Intermedio',
@@ -87,11 +79,11 @@ function SLLHomeView() {
         <div className="sll-main-scroll">
           <section className="sll-hero" aria-label="Resumo de boas-vindas">
             <div className="sll-hero-art" aria-hidden="true">
-              <img className="sll-hero-circle sll-hero-circle-5" src={heroArt.circle5} alt="" />
-              <img className="sll-hero-circle sll-hero-circle-4" src={heroArt.circle4} alt="" />
-              <img className="sll-hero-circle sll-hero-circle-3" src={heroArt.circle3} alt="" />
-              <img className="sll-hero-circle sll-hero-circle-2" src={heroArt.circle2} alt="" />
-              <img className="sll-hero-circle sll-hero-circle-1" src={heroArt.circle1} alt="" />
+              <div className="sll-hero-circle sll-hero-circle-5" />
+              <div className="sll-hero-circle sll-hero-circle-4" />
+              <div className="sll-hero-circle sll-hero-circle-3" />
+              <div className="sll-hero-circle sll-hero-circle-2" />
+              <div className="sll-hero-circle sll-hero-circle-1" />
             </div>
 
             <div className="sll-hero-copy">

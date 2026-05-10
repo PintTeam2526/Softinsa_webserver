@@ -5,3 +5,21 @@
 	text-decoration: none;
 	color: inherit;
 }
+
+@media (max-width: 992px) {
+	.softinsa-shell-topbar {
+		flex-wrap: nowrap;
+	}
+
+	.softinsa-shell-topbar-search {
+		min-width: 0;
+		max-width: none;
+		flex: 1 1 auto;
+		order: 0;
+	}
+
+	.softinsa-shell-topbar-actions {
+		width: auto;
+		order: 0;
+	}
+}
