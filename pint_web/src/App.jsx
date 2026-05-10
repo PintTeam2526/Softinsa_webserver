@@ -26,6 +26,7 @@ import ConsultorObjetivosView from './views/pages/consultor/ConsultorObjetivosVi
 import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistasView'
 import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'
 import ConsultorListaBadgesView from './views/pages/consultor/ConsultorListaBadgesView'
+import ConsultorBadgePageView from './views/pages/consultor/ConsultorBadgePageView'
 import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 function App() {
@@ -72,6 +73,8 @@ function App() {
         <Route path="badges/conquistas" element={<ConsultorConquistasView />} />
         <Route path="outras-areas" element={<ConsultorOutrasAreasView />} />
         <Route path="badges/outras-areas" element={<ConsultorOutrasAreasView />} />
+        <Route path="badge/:slug" element={<ConsultorBadgePageView />} />
+        <Route path="area/lowcode/:slug" element={<ConsultorBadgePageView />} />
         <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
         <Route path="badges" element={<ConsultorDashboardView />} />
         <Route path="mensagens" element={<ConsultorDashboardView />} />
