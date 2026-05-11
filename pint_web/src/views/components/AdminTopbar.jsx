@@ -218,11 +218,6 @@ const AdminTopbar = memo(() => {
 
   return (
     <div className="softinsa-shell-topbar">
-      <label className="softinsa-shell-topbar-search" aria-label="Search">
-        <SearchIcon />
-        <input type="text" placeholder="Search..." />
-      </label>
-
       <div className="softinsa-shell-topbar-actions">
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button

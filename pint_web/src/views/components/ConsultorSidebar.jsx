@@ -31,22 +31,6 @@ function IconArea({ className }) {
   )
 }
 
-function IconServiceLine({ className }) {
-  return (
-    <svg {...iconSvgProps} viewBox="0 0 24 24" className={className}>
-      <path fillRule="evenodd" clipRule="evenodd" d="M5 9C5 7.14348 5.7375 5.36301 7.05025 4.05025C8.36301 2.7375 10.1435 2 12 2C13.8565 2 15.637 2.7375 16.9497 4.05025C18.2625 5.36301 19 7.14348 19 9V10.035C20.696 10.278 22 11.737 22 13.5V13.75C21.9999 14.1836 21.913 14.6128 21.7444 15.0123C21.5759 15.4119 21.3291 15.7736 21.0186 16.0763C20.7081 16.379 20.3401 16.6164 19.9365 16.7747C19.5328 16.933 19.1015 17.0089 18.668 16.998C17.928 19.118 16.046 20.547 14.015 20.909C13.545 21.081 12.989 21 12.5 21C12.1022 21 11.7206 20.842 11.4393 20.5607C11.158 20.2794 11 19.8978 11 19.5C11 19.1022 11.158 18.7206 11.4393 18.4393C11.7206 18.158 12.1022 18 12.5 18H13.5C13.7348 18 13.9664 18.055 14.176 18.1608C14.3856 18.2666 14.5675 18.4201 14.707 18.609C16.003 17.992 17 16.689 17 15V9C17 7.67392 16.4732 6.40215 15.5355 5.46447C14.5979 4.52678 13.3261 4 12 4C10.6739 4 9.40215 4.52678 8.46447 5.46447C7.52678 6.40215 7 7.67392 7 9V15.25C7 15.7141 6.81563 16.1592 6.48744 16.4874C6.15925 16.8156 5.71413 17 5.25 17C4.38805 17 3.5614 16.6576 2.9519 16.0481C2.34241 15.4386 2 14.612 2 13.75V13.5C1.99978 12.6582 2.30296 11.8446 2.85395 11.2082C3.40495 10.5718 4.16685 10.1553 5 10.035V9ZM5 12.085C4.70742 12.1884 4.45413 12.3801 4.27503 12.6335C4.09593 12.8869 3.99984 13.1897 4 13.5V13.75C4 14.355 4.43 14.86 5 14.975V12.085ZM19 12.085V14.975C19.57 14.859 20 14.355 20 13.75V13.5C20.0002 13.1897 19.9041 12.8869 19.725 12.6335C19.5459 12.3801 19.2926 12.1884 19 12.085Z" fill="currentColor" />
-    </svg>
-  )
-}
-
-function IconLearningPath({ className }) {
-  return (
-    <svg {...iconSvgProps} viewBox="0 0 24 24" className={className}>
-      <path fillRule="evenodd" clipRule="evenodd" d="M3 6C3.00014 5.43893 3.15762 4.88915 3.45455 4.41309C3.75149 3.93703 4.17597 3.55379 4.67979 3.30687C5.1836 3.05996 5.74657 2.95929 6.30473 3.01628C6.8629 3.07327 7.3939 3.28565 7.83742 3.62929C8.28094 3.97293 8.6192 4.43406 8.81379 4.9603C9.00838 5.48654 9.0515 6.05681 8.93825 6.60633C8.82499 7.15585 8.5599 7.6626 8.17309 8.06901C7.78628 8.47543 7.29325 8.76523 6.75 8.9055V17.25C6.75 17.8467 6.98705 18.419 7.40901 18.841C7.83097 19.2629 8.40326 19.5 9 19.5C9.59674 19.5 10.169 19.2629 10.591 18.841C11.0129 18.419 11.25 17.8467 11.25 17.25V6.75C11.25 5.75544 11.6451 4.80161 12.3483 4.09835C13.0516 3.39509 14.0054 3 15 3C15.9946 3 16.9484 3.39509 17.6517 4.09835C18.3549 4.80161 18.75 5.75544 18.75 6.75V11.25H17.25V6.75C17.25 6.15326 17.0129 5.58097 16.591 5.15901C16.169 4.73705 15.5967 4.5 15 4.5C14.4033 4.5 13.831 4.73705 13.409 5.15901C12.9871 5.58097 12.75 6.15326 12.75 6.75V17.25C12.75 18.2446 12.3549 19.1984 11.6517 19.9016C10.9484 20.6049 9.99456 21 9 21C8.00544 21 7.05161 20.6049 6.34835 19.9016C5.64509 19.1984 5.25 18.2446 5.25 17.25V8.9055C4.60591 8.7392 4.03535 8.36353 3.62806 7.83758C3.22076 7.31163 2.99983 6.66522 3 6ZM15 15.75C15 14.9544 15.3161 14.1913 15.8787 13.6287C16.4413 13.0661 17.2044 12.75 18 12.75C18.7956 12.75 19.5587 13.0661 20.1213 13.6287C20.6839 14.1913 21 14.9544 21 15.75C20.9999 16.6349 20.7865 17.5068 20.3779 18.2917C19.9692 19.0766 19.3774 19.7514 18.6525 20.259L18 20.715L17.3475 20.259C16.6226 19.7514 16.0308 19.0766 15.6221 18.2917C15.2135 17.5068 15.0001 16.6349 15 15.75Z" fill="currentColor" />
-    </svg>
-  )
-}
-
 function IconPedidos({ className }) {
   return (
     <svg {...iconSvgProps} viewBox="0 0 24 24" className={className}>
@@ -158,42 +142,6 @@ const navigationSections = [
     ],
   },
   {
-    title: 'Service Line',
-    items: [
-      {
-        text: 'Hybrid Cloud',
-        icon: IconServiceLine,
-        to: '/consultor/service-line/hybrid-cloud',
-        hasDropdown: true,
-        subItems: [
-          { text: 'Cloud Practitioner', to: '/consultor/service-line/hybrid-cloud/cloud-practitioner' },
-          { text: 'Cloud Associate', to: '/consultor/service-line/hybrid-cloud/cloud-associate' },
-          { text: 'Cloud Specialist', to: '/consultor/service-line/hybrid-cloud/cloud-specialist' },
-          { text: 'Senior Cloud Engineer', to: '/consultor/service-line/hybrid-cloud/senior-cloud-engineer' },
-          { text: 'Cloud Architect', to: '/consultor/service-line/hybrid-cloud/cloud-architect' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Learning Path',
-    items: [
-      {
-        text: 'Jornada Tecnica',
-        icon: IconLearningPath,
-        to: '/consultor/learning-path/jornada-tecnica',
-        hasDropdown: true,
-        subItems: [
-          { text: 'Trainee', to: '/consultor/learning-path/jornada-tecnica/trainee' },
-          { text: 'Junior', to: '/consultor/learning-path/jornada-tecnica/junior' },
-          { text: 'Mid-level', to: '/consultor/learning-path/jornada-tecnica/mid-level' },
-          { text: 'Senior', to: '/consultor/learning-path/jornada-tecnica/senior' },
-          { text: 'Tech Lead', to: '/consultor/learning-path/jornada-tecnica/tech-lead' },
-        ],
-      },
-    ],
-  },
-  {
     title: 'Badges',
     items: [
       {
@@ -217,7 +165,7 @@ const navigationSections = [
         to: '/consultor/badges/conquistas',
       },
       {
-        text: 'Outras Areas',
+        text: 'Outras Áreas',
         icon: IconOutrasAreas,
         to: '/consultor/badges/outras-areas',
       },

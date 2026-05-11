@@ -150,8 +150,8 @@
 }
 
 .consultor-dashboard-summary-donut {
-  width: 68px;
-  height: 68px;
+  width: 71px;
+  height: 72px;
   flex-shrink: 0;
   display: block;
 }
@@ -173,6 +173,21 @@
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+.consultor-dashboard-metric.is-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-metric.is-clickable:hover {
+  box-shadow: 0 14px 24px rgba(17, 38, 146, 0.12);
+  transform: translateY(-1px);
+}
+
+.consultor-dashboard-metric.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
 }
 
 .consultor-dashboard-metric-icon-tile {
@@ -284,6 +299,35 @@
   height: 24px;
   color: #8a92a6;
   flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-card-header-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 4px 8px;
+  margin: -4px -8px 20px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  transition: background 0.2s ease;
+}
+
+.consultor-dashboard-card-header-btn:hover {
+  background: #f6f7f9;
+}
+
+.consultor-dashboard-card-header-btn:hover .consultor-dashboard-card-chevron {
+  color: #39639c;
+  transform: translateX(2px);
+}
+
+.consultor-dashboard-card-header-btn:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
 }
 
 .consultor-dashboard-card-body {
@@ -305,6 +349,28 @@
 
 .consultor-dashboard-badge-row.is-my-badge {
   gap: 18px;
+}
+
+.consultor-dashboard-badge-row.is-clickable {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: -8px -10px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-badge-row.is-clickable:hover {
+  background: #f6f7f9;
+  transform: translateX(2px);
+}
+
+.consultor-dashboard-badge-row.is-clickable:hover .consultor-dashboard-badge-action {
+  color: #39639c;
+}
+
+.consultor-dashboard-badge-row.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
 }
 
 .consultor-dashboard-badge-image {

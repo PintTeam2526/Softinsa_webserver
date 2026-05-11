@@ -1,4 +1,12 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import badgeJuniorCitizenDeveloper from "../../../assets/images/badges/outsystems_1.png";
+import badgeOutsystemsAdvanced from "../../../assets/images/badges/outsystems_3.png";
+import badgeOutsystemsSpecial from "../../../assets/images/badges/outsystems_special.png";
+import badgeTmJunior from "../../../assets/images/badges/tm_1.png";
+import badgeTmAdvanced from "../../../assets/images/badges/tm_3.png";
+import badgeTmSpecial from "../../../assets/images/badges/tm_special.png";
+import badgeDevopsIntermediate from "../../../assets/images/badges/devops_2.png";
+import badgeDevopsAdvanced from "../../../assets/images/badges/devops_4.png";
 import "./admin-badges.css";
 import axios from "axios";
 

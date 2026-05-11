@@ -1,15 +1,66 @@
 import { FaTimes, FaUpload } from 'react-icons/fa'
+import { HiOutlineStar } from 'react-icons/hi2'
 import { useState } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import './TalentManagerBadgesView.css'
+import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
+import outsystems2 from '../../../assets/images/badges/outsystems_2.png'
+import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
+import outsystems4 from '../../../assets/images/badges/outsystems_4.png'
+import outsystems5 from '../../../assets/images/badges/outsystems_5.png'
+import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
+import devops1 from '../../../assets/images/badges/devops_1.png'
+import devops2 from '../../../assets/images/badges/devops_2.png'
+import devops3 from '../../../assets/images/badges/devops_3.png'
+import devops4 from '../../../assets/images/badges/devops_4.png'
+import devops5 from '../../../assets/images/badges/devops_5.png'
+import devopsSpecial from '../../../assets/images/badges/devops_special.png'
+import tm1 from '../../../assets/images/badges/tm_1.png'
+import tm2 from '../../../assets/images/badges/tm_2.png'
+import tm3 from '../../../assets/images/badges/tm_3.png'
+import tm4 from '../../../assets/images/badges/tm_4.png'
+import tm5 from '../../../assets/images/badges/tm_5.png'
+import tmSpecial from '../../../assets/images/badges/tm_special.png'
 
-const badgeJuniorCitizenDeveloper = 'https://www.figma.com/api/mcp/asset/fe31d5ae-9470-42b7-8700-e51e15feb53f'
-const badgeIntermedioLowCodeBuilder = 'https://www.figma.com/api/mcp/asset/36d8a1c8-b264-42e2-93d1-2ea65b258326'
-const badgeSeniorApplicationCreator = 'https://www.figma.com/api/mcp/asset/0392c8ce-5868-4fad-b9c3-b0606588109d'
-const badgeEspecialistaFullStackLowCodeDev = 'https://www.figma.com/api/mcp/asset/dab477cd-00d4-42c0-8f58-2105e5b0d3fc'
-const badgeLiderDeConhecimentoEliteOutSystemsArchitect = 'https://www.figma.com/api/mcp/asset/e7e007cb-5ff0-4028-b924-11d6dcf1d1c2'
+function IconAreaMenu({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+const outsystemsBadges = [
+  { title: 'Citizen developer',    level: 'Nível Junior',          icon: outsystems1 },
+  { title: 'Low-Code Builder',     level: 'Nível Intermédio',      icon: outsystems2 },
+  { title: 'Application Creator',  level: 'Nível Sénior',          icon: outsystems3 },
+  { title: 'Full-Stack Low-Code',  level: 'Nível Especialista',    icon: outsystems4 },
+  { title: 'Elite OutSystems',     level: 'Líder de conhecimento', icon: outsystems5 },
+]
+
+const devopsBadges = [
+  { title: 'DevOps Beginner',      level: 'Nível Junior',          icon: devops1 },
+  { title: 'DevOps Intermediate',  level: 'Nível Intermédio',      icon: devops2 },
+  { title: 'DevOps Specialist',    level: 'Nível Sénior',          icon: devops3 },
+  { title: 'DevOps Expert',        level: 'Nível Especialista',    icon: devops4 },
+  { title: 'DevOps Architect',     level: 'Líder de conhecimento', icon: devops5 },
+]
+
+const tmBadges = [
+  { title: 'Talent Beginner',      level: 'Nível Junior',          icon: tm1 },
+  { title: 'Talent Sourcer',       level: 'Nível Intermédio',      icon: tm2 },
+  { title: 'Talent Manager',       level: 'Nível Sénior',          icon: tm3 },
+  { title: 'Talent Strategist',    level: 'Nível Especialista',    icon: tm4 },
+  { title: 'Talent Leader',        level: 'Líder de conhecimento', icon: tm5 },
+]
 const imgSearch = 'https://www.figma.com/api/mcp/asset/492718ad-8b3c-4cb1-b75f-311c93119dfd'
 const imgChevron = 'https://www.figma.com/api/mcp/asset/848d08f5-8f59-4d13-afe5-f69bf9c9060b'
 const imgCategory = 'https://www.figma.com/api/mcp/asset/2cafddfc-7f04-4b81-8834-ad8a1afc8516'
@@ -27,60 +78,15 @@ const imgModalBadge = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b2
 
 const badgeSets = {
   hybrid: [
-    {
-      title: 'LowCode (Outsystems)',
-      badges: [
-        { title: 'Citizen developer', level: 'Nível Junior', icon: badgeJuniorCitizenDeveloper },
-        { title: 'Low-Code Builder', level: 'Nível Intermédio', icon: badgeIntermedioLowCodeBuilder },
-        { title: 'Application Creator', level: 'Nível Sénior', icon: badgeSeniorApplicationCreator },
-        { title: 'Full-Stack Low-Code', level: 'Nível Especialista', icon: badgeEspecialistaFullStackLowCodeDev },
-        { title: 'Elite OutSystems', level: 'Líder de conhecimento', icon: badgeLiderDeConhecimentoEliteOutSystemsArchitect },
-      ],
-    },
-    {
-      title: 'Área 2',
-      badges: [
-        { title: 'Low-Code Builder', level: 'Nível Junior', icon: badgeJuniorCitizenDeveloper },
-        { title: 'Low-Code Builder', level: 'Nível Intermédio', icon: badgeIntermedioLowCodeBuilder },
-        { title: 'Application Creator', level: 'Nível Sénior', icon: badgeSeniorApplicationCreator },
-        { title: 'Full-Stack Low-Code', level: 'Nível Especialista', icon: badgeEspecialistaFullStackLowCodeDev },
-        { title: 'Elite OutSystems', level: 'Líder de conhecimento', icon: badgeLiderDeConhecimentoEliteOutSystemsArchitect },
-      ],
-    },
-    {
-      title: 'Área 3',
-      badges: [
-        { title: 'Low-Code Builder', level: 'Nível Junior', icon: badgeJuniorCitizenDeveloper },
-        { title: 'Low-Code Builder', level: 'Nível Intermédio', icon: badgeIntermedioLowCodeBuilder },
-        { title: 'Application Creator', level: 'Nível Sénior', icon: badgeSeniorApplicationCreator },
-        { title: 'Full-Stack Low-Code', level: 'Nível Especialista', icon: badgeEspecialistaFullStackLowCodeDev },
-        { title: 'Elite OutSystems', level: 'Líder de conhecimento', icon: badgeLiderDeConhecimentoEliteOutSystemsArchitect },
-      ],
-    },
+    { title: 'LowCode (Outsystems)', obtained: 2, badges: outsystemsBadges },
+    { title: 'Área 2',               obtained: 1, badges: outsystemsBadges },
+    { title: 'Área 3',               obtained: 0, badges: outsystemsBadges },
   ],
   applicationOps: [
-    {
-      title: 'Application Ops Core',
-      badges: [
-        { title: 'Citizen developer', level: 'Nível Junior', icon: badgeJuniorCitizenDeveloper },
-        { title: 'Low-Code Builder', level: 'Nível Intermédio', icon: badgeIntermedioLowCodeBuilder },
-        { title: 'Application Creator', level: 'Nível Sénior', icon: badgeSeniorApplicationCreator },
-        { title: 'Full-Stack Low-Code', level: 'Nível Especialista', icon: badgeEspecialistaFullStackLowCodeDev },
-        { title: 'Elite OutSystems', level: 'Líder de conhecimento', icon: badgeLiderDeConhecimentoEliteOutSystemsArchitect },
-      ],
-    },
+    { title: 'Application Ops Core', obtained: 3, badges: devopsBadges },
   ],
   sourcTalentManag: [
-    {
-      title: 'Sourc. & Talent',
-      badges: [
-        { title: 'Citizen developer', level: 'Nível Junior', icon: badgeJuniorCitizenDeveloper },
-        { title: 'Low-Code Builder', level: 'Nível Intermédio', icon: badgeIntermedioLowCodeBuilder },
-        { title: 'Application Creator', level: 'Nível Sénior', icon: badgeSeniorApplicationCreator },
-        { title: 'Full-Stack Low-Code', level: 'Nível Especialista', icon: badgeEspecialistaFullStackLowCodeDev },
-        { title: 'Elite OutSystems', level: 'Líder de conhecimento', icon: badgeLiderDeConhecimentoEliteOutSystemsArchitect },
-      ],
-    },
+    { title: 'Sourc. & Talent',      obtained: 4, badges: tmBadges },
   ],
 }
 
@@ -95,7 +101,7 @@ function BadgeCard({ icon, title, level, onClick, cp }) {
         <div className={`${cp}-card-title`}>{title}</div>
         <div className={`${cp}-card-level`}>{level}</div>
         <div className={`${cp}-card-points`}>
-          <span className={`${cp}-card-points-icon`} aria-hidden="true" />
+          <HiOutlineStar className={`${cp}-card-points-icon`} aria-hidden="true" />
           <span>550 Pontos</span>
         </div>
       </div>
@@ -103,12 +109,12 @@ function BadgeCard({ icon, title, level, onClick, cp }) {
   )
 }
 
-function BadgeMenuItem({ title, detail, icon, active = false, onClick, cp }) {
+function BadgeMenuItem({ title, detail, active = false, onClick, cp }) {
   return (
     <button type="button" className={`${cp}-menu-item${active ? ' is-active' : ''}`} onClick={onClick}>
       <div className={`${cp}-menu-item-main`}>
         <div className={`${cp}-menu-icon`}>
-          <img alt="" src={icon} />
+          <IconAreaMenu className={`${cp}-menu-icon-svg`} />
         </div>
 
         <div className={`${cp}-menu-copy`}>
@@ -287,7 +293,7 @@ function TalentManagerBadgesView({
             <button type="button" className={`${cp}-area-trigger`} onClick={() => toggleSection('hybrid')} aria-expanded={openSection === 'hybrid'}>
               <div className={`${cp}-area-trigger-main`}>
                 <div className={`${cp}-area-icon`}>
-                  <img alt="" src={imgIcon} />
+                  <IconAreaMenu className={`${cp}-area-icon-svg`} />
                 </div>
 
                 <div className={`${cp}-area-trigger-copy`}>
@@ -305,7 +311,12 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.hybrid.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-group-title`}>
+                      <span>{section.title}</span>
+                      <span className={`${cp}-badge-group-progress`}>
+                        {Math.round((section.obtained / section.badges.length) * 100)}%
+                      </span>
+                    </div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
@@ -331,7 +342,6 @@ function TalentManagerBadgesView({
               cp={cp}
               title="Application Ops."
               detail="2 áreas • 12 badges"
-              icon={imgCategory}
               active={openSection === 'applicationOps'}
               onClick={() => toggleSection('applicationOps')}
             />
@@ -340,7 +350,12 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.applicationOps.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-group-title`}>
+                      <span>{section.title}</span>
+                      <span className={`${cp}-badge-group-progress`}>
+                        {Math.round((section.obtained / section.badges.length) * 100)}%
+                      </span>
+                    </div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
@@ -366,7 +381,6 @@ function TalentManagerBadgesView({
               cp={cp}
               title="Sourc. & Talent Manag."
               detail="1 áreas • 6 badges"
-              icon={imgGroup2}
               active={openSection === 'sourcTalentManag'}
               onClick={() => toggleSection('sourcTalentManag')}
             />
@@ -375,7 +389,12 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.sourcTalentManag.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
+                    <div className={`${cp}-badge-group-title`}>
+                      <span>{section.title}</span>
+                      <span className={`${cp}-badge-group-progress`}>
+                        {Math.round((section.obtained / section.badges.length) * 100)}%
+                      </span>
+                    </div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard

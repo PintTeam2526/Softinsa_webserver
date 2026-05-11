@@ -5,11 +5,10 @@ import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
+import badgeEntryLevel from '../../../assets/images/badges/outsystems_1.png'
+import badgeTeamLeader from '../../../assets/images/badges/tm_1.png'
+import badgeDevOps from '../../../assets/images/badges/devops_2.png'
 import './SLL-badges.css'
-
-const profileBadgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
-const profileBadgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
-const profileBadgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
 const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
 const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
 const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
@@ -20,34 +19,34 @@ const badgeGroups = [
   {
     title: 'Área: LowCode (Outsystems)',
     badges: [
-      { name: 'Low-Code (Outsystems)', level: 'Junior', image: profileBadgeEntryLevel },
-      { name: 'Low-Code (Outsystems)', level: 'Intermédio', image: profileBadgeTeamLeader },
-      { name: 'Low-Code (Outsystems)', level: 'Sénior', image: profileBadgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Especialista', image: profileBadgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Líder de conhecimento', image: profileBadgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Conquista Especial', image: profileBadgeDevOps },
+      { name: 'Low-Code (Outsystems)', level: 'Junior', image: badgeEntryLevel },
+      { name: 'Low-Code (Outsystems)', level: 'Intermédio', image: badgeTeamLeader },
+      { name: 'Low-Code (Outsystems)', level: 'Sénior', image: badgeDevOps },
+      { name: 'Low-Code (Outsystems)', level: 'Especialista', image: badgeDevOps },
+      { name: 'Low-Code (Outsystems)', level: 'Líder de conhecimento', image: badgeDevOps },
+      { name: 'Low-Code (Outsystems)', level: 'Conquista Especial', image: badgeDevOps },
     ],
   },
   {
     title: 'Área: Automation',
     badges: [
-      { name: 'Automation', level: 'Junior', image: profileBadgeEntryLevel },
-      { name: 'Automation', level: 'Intermédio', image: profileBadgeEntryLevel },
-      { name: 'Automation', level: 'Nível Sénior', image: profileBadgeEntryLevel },
-      { name: 'Automation', level: 'Especialista', image: profileBadgeEntryLevel },
-      { name: 'Automation', level: 'Líder de conhecimento', image: profileBadgeEntryLevel },
-      { name: 'Automation', level: 'Conquista Especial', image: profileBadgeEntryLevel },
+      { name: 'Automation', level: 'Junior', image: badgeEntryLevel },
+      { name: 'Automation', level: 'Intermédio', image: badgeEntryLevel },
+      { name: 'Automation', level: 'Nível Sénior', image: badgeEntryLevel },
+      { name: 'Automation', level: 'Especialista', image: badgeEntryLevel },
+      { name: 'Automation', level: 'Líder de conhecimento', image: badgeEntryLevel },
+      { name: 'Automation', level: 'Conquista Especial', image: badgeEntryLevel },
     ],
   },
   {
     title: 'Área: Cloud Architecture',
     badges: [
-      { name: 'Cloud Architecture', level: 'Junior', image: profileBadgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Intermédio', image: profileBadgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Nível Sénior', image: profileBadgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Especialista', image: profileBadgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Líder de conhecimento', image: profileBadgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Conquista Especial', image: profileBadgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Junior', image: badgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Intermédio', image: badgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Nível Sénior', image: badgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Especialista', image: badgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Líder de conhecimento', image: badgeEntryLevel },
+      { name: 'Cloud Architecture', level: 'Conquista Especial', image: badgeEntryLevel },
     ],
   },
 ]

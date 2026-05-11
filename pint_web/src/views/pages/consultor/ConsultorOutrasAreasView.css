@@ -367,6 +367,14 @@
   display: block;
 }
 
+.consultor-outras-area-icon-svg,
+.consultor-outras-menu-icon-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: #ffffff;
+}
+
 .consultor-outras-area-trigger-copy,
 .consultor-outras-menu-copy {
   display: flex;
@@ -444,6 +452,16 @@
   font-size: 14px;
   line-height: 21px;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.consultor-outras-badge-group-progress {
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: #39639c;
 }
 
 .consultor-outras-badge-grid {
@@ -667,12 +685,11 @@
 }
 
 .consultor-outras-card-points-icon {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #8a92a6;
-  display: inline-block;
+  width: 14px;
+  height: 14px;
+  color: #f59e0b;
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .consultor-outras-divider {

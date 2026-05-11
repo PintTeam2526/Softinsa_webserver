@@ -1,13 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   HiOutlineClock,
   HiOutlineCurrencyEuro,
   HiOutlineStar,
   HiOutlinePaperClip,
+  HiOutlineShare,
+  HiOutlineEnvelope,
+  HiOutlineDocumentArrowDown,
+  HiStar,
 } from 'react-icons/hi2'
+import { FaLinkedin } from 'react-icons/fa'
 import './ConsultorBadgePageView.css'
-import avtar1 from '../../../assets/images/avatars/avtar_1.png'
+import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
+import tm1 from '../../../assets/images/badges/tm_1.png'
+import devops2 from '../../../assets/images/badges/devops_2.png'
 
 const LOREM_LONG =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
@@ -16,7 +23,7 @@ const badgeData = {
   'citizen-developer': {
     name: 'Citizen Developer',
     level: 'Nível Júnior',
-    image: avtar1,
+    image: outsystems1,
     area: 'LowCode (Outsystems)',
     serviceLine: 'Hybrid Cloud',
     learningPath: 'Jornada Técnica',
@@ -26,15 +33,63 @@ const badgeData = {
     isFavorite: false,
     devolucao: {
       data: '12/04/2026',
-      avaliador: 'Ana Costa',
+      avaliador: 'Ana Costa, Tech Lead',
       motivo: LOREM_LONG,
     },
     requisitos: [
-      { title: 'OutSystems Fundamentals',                                  candidatura: LOREM_LONG },
-      { title: 'Developing Reactive Web Applications',                     candidatura: LOREM_LONG },
-      { title: 'Introduction to Low-Code Development with OutSystems',     candidatura: LOREM_LONG },
-      { title: 'OutSystems Associate Developer Preparation',               candidatura: LOREM_LONG.slice(0, 120) },
-      { title: 'Formação equivalente em Low-Code com OutSystems',          candidatura: LOREM_LONG },
+      { title: 'OutSystems Fundamentals',                                  descricao: LOREM_LONG },
+      { title: 'Developing Reactive Web Applications',                     descricao: LOREM_LONG },
+      { title: 'Introduction to Low-Code Development with OutSystems',     descricao: LOREM_LONG },
+      { title: 'OutSystems Associate Developer Preparation',               descricao: LOREM_LONG.slice(0, 120) },
+      { title: 'Formação equivalente em Low-Code com OutSystems',          descricao: LOREM_LONG },
+    ],
+  },
+  'team-lider-beginner': {
+    name: 'Team Lider Beginner',
+    level: 'Nível Júnior',
+    image: tm1,
+    area: 'Talent Management',
+    serviceLine: 'Hybrid Cloud',
+    learningPath: 'Jornada de Liderança',
+    description: LOREM_LONG,
+    status: 'Em Análise',
+    isSpecial: false,
+    isFavorite: false,
+    devolucao: {
+      data: '08/04/2026',
+      avaliador: 'Bruno Silva, Talent Manager',
+      motivo: LOREM_LONG,
+    },
+    requisitos: [
+      { title: 'Team Leadership Fundamentals',                            descricao: LOREM_LONG },
+      { title: 'People Management Basics',                                descricao: LOREM_LONG },
+      { title: 'Feedback and Coaching in Teams',                          descricao: LOREM_LONG },
+      { title: 'Conflict Resolution for Leaders',                          descricao: LOREM_LONG.slice(0, 120) },
+      { title: 'Formação equivalente em gestão de equipas',               descricao: LOREM_LONG },
+    ],
+  },
+  'devops-intermediate': {
+    name: 'DevOps Intermediate',
+    level: 'Nível Intermédio',
+    image: devops2,
+    area: 'DevOps',
+    serviceLine: 'Hybrid Cloud',
+    learningPath: 'Jornada Técnica',
+    description: LOREM_LONG,
+    status: 'Em Análise',
+    isSpecial: false,
+    isFavorite: false,
+    devolucao: {
+      data: '03/04/2026',
+      avaliador: 'Carla Mendes, DevOps Lead',
+      motivo: LOREM_LONG,
+    },
+    requisitos: [
+      { title: 'CI/CD Fundamentals',                                      descricao: LOREM_LONG },
+      { title: 'Infrastructure as Code',                                   descricao: LOREM_LONG },
+      { title: 'Monitoring and Observability',                             descricao: LOREM_LONG },
+      { title: 'Container Orchestration Basics',                           descricao: LOREM_LONG.slice(0, 120) },
+      { title: 'Formação equivalente em DevOps',                           descricao: LOREM_LONG },
     ],
   },
 }
@@ -77,6 +132,53 @@ function UploadRow({ id, accept, onFileChange }) {
 function ConsultorBadgePageView() {
   const { slug } = useParams()
   const badge = getBadgeBySlug(slug)
+
+  const [isFavorite, setIsFavorite] = useState(Boolean(badge.isFavorite))
+  const [isShareOpen, setIsShareOpen] = useState(false)
+  const shareRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (shareRef.current && !shareRef.current.contains(event.target)) {
+        setIsShareOpen(false)
+      }
+    }
+    function handleEscape(event) {
+      if (event.key === 'Escape') setIsShareOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
+
+  function toggleFavorite() {
+    setIsFavorite((prev) => !prev)
+  }
+
+  function shareOnLinkedIn() {
+    const url = encodeURIComponent(window.location.href)
+    const text = encodeURIComponent(`Conquistei o badge "${badge.name}" na Softinsa!`)
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank', 'noopener,noreferrer')
+    setIsShareOpen(false)
+  }
+
+  function shareByEmail() {
+    const subject = encodeURIComponent(`Badge Softinsa: ${badge.name}`)
+    const body = encodeURIComponent(
+      `Olá,\n\nQuero partilhar o meu badge "${badge.name}" — ${badge.level}.\n\n${window.location.href}`
+    )
+    window.location.href = `mailto:?subject=${subject}&body=${body}`
+    setIsShareOpen(false)
+  }
+
+  function exportCertificate() {
+    // TODO: ligar ao serviço de geração de certificados
+    console.info('Exportar certificado:', badge.name)
+    setIsShareOpen(false)
+  }
 
   return (
     <section className="consultor-badge-page">
@@ -125,14 +227,50 @@ function ConsultorBadgePageView() {
                 <span>Badge Especial</span>
               </span>
             ) : null}
-            <span className="consultor-badge-info-status-row">
-              <HiOutlineStar aria-hidden="true" />
-              <span>Badge Favorito</span>
-            </span>
+
             <div className="consultor-badge-info-actions">
-              <button type="button" className="consultor-badge-info-fav-btn">
-                <HiOutlineStar aria-hidden="true" />
-                <span>{badge.isFavorite ? 'Remover Favorito' : 'Adicionar Favorito'}</span>
+              <div className="consultor-badge-share-wrap" ref={shareRef}>
+                <button
+                  type="button"
+                  className="consultor-badge-info-share-btn"
+                  onClick={() => setIsShareOpen((prev) => !prev)}
+                  aria-haspopup="menu"
+                  aria-expanded={isShareOpen}
+                >
+                  <HiOutlineShare aria-hidden="true" />
+                  <span>Partilhar badge</span>
+                </button>
+
+                {isShareOpen ? (
+                  <div className="consultor-badge-share-menu" role="menu">
+                    <button type="button" role="menuitem" className="consultor-badge-share-option" onClick={shareOnLinkedIn}>
+                      <FaLinkedin aria-hidden="true" />
+                      <span>Partilhar no LinkedIn</span>
+                    </button>
+                    <button type="button" role="menuitem" className="consultor-badge-share-option" onClick={shareByEmail}>
+                      <HiOutlineEnvelope aria-hidden="true" />
+                      <span>Partilhar por email</span>
+                    </button>
+                    <button type="button" role="menuitem" className="consultor-badge-share-option" onClick={exportCertificate}>
+                      <HiOutlineDocumentArrowDown aria-hidden="true" />
+                      <span>Exportar certificado</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              <button
+                type="button"
+                className={`consultor-badge-info-fav-btn${isFavorite ? ' is-active' : ''}`}
+                onClick={toggleFavorite}
+                aria-pressed={isFavorite}
+              >
+                {isFavorite ? (
+                  <HiStar aria-hidden="true" />
+                ) : (
+                  <HiOutlineStar aria-hidden="true" />
+                )}
+                <span>{isFavorite ? 'Retirar dos Badges Favoritos' : 'Adicionar Favorito'}</span>
               </button>
             </div>
           </div>
@@ -147,7 +285,7 @@ function ConsultorBadgePageView() {
           </div>
 
           <div className="consultor-badge-devolucoes-field">
-            <label>Avaliador:</label>
+            <label>Avaliador e Cargo:</label>
             <span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span>
           </div>
 
@@ -179,8 +317,9 @@ function ConsultorBadgePageView() {
 
               <div className="consultor-badge-req-body">
                 <h3 className="consultor-badge-req-title">{req.title}</h3>
-                <span className="consultor-badge-req-section-label">Candidatura:</span>
-                <p className="consultor-badge-req-text">{req.candidatura}</p>
+                <span className="consultor-badge-req-section-label">Descrição:</span>
+                <p className="consultor-badge-req-text">{req.descricao}</p>
+                <span className="consultor-badge-req-section-label">Documentação:</span>
                 <UploadRow />
               </div>
             </div>

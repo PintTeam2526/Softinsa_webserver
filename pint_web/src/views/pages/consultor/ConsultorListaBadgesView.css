@@ -72,12 +72,14 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
 }
 
 .consultor-lista-filter-search {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   color: #717171;
   font-size: 16px;
@@ -100,6 +102,7 @@
 .consultor-lista-chips {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 
@@ -225,6 +228,20 @@
 .consultor-lista-table tbody tr:last-child td { border-bottom: 0; }
 .consultor-lista-table tbody td:first-child { padding-left: 18px; }
 .consultor-lista-table tbody td:last-child  { padding-right: 18px; }
+
+.consultor-lista-row.is-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.consultor-lista-row.is-clickable:hover td {
+  background: #f6f7f9;
+}
+
+.consultor-lista-row.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: -2px;
+}
 
 .consultor-lista-col-name   { width: 41%; }
 .consultor-lista-col-level  { width: 25%; }

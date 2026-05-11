@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
-  HiOutlineClipboardDocumentList,
   HiOutlineMagnifyingGlass,
   HiOutlinePlus,
   HiOutlineClock,
@@ -8,12 +8,37 @@ import {
   HiOutlineXCircle,
   HiOutlineArrowUturnLeft,
 } from 'react-icons/hi2'
+import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
+import tm1 from '../../../assets/images/badges/tm_1.png'
+import devops2 from '../../../assets/images/badges/devops_2.png'
 import './ConsultorPedidosView.css'
-import avtar1 from '../../../assets/images/avatars/avtar_1.png'
-import avtar2 from '../../../assets/images/avatars/avtar_2.png'
-import avtar3 from '../../../assets/images/avatars/avtar_3.png'
-import avtar4 from '../../../assets/images/avatars/avtar_4.png'
-import avtar5 from '../../../assets/images/avatars/avtar_5.png'
+
+function slugify(value) {
+  return value
+    .toString()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function IconPedidos({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M5.25 1.5C5.05109 1.5 4.86032 1.57902 4.71967 1.71967C4.57902 1.86032 4.5 2.05109 4.5 2.25V21.75C4.5 21.9489 4.57902 22.1397 4.71967 22.2803C4.86032 22.421 5.05109 22.5 5.25 22.5H9.75V21H6V3H18V10.5H19.5V2.25C19.5 2.05109 19.421 1.86032 19.2803 1.71967C19.1397 1.57902 18.9489 1.5 18.75 1.5H5.25Z" fill="currentColor" />
+      <path opacity="0.4" d="M7.5 7.5H16.5V6H7.5V7.5ZM7.5 10.5H13.5V9H7.5V10.5Z" fill="currentColor" />
+      <path opacity="0.4" fillRule="evenodd" clipRule="evenodd" d="M15.75 12C14.3576 12 13.0223 12.5531 12.0377 13.5377C11.0531 14.5223 10.5 15.8576 10.5 17.25C10.5 18.6424 11.0531 19.9777 12.0377 20.9623C13.0223 21.9469 14.3576 22.5 15.75 22.5C17.1424 22.5 18.4777 21.9469 19.4623 20.9623C20.4469 19.9777 21 18.6424 21 17.25C21 15.8576 20.4469 14.5223 19.4623 13.5377C18.4777 12.5531 17.1424 12 15.75 12ZM15 14.25V17.25C14.9998 17.3486 15.0191 17.4462 15.0567 17.5373C15.0942 17.6284 15.1494 17.7112 15.219 17.781L17.469 20.031L18.531 18.969L16.5 16.9395V14.25H15Z" fill="currentColor" />
+    </svg>
+  )
+}
 
 const STATUS_CONFIG = {
   analysis: { label: 'Em Análise',      Icon: HiOutlineClock,           cls: 'is-analysis' },
@@ -22,44 +47,78 @@ const STATUS_CONFIG = {
   returned: { label: 'Devolvido',       Icon: HiOutlineArrowUturnLeft,  cls: 'is-returned' },
 }
 
+const EVALUATOR_CONFIG = {
+  TM: { label: 'Talent Manager',      cls: 'is-tm' },
+  SL: { label: 'Service Line Lider',  cls: 'is-sl' },
+}
+
 const historyRows = [
-  { id: 1, name: 'Citizen Developer',    thumb: avtar1, evaluators: [avtar1],         status: 'analysis', progress: 25  },
-  { id: 2, name: 'Team Lider Beginner',  thumb: avtar2, evaluators: [avtar2, avtar3], status: 'analysis', progress: 64  },
-  { id: 3, name: 'DevOps Intermediate',  thumb: avtar3, evaluators: [avtar3, avtar4], status: 'accepted', progress: 100 },
-  { id: 4, name: 'Citizen Developer',    thumb: avtar4, evaluators: [avtar4, avtar2], status: 'rejected', progress: 100 },
-  { id: 5, name: 'Team Lider Beginner',  thumb: avtar5, evaluators: [avtar5],         status: 'returned', progress: 25  },
-  { id: 6, name: 'DevOps Intermediate',  thumb: avtar1, evaluators: [avtar1, avtar3], status: 'returned', progress: 76  },
+  { id: 1, name: 'Citizen Developer',    evaluators: ['TM'],       status: 'analysis', progress: 25  },
+  { id: 2, name: 'Team Lider Beginner',  evaluators: ['TM', 'SL'], status: 'analysis', progress: 64  },
+  { id: 3, name: 'DevOps Intermediate',  evaluators: ['TM', 'SL'], status: 'accepted', progress: 100 },
+  { id: 4, name: 'Citizen Developer',    evaluators: ['TM', 'SL'], status: 'rejected', progress: 100 },
+  { id: 5, name: 'Team Lider Beginner',  evaluators: ['TM'],       status: 'returned', progress: 25  },
+  { id: 6, name: 'DevOps Intermediate',  evaluators: ['TM', 'SL'], status: 'returned', progress: 76  },
 ]
 
 const candidateBadges = [
-  { id: 1, name: 'Citizen Developer',    area: 'LowCode (Outsystems)', thumb: avtar1 },
-  { id: 2, name: 'Team Lider Beginner',  area: 'Talent Management',    thumb: avtar2 },
-  { id: 3, name: 'DevOps Intermediate',  area: 'DevOps',               thumb: avtar3 },
+  { id: 1, name: 'Citizen Developer',    area: 'LowCode (Outsystems)', image: outsystems1 },
+  { id: 2, name: 'Team Lider Beginner',  area: 'Talent Management',     image: tm1 },
+  { id: 3, name: 'DevOps Intermediate',  area: 'DevOps',                image: devops2 },
 ]
 
-function HistoryRow({ row }) {
+const BADGE_IMAGE_BY_NAME = {
+  'Citizen Developer': outsystems1,
+  'Team Lider Beginner': tm1,
+  'DevOps Intermediate': devops2,
+}
+
+function BadgeThumbnail({ badge }) {
+  const image = badge.image || BADGE_IMAGE_BY_NAME[badge.name]
+  return <img src={image} alt={badge.name} className="consultor-pedidos-badge-thumb" />
+}
+
+function HistoryRow({ row, onClick }) {
   const status = STATUS_CONFIG[row.status]
   const StatusIcon = status.Icon
 
+  function handleKeyDown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onClick()
+    }
+  }
+
   return (
-    <tr>
+    <tr
+      className="consultor-pedidos-row is-clickable"
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`Ver detalhes do badge ${row.name}`}
+    >
       <td>
         <div className="consultor-pedidos-badge-cell">
-          <img src={row.thumb} alt="" className="consultor-pedidos-badge-thumb" />
+          <BadgeThumbnail badge={row} />
           <span className="consultor-pedidos-badge-name">{row.name}</span>
         </div>
       </td>
 
       <td>
         <div className="consultor-pedidos-evaluators">
-          {row.evaluators.map((avatar, index) => (
-            <img
-              key={index}
-              src={avatar}
-              alt=""
-              className="consultor-pedidos-evaluator-avatar"
-            />
-          ))}
+          {row.evaluators.map((code, index) => {
+            const cfg = EVALUATOR_CONFIG[code] ?? { label: code, cls: '' }
+            return (
+              <span
+                key={index}
+                className={`consultor-pedidos-evaluator-tag ${cfg.cls}`}
+                title={cfg.label}
+              >
+                {code}
+              </span>
+            )
+          })}
         </div>
       </td>
 
@@ -84,7 +143,7 @@ function HistoryRow({ row }) {
 function CandidateRow({ badge, onApply }) {
   return (
     <div className="consultor-pedidos-suggestion">
-      <img src={badge.thumb} alt="" className="consultor-pedidos-suggestion-thumb" />
+      <BadgeThumbnail badge={badge} />
 
       <div className="consultor-pedidos-suggestion-copy">
         <h4>{badge.name}</h4>
@@ -94,7 +153,7 @@ function CandidateRow({ badge, onApply }) {
       <button
         type="button"
         className="consultor-pedidos-apply-btn"
-        aria-label={`Candidatar ao badge ${badge.name}`}
+        aria-label={`Ver badge ${badge.name}`}
         onClick={() => onApply(badge)}
       >
         <HiOutlinePlus className="consultor-pedidos-apply-btn-icon" aria-hidden="true" />
@@ -104,6 +163,7 @@ function CandidateRow({ badge, onApply }) {
 }
 
 function ConsultorPedidosView() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredCandidates = useMemo(() => {
@@ -112,9 +172,12 @@ function ConsultorPedidosView() {
     return candidateBadges.filter((b) => `${b.name} ${b.area}`.toLowerCase().includes(term))
   }, [searchTerm])
 
-  function handleApply(badge) {
-    // TODO: ligar à API de candidatura a badges
-    console.info('Candidatar:', badge.name)
+  function goToBadge(name) {
+    navigate(`/consultor/badge/${slugify(name)}`)
+  }
+
+  function goToOutrasAreas() {
+    navigate('/consultor/badges/outras-areas')
   }
 
   return (
@@ -136,7 +199,7 @@ function ConsultorPedidosView() {
 
       <article className="consultor-pedidos-card" aria-label="Histórico de Pedidos">
         <header className="consultor-pedidos-card-header">
-          <HiOutlineClipboardDocumentList className="consultor-pedidos-card-header-icon" aria-hidden="true" />
+          <IconPedidos className="consultor-pedidos-card-header-icon" />
           <h2>Histórico de Pedidos</h2>
         </header>
 
@@ -150,7 +213,7 @@ function ConsultorPedidosView() {
           </thead>
           <tbody>
             {historyRows.map((row) => (
-              <HistoryRow key={row.id} row={row} />
+              <HistoryRow key={row.id} row={row} onClick={() => goToBadge(row.name)} />
             ))}
           </tbody>
         </table>
@@ -175,7 +238,7 @@ function ConsultorPedidosView() {
         <div className="consultor-pedidos-suggestions">
           {filteredCandidates.length > 0 ? (
             filteredCandidates.map((badge) => (
-              <CandidateRow key={badge.id} badge={badge} onApply={handleApply} />
+              <CandidateRow key={badge.id} badge={badge} onApply={(b) => goToBadge(b.name)} />
             ))
           ) : (
             <div className="consultor-pedidos-empty">Nenhum badge encontrado.</div>
@@ -183,7 +246,7 @@ function ConsultorPedidosView() {
         </div>
 
         <div className="consultor-pedidos-card-footer">
-          <button type="button" className="consultor-pedidos-more-btn">
+          <button type="button" className="consultor-pedidos-more-btn" onClick={goToOutrasAreas}>
             Ver Mais Badges
           </button>
         </div>

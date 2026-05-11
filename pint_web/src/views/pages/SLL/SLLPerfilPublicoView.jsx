@@ -1,11 +1,10 @@
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
+import badgeEntryLevel from '../../../assets/images/badges/outsystems_1.png'
+import badgeTeamLeader from '../../../assets/images/badges/tm_1.png'
+import badgeDevOps from '../../../assets/images/badges/devops_2.png'
 import './SLL-perfil-publico.css'
 
-const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
-const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
-const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
-const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
 const heroCircle1 = 'https://www.figma.com/api/mcp/asset/288fce76-e128-4294-99a0-2da910fa598e'
 const heroCircle2 = 'https://www.figma.com/api/mcp/asset/72189645-88a7-49c5-9d57-6e68bd098b5b'
 const heroCircle3 = 'https://www.figma.com/api/mcp/asset/cdd091b5-b5e5-4ef4-8207-d871d25984d9'
@@ -70,7 +69,7 @@ function SLLPerfilPublicoView() {
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={profileAvatar} alt="António Portugal" />
+                <img src="https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856" alt="António Portugal" />
               </div>
 
               <div className="sll-profile-copy">
