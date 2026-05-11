@@ -360,6 +360,14 @@
   flex-shrink: 0;
 }
 
+.tm-badges-area-icon-svg,
+.tm-badges-menu-icon-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: #ffffff;
+}
+
 .tm-badges-area-icon img,
 .tm-badges-menu-icon img {
   width: 16px;
@@ -444,6 +452,16 @@
   font-size: 14px;
   line-height: 21px;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tm-badges-badge-group-progress {
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: #39639c;
 }
 
 .tm-badges-badge-grid {
@@ -667,12 +685,11 @@
 }
 
 .tm-badges-card-points-icon {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: #8a92a6;
-  display: inline-block;
+  width: 14px;
+  height: 14px;
+  color: #f59e0b;
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .tm-badges-divider {

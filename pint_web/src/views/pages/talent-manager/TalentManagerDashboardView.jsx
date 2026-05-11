@@ -1,5 +1,13 @@
 import { FaBell, FaClipboardList } from 'react-icons/fa'
 
+import badgeJunior from '../../../assets/images/badges/tm_1.png'
+import badgeIntermedio from '../../../assets/images/badges/tm_2.png'
+import badgeSenior from '../../../assets/images/badges/tm_3.png'
+import badge4 from '../../../assets/images/badges/tm_4.png'
+import badge5 from '../../../assets/images/badges/tm_5.png'
+import badge6 from '../../../assets/images/badges/tm_special.png'
+import badge7 from '../../../assets/images/badges/outsystems_special.png'
+
 
 const heroCircle5 = 'https://www.figma.com/api/mcp/asset/739430e1-57f7-4057-8b30-e4e9ac3df7a9'
 const heroCircle4 = 'https://www.figma.com/api/mcp/asset/31ef0c85-37c3-4902-831e-06a6e32c1a31'
@@ -9,13 +17,6 @@ const heroCircle1 = 'https://www.figma.com/api/mcp/asset/8e0c1c48-1af5-4053-870f
 const pendingImage1 = 'https://www.figma.com/api/mcp/asset/351dcc52-b438-4039-8032-2145a7543488'
 const pendingImage2 = 'https://www.figma.com/api/mcp/asset/cc1850d2-ede7-4d3f-b410-76c7191d8812'
 const pendingImage3 = 'https://www.figma.com/api/mcp/asset/fdcac280-e852-47a8-a018-ef47d87ca4b6'
-const badgeJunior = 'https://www.figma.com/api/mcp/asset/5e7441b9-9e56-408f-b55b-f4c1ff9ac25e'
-const badgeIntermedio = 'https://www.figma.com/api/mcp/asset/75068ae9-9335-4083-8d92-65ac0d0370de'
-const badgeSenior = 'https://www.figma.com/api/mcp/asset/19bc82e2-8968-4464-8773-ea7b019e00db'
-const badge4 = 'https://www.figma.com/api/mcp/asset/a5449093-d00b-4959-94e8-73067670a5c9'
-const badge5 = 'https://www.figma.com/api/mcp/asset/151de966-29b4-4c0f-8b8b-cb7dd0f8cf0d'
-const badge6 = 'https://www.figma.com/api/mcp/asset/5109254f-b005-417b-bbae-724799eeed67'
-const badge7 = 'https://www.figma.com/api/mcp/asset/b3faff3f-ab54-49c8-affb-e1d6bd232a34'
 const requestClockIcon = 'https://www.figma.com/api/mcp/asset/675891eb-9ef9-4feb-9b53-6c651d6e435c'
 
 const pendingRequests = [

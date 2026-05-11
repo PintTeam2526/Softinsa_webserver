@@ -1,7 +1,26 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import badgeJuniorCitizenDeveloper from "../../../assets/images/badges/outsystems_1.png";
+import badgeOutsystemsAdvanced from "../../../assets/images/badges/outsystems_3.png";
+import badgeOutsystemsSpecial from "../../../assets/images/badges/outsystems_special.png";
+import badgeTmJunior from "../../../assets/images/badges/tm_1.png";
+import badgeTmAdvanced from "../../../assets/images/badges/tm_3.png";
+import badgeTmSpecial from "../../../assets/images/badges/tm_special.png";
+import badgeDevopsIntermediate from "../../../assets/images/badges/devops_2.png";
+import badgeDevopsAdvanced from "../../../assets/images/badges/devops_4.png";
 import "./admin-badges.css";
 
-const badgeJuniorCitizenDeveloper = "https://www.figma.com/api/mcp/asset/8ac1b8c7-eccc-423b-8373-e25bf82c55b4";
+const badgeImages = [
+  badgeJuniorCitizenDeveloper,
+  badgeOutsystemsAdvanced,
+  badgeOutsystemsSpecial,
+  badgeTmJunior,
+  badgeTmAdvanced,
+  badgeTmSpecial,
+  badgeDevopsIntermediate,
+  badgeDevopsAdvanced,
+];
+
+const defaultBadgeImage = badgeImages[0];
 
 const learningPathOptions = ["Jornada Técnica", "Power Skills"];
 const serviceLineOptions = ["Hybrid Cloud", "Data & AI", "Security"];
@@ -38,7 +57,7 @@ const badgesRows = Array.from({ length: 40 }, (_, index) => {
     points: 100 + (index % 4) * 25,
     isSpecial: index % 6 === 0,
     logoFileName: "",
-    image: badgeJuniorCitizenDeveloper,
+    image: badgeImages[index % badgeImages.length],
     requirements: [],
   };
 });
@@ -62,7 +81,7 @@ const getDefaultBadgeForm = () => ({
   isSpecial: true,
   logoFileName: "",
   logoFile: null,
-  image: badgeJuniorCitizenDeveloper,
+  image: defaultBadgeImage,
   requirements: [],
 });
 
@@ -341,7 +360,7 @@ const SoftinsaBadges = memo(() => {
         ...previousData,
         logoFile: file,
         logoFileName: file.name,
-        image: nextImage || previousData.image || badgeJuniorCitizenDeveloper,
+        image: nextImage || previousData.image || defaultBadgeImage,
       }));
     };
 
@@ -540,7 +559,7 @@ const SoftinsaBadges = memo(() => {
       points: parsedPoints,
       isSpecial: Boolean(formData.isSpecial),
       logoFileName: formData.logoFileName,
-      image: formData.image || badgeJuniorCitizenDeveloper,
+      image: formData.image || defaultBadgeImage,
       requirements: formData.requirements,
     };
 

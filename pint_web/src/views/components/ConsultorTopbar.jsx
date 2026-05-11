@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTopbarController } from '../../controllers/topbar.controller'
 import avatarImg from '../../assets/images/avatars/01.png'
@@ -55,43 +55,12 @@ function NotificationRepositoryArrowIcon({ isOpen }) {
   )
 }
 
-function NotificationRepository({
-  items,
-  expandedId,
-  isComposerOpen,
-  composeMessage,
-  onComposeMessageChange,
-  onToggleItem,
-  onClose,
-  onToggleComposer,
-  onShowRepository,
-  onSendBroadcast,
-}) {
-  const isSendDisabled = composeMessage.trim().length === 0
-
+function NotificationRepository({ items, expandedId, onToggleItem, onClose }) {
   return (
     <div className="softinsa-shell-notification-panel" role="dialog" aria-label="Repositorio de notificacoes">
       <div className="softinsa-shell-notification-panel-header">
         <div className="softinsa-shell-notification-panel-title-wrap">
-          <button
-            type="button"
-            className={`softinsa-shell-notification-panel-title-btn${isComposerOpen ? '' : ' is-active'}`}
-            onClick={onShowRepository}
-            aria-label="Ver lista de notificacoes"
-          >
-            <span className="softinsa-shell-notification-panel-title">Notificacoes</span>
-          </button>
-
-          <span className="softinsa-shell-notification-panel-separator" aria-hidden="true" />
-
-          <button
-            type="button"
-            className={`softinsa-shell-notification-panel-add${isComposerOpen ? ' is-active' : ''}`}
-            aria-label="Criar notificacao global"
-            onClick={onToggleComposer}
-          >
-            +
-          </button>
+          <span className="softinsa-shell-notification-panel-title">Notificacoes</span>
         </div>
 
         <button
@@ -106,69 +75,39 @@ function NotificationRepository({
 
       <div className="softinsa-shell-notification-panel-divider" />
 
-      {isComposerOpen ? (
-        <div className="softinsa-shell-notification-compose">
-          <label
-            className="softinsa-shell-notification-compose-label"
-            htmlFor="softinsa-shell-notification-compose-message"
-          >
-            Mensagem para todos os utilizadores:
-          </label>
+      <div className="softinsa-shell-notification-list">
+        {items.map((item) => {
+          const isExpanded = expandedId === item.id
 
-          <textarea
-            id="softinsa-shell-notification-compose-message"
-            className="softinsa-shell-notification-compose-textarea"
-            value={composeMessage}
-            onChange={(event) => onComposeMessageChange(event.target.value)}
-            placeholder="Escreva aqui a mensagem global..."
-          />
+          return (
+            <div key={item.id} className="softinsa-shell-notification-item-group">
+              <button
+                type="button"
+                className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
+                onClick={() => onToggleItem(item.id)}
+                aria-expanded={isExpanded}
+              >
+                <span className="softinsa-shell-notification-item-left">
+                  <span className="softinsa-shell-notification-item-title">{item.title}</span>
+                </span>
 
-          <div className="softinsa-shell-notification-compose-actions">
-            <button
-              type="button"
-              className="softinsa-shell-notification-send-btn"
-              onClick={onSendBroadcast}
-              disabled={isSendDisabled}
-            >
-              Enviar
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="softinsa-shell-notification-list">
-          {items.map((item) => {
-            const isExpanded = expandedId === item.id
+                <span className="softinsa-shell-notification-item-right">
+                  <span className="softinsa-shell-notification-item-source">{item.source}</span>
+                  <NotificationRepositoryArrowIcon isOpen={isExpanded} />
+                </span>
+              </button>
 
-            return (
-              <div key={item.id} className="softinsa-shell-notification-item-group">
-                <button
-                  type="button"
-                  className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
-                  onClick={() => onToggleItem(item.id)}
-                  aria-expanded={isExpanded}
+              {isExpanded ? (
+                <div
+                  className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}
                 >
-                  <span className="softinsa-shell-notification-item-left">
-                    <span className="softinsa-shell-notification-item-title">{item.title}</span>
-                  </span>
-
-                  <span className="softinsa-shell-notification-item-right">
-                    <span className="softinsa-shell-notification-item-source">{item.source}</span>
-                    <NotificationRepositoryArrowIcon isOpen={isExpanded} />
-                  </span>
-                </button>
-
-                {isExpanded ? (
-                  <div
-                    className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}
-                  >
-                    {item.message}
-                  </div>
-                ) : null}
-              </div>
-            )
-          })}
-        </div>
-      )}
+                  {item.message}
+                </div>
+              ) : null}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -177,26 +116,25 @@ const ConsultorTopbar = memo(() => {
   const {
     notificationWrapRef,
     isNotificationsOpen,
-    isNotificationComposerOpen,
     expandedNotificationId,
-    notificationBroadcastMessage,
     notificationItems,
     toggleNotifications,
     closeNotifications,
     toggleNotificationMessage,
-    toggleComposer,
-    showRepository,
-    sendBroadcast,
-    setNotificationBroadcastMessage,
   } = useTopbarController()
+
+  useEffect(() => {
+    function handleOpenNotifications() {
+      if (!isNotificationsOpen) {
+        toggleNotifications()
+      }
+    }
+    window.addEventListener('consultor:open-notifications', handleOpenNotifications)
+    return () => window.removeEventListener('consultor:open-notifications', handleOpenNotifications)
+  }, [isNotificationsOpen, toggleNotifications])
 
   return (
     <div className="softinsa-shell-topbar">
-      <label className="softinsa-shell-topbar-search" aria-label="Search">
-        <SearchIcon />
-        <input type="text" placeholder="Search..." />
-      </label>
-
       <div className="softinsa-shell-topbar-actions">
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button
@@ -213,14 +151,8 @@ const ConsultorTopbar = memo(() => {
             <NotificationRepository
               items={notificationItems}
               expandedId={expandedNotificationId}
-              isComposerOpen={isNotificationComposerOpen}
-              composeMessage={notificationBroadcastMessage}
-              onComposeMessageChange={setNotificationBroadcastMessage}
               onToggleItem={toggleNotificationMessage}
               onClose={closeNotifications}
-              onToggleComposer={toggleComposer}
-              onShowRepository={showRepository}
-              onSendBroadcast={sendBroadcast}
             />
           ) : null}
         </div>
