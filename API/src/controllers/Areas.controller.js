@@ -7,7 +7,7 @@ controllers.getAllAreas = async (req, res) => {
     try {
         const isAdmin = req.user?.role === "admin";
 
-        const whereClause = isAdmin ? {} : { estado_A_I_: true };
+        const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await Areas.findAll({
             where: whereClause
@@ -45,7 +45,7 @@ controllers.getAreaByID = async (req, res) => {
             });
         }
 
-        if (resultado.estado_A_I_ === false && !isAdmin) {
+        if (resultado.estado_A_I === false && !isAdmin) {
             return res.status(401).json({
                 mensagem: "Utilizador não autorizado"
             });
@@ -80,7 +80,7 @@ controllers.createArea = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I_
+            estado_A_I
         } = req.body;
 
         await Areas.create({
@@ -89,7 +89,7 @@ controllers.createArea = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I_,
+            estado_A_I,
             data_insercao: new Date()   // DATA ATUAL
         });
 
@@ -121,7 +121,7 @@ controllers.deleteAreaByID = async (req, res) => {
         const id = req.params.id;
         const resultado = await Areas.findByPk(id);
 
-        resultado.estado_A_I_ = false;
+        resultado.estado_A_I = false;
         await resultado.save();
 
         return res.status(200).json({
@@ -163,14 +163,14 @@ controllers.updateAreaByID = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I_
+            estado_A_I
         } = req.body;
 
         area.id_serviceline = id_serviceline ?? area.id_serviceline;
         area.nome_area = nome_area ?? area.nome_area;
         area.descricao_area = descricao_area ?? area.descricao_area;
         area.imagem_area = imagem_area ?? area.imagem_area;
-        area.estado_A_I_ = estado_A_I_ ?? area.estado_A_I_;
+        area.estado_A_I = estado_A_I ?? area.estado_A_I;
 
         area.data_insercao = new Date(); // DATA ATUALIZADA
 

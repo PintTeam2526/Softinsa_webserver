@@ -7,7 +7,7 @@ controllers.getAllBadges = async (req, res) => {
     try {
         const isAdmin = req.user?.role === "admin";
 
-        const whereClause = isAdmin ? {} : { estado_A_I_: true };
+        const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await Badges.findAll({
             where: whereClause
@@ -39,7 +39,7 @@ controllers.getBadgeById = async (req, res) => {
             });
         }
 
-        if (resultado.estado_A_I_ === false && !isAdmin) {
+        if (resultado.estado_a_i === false && !isAdmin) {
             return res.status(401).json({
                 mensagem: "Utilizador não autorizado"
             });
@@ -79,7 +79,7 @@ controllers.createBadge = async (req, res) => {
             imagem_badge,
             sla,
             validade,
-            estado_A_I_
+            estado_a_i
         } = req.body;
 
         await Badges.create({
@@ -93,7 +93,7 @@ controllers.createBadge = async (req, res) => {
             imagem_badge,
             sla,
             validade,
-            estado_A_I_,
+            estado_a_i,
             data_insercao: new Date() // DATA ATUAL
         });
 
@@ -132,7 +132,7 @@ controllers.deleteBadgeById = async (req, res) => {
             });
         }
 
-        resultado.estado_A_I_ = false;
+        resultado.estado_a_i = false;
 
         await resultado.save();
 
@@ -181,7 +181,7 @@ controllers.updateBadgeById = async (req, res) => {
             imagem_badge,
             sla,
             validade,
-            estado_A_I_
+            estado_a_i
         } = req.body;
 
         badge.id_area = id_area ?? badge.id_area;
@@ -193,7 +193,7 @@ controllers.updateBadgeById = async (req, res) => {
         badge.imagem_badge = imagem_badge ?? badge.imagem_badge;
         badge.sla = sla ?? badge.sla;
         badge.validade = validade ?? badge.validade;
-        badge.estado_A_I_ = estado_A_I_ ?? badge.estado_A_I_;
+        badge.estado_a_i = estado_a_i ?? badge.estado_a_i;
 
         badge.data_insercao = new Date(); // DATA ATUALIZADA
 
