@@ -4,7 +4,6 @@ import ConsultorLayout from './views/layouts/ConsultorLayout'
 import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/admin-users'
 import SoftinsaPedidos from './views/pages/admin/admin-pedidos'
-import SoftinsaSlas from './views/pages/admin/admin-slas'
 import SoftinsaRgpd from './views/pages/admin/admin-rgpd'
 import SoftinsaBadges from './views/pages/admin/admin-badges'
 import SoftinsaAreas from './views/pages/admin/admin-areas'
@@ -42,7 +41,6 @@ function App() {
         <Route index element={<DashboardView />} />
         <Route path="utilizadores" element={<SoftinsaUsers />} />
         <Route path="pedidos" element={<SoftinsaPedidos />} />
-        <Route path="slas" element={<SoftinsaSlas />} />
         <Route path="rgpd" element={<SoftinsaRgpd />} />
         <Route path="badges" element={<SoftinsaBadges />} />
         <Route path="areas" element={<SoftinsaAreas />} />

@@ -8,7 +8,6 @@ export const sidebarSections = [
     items: [
       { text: 'Utilizadores', icon: 'users', to: '/softinsa/utilizadores' },
       { text: 'Pedidos', icon: 'pedidos', to: '/softinsa/pedidos' },
-      { text: 'SLAs', icon: 'slas', to: '/softinsa/slas' },
       { text: 'RGPD', icon: 'rgpd', to: '/softinsa/rgpd' },
     ],
   },
