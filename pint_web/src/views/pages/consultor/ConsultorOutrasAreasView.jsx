@@ -27,6 +27,7 @@ function ConsultorOutrasAreasView() {
       showExportButton={false}
       classPrefix="consultor-outras"
       onBadgeClick={handleBadgeClick}
+      showTabProgress
     />
   )
 }

@@ -147,6 +147,7 @@ function TalentManagerBadgesView({
   showExportButton = true,
   classPrefix = 'tm-badges',
   onBadgeClick = null,
+  showTabProgress = false,
 } = {}) {
   const [showExport, setShowExport] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState(null)
@@ -163,7 +164,28 @@ function TalentManagerBadgesView({
   }
 
   const cp = classPrefix
-  const tabs = ['Jornada Técnica', 'Power Skills']
+
+  const jornadaTotals = Object.values(badgeSets).reduce(
+    (acc, sections) => {
+      sections.forEach((section) => {
+        acc.obtained += section.obtained ?? 0
+        acc.total += section.badges.length
+      })
+      return acc
+    },
+    { obtained: 0, total: 0 }
+  )
+
+  const tabs = [
+    {
+      label: 'Jornada Técnica',
+      progress: jornadaTotals.total ? Math.round((jornadaTotals.obtained / jornadaTotals.total) * 100) : 0,
+    },
+    {
+      label: 'Power Skills',
+      progress: 0,
+    },
+  ]
 
   const exportRows = Object.entries(badgeSets).flatMap(([areaName, groups]) =>
     groups.flatMap((group) =>
@@ -236,14 +258,17 @@ function TalentManagerBadgesView({
           <div className={`${cp}-tabs`} role="tablist" aria-label="Categorias de badges">
             {tabs.map((tab) => (
               <button
-                key={tab}
+                key={tab.label}
                 type="button"
-                className={`${cp}-tab${activeTab === tab ? ' is-active' : ''}`}
+                className={`${cp}-tab${activeTab === tab.label ? ' is-active' : ''}`}
                 role="tab"
-                aria-selected={activeTab === tab}
-                onClick={() => setActiveTab(tab)}
+                aria-selected={activeTab === tab.label}
+                onClick={() => setActiveTab(tab.label)}
               >
-                {tab}
+                <span className={`${cp}-tab-label`}>{tab.label}</span>
+                {showTabProgress ? (
+                  <span className={`${cp}-tab-progress`}>Progresso: {tab.progress}%</span>
+                ) : null}
               </button>
             ))}
           </div>
@@ -311,12 +336,7 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.hybrid.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>
-                      <span>{section.title}</span>
-                      <span className={`${cp}-badge-group-progress`}>
-                        {Math.round((section.obtained / section.badges.length) * 100)}%
-                      </span>
-                    </div>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
@@ -350,12 +370,7 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.applicationOps.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>
-                      <span>{section.title}</span>
-                      <span className={`${cp}-badge-group-progress`}>
-                        {Math.round((section.obtained / section.badges.length) * 100)}%
-                      </span>
-                    </div>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
@@ -389,12 +404,7 @@ function TalentManagerBadgesView({
               <div className={`${cp}-area-body`}>
                 {badgeSets.sourcTalentManag.map((section) => (
                   <div key={section.title} className={`${cp}-badge-group`}>
-                    <div className={`${cp}-badge-group-title`}>
-                      <span>{section.title}</span>
-                      <span className={`${cp}-badge-group-progress`}>
-                        {Math.round((section.obtained / section.badges.length) * 100)}%
-                      </span>
-                    </div>
+                    <div className={`${cp}-badge-group-title`}>{section.title}</div>
                     <div className={`${cp}-badge-grid`}>
                       {section.badges.map((badge) => (
                         <BadgeCard
