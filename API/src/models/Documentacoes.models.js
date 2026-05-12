@@ -28,7 +28,7 @@ var Documentacoes = sequelize.define('Documentacoes',
         },
     },
     documentacao: {
-        type: Sequelize.STRING(254),
+        type: Sequelize.TEXT,
         allowNull: false
     },
     validado: {

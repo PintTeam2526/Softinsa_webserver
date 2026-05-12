@@ -1,4 +1,5 @@
 const Badges = require('../models/Badges.models');
+const devolverEstadoBadgeService = require('../services/devolverEstadoBadge.service');
 
 const controllers = {};
 
@@ -210,6 +211,21 @@ controllers.updateBadgeById = async (req, res) => {
         return res.status(500).json({
             mensagem: "Erro ao atualizar badge",
             erro: error.message
+        });
+    }
+};
+
+// Devolver estado do badge
+controllers.devolverEstadoBadge = async (req, res) => {
+    try {
+        const estado = await devolverEstadoBadgeService.devolverEstadoBadge(
+            req.params.id_badge,
+            req.params.id_consultor
+        );
+        res.json({estado});
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
         });
     }
 };

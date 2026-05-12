@@ -18,6 +18,9 @@ router.put('/:id/update', controllerBadges.updateBadgeById);
 // Eliminar um  badge
 router.delete('/:id/delete', controllerBadges.deleteBadgeById);
 
+// Devolver estado do badge
+router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
+
 
 //AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
 

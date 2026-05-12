@@ -1,6 +1,7 @@
 const Utilizadores = require('../models/Utilizadores.models');
 const Objetivos = require('../models/Objetivos.models');
 const Notificacoes = require('../models/NotificacoesPedidos.models');
+const criarUtilizadoresService = require('../services/criarUtilizadores.service');
 
 const controllers = {};
 
@@ -17,10 +18,16 @@ controllers.getUtilizadorById = async (req, res) => {
     res.json(resultado);
 };
 
-//Criar um utilizador
+//Criar um utilizador (usa o service criar utilizadores)
 controllers.createUtilizador = async (req, res) => {
-    const resultado = await Utilizadores.create(req.body);
-    res.json(resultado);
+    try {
+        const resultado = await criarUtilizadoresService.criarUtilizador(req.body);
+        res.status(201).json(resultado);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
 };
 
 //Apagar um utilizador com determinado id
