@@ -1,6 +1,7 @@
 const Utilizadores = require('../models/Utilizadores.models');
 const Objetivos = require('../models/Objetivos.models');
 const Notificacoes = require('../models/NotificacoesPedidos.models');
+const criarUtilizadoresService = require('../services/criarUtilizadores.service');
 
 const controllers = {};
 
@@ -67,60 +68,14 @@ controllers.getUtilizadorById = async (req, res) => {
     }
 };
 
-// Criar utilizador
+//Criar um utilizador (usa o service criar utilizadores)
 controllers.createUtilizador = async (req, res) => {
     try {
-        const {
-            nome_utilizador,
-            email_utilizador,
-            password_utilizador,
-            username_utilizador,
-            tipo_utilizador,
-            imagem_utilizador,
-            estado_a_i
-        } = req.body;
-
-        const isAdmin = req.user?.role === "A";
-
-        // Talent Manager / Service Line / Admin → só admin
-        if (
-            ["TM", "SL", "A"].includes(tipo_utilizador) &&
-            !isAdmin
-        ) {
-            return res.status(401).json({
-                mensagem: "Utilizador não autorizado"
-            });
-        }
-
-        // Consultor → guest ou admin
-        if (
-            tipo_utilizador === "CO" &&
-            req.user &&
-            !isAdmin
-        ) {
-            return res.status(401).json({
-                mensagem: "Utilizador não autorizado"
-            });
-        }
-
-        const resultado = await Utilizadores.create({
-            nome_utilizador,
-            email_utilizador,
-            password_utilizador,
-            username_utilizador,
-            tipo_utilizador,
-            imagem_utilizador,
-            estado_a_i
-        });
-
-        return res.status(201).json(resultado);
-
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            mensagem: "Erro ao criar utilizador",
-            erro: error.message
+        const resultado = await criarUtilizadoresService.criarUtilizador(req.body);
+        res.status(201).json(resultado);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
         });
     }
 };
