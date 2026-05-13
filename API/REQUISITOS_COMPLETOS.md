@@ -281,7 +281,7 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 | id_historico | SERIAL PK | |
 | id_estado | INTEGER FK → Estados | |
 | id_pedido_badge | INTEGER FK → PedidosBadges | |
-| id_utilizador_avaliador | INTEGER | (não está no modelo Sequelize mas é usado no controller) |
+| id_utilizador_avaliador | INTEGER | FK → Utilizadores (nullable; adicionado ao modelo na correção #24) |
 | data | DATE NOT NULL | |
 | estado_objetivo | TEXT NOT NULL | Descrição do evento |
 
@@ -338,7 +338,7 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 
 Nenhum — todas as correções foram aplicadas.
 
-#### Corrigidas (13/05/2026)
+#### Corrigidas (13/05/2026) + (14/05/2026)
 | # | Problema | Ficheiro | Fix |
 |---|----------|----------|-----|
 | 6 | `RGPD.models.js` e `Politicas.models.js` duplicam modelo `Politicas`; `Politicas.models.js` sem require de `Administradores` | ambos | `Politicas.models.js` sobrescrito com conteúdo correto; `RGPD.models.js` apagado; `setup.js:26` descomentado |
@@ -370,6 +370,11 @@ Nenhum — todas as correções foram aplicadas.
 | 33 | `database.js`: `logging: true` causa deprecation warning | `database.js:15` | `logging: true` → `logging: false` |
 | 34 | `app.js`: `sync({alter:true})` falha com "column contains null values" em BD existente | `app.js:58` | `sync({alter:true})` → `sync({force:true})` — recria tabelas do zero |
 | 35 | `sql/seed.sql`: INSERTs sem `"createdAt"`/`"updatedAt"` violam NOT NULL nas tabelas com `timestamps:true` | `sql/seed.sql:13,49,56,185` | Adicionadas colunas `"createdAt"`, `"updatedAt"` com `NOW()` em Utilizadores, Consultores, Administradores, Politicas |
+| 36 | `seed.service.js`: `{ multiple: true }` é flag MSSQL — causa falha silenciosa em PostgreSQL | `seed.service.js:21` | Removido `{ multiple: true }` |
+| 37 | `seed.service.js`: erro só logava `error.message`, sem mostrar SQL | `seed.service.js:25-26` | Adicionado `if (error.sql) console.error('   SQL:', ...)` |
+| 38 | `seed.service.js`: COUNT query sem quotes lia tabela legado `utilizadores` em vez de `"Utilizadores"` | `seed.service.js:9` | `FROM Utilizadores` → `FROM "Utilizadores"` |
+| 39 | `sql/seed.sql`: tabelas sem quotes no seed falham em pgAdmin porque PostgreSQL lowercase bate em tabelas legado | `sql/seed.sql` (23 INSERTs) | Todos os nomes de tabela quotados: `INSERT INTO "Tabela"` |
+| 40 | `sql/seed.sql`: `INSERT INTO "Estados"` duplica seed do `afterSync` hook no model | `sql/seed.sql:90-98` | Removido bloco Estados (model `Estados.models.js` tem `afterSync` com `popularEstados()`) |
 
 ---
 
@@ -698,8 +703,10 @@ Nenhum — todas as correções foram aplicadas.
 |---------------|-----------|
 | Ao iniciar (`npm start`) | Importa 24 modelos Sequelize |
 | | `sequelize.sync({ force: true })` — recria tabelas conforme os modelos (destrutivo) |
-| | `seedDatabase()` — lê e executa `sql/seed.sql` se BD estiver vazia |
+| | `afterSync` hook em `Estados.models.js` — popula automaticamente os 6 estados |
+| | `seedDatabase()` — verifica `"Utilizadores"` (quotes forçam case-sensitive); se vazia, lê e executa `sql/seed.sql` |
 | | `app.listen(3000)` — só inicia após sync + seed |
+| **Nota:** | `sql/seed.sql` usa nomes de tabela quotados (`"Utilizadores"`, `"Areas"`, etc.) para compatibilidade com PostgreSQL (case-sensitive) e pgAdmin |
 
 ### 5.2 Endpoints com Rotas Comentadas (Por Implementar)
 
@@ -948,7 +955,7 @@ API/
     routes/
       Rotas.js             # Agregador de rotas
       # +12 ficheiros de rota individuais
-    services/              # 5 serviços de lógica de negócio
+    services/              # 6 serviços: lógica de negócio + seedDatabase()
     public/                # Ficheiros estáticos
   docs/
     analise-funcionalidades-falta.md  # Análise de funcionalidades em falta
