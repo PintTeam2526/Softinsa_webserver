@@ -317,6 +317,13 @@
             ],
             "url": "{{baseUrl}}/api/badges/{{badgeId}}/delete"
           }
+        },
+        {
+          "name": "Get Badge Estado by Consultor",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/consultor/{{userId}}/estado"
+          }
         }
       ]
     },

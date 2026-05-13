@@ -115,7 +115,7 @@ controllers.createBadge = async (req, res) => {
 // Eliminar badge
 controllers.deleteBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -154,7 +154,7 @@ controllers.deleteBadgeById = async (req, res) => {
 // Atualizar badge
 controllers.updateBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({

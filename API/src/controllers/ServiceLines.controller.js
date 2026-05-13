@@ -104,7 +104,7 @@ controllers.createServiceLine = async (req, res) => {
 // Eliminar Service Line (soft delete)
 controllers.deleteServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -143,7 +143,7 @@ controllers.deleteServiceLineById = async (req, res) => {
 // Atualizar Service Line
 controllers.updateServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({

@@ -100,9 +100,8 @@ controllers.deleteUtilizadorById = async (req, res) => {
             });
         }
 
-        await Utilizadores.destroy({
-            where: { id_utilizador: id }
-        });
+        utilizador.estado_a_i = false;
+        await utilizador.save();
 
         return res.status(200).json({
             mensagem: "Utilizador eliminado"
