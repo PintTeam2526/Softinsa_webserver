@@ -5,7 +5,7 @@ const controllers = {};
 // Mostrar todas as Learning Paths
 controllers.getAllLearningPaths = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === 'A';
+        const isAdmin = req.user?.role === 'a';
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
@@ -27,7 +27,7 @@ controllers.getAllLearningPaths = async (req, res) => {
 // Mostrar uma Learning Path por ID
 controllers.getLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const id = req.params.id;
 
         const resultado = await LearningPaths.findByPk(id);
@@ -38,7 +38,7 @@ controllers.getLearningPathById = async (req, res) => {
             });
         }
 
-        if (resultado.estado_A_I_ === false && !isAdmin) {
+        if (resultado.estado_a_i === false && !isAdmin) {
             return res.status(401).json({
                 mensagem: "Utilizador não autorizado"
             });
@@ -59,7 +59,7 @@ controllers.getLearningPathById = async (req, res) => {
 // Criar Learning Path
 controllers.createLearningPath = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -101,7 +101,7 @@ controllers.createLearningPath = async (req, res) => {
 // Eliminar Learning Path
 controllers.deleteLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -119,7 +119,7 @@ controllers.deleteLearningPathById = async (req, res) => {
             });
         }
 
-        resultado.estado_A_I_ = false;
+        resultado.estado_a_i = false;
 
         await resultado.save();
 
@@ -140,7 +140,7 @@ controllers.deleteLearningPathById = async (req, res) => {
 // Atualizar Learning Path
 controllers.updateLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -168,7 +168,7 @@ controllers.updateLearningPathById = async (req, res) => {
         learningPath.nome_learning_path = nome_learning_path ?? learningPath.nome_learning_path;
         learningPath.descricao_learning_path = descricao_learning_path ?? learningPath.descricao_learning_path;
         learningPath.imagem_learning_path = imagem_learning_path ?? learningPath.imagem_learning_path;
-        learningPath.estado_A_I_ = estado_A_I_ ?? learningPath.estado_A_I_;
+        learningPath.estado_a_i = estado_a_i ?? learningPath.estado_a_i;
 
         learningPath.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 

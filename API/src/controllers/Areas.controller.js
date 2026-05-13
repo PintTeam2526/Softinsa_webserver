@@ -8,7 +8,7 @@ const controllers = {};
 // Mostrar todas as áreas
 controllers.getAllAreas = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await Areas.findAll({
@@ -54,7 +54,7 @@ controllers.getAllAreas = async (req, res) => {
 // Mostrar área por ID
 controllers.getAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const id = req.params.id;
 
         const resultado = await Areas.findByPk(id,
@@ -106,7 +106,7 @@ controllers.getAreaByID = async (req, res) => {
 // Criar área
 controllers.createArea = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -116,7 +116,7 @@ controllers.createArea = async (req, res) => {
 
         const {
             id_area,
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
@@ -125,7 +125,7 @@ controllers.createArea = async (req, res) => {
 
         await Areas.create({
             id_area,
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
@@ -150,7 +150,7 @@ controllers.createArea = async (req, res) => {
 // Eliminar área
 controllers.deleteAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -181,7 +181,7 @@ controllers.deleteAreaByID = async (req, res) => {
 // Atualizar área
 controllers.updateAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -199,14 +199,14 @@ controllers.updateAreaByID = async (req, res) => {
         }
 
         const {
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
             estado_a_i
         } = req.body;
 
-        area.id_serviceline = id_serviceline ?? area.id_serviceline;
+        area.id_service_line = id_service_line ?? area.id_service_line;
         area.nome_area = nome_area ?? area.nome_area;
         area.descricao_area = descricao_area ?? area.descricao_area;
         area.imagem_area = imagem_area ?? area.imagem_area;

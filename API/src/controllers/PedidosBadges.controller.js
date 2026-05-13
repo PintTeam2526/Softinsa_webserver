@@ -4,6 +4,9 @@ const HistoricoPedidos = require("../models/HistoricoPedidos.models");
 const NotificacoesPedidos = require("../models/NotificacoesPedidos.models");
 const BadgesConcluidos = require("../models/BadgesConcluidos.models");
 const TalentManager = require("../models/TalentManagers.models");
+const Badges = require("../models/Badges.models");
+const Area = require("../models/Areas.models");
+const ServiceLineLider = require("../models/ServiceLineLiders.models");
 
 const controllers = {};
 
@@ -12,19 +15,19 @@ const controllers = {};
 ===================================================== */
 
 function isAdmin(req) {
-    return req.user?.role === "A";
+    return req.user?.role === "a";
 }
 
 function isTM(req) {
-    return req.user?.role === "TM";
+    return req.user?.role === "t";
 }
 
 function isSL(req) {
-    return req.user?.role === "SL";
+    return req.user?.role === "s";
 }
 
 function isConsultor(req) {
-    return req.user?.role === "CO";
+    return req.user?.role === "c";
 }
 
 async function criarHistorico(idPedido, idEstado, idUser, texto) {
@@ -57,7 +60,7 @@ async function escolherTalentManager() {
             where: {
                 id_talent_manager: tm.id_talent_manager,
                 estado_atual: {
-                    [Sequelize.Op.notIn]: [7, 8] // rejeitado / concluído
+                    [Sequelize.Op.notIn]: [4, 5] // aprovado / rejeitado
                 }
             }
         });
@@ -162,7 +165,7 @@ controllers.createPedido = async (req, res) => {
                 id_consultor: id_consultor,
                 id_badge: id_badge,
                 estado_atual: {
-                    [Sequelize.Op.notIn]: [7, 8] // 7: Rejeitado, 8: Concluído
+                    [Sequelize.Op.notIn]: [4, 5] // 4: Aprovado, 5: Rejeitado
                 }
             }
         });
@@ -182,16 +185,28 @@ controllers.createPedido = async (req, res) => {
             });
         }
 
-        // 📝 3. Criar o pedido
+        // 🔍 3. Buscar Service Line Lider da área do badge
+        const badge = await Badges.findByPk(id_badge);
+        if (!badge) {
+            return res.status(404).json({ mensagem: "Badge não encontrado" });
+        }
+        const area = await Area.findByPk(badge.id_area);
+        if (!area) {
+            return res.status(404).json({ mensagem: "Área não encontrada" });
+        }
+        const sl = await ServiceLineLider.findOne({ where: { id_service_line: area.id_service_line } });
+        const idServiceLineLider = sl ? sl.id_service_line_lider : 1;
+
+        // 📝 4. Criar o pedido
         const pedido = await Pedidos.create({
             id_consultor,
             id_talent_manager: tm.id_talent_manager,
-            id_service_line_lider: 1, // Definido como 1 conforme o teu código original
+            id_service_line_lider: idServiceLineLider,
             id_badge,
             estado_atual: 1
         });
 
-        // 📜 4. Histórico e Notificação
+        // 📜 5. Histórico e Notificação
         await criarHistorico(
             pedido.id_pedido_badge,
             1,
@@ -200,9 +215,9 @@ controllers.createPedido = async (req, res) => {
         );
 
         await criarNotificacao(
-            tm.id_talent_manager,
+            id_consultor,
             pedido.id_pedido_badge,
-            "Novo pedido atribuído automaticamente."
+            "Novo pedido criado. Aguarda validação."
         );
 
         return res.status(201).json({
@@ -246,7 +261,7 @@ controllers.tmReview = async (req, res) => {
         let mensagemResposta;
 
         if (acao === "aprovar") {
-            estado = 5;
+            estado = 2;
             mensagemHistorico = "Aprovado pelo Talent Manager";
             mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
             mensagemResposta = "Pedido aprovado";
@@ -313,7 +328,7 @@ controllers.slReview = async (req, res) => {
 
         const acoes = {
             aprovar: {
-                estado: 8,
+                estado: 4,
                 historico: "Aprovado final",
                 notificacao: "Pedido aprovado. Badge atribuído.",
                 resposta: "Pedido aprovado com sucesso"
@@ -325,7 +340,7 @@ controllers.slReview = async (req, res) => {
                 resposta: "Pedido devolvido"
             },
             rejeitar: {
-                estado: 7,
+                estado: 5,
                 historico: "Pedido rejeitado",
                 notificacao: "Pedido rejeitado.",
                 resposta: "Pedido rejeitado"
@@ -350,7 +365,7 @@ controllers.slReview = async (req, res) => {
                 id_badge: pedido.id_badge,
                 id_consultor: pedido.id_consultor,
                 data_limite_conclusao: new Date(),
-                data_conclusao: new Date(),
+                data_conclusao_badge: new Date(),
                 url_validacao: "Interno"
             });
         }
@@ -412,13 +427,13 @@ controllers.resubmitPedido = async (req, res) => {
         }
 
         // 🔄 Atualizar estado (volta para TM)
-        pedido.estado_atual = 2;
+        pedido.estado_atual = 1;
         await pedido.save();
 
         // 📝 Histórico
         await criarHistorico(
             pedido.id_pedido_badge,
-            2,
+            1,
             req.user.id,
             "Pedido reenviado pelo consultor"
         );

@@ -55,14 +55,14 @@ async function criarUtilizador({
         }
 
         // TALENT MANAGER
-        else if (tipo_utilizador === 'tm') {
+        else if (tipo_utilizador === 't') {
             await TalentManagers.create({
                 id_utilizador: novoUtilizador.id_utilizador
             }, { transaction });
         }
 
         // SERVICE LINE LIDER
-        else if (tipo_utilizador === 'sl') {
+        else if (tipo_utilizador === 's') {
             if (!id_service_line) {
                 throw new Error('O id_service_line é obrigatório para service line liders');
             }

@@ -6,7 +6,7 @@ const badges = require('../models/Badges.models');
 const utilizador = require('../models/Utilizadores.models');
 const consultor = require('../models/Consultores.models');
 const area = require('../models/Areas.models')
-const listarPedidos = require('../services/listarPedidos.service')
+const { listarPedidosPorCargo } = require('../services/listarPedidos.service')
 
 const controller = {};
 
@@ -94,15 +94,19 @@ const controller = {};
 
 controller.consultor = async (req, res) => {
     try{
-        const isConsultor = req.user?.role === "CO";
+        const isConsultor = req.user?.role === "c";
+
+        if (!isConsultor) {
+            return res.status(401).json({ mensagem: "Utilizador não autorizado" });
+        }
 
         const badgesObtidosConsultor = await badgesObtidos.findAll({
-            where: id_consultor = req.user.id_consultor
+            where: { id_consultor: req.user.id_consultor }
         })
 
-        const pedidos = listarPedidos('')
+        const pedidos = await listarPedidosPorCargo('consultor', req.user.id_consultor)
 
-        res.json({badgesObtidosConsultor})
+        res.json({ badgesObtidosConsultor, pedidos })
     }
     catch(error)
     {
