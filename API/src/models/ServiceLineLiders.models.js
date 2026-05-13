@@ -35,8 +35,8 @@ var ServiceLineLiders = sequelize.define('ServiceLineLiders',
 });
 
 
-ServiceLineLiders.belongsTo(Utilizador);
-ServiceLineLiders.belongsTo(ServiceLine);
+ServiceLineLiders.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
+ServiceLineLiders.belongsTo(ServiceLine, { foreignKey: 'id_service_line' });
 
 module.exports = ServiceLineLiders;
 

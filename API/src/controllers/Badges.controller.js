@@ -1,11 +1,12 @@
 const Badges = require('../models/Badges.models');
+const devolverEstadoBadgeService = require('../services/devolverEstadoBadge.service');
 
 const controllers = {};
 
 // Mostrar todos os badges
 controllers.getAllBadges = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
@@ -28,7 +29,7 @@ controllers.getAllBadges = async (req, res) => {
 // Mostrar badge por ID
 controllers.getBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
         const id = req.params.id;
 
         const resultado = await Badges.findByPk(id);
@@ -60,7 +61,7 @@ controllers.getBadgeById = async (req, res) => {
 // Criar badge
 controllers.createBadge = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -114,7 +115,7 @@ controllers.createBadge = async (req, res) => {
 // Eliminar badge
 controllers.deleteBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -153,7 +154,7 @@ controllers.deleteBadgeById = async (req, res) => {
 // Atualizar badge
 controllers.updateBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -210,6 +211,21 @@ controllers.updateBadgeById = async (req, res) => {
         return res.status(500).json({
             mensagem: "Erro ao atualizar badge",
             erro: error.message
+        });
+    }
+};
+
+// Devolver estado do badge
+controllers.devolverEstadoBadge = async (req, res) => {
+    try {
+        const estado = await devolverEstadoBadgeService.devolverEstadoBadge(
+            req.params.id_badge,
+            req.params.id_consultor
+        );
+        res.json({estado});
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
         });
     }
 };

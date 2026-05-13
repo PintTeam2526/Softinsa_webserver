@@ -5,15 +5,13 @@ const controllers = {};
 // Mostrar todas as Learning Paths
 controllers.getAllLearningPaths = async (req, res) => {
     try {
-
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === 'A';
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await LearningPaths.findAll({
             where: whereClause
         });
-        console.log("Learning paths")
         return res.status(200).json(resultado);
 
     } catch (error) {
@@ -29,7 +27,7 @@ controllers.getAllLearningPaths = async (req, res) => {
 // Mostrar uma Learning Path por ID
 controllers.getLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
         const id = req.params.id;
 
         const resultado = await LearningPaths.findByPk(id);
@@ -61,7 +59,7 @@ controllers.getLearningPathById = async (req, res) => {
 // Criar Learning Path
 controllers.createLearningPath = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -103,7 +101,7 @@ controllers.createLearningPath = async (req, res) => {
 // Eliminar Learning Path
 controllers.deleteLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -142,7 +140,7 @@ controllers.deleteLearningPathById = async (req, res) => {
 // Atualizar Learning Path
 controllers.updateLearningPathById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({

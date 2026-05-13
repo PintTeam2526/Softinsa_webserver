@@ -30,7 +30,7 @@ var Favoritos = sequelize.define('Favoritos',
     timestamps: false
 });
 
-Favoritos.belongsTo(Consultor);
-Favoritos.belongsTo(Badge);
+Favoritos.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+Favoritos.belongsTo(Badge, { foreignKey: 'id_badge' });
 
 module.exports = Favoritos;

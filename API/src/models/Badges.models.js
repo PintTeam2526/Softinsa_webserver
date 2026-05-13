@@ -2,6 +2,7 @@ var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Area = require('./Areas.models');
 
+
 var Badges = sequelize.define('Badges',
 {
     id_badge: {
@@ -66,7 +67,7 @@ var Badges = sequelize.define('Badges',
 });
 
 
-Badges.belongsTo(Area);
+Badges.belongsTo(Area, { foreignKey: 'id_area' });
 
 module.exports = Badges;
 

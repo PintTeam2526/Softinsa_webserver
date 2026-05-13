@@ -44,6 +44,6 @@ var Areas = sequelize.define('Areas',
 });
 
 
-Areas.belongsTo(ServiceLine);
+Areas.belongsTo(ServiceLine, { foreignKey: 'id_service_line' });
 
 module.exports = Areas;

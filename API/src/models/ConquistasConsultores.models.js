@@ -38,7 +38,7 @@ var ConquistasConsultores = sequelize.define('ConquistasConsultores',
     timestamps: false
 });
 
-ConquistasConsultores.belongsTo(Consultor);
-ConquistasConsultores.belongsTo(Conquista);
+ConquistasConsultores.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+ConquistasConsultores.belongsTo(Conquista, { foreignKey: 'id_conquista' });
 
 module.exports = ConquistasConsultores;

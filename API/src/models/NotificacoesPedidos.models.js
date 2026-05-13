@@ -40,7 +40,7 @@ var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
     timestamps: false
 });
 
-NotificacoesPedidos.belongsTo(Consultor);
-NotificacoesPedidos.belongsTo(PedidoBadge);
+NotificacoesPedidos.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+NotificacoesPedidos.belongsTo(PedidoBadge, { foreignKey: 'id_pedido_badge' });
 
 module.exports = NotificacoesPedidos;

@@ -23,10 +23,10 @@ router.put('/:id/update', controllerUtilizador.updateUtilizadorById);
 router.delete('/:id/delete', controllerUtilizador.deleteUtilizadorById);
 
 //Adicionar um objetivo do consultor
-router.post('/:id/objetivo/create', controllerUtilizador.createObjetivo)
+router.post('/:id/objetivo/create', controllerUtilizador.createObjetivo) // -> Consultor
 
 //Apagar um objetivo do consultor
-router.delete('/:id/objetivo/delete', controllerUtilizador.deleteObjetivoById);
+router.delete('/:id/objetivo/delete', controllerUtilizador.deleteObjetivoById); // -> Consultor
 
 // Listar notificações
 router.get('/:idUtilizador/notificacoes', authVerification,controllerUtilizador.getAllNotificacoes);
@@ -35,9 +35,6 @@ router.get('/:idUtilizador/notificacoes', authVerification,controllerUtilizador.
 router.post('/:idUtilizador/notificacoes/create', authVerification,controllerUtilizador.createNotificacao);
 
 
-// Mostrar dados da dashboard
-//router.get('/:id/dashboard', controllerUtilizador.getDashboard );
-//ENDPOINT NÃO IMPLEMENTADO
 
 
 module.exports = router;

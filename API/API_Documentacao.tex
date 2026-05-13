@@ -1,0 +1,564 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Pacotes ---
+\usepackage[portuges]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    citecolor=blue!60!black
+}
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!5},
+    rulecolor=\color{gray!30}
+}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{caption}
+
+\title{\textbf{Softinsa Web Server} \\ \large Documentação da API REST}
+\author{Softinsa}
+\date{Maio 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+% ===================================================================
+\section{Introdução}
+% ===================================================================
+
+A API do \textbf{Softinsa Web Server} é uma interface REST desenvolvida em \texttt{Node.js} com \texttt{Express 5}, utilizando \texttt{PostgreSQL} como base de dados e \texttt{Sequelize} como ORM.
+
+\begin{itemize}
+    \item \textbf{Base URL:} \texttt{http://localhost:3000/api}
+    \item \textbf{Porta:} 3000
+    \item \textbf{Formato de dados:} JSON
+    \item \textbf{Autenticação:} JWT (Bearer token)
+\end{itemize}
+
+\subsection{Autenticação}
+
+A API utiliza dois middleware de autenticação:
+
+\begin{description}
+    \item[\texttt{auth.middleware}] --- É aplicado globalmente a todos os pedidos. Extrai o token JWT do header \texttt{Authorization: Bearer <token>} e define \texttt{req.user}. Se não existir token válido, o utilizador é marcado como \texttt{guest}.
+    \item[\texttt{requireAuth.middleware}] --- É aplicado em rotas específicas. Se \texttt{req.user.role === "guest"}, devolve \texttt{401 Unauthorized}.
+\end{description}
+
+\subsection{Papéis (Roles)}
+
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Código} & \textbf{Papel} \\
+    \midrule
+    A  & Administrador \\
+    TM & Talent Manager \\
+    SL & Service Line Leader \\
+    CO & Consultor \\
+    guest & Utilizador não autenticado \\
+    \bottomrule
+\end{tabular}
+
+\newpage
+
+% ===================================================================
+\section{Rotas}
+% ===================================================================
+
+Todas as rotas são precedidas pelo prefixo \texttt{/api}.
+
+% -------------------------------------------------------------------
+\subsection{Autenticação}
+\label{sec:autenticacao}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/autenticacao}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    POST & \texttt{/register} & --- & Regista um novo utilizador. \\
+    POST & \texttt{/login} & --- & Autentica um utilizador e devolve um token JWT. \\
+    GET  & \texttt{/get-me} & --- & Devolve os dados do utilizador autenticado. \\
+    PUT  & \texttt{/update-me} & \texttt{requireAuth} & Edita os dados do utilizador autenticado. \\
+    DELETE & \texttt{/delete-me} & \texttt{requireAuth} & Elimina o utilizador autenticado. \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Register}
+\begin{lstlisting}
+POST /api/autenticacao/register
+Body: {
+    "nome": "João Silva",
+    "email": "joao@exemplo.com",
+    "password": "minhaPassword123"
+}
+Resposta (201): {
+    "message": "Conta criada com sucesso",
+    "user": {
+        "id": 1,
+        "email": "joao@exemplo.com",
+        "role": "CO"
+    }
+}
+\end{lstlisting}
+
+\subsubsection*{Exemplo: Login}
+\begin{lstlisting}
+POST /api/autenticacao/login
+Body: {
+    "email": "joao@exemplo.com",
+    "password": "minhaPassword123"
+}
+Resposta (200): {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+        "email": "joao@exemplo.com",
+        "role": "CO"
+    }
+}
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Áreas}
+\label{sec:areas}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/areas}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET    & \texttt{/get} & --- & Lista todas as áreas (filtra inativas para não-admin). \\
+    GET    & \texttt{/:id/get} & --- & Devolve uma área pelo ID. \\
+    POST   & \texttt{/create} & Admin & Cria uma nova área. \\
+    PUT    & \texttt{/:id/update} & Admin & Atualiza uma área. \\
+    DELETE & \texttt{/:id/delete} & Admin & Soft delete de uma área (\texttt{estado\_a\_i = false}). \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Criar Área}
+\begin{lstlisting}
+POST /api/areas/create
+Body: {
+    "id_serviceline": 1,
+    "nome_area": "Cloud Computing",
+    "descricao_area": "Área de cloud",
+    "imagem_area": "cloud.png",
+    "estado_a_i": true
+}
+Resposta (201): { "mensagem": "Área criada" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Badges}
+\label{sec:badges}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/badges}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET & \texttt{/get} & --- & Lista todos os badges. \\
+    GET & \texttt{/:id/get} & --- & Devolve um badge pelo ID. \\
+    POST & \texttt{/create} & Admin & Cria um novo badge. \\
+    PUT & \texttt{/:id/update} & --- & Atualiza um badge. \\
+    DELETE & \texttt{/:id/delete} & --- & Soft delete de um badge. \\
+    GET & \texttt{/:id\_badge/consultor/:id\_consultor/estado} & --- & Devolve o estado de um badge para um consultor. \\
+\end{longtable}
+
+\subsubsection*{Estados possíveis do badge}
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Estado} & \textbf{Descrição} \\
+    \midrule
+    Concluido & Badge concluído (dentro da validade). \\
+    Expirado  & Badge concluído mas expirado. \\
+    Em análise & Pedido em análise (estados 1 ou 2). \\
+    Por Obter & Pedido devolvido ou aguardando (estados 3, 5 ou 6). \\
+    \bottomrule
+\end{tabular}
+
+\subsubsection*{Exemplo: Criar Badge}
+\begin{lstlisting}
+POST /api/badges/create
+Body: {
+    "id_area": 1,
+    "nome_badge": "AWS Practitioner",
+    "descricao_badge": "Badge de AWS",
+    "pontos_badge": 100,
+    "pago": false,
+    "nivel_badge": 1,
+    "sla": 30,
+    "validade": 365,
+    "estado_a_i": true
+}
+Resposta (201): { "mensagem": "Badge criado com sucesso" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Candidaturas}
+\label{sec:candidaturas}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/candidaturas}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    POST & \texttt{/} & --- & Submete uma candidatura (pedido + documentos). \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Submeter Candidatura}
+\begin{lstlisting}
+POST /api/candidaturas
+Body: {
+    "id_consultor": 1,
+    "id_badge": 2,
+    "documentos": ["certificado.pdf", "apresentacao.pdf"]
+}
+Resposta: { "success": true, "message": "Candidatura submetida com sucesso" }
+\end{lstlisting}
+
+O serviço de candidaturas atribui automaticamente o Talent Manager com menos pedidos e o Service Line Leader da área do badge.
+
+% -------------------------------------------------------------------
+\subsection{Consultores}
+\label{sec:consultores}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/consultores}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    PUT & \texttt{/:id} & --- & Edita os dados de um consultor. \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Editar Consultor}
+\begin{lstlisting}
+PUT /api/consultores/1
+Body: {
+    "nome": "João Atualizado",
+    "email": "joao.novo@exemplo.com",
+    "id_area": 2,
+    "foto_perfil": "nova_foto.png",
+    "password": "novaPassword"
+}
+Resposta: { "success": true, "message": "Dados atualizados com sucesso" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Learning Paths}
+\label{sec:learningpaths}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/learningPaths}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET    & \texttt{/get} & --- & Lista todas as Learning Paths. \\
+    GET    & \texttt{/:id/get} & --- & Devolve uma Learning Path pelo ID. \\
+    POST   & \texttt{/create} & Admin & Cria uma nova Learning Path. \\
+    PUT    & \texttt{/:id/update} & --- & Atualiza uma Learning Path. \\
+    DELETE & \texttt{/:id/delete} & --- & Soft delete de uma Learning Path. \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Criar Learning Path}
+\begin{lstlisting}
+POST /api/learningPaths/create
+Body: {
+    "nome_learning_path": "Cloud Expert",
+    "descricao_learning_path": "Percurso de cloud",
+    "imagem_learning_path": "cloud_path.png",
+    "estado_a_i": true
+}
+Resposta (201): { "mensagem": "Learning Path criada com sucesso" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Pedidos de Badges}
+\label{sec:pedidos}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/pedidos}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET  & \texttt{/get} & \texttt{requireAuth} & Lista todos os pedidos (consultor vê apenas os seus). \\
+    GET  & \texttt{/:id/get} & \texttt{requireAuth} & Devolve um pedido pelo ID. \\
+    POST & \texttt{/create} & \texttt{requireAuth} & Cria um novo pedido (apenas CO ou Admin). \\
+    POST & \texttt{/:id/tm-review} & --- & Avaliação do Talent Manager (aprovar/devolver). \\
+    POST & \texttt{/:id/sl-review} & --- & Avaliação do Service Line Leader (aprovar/devolver/rejeitar). \\
+    POST & \texttt{/:id/resubmit} & --- & Reenvio do pedido pelo consultor. \\
+\end{longtable}
+
+\subsubsection*{Workflow de Pedidos}
+O fluxo de aprovação segue os seguintes estados:
+
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Estado} & \textbf{Descrição} \\
+    \midrule
+    1 & Pedido criado (aguarda TM) \\
+    2 & Reenviado pelo consultor \\
+    3 & Devolvido pelo TM \\
+    4 & --- \\
+    5 & Aprovado pelo TM \\
+    6 & Devolvido pelo SL \\
+    7 & Rejeitado pelo SL \\
+    8 & Aprovado / Concluído \\
+    \bottomrule
+\end{tabular}
+
+\subsubsection*{Fluxo}
+\begin{lstlisting}[frame=none]
+  Consultor  -->  TM  -->  SL  -->  Concluído (8)
+      |            |        |
+      |        devolver   rejeitar (7)
+      |         (3)       devolver (6)
+      |            |        |
+      +<-----------+--------+
+      resubmit (2)
+\end{lstlisting}
+
+\subsubsection*{Exemplo: Criar Pedido}
+\begin{lstlisting}
+POST /api/pedidos/create
+Body: { "id_consultor": 1, "id_badge": 2 }
+Resposta (201): {
+    "mensagem": "Pedido criado com sucesso",
+    "dados": { "id_pedido_badge": 1, ... }
+}
+\end{lstlisting}
+
+\subsubsection*{Exemplo: TM Review}
+\begin{lstlisting}
+POST /api/pedidos/1/tm-review
+Body: { "acao": "aprovar" }
+Resposta (200): { "mensagem": "Pedido aprovado" }
+\end{lstlisting}
+
+\subsubsection*{Exemplo: SL Review}
+\begin{lstlisting}
+POST /api/pedidos/1/sl-review
+Body: { "acao": "aprovar" }
+Resposta (200): { "mensagem": "Pedido aprovado com sucesso" }
+\end{lstlisting}
+
+\subsubsection*{Exemplo: Reenviar Pedido}
+\begin{lstlisting}
+POST /api/pedidos/1/resubmit
+Resposta (200): { "mensagem": "Pedido reenviado com sucesso" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Service Lines}
+\label{sec:servicelines}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/serviceLines}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET    & \texttt{/get} & --- & Lista todas as Service Lines. \\
+    GET    & \texttt{/:id/get} & --- & Devolve uma Service Line pelo ID. \\
+    POST   & \texttt{/create} & Admin & Cria uma nova Service Line. \\
+    PUT    & \texttt{/:id/update} & --- & Atualiza uma Service Line. \\
+    DELETE & \texttt{/:id/delete} & --- & Soft delete de uma Service Line. \\
+\end{longtable}
+
+\subsubsection*{Exemplo: Criar Service Line}
+\begin{lstlisting}
+POST /api/serviceLines/create
+Body: {
+    "id_learning_path": 1,
+    "nome_serviceline": "Cloud Services",
+    "descricao_serviceline": "Linha de cloud",
+    "imagem_serviceline": "cloud_sl.png",
+    "estado_a_i": true
+}
+Resposta (201): { "mensagem": "Service Line criada com sucesso" }
+\end{lstlisting}
+
+% -------------------------------------------------------------------
+\subsection{Utilizadores}
+\label{sec:utilizadores}
+% -------------------------------------------------------------------
+
+Prefix: \texttt{/api/utilizadores}
+
+\begin{longtable}{@{}lllp{6cm}@{}}
+    \toprule
+    \textbf{Método} & \textbf{Path} & \textbf{Auth} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    GET    & \texttt{/get} & \texttt{requireAuth} & Lista todos os utilizadores (consultor vê apenas o seu perfil). \\
+    GET    & \texttt{/:id/get} & --- & Devolve um utilizador pelo ID. \\
+    POST   & \texttt{/create} & \texttt{requireAuth} & Cria um novo utilizador com papel específico. \\
+    PUT    & \texttt{/:id/update} & --- & Atualiza um utilizador. \\
+    DELETE & \texttt{/:id/delete} & Admin & Elimina um utilizador. \\
+    POST   & \texttt{/:id/objetivo/create} & --- & Adiciona um objetivo a um utilizador. \\
+    DELETE & \texttt{/:id/objetivo/delete} & --- & Remove um objetivo de um utilizador. \\
+    GET    & \texttt{/:idUtilizador/notificacoes} & \texttt{requireAuth} & Lista notificações de um utilizador. \\
+    POST   & \texttt{/:idUtilizador/notificacoes/create} & \texttt{requireAuth} & Envia uma notificação a um utilizador. \\
+\end{longtable}
+
+\subsubsection*{Tipos de Utilizador}
+\begin{tabular}{ll}
+    \toprule
+    \textbf{Código} & \textbf{Papel} \\
+    \midrule
+    c  & Consultor \\
+    tm & Talent Manager \\
+    sl & Service Line Leader \\
+    a  & Admin \\
+    \bottomrule
+\end{tabular}
+
+\subsubsection*{Exemplo: Criar Utilizador}
+\begin{lstlisting}
+POST /api/utilizadores/create
+Body: {
+    "nome_utilizador": "Maria Santos",
+    "email_utilizador": "maria@exemplo.com",
+    "password_utilizador": "hash123",
+    "username_utilizador": "maria.santos",
+    "tipo_utilizador": "c",
+    "imagem_utilizador": "avatar.png",
+    "id_area": 1
+}
+Resposta (201): {
+    "success": true,
+    "message": "Utilizador criado com sucesso",
+    "id_utilizador": 5
+}
+\end{lstlisting}
+
+\newpage
+
+% ===================================================================
+\section{Modelos de Dados}
+% ===================================================================
+
+A base de dados é composta pelas seguintes tabelas (modelos Sequelize):
+
+\begin{longtable}{@{}ll@{}}
+    \toprule
+    \textbf{Tabela} & \textbf{Descrição} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+
+    Utilizadores & Utilizadores do sistema (todos os papéis). \\
+    Administradores & Administradores. \\
+    Consultores & Consultores (com área e pontuação). \\
+    TalentManagers & Talent Managers. \\
+    ServiceLineLiders & Service Line Leaders. \\
+    Areas & Áreas de conhecimento. \\
+    ServiceLines & Linhas de serviço. \\
+    LearningPaths & Percursos de aprendizagem. \\
+    Badges & Badges disponíveis. \\
+    BadgesConcluidos & Badges concluídos por consultores. \\
+    Objetivos & Objetivos definidos para consultores. \\
+    PedidosBadges & Pedidos de badges. \\
+    HistoricoPedidos & Histórico de estados dos pedidos. \\
+    Estados & Tabela de estados. \\
+    NotificacoesPedidos & Notificações relacionadas com pedidos. \\
+    NotificacoesAdmin & Notificações de administrador. \\
+    Documentacoes & Documentos associados a pedidos. \\
+    Enviadas & Registos de envios. \\
+    Favoritos & Favoritos dos utilizadores. \\
+    Conquistas & Conquistas do sistema. \\
+    ConquistasConsultores & Conquistas atribuídas a consultores. \\
+    Politicas & Políticas/RGPD. \\
+    PoliticasAceites & Políticas aceites por utilizadores. \\
+    Requisitos & Requisitos de badges. \\
+    EstadoPedidos & Estados de pedidos. \\
+    RGPD & Registos RGPD. \\
+\end{longtable}
+
+\newpage
+
+% ===================================================================
+\section{Rotas Não Implementadas / Descontinuadas}
+% ===================================================================
+
+As seguintes rotas existem nos ficheiros de código mas estão comentadas ou por implementar:
+
+\begin{itemize}
+    \item \textbf{Gestão} (\texttt{Gestao.route.js}) --- Rotas para SLA e RGPD. Não ativa no router principal.
+    \item \textbf{Conquistas} (\texttt{Conquistas.route.js}) --- CRUD de conquistas. Comentada (tabela Conquistas pode não existir).
+    \item Histórico de pedido: \texttt{GET /api/pedidos/:id/historico} --- por implementar.
+    \item Atualizar pedido: \texttt{PUT /api/pedidos/:id/update} --- por implementar.
+    \item Eliminar pedido: \texttt{DELETE /api/pedidos/:id/delete} --- por implementar.
+    \item Requisitos de badges --- todo o subgrupo de rotas comentado.
+    \item Dashboard: \texttt{GET /api/utilizadores/:id/dashboard} --- por implementar.
+    \item Badges do utilizador: \texttt{GET /api/utilizadores/:id/badges} --- por implementar.
+\end{itemize}
+
+\end{document}

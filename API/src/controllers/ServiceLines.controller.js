@@ -5,7 +5,7 @@ const controllers = {};
 // Mostrar todas as Service Lines
 controllers.getAllServiceLines = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
@@ -28,7 +28,7 @@ controllers.getAllServiceLines = async (req, res) => {
 // Mostrar Service Line por ID
 controllers.getServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
         const id = req.params.id;
 
         const resultado = await ServiceLines.findByPk(id);
@@ -60,7 +60,7 @@ controllers.getServiceLineById = async (req, res) => {
 // Criar Service Line
 controllers.createServiceLine = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -104,7 +104,7 @@ controllers.createServiceLine = async (req, res) => {
 // Eliminar Service Line (soft delete)
 controllers.deleteServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -143,7 +143,7 @@ controllers.deleteServiceLineById = async (req, res) => {
 // Atualizar Service Line
 controllers.updateServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({

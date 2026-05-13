@@ -1,0 +1,858 @@
+{
+  "info": {
+    "_postman_id": "85b8ad95-ccf7-45f6-b9f9-a5e143f63af7",
+    "name": "Softinsa API - Complete",
+    "description": "Collection completa para testar os endpoints ativos da API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticacao",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Joao Teste\",\n  \"email\": \"joao.teste@example.com\",\n  \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/autenticacao/register"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 ou 400', function () {",
+                  "  pm.expect([201, 400]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{loginEmail}}\",\n  \"password\": \"{{loginPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/autenticacao/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "pm.test('Token presente', function () {",
+                  "  pm.expect(json).to.have.property('token');",
+                  "});",
+                  "if (json.token) pm.environment.set('token', json.token);",
+                  "if (json.user && json.user.id) pm.environment.set('userId', json.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Me (controller vazio)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/autenticacao/get-me"
+          }
+        },
+        {
+          "name": "Update Me (controller vazio)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_utilizador\": \"Nome Atualizado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/autenticacao/update-me"
+          }
+        },
+        {
+          "name": "Delete Me (controller vazio)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/autenticacao/delete-me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Areas",
+      "item": [
+        {
+          "name": "Get All Areas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/areas/get"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Area By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/areas/{{areaId}}/get"
+          }
+        },
+        {
+          "name": "Create Area",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_area\": 999,\n  \"id_serviceline\": 1,\n  \"nome_area\": \"Área Teste\",\n  \"descricao_area\": \"Criada via Postman\",\n  \"imagem_area\": \"img-area\",\n  \"estado_A_I_\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/areas/create"
+          }
+        },
+        {
+          "name": "Update Area",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_area\": \"Área Teste Atualizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/areas/{{areaId}}/update"
+          }
+        },
+        {
+          "name": "Delete Area",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/areas/{{areaId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Badges",
+      "item": [
+        {
+          "name": "Get All Badges",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/badges/get"
+          }
+        },
+        {
+          "name": "Get Badge By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/get"
+          }
+        },
+        {
+          "name": "Create Badge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_badge\": 999,\n  \"id_area\": 1,\n  \"nome_badge\": \"Badge Teste\",\n  \"descricao_badge\": \"Badge criado via Postman\",\n  \"pontos_badge\": 50,\n  \"pago\": false,\n  \"nivel_badge\": \"junior\",\n  \"imagem_badge\": \"img-badge\",\n  \"sla\": 30,\n  \"validade\": 365,\n  \"estado_A_I_\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/badges/create"
+          }
+        },
+        {
+          "name": "Update Badge",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao_badge\": \"Badge atualizado via Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/update"
+          }
+        },
+        {
+          "name": "Delete Badge",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/delete"
+          }
+        },
+        {
+          "name": "Get Badge Estado by Consultor",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/consultor/{{userId}}/estado"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ServiceLines",
+      "item": [
+        {
+          "name": "Get All Service Lines",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/serviceLines/get"
+          }
+        },
+        {
+          "name": "Get Service Line By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/serviceLines/{{serviceLineId}}/get"
+          }
+        },
+        {
+          "name": "Create Service Line",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_service_line\": 999,\n  \"id_learning_path\": 1,\n  \"nome_serviceline\": \"Service Line Teste\",\n  \"descricao_serviceline\": \"Criada via Postman\",\n  \"imagem_serviceline\": \"img-sl\",\n  \"estado_a_i\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/serviceLines/create"
+          }
+        },
+        {
+          "name": "Update Service Line",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao_serviceline\": \"Service Line atualizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/serviceLines/{{serviceLineId}}/update"
+          }
+        },
+        {
+          "name": "Delete Service Line",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/serviceLines/{{serviceLineId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "LearningPaths",
+      "item": [
+        {
+          "name": "Get All Learning Paths",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/learningPaths/get"
+          }
+        },
+        {
+          "name": "Get Learning Path By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/learningPaths/{{learningPathId}}/get"
+          }
+        },
+        {
+          "name": "Create Learning Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_learning_path\": 999,\n  \"nome_learning_path\": \"LP Teste\",\n  \"descricao_learning_path\": \"Criada via Postman\",\n  \"imagem_learning_path\": \"img-lp\",\n  \"estado_a_i\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/learningPaths/create"
+          }
+        },
+        {
+          "name": "Update Learning Path",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descricao_learning_path\": \"LP atualizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/learningPaths/{{learningPathId}}/update"
+          }
+        },
+        {
+          "name": "Delete Learning Path",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/learningPaths/{{learningPathId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utilizadores",
+      "item": [
+        {
+          "name": "Get All Utilizadores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/utilizadores/get"
+          }
+        },
+        {
+          "name": "Get Utilizador By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/get"
+          }
+        },
+        {
+          "name": "Create Utilizador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_utilizador\": 999,\n  \"nome_utilizador\": \"Utilizador API\",\n  \"email_utilizador\": \"api.user@example.com\",\n  \"password_utilizador\": \"123456\",\n  \"tipo_utilizador\": \"CO\",\n  \"estado_a_i\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/utilizadores/create"
+          }
+        },
+        {
+          "name": "Update Utilizador",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_utilizador\": \"Utilizador Atualizado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/update"
+          }
+        },
+        {
+          "name": "Delete Utilizador",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/delete"
+          }
+        },
+        {
+          "name": "Create Objetivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo_objetivo\": \"Objetivo teste\",\n  \"descricao_objetivo\": \"Descrição do objetivo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/objetivo/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.id_objetivo) pm.environment.set('objetivoId', json.id_objetivo);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Objetivo",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/utilizadores/{{objetivoId}}/objetivo/delete"
+          }
+        },
+        {
+          "name": "Get Notificacoes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/notificacoes"
+          }
+        },
+        {
+          "name": "Create Notificacao",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"justificacao\": \"Notificação de teste\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/notificacoes/create"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pedidos",
+      "item": [
+        {
+          "name": "Get All Pedidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/get"
+          }
+        },
+        {
+          "name": "Get Pedido By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/get"
+          }
+        },
+        {
+          "name": "Create Pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_pedido_badge\": 999,\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{userId}},\n  \"justificacao\": \"Pedido criado via Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pedidos/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.dados && json.dados.id_pedido_badge) {",
+                  "    pm.environment.set('pedidoId', json.dados.id_pedido_badge);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TM Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"acao\": \"aprovar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/tm-review"
+          }
+        },
+        {
+          "name": "SL Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"acao\": \"rejeitar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/sl-review"
+          }
+        },
+        {
+          "name": "Resubmit Pedido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/resubmit"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Sem erro 500', function () {",
+          "  pm.expect(pm.response.code).to.not.equal(500);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "loginEmail",
+      "value": "joao.teste@example.com"
+    },
+    {
+      "key": "loginPassword",
+      "value": "123456"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "areaId",
+      "value": "1"
+    },
+    {
+      "key": "badgeId",
+      "value": "1"
+    },
+    {
+      "key": "serviceLineId",
+      "value": "1"
+    },
+    {
+      "key": "learningPathId",
+      "value": "1"
+    },
+    {
+      "key": "pedidoId",
+      "value": "1"
+    },
+    {
+      "key": "objetivoId",
+      "value": "1"
+    }
+  ]
+}

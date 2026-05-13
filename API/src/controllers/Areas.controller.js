@@ -1,21 +1,42 @@
 const Areas = require('../models/Areas.models');
+const ServiceLine = require('../models/ServiceLines.models')
+const Badges = require('../models/Badges.models')
+const Sequelize = require('sequelize');
 
 const controllers = {};
 
 // Mostrar todas as áreas
 controllers.getAllAreas = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
-
+        const isAdmin = req.user?.role === "A";
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await Areas.findAll({
-            where: whereClause
+            where: whereClause,
+            attributes: {
+                include: [
+                    [
+                        // Usamos ${Badges.tableName} para o Sequelize colocar o nome correto automaticamente
+                        Sequelize.literal(`(
+                SELECT COUNT(*)::integer
+                FROM "${Badges.tableName}" AS badge
+                WHERE badge.id_area = "Areas"."id_area"
+            )`),
+                        'total_badges'
+                    ]
+                ]
+            },
+            include: [
+                {
+                    model: ServiceLine,
+                    attributes: ['nome_service_line']
+                }
+            ]
         });
 
-        if (!resultado) {
+        if (!resultado || resultado.length === 0) {
             return res.status(404).json({
-                mensagem: "Não existe áreas"
+                mensagem: "Não existem áreas"
             });
         }
 
@@ -23,7 +44,6 @@ controllers.getAllAreas = async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao buscar áreas:", error);
-
         return res.status(500).json({
             mensagem: "Erro na pesquisa",
             erro: error.message
@@ -34,10 +54,30 @@ controllers.getAllAreas = async (req, res) => {
 // Mostrar área por ID
 controllers.getAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
         const id = req.params.id;
 
-        const resultado = await Areas.findByPk(id);
+        const resultado = await Areas.findByPk(id,
+            {
+                attributes: {
+                include: [
+                    [
+                        // Usamos ${Badges.tableName} para o Sequelize colocar o nome correto automaticamente
+                        Sequelize.literal(`(
+                SELECT COUNT(*)::integer
+                FROM "${Badges.tableName}" AS badge
+                WHERE badge.id_area = "Areas"."id_area"
+            )`),
+                        'total_badges'
+                    ]
+                ]
+            },
+                include: [{
+                    model: ServiceLine,
+                    attributes: ['nome_service_line']
+                }]
+            }
+        );
 
         if (!resultado) {
             return res.status(404).json({
@@ -45,7 +85,7 @@ controllers.getAreaByID = async (req, res) => {
             });
         }
 
-        if (resultado.estado_A_I === false && !isAdmin) {
+        if (resultado.estado_a_i === false && !isAdmin) {
             return res.status(401).json({
                 mensagem: "Utilizador não autorizado"
             });
@@ -66,7 +106,7 @@ controllers.getAreaByID = async (req, res) => {
 // Criar área
 controllers.createArea = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -80,7 +120,7 @@ controllers.createArea = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I
+            estado_a_i
         } = req.body;
 
         await Areas.create({
@@ -89,7 +129,7 @@ controllers.createArea = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I,
+            estado_a_i,
             data_insercao: new Date()   // DATA ATUAL
         });
 
@@ -110,7 +150,7 @@ controllers.createArea = async (req, res) => {
 // Eliminar área
 controllers.deleteAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -121,7 +161,7 @@ controllers.deleteAreaByID = async (req, res) => {
         const id = req.params.id;
         const resultado = await Areas.findByPk(id);
 
-        resultado.estado_A_I = false;
+        resultado.estado_a_i = false;
         await resultado.save();
 
         return res.status(200).json({
@@ -141,7 +181,7 @@ controllers.deleteAreaByID = async (req, res) => {
 // Atualizar área
 controllers.updateAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "A";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -163,14 +203,14 @@ controllers.updateAreaByID = async (req, res) => {
             nome_area,
             descricao_area,
             imagem_area,
-            estado_A_I
+            estado_a_i
         } = req.body;
 
         area.id_serviceline = id_serviceline ?? area.id_serviceline;
         area.nome_area = nome_area ?? area.nome_area;
         area.descricao_area = descricao_area ?? area.descricao_area;
         area.imagem_area = imagem_area ?? area.imagem_area;
-        area.estado_A_I = estado_A_I ?? area.estado_A_I;
+        area.estado_a_i = estado_a_i ?? area.estado_a_i;
 
         area.data_insercao = new Date(); // DATA ATUALIZADA
 

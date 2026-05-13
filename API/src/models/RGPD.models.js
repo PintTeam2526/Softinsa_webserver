@@ -2,9 +2,9 @@ var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Administrador = require('./Administradores.models');
 
-var NotificacoesAdmins = sequelize.define('NotificacoesAdmins',
+var Politicas = sequelize.define('Politicas',
 {
-    id_notificacao_admin: {
+    id_politica: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -18,15 +18,15 @@ var NotificacoesAdmins = sequelize.define('NotificacoesAdmins',
             key: 'id_administrador'
         },
     },
-    notificacao: {
+    politica: {
         type: Sequelize.TEXT,
-        allowNull: true
+        allowNull: false
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
-NotificacoesAdmins.belongsTo(Administrador, { foreignKey: 'id_administrador' });
+Politicas.belongsTo(Administrador, { foreignKey: 'id_administrador' });
 
-module.exports = NotificacoesAdmins;
+module.exports = Politicas;
