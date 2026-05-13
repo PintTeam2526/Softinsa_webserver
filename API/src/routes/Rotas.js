@@ -2,6 +2,7 @@ const express = require('express');
 
 var autenticacaoRouter = require('../routes/Autenticacao.route');
 var areasRouter = require('../routes/Areas.route');
+var dashboardRoute = require('../routes/Dashboard.route');
 //var gestaoRouter = require('../routes/Gestao.route');
 var utilizadoresRouter = require('../routes/Utilizadores.route');
 var badgesRouter = require('../routes/Badges.route');
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.use('/autenticacao', autenticacaoRouter);
 router.use('/areas', areasRouter);
+router.use('/dashboard', dashboardRoute)
 //router.use('/gestao', gestaoRouter);
 router.use('/utilizadores', utilizadoresRouter);
 router.use('/badges', badgesRouter);
