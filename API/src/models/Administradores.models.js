@@ -20,7 +20,7 @@ var Administradores = sequelize.define('Administradores',
     },
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 

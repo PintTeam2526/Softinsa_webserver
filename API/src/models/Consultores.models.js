@@ -35,7 +35,7 @@ var Consultores = sequelize.define('Consultores',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 

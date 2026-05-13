@@ -2,6 +2,7 @@ var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Area = require('./Areas.models');
 
+
 var Badges = sequelize.define('Badges',
 {
     id_badge: {

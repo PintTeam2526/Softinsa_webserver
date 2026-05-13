@@ -67,4 +67,7 @@ PedidosBadges.belongsTo(ServiceLineLider, { foreignKey: 'id_service_line_lider' 
 PedidosBadges.belongsTo(Badge, { foreignKey: 'id_badge' });
 PedidosBadges.belongsTo(Estado, { foreignKey: 'estado_atual' });
 
+// Associações inversas para permitir Eager Loading a partir de Badges
+Badge.hasMany(PedidosBadges, { foreignKey: 'id_badge' });
+
 module.exports = PedidosBadges;

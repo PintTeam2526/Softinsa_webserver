@@ -23,16 +23,16 @@ const HistoricoPedidos = require('./src/models/HistoricoPedidos.models');
 const Estados = require('./src/models/Estados.models');
 const Favoritos = require('./src/models/Favoritos.models');
 const NotificacoesPedidos = require('./src/models/NotificacoesPedidos.models');
-const Politicas = require('./src/models/Potilicas.models');
-const PoliticasAceites = require('./src/models/PoliticasAceites.models');
-const EstadoPedidos = require('./src/models/EstadoPedidos.models');
+//const Politicas = require('./src/models/Potilicas.models');
+//const PoliticasAceites = require('./src/models/PoliticasAceites.models');
+//const EstadoPedidos = require('./src/models/EstadoPedidos.models');
 const Requisitos = require('./src/models/Requisitos.models');
 const ConquistasConsultores = require('./src/models/ConquistasConsultores.models');
 
 
 
 const setup = async () => {
-    try {
+  try {
         // Utilizar apenas se se quiser recrear TODA a base de dados do zero
         await sequelize.sync({force : true});
         //senão usar este:

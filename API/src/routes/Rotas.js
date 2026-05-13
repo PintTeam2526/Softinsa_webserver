@@ -31,5 +31,3 @@ router.use('/consultores', consultoresRoutes);
 router.use('/candidaturas', candidaturasRoutes);
 
 module.exports = router;
-
-
