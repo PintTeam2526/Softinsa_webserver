@@ -11,7 +11,8 @@ var authVerification = require('../middleware/requireAuth.middleware')
 router.post('/register', controllerAutenticacao.register);
 
 // Autenticar um utilizador
-router.post('/login' ,controllerAutenticacao.login);
+router.post('/login', controllerAutenticacao.login);
+router.post('/mobile/login', controllerAutenticacao.loginMobile);
 
 // Obter utilizador autenticado
 router.get('/get-me', controllerAutenticacao.getAutenticacao);

@@ -26,6 +26,6 @@ var TalentManagers = sequelize.define('TalentManagers',
 });
 
 
-TalentManagers.belongsTo(Utilizador);
+TalentManagers.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
 
 module.exports = TalentManagers;

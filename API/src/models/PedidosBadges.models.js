@@ -4,6 +4,7 @@ var Consultor = require('./Consultores.models');
 var TalentManager = require('./TalentManagers.models');
 var ServiceLineLider = require('./ServiceLineLiders.models');
 var Badge = require('./Badges.models');
+var Estado = require('./Estados.models')
 
 var PedidosBadges = sequelize.define('PedidosBadges',
 {
@@ -47,7 +48,11 @@ var PedidosBadges = sequelize.define('PedidosBadges',
     },
     estado_atual: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Estado,
+            key: 'id_estado'
+        },
     }
 },
 
@@ -56,9 +61,13 @@ var PedidosBadges = sequelize.define('PedidosBadges',
     timestamps: false
 });
 
-PedidosBadges.belongsTo(Consultor);
-PedidosBadges.belongsTo(TalentManager);
-PedidosBadges.belongsTo(ServiceLineLider);
-PedidosBadges.belongsTo(Badge);
+PedidosBadges.belongsTo(Consultor, { foreignKey: 'id_consultor' });
+PedidosBadges.belongsTo(TalentManager, { foreignKey: 'id_talent_manager' });
+PedidosBadges.belongsTo(ServiceLineLider, { foreignKey: 'id_service_line_lider' });
+PedidosBadges.belongsTo(Badge, { foreignKey: 'id_badge' });
+PedidosBadges.belongsTo(Estado, { foreignKey: 'estado_atual' });
+
+// Associações inversas para permitir Eager Loading a partir de Badges
+Badge.hasMany(PedidosBadges, { foreignKey: 'id_badge' });
 
 module.exports = PedidosBadges;
