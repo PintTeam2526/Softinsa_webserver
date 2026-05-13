@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const consultoresController = require('../controllers/consultores.controller');
+const consultoresController = require('../controllers/Consultores.controller');
 
 router.put('/:id', consultoresController.editarDados);
 router.get('/info/:id', consultoresController.getConsultorByIdMobile);
