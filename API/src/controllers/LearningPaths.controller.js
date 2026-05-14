@@ -1,4 +1,9 @@
 const LearningPaths = require('../models/LearningPaths.models');
+const ServiceLines = require('../models/ServiceLines.models');
+const Areas = require('../models/Areas.models');
+const Badges = require('../models/Badges.models');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const controllers = {};
 
@@ -121,6 +126,20 @@ controllers.deleteLearningPathById = async (req, res) => {
 
         await resultado.save();
 
+        const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
+        const slIds = serviceLines.map(sl => sl.id_service_line);
+        await ServiceLines.update({ estado_a_i: false }, { where: { id_learning_path: id } });
+
+        if (slIds.length > 0) {
+            const areas = await Areas.findAll({ where: { id_service_line: { [Op.in]: slIds } } });
+            const areaIds = areas.map(a => a.id_area);
+            await Areas.update({ estado_a_i: false }, { where: { id_service_line: { [Op.in]: slIds } } });
+
+            if (areaIds.length > 0) {
+                await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
+            }
+        }
+
         return res.status(200).json({
             mensagem: "Learning Path eliminada com sucesso"
         });
@@ -171,6 +190,22 @@ controllers.updateLearningPathById = async (req, res) => {
         learningPath.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 
         await learningPath.save();
+
+        if (estado_a_i === false) {
+            const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
+            const slIds = serviceLines.map(sl => sl.id_service_line);
+            await ServiceLines.update({ estado_a_i: false }, { where: { id_learning_path: id } });
+
+            if (slIds.length > 0) {
+                const areas = await Areas.findAll({ where: { id_service_line: { [Op.in]: slIds } } });
+                const areaIds = areas.map(a => a.id_area);
+                await Areas.update({ estado_a_i: false }, { where: { id_service_line: { [Op.in]: slIds } } });
+
+                if (areaIds.length > 0) {
+                    await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
+                }
+            }
+        }
 
         return res.status(200).json({
             mensagem: "Learning Path atualizada com sucesso",

@@ -1,23 +1,38 @@
 const bcrypt = require('bcrypt');
 const Utilizadores = require('../models/Utilizadores.models');
 const criarUtilizadoresService = require('../services/criarUtilizadores.service');
+const { Op } = require('sequelize');
 
 const controllers = {};
 
 // Mostrar todos os utilizadores
 controllers.getAllUtilizadores = async (req, res) => {
     try {
+        const isAdmin = req.user?.role === "a";
         const isConsultor = req.user?.role === "c";
 
         if (isConsultor) {
             const resultado = await Utilizadores.findByPk(req.user.id);
 
+            if (!resultado) {
+                return res.status(404).json({
+                    mensagem: "Utilizador não existe"
+                });
+            }
+
             return res.status(200).json([resultado]);
         }
 
-        const resultado = await Utilizadores.findAll();
+        const whereClause = isAdmin
+            ? { id_utilizador: { [Op.ne]: req.user.id } }
+            : {
+                estado_a_i: true,
+                tipo_utilizador: { [Op.ne]: 'a' }
+            };
 
-        if (!resultado) {
+        const resultado = await Utilizadores.findAll({ where: whereClause });
+
+        if (!resultado || resultado.length === 0) {
             return res.status(404).json({
                 mensagem: "Não existem utilizadores"
             });
@@ -39,6 +54,7 @@ controllers.getAllUtilizadores = async (req, res) => {
 controllers.getUtilizadorById = async (req, res) => {
     try {
         const id = req.params.id;
+        const isAdmin = req.user?.role === "a";
         const isConsultor = req.user?.role === "c";
 
         if (isConsultor && req.user.id != id) {
@@ -53,6 +69,14 @@ controllers.getUtilizadorById = async (req, res) => {
             return res.status(404).json({
                 mensagem: "Utilizador não existe"
             });
+        }
+
+        if (!isAdmin && !isConsultor) {
+            if (resultado.tipo_utilizador === 'a' || resultado.estado_a_i === false) {
+                return res.status(404).json({
+                    mensagem: "Utilizador não existe"
+                });
+            }
         }
 
         return res.status(200).json(resultado);

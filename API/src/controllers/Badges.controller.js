@@ -83,6 +83,15 @@ controllers.createBadge = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (estado_a_i !== false) {
+            const area = await Areas.findByPk(id_area);
+            if (!area || area.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível criar um Badge ativo numa Área inativa"
+                });
+            }
+        }
+
         await Badges.create({
             id_area,
             nome_badge,
@@ -183,6 +192,15 @@ controllers.updateBadgeById = async (req, res) => {
             validade,
             estado_a_i
         } = req.body;
+
+        if (id_area !== undefined && id_area !== badge.id_area) {
+            const area = await Areas.findByPk(id_area);
+            if (!area || area.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível associar a uma Área inativa"
+                });
+            }
+        }
 
         badge.id_area = id_area ?? badge.id_area;
         badge.nome_badge = nome_badge ?? badge.nome_badge;

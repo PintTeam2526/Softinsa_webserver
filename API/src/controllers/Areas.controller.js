@@ -2,6 +2,7 @@ const Areas = require('../models/Areas.models');
 const ServiceLine = require('../models/ServiceLines.models')
 const Badges = require('../models/Badges.models')
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const controllers = {};
 
@@ -122,6 +123,15 @@ controllers.createArea = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (estado_a_i !== false) {
+            const sl = await ServiceLine.findByPk(id_service_line);
+            if (!sl || sl.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível criar uma Área ativa numa Service Line inativa"
+                });
+            }
+        }
+
         await Areas.create({
             id_service_line,
             nome_area,
@@ -161,6 +171,8 @@ controllers.deleteAreaByID = async (req, res) => {
 
         resultado.estado_a_i = false;
         await resultado.save();
+
+        await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
 
         return res.status(200).json({
             message: 'Área eliminada'
@@ -204,6 +216,15 @@ controllers.updateAreaByID = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (id_service_line !== undefined && id_service_line !== area.id_service_line) {
+            const sl = await ServiceLine.findByPk(id_service_line);
+            if (!sl || sl.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível associar a uma Service Line inativa"
+                });
+            }
+        }
+
         area.id_service_line = id_service_line ?? area.id_service_line;
         area.nome_area = nome_area ?? area.nome_area;
         area.descricao_area = descricao_area ?? area.descricao_area;
@@ -213,6 +234,10 @@ controllers.updateAreaByID = async (req, res) => {
         area.data_insercao = new Date(); // DATA ATUALIZADA
 
         await area.save();
+
+        if (estado_a_i === false) {
+            await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
+        }
 
         return res.status(200).json({
             mensagem: "Área atualizada com sucesso"
