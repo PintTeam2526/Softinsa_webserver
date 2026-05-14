@@ -1,42 +1,42 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-users.css";
-import axios from "axios";
 
-const BASE_URL    = "http://localhost:3000/api";
-const urlUsersList= `${BASE_URL}/utilizadores/get`;
+import { getUtilizadores, createUtilizador, inativarUtilizador, tipoByProfile } from '../../../controllers/utilizadoresController'
+
 
 // Mapeamento tipo_utilizador (BD) → label legível
 const profileByTipo = {
-  AD: "Admin",
-  CO: "Consultor",
-  TM: "Talent Manager",
-  SL: "Service Line Lider",
+  a: "Admin",
+  c: "Consultor",
+  t: "Talent Manager",
+  s: "Service Line Lider",
 };
 
 // Opções estáticas (não existem na BD de Utilizadores)
 const learningPathOptions = ["Jornada Técnica", "Power Skills"];
-const serviceLineOptions  = ["Hybrid Cloud", "Data & AI", "Security"];
-const areaOptions         = ["LowCode (Outsystems)", "Frontend", "Backend"];
-const profileOptions      = Object.values(profileByTipo);
-const statusOptions       = ["Ativo", "Inativo"];
+const serviceLineOptions = ["Hybrid Cloud", "Data & AI", "Security"];
+const areaOptions = ["LowCode (Outsystems)", "Frontend", "Backend"];
+const profileOptions = Object.values(profileByTipo);
+const statusOptions = ["Ativo", "Inativo"];
 
 const defaultAvatar = "https://www.figma.com/api/mcp/asset/54902fd0-73ae-42f2-b5e5-a9d96163e1e2";
 
 const mapUtilizador = (row) => ({
-  id:          row.id_utilizador,
-  name:        row.nome_utilizador,
-  email:       row.email_utilizador,
-  profile:     profileByTipo[row.tipo_utilizador] ?? row.tipo_utilizador,
-  status:      row.estado_a_i ? "Ativo" : "Inativo",
-  avatar:      row.imagem_utilizador || defaultAvatar,
+  id: row.id_utilizador,
+  name: row.nome_utilizador,
+  email: row.email_utilizador,
+  profile: profileByTipo[row.tipo_utilizador] ?? row.tipo_utilizador,
+  status: row.estado_a_i ? "Ativo" : "Inativo",
+  avatar: row.imagem_utilizador || defaultAvatar,
   // campos sem FK na BD — mantidos para o form mas vazios
   learningPath: "",
-  serviceLine:  "",
-  area:         "",
+  serviceLine: "",
+  area: "",
 });
 
 const getDefaultUserForm = () => ({
-  name: "", email: "", learningPath: "Jornada Técnica",
+  name: "", email: "", password: "",
+  learningPath: "Jornada Técnica",
   serviceLine: "Hybrid Cloud", area: "LowCode (Outsystems)",
   profile: "Consultor", status: "Ativo",
 });
@@ -111,18 +111,18 @@ function SelectArrowIcon() {
 // ── componente principal ──────────────────────────────────────────────────────
 
 const SoftinsaUsers = memo(() => {
-  const [users, setUsers]                         = useState([]);
-  const [isFilterOpen, setIsFilterOpen]           = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
-  const [filterDraft, setFilterDraft]             = useState(getDefaultFilterDraft());
-  const [activeFilters, setActiveFilters]         = useState(getDefaultFilterDraft());
-  const [searchTerm, setSearchTerm]               = useState("");
-  const [exportFormat, setExportFormat]           = useState("");
-  const [entriesPerPage, setEntriesPerPage]       = useState(10);
-  const [currentPage, setCurrentPage]             = useState(1);
-  const [modalMode, setModalMode]                 = useState(null);
-  const [editingUserId, setEditingUserId]         = useState(null);
-  const [formData, setFormData]                   = useState(getDefaultUserForm());
+  const [filterDraft, setFilterDraft] = useState(getDefaultFilterDraft());
+  const [activeFilters, setActiveFilters] = useState(getDefaultFilterDraft());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [exportFormat, setExportFormat] = useState("");
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modalMode, setModalMode] = useState(null);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [formData, setFormData] = useState(getDefaultUserForm());
   const filterWrapRef = useRef(null);
 
   // ── fetch ─────────────────────────────────────────────────────────────────
@@ -130,29 +130,28 @@ const SoftinsaUsers = memo(() => {
   useEffect(() => { loadUsers(); }, []);
 
   function loadUsers() {
-    axios
-      .get(urlUsersList)
-      .then((res) => { setUsers(res.data.map(mapUtilizador)); })
+    getUtilizadores()
+      .then((data) => { setUsers(data.map(mapUtilizador)); })
       .catch((error) => { console.error(error); });
   }
 
   // ── estado derivado ───────────────────────────────────────────────────────
 
-  const isModalOpen      = modalMode !== null;
-  const isEditMode       = modalMode === "edit";
+  const isModalOpen = modalMode !== null;
+  const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.profile || activeFilters.status);
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
   const filteredUsers = users.filter((user) => {
     const matchesProfile = !activeFilters.profile || user.profile === activeFilters.profile;
-    const matchesStatus  = !activeFilters.status  || user.status  === activeFilters.status;
-    const matchesSearch  = !normalizedSearchTerm  || normalizeSearchValue(`${user.name} ${user.email}`).includes(normalizedSearchTerm);
+    const matchesStatus = !activeFilters.status || user.status === activeFilters.status;
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(`${user.name} ${user.email}`).includes(normalizedSearchTerm);
     return matchesProfile && matchesStatus && matchesSearch;
   });
 
-  const totalPages    = Math.max(1, Math.ceil(filteredUsers.length / entriesPerPage));
-  const pageNumbers   = Array.from({ length: totalPages }, (_, i) => i + 1);
-  const paginatedUsers= filteredUsers.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / entriesPerPage));
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
 
   // ── handlers (sem alterações) ─────────────────────────────────────────────
 
@@ -166,33 +165,67 @@ const SoftinsaUsers = memo(() => {
 
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
 
-  const handleFieldChange    = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
-  const handleOpenAddUser    = () => { setFormData(getDefaultUserForm()); setEditingUserId(null); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("add"); };
-  const handleOpenEditUser   = (user) => { setFormData({ name: user.name, email: user.email, learningPath: user.learningPath || "Jornada Técnica", serviceLine: user.serviceLine || "Hybrid Cloud", area: user.area || "LowCode (Outsystems)", profile: user.profile, status: user.status }); setEditingUserId(user.id); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("edit"); };
-  const handleCloseModal     = () => { setModalMode(null); setEditingUserId(null); };
+  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleOpenAddUser = () => { setFormData(getDefaultUserForm()); setEditingUserId(null); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("add"); };
+  const handleOpenEditUser = (user) => { setFormData({ name: user.name, email: user.email, learningPath: user.learningPath || "Jornada Técnica", serviceLine: user.serviceLine || "Hybrid Cloud", area: user.area || "LowCode (Outsystems)", profile: user.profile, status: user.status }); setEditingUserId(user.id); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("edit"); };
+  const handleCloseModal = () => { setModalMode(null); setEditingUserId(null); };
 
-  const handleSubmitUser = (e) => {
+  const handleSubmitUser = async (e) => {
     e.preventDefault();
+
     if (isEditMode && editingUserId !== null) {
-      setUsers((prev) => prev.map((u) => u.id === editingUserId ? { ...u, ...formData } : u));
+      if (formData.status === "Inativo") {
+        try {
+          await inativarUtilizador(editingUserId);
+          setUsers((prev) =>
+            prev.map((u) => u.id === editingUserId ? { ...u, status: "Inativo" } : u)
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        setUsers((prev) =>
+          prev.map((u) => u.id === editingUserId ? { ...u, ...formData } : u)
+        );
+      }
     } else {
-      setUsers((prev) => { const nextId = prev.reduce((max, u) => Math.max(max, Number(u.id) || 0), 0) + 1; return [{ id: nextId, ...formData, avatar: defaultAvatar }, ...prev]; });
-      setCurrentPage(1);
+      const sanitizedName = formData.name.trim();
+      const sanitizedEmail = formData.email.trim();
+      if (!sanitizedName || !sanitizedEmail || !formData.password) return;
+
+      const payload = {
+        nome_utilizador: sanitizedName,
+        email_utilizador: sanitizedEmail,
+        password_utilizador: formData.password,
+        username_utilizador: sanitizedEmail.split("@")[0],
+        tipo_utilizador: tipoByProfile[formData.profile] ?? "c",
+        imagem_utilizador: "",
+        estado_a_i: formData.status === "Ativo",
+      };
+
+      try {
+        const created = await createUtilizador(payload);
+        setUsers((prev) => [mapUtilizador(created), ...prev]);
+        setCurrentPage(1);
+      } catch (error) {
+        console.error(error);
+      }
     }
+
     handleCloseModal();
   };
 
-  const handleToggleFilter      = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
+  const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
   const handleFilterDraftChange = (field, value) => setFilterDraft((prev) => ({ ...prev, [field]: value }));
-  const handleApplyFilters      = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleClearFilters      = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleEntriesChange     = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
-  const handleSearchChange      = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
-  const handlePreviousPage      = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const handleNextPage          = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const handlePageSelect        = (page) => setCurrentPage(page);
-  const handleOpenExportAlert   = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
-  const handleCloseExportAlert  = () => { setIsExportAlertOpen(false); setExportFormat(""); };
+  const handleApplyFilters = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleEntriesChange = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
+  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
+  const handleOpenExportAlert = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
+  const handleCloseExportAlert = () => { setIsExportAlertOpen(false); setExportFormat(""); };
 
   const handleConfirmExport = async () => {
     if (!exportFormat) return;
@@ -373,6 +406,18 @@ const SoftinsaUsers = memo(() => {
                 <label htmlFor="softinsa-user-email">Email:</label>
                 <input id="softinsa-user-email" type="email" value={formData.email} onChange={(e) => handleFieldChange("email", e.target.value)} />
               </div>
+              {!isEditMode ? (
+                <div className="softinsa-users-modal-field">
+                  <label htmlFor="softinsa-user-password">Password:</label>
+                  <input
+                    id="softinsa-user-password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleFieldChange("password", e.target.value)}
+                    required
+                  />
+                </div>
+              ) : null}
               <div className="softinsa-users-modal-row">
                 <div className="softinsa-users-modal-field">
                   <label htmlFor="softinsa-user-learning-path">Learning Path:</label>
