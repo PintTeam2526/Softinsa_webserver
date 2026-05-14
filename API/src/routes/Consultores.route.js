@@ -3,6 +3,10 @@ const router = express.Router();
 const authVerification = require('../middleware/requireAuth.middleware');
 
 const consultoresController = require('../controllers/Consultores.controller');
+const requireAuth = require('../middleware/requireAuth.middleware');
+
+// Aplicar o middleware de autenticação a todas as rotas deste router
+//router.use(requireAuth);
 
 router.put('/:id', consultoresController.editarDados);
 router.get('/info/:id', consultoresController.getConsultorByIdMobile);

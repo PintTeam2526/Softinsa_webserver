@@ -1,5 +1,6 @@
 const Badges = require('../models/Badges.models');
 const devolverEstadoBadgeService = require('../services/devolverEstadoBadge.service');
+const Areas = require('../models/Areas.models');
 
 const controllers = {};
 
@@ -81,6 +82,15 @@ controllers.createBadge = async (req, res) => {
             validade,
             estado_a_i
         } = req.body;
+
+        if (estado_a_i !== false) {
+            const area = await Areas.findByPk(id_area);
+            if (!area || area.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível criar um Badge ativo numa Área inativa"
+                });
+            }
+        }
 
         await Badges.create({
             id_area,
@@ -183,6 +193,15 @@ controllers.updateBadgeById = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (id_area !== undefined && id_area !== badge.id_area) {
+            const area = await Areas.findByPk(id_area);
+            if (!area || area.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível associar a uma Área inativa"
+                });
+            }
+        }
+
         badge.id_area = id_area ?? badge.id_area;
         badge.nome_badge = nome_badge ?? badge.nome_badge;
         badge.descricao_badge = descricao_badge ?? badge.descricao_badge;
@@ -227,5 +246,100 @@ controllers.devolverEstadoBadge = async (req, res) => {
         });
     }
 };
+
+controllers.devolverEstadoBadgeMobile = async (req, res) => {
+    try {
+        const estado = await devolverEstadoBadgeService.devolverEstadoBadge(
+            req.params.id_badge,
+            req.params.id_consultor
+        );
+        res.json(estado);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+};
+
+controllers.getBadgesByAreaIDMobile = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).send("ERRO! Tens de enviar o Id da Area");
+  }
+
+  try {
+
+    const response = await Badges.findAll({
+      where: { id_area: id },
+      include: [
+      {
+        model: Areas,
+        attributes: [
+          'nome_area'
+        ]
+      }
+      ]
+    });
+
+    const dados = response.map(item => ({
+      ID_BADGE: item.id_badge,
+      ID_AREA: item.id_area,
+      NOME_BADGE: item.nome_badge,
+      DESCRICAO_BADGE: item.descricao_badge,
+      PONTOS_BADGE: item.pontos_badge,
+      PAGO: item.pago,
+      NIVEL_BADGE: item.nivel_badge,
+      IMAGEM_BADGE: item.imagem_badge,
+      nome_area_pai: item.Area.nome_area,
+      ESTADO_A_I_: item.estado_a_i,
+      DATA_INSERCAO: item.data_insercao
+    }));
+
+    res.json(dados);
+
+
+  }catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+
+}
+
+controllers.getBadgeByIdMobile = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).send("Tens de enviar o id do badge no url");
+  }
+
+  const response = await Badges.findOne({
+    where: { id_badge: id },
+    include: [
+      {
+        model: Areas,
+        attributes: [
+          'nome_area'
+        ]
+      }
+    ]
+  });
+
+  
+  const dados = {
+    ID_BADGE: response.id_badge,
+    ID_AREA: response.id_area,
+    NOME_BADGE: response.nome_badge,
+    DESCRICAO_BADGE: response.descricao_badge,
+    PONTOS_BADGE: response.pontos_badge,
+    PAGO: response.pago,
+    NIVEL_BADGE: response.nivel_badge,
+    IMAGEM_BADGE: response.imagem_badge,
+    nome_area_pai: response.Area.nome_area,
+    ESTADO_A_I_: response.estado_a_i,
+    DATA_INSERCAO: response.data_insercao
+  };
+
+  res.json([dados]);
+  
+}
 
 module.exports = controllers;

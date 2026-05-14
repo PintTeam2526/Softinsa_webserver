@@ -20,7 +20,7 @@ router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById)
 
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
-
+router.get('/mobile/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadgeMobile);
 
 //AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
 
@@ -40,5 +40,7 @@ router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolve
 //router.put('/:badgeId/requisitos/:id/update', controllerBadges.updateRequisitoById);
 
 
-
+//MOBILE
+router.get('/get/area/:id',controllerBadges.getBadgesByAreaIDMobile);
+router.get('/get/:id', controllerBadges.getBadgeByIdMobile);
 module.exports = router;

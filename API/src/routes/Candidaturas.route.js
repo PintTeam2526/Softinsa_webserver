@@ -3,6 +3,10 @@ const router = express.Router();
 
 const candidaturaController = require('../controllers/Candidaturas.controller');
 
-router.post('/', candidaturaController.submeterCandidatura);
+
+
+// Rotas Mobile (Submissão faseada)
+router.post('/documentacao', candidaturaController.inserirDocumentacaoBadge);
+router.post('/candidatar', candidaturaController.candidatarBadge);
 
 module.exports = router;

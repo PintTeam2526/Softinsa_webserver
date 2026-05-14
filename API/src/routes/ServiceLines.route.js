@@ -18,4 +18,8 @@ router.put('/:id/update', authVerification, controllerServiceLines.updateService
 // Apagar service line
 router.delete('/:id/delete', authVerification, controllerServiceLines.deleteServiceLineById);
 
+
+//MOBILE
+router.get('/get/mobile', controllerServiceLines.getAllServiceLinesMobile);
+router.get('/get/mobile/:id', controllerServiceLines.getServiceLineByIdMobile);
 module.exports = router;

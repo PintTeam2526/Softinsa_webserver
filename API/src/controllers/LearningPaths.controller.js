@@ -1,4 +1,9 @@
 const LearningPaths = require('../models/LearningPaths.models');
+const ServiceLines = require('../models/ServiceLines.models');
+const Areas = require('../models/Areas.models');
+const Badges = require('../models/Badges.models');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const controllers = {};
 
@@ -121,6 +126,20 @@ controllers.deleteLearningPathById = async (req, res) => {
 
         await resultado.save();
 
+        const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
+        const slIds = serviceLines.map(sl => sl.id_service_line);
+        await ServiceLines.update({ estado_a_i: false }, { where: { id_learning_path: id } });
+
+        if (slIds.length > 0) {
+            const areas = await Areas.findAll({ where: { id_service_line: { [Op.in]: slIds } } });
+            const areaIds = areas.map(a => a.id_area);
+            await Areas.update({ estado_a_i: false }, { where: { id_service_line: { [Op.in]: slIds } } });
+
+            if (areaIds.length > 0) {
+                await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
+            }
+        }
+
         return res.status(200).json({
             mensagem: "Learning Path eliminada com sucesso"
         });
@@ -172,6 +191,22 @@ controllers.updateLearningPathById = async (req, res) => {
 
         await learningPath.save();
 
+        if (estado_a_i === false) {
+            const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
+            const slIds = serviceLines.map(sl => sl.id_service_line);
+            await ServiceLines.update({ estado_a_i: false }, { where: { id_learning_path: id } });
+
+            if (slIds.length > 0) {
+                const areas = await Areas.findAll({ where: { id_service_line: { [Op.in]: slIds } } });
+                const areaIds = areas.map(a => a.id_area);
+                await Areas.update({ estado_a_i: false }, { where: { id_service_line: { [Op.in]: slIds } } });
+
+                if (areaIds.length > 0) {
+                    await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
+                }
+            }
+        }
+
         return res.status(200).json({
             mensagem: "Learning Path atualizada com sucesso",
             dados: learningPath
@@ -186,5 +221,61 @@ controllers.updateLearningPathById = async (req, res) => {
         });
     }
 };
+
+controllers.getAllLearningPathsMobile = async (req, res) => {
+  try {
+    const resultado = await LearningPaths.findAll();
+    //como devolve varios tenho de fazer o map
+    const data = resultado.map(item => ({
+      ID_LEARNINGPATH: item.id_learning_path,
+      NOME_LEARNINGPATH: item.nome_learning_path,
+      DESCRICAO_LEARNINGPATH: item.descricao_learning_path,
+      IMAGEM_LEARNING_PATH: item.imagem_learning_path,
+      ESTADO_A_I_: item.estado_a_i,
+      DATA_INSERCAO: item.data_insercao
+    }));
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+}
+
+
+controllers.getLearningPathByIdMobile = async (req, res) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    res.status(500).send("Tens de enviar o id do LP pelo url!");
+  }
+  
+  try { 
+    const resultado = await LearningPaths.findOne({
+      where: {id_learning_path: id}
+    });
+
+    if (!resultado) {
+      return res.status(404).json({ error: "LearningPath não encontrado" });
+    }
+
+    const resposta = {
+      ID_LEARNINGPATH: resultado.id_learning_path,
+      NOME_LEARNINGPATH: resultado.nome_learning_path,
+      DESCRICAO_LEARNINGPATH: resultado.descricao_learning_path,
+      IMAGEM_LEARNING_PATH: resultado.imagem_learning_path,
+      ESTADO_A_I_: resultado.estado_a_i,
+      DATA_INSERCAO: resultado.data_insercao
+    }
+  
+    res.json([resposta]);
+
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+}
 
 module.exports = controllers;
