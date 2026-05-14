@@ -1,12 +1,10 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-learning-paths.css";
 
-import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getLearningPaths, createLearningPath, updateLearningPath } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
-
-const BASE_URL = 'http://localhost:3000/api';
 
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -285,23 +283,33 @@ const SoftinsaLearningPaths = memo(() => {
     if (!sanitizedName) return;
 
     const payload = {
-      name: sanitizedName,
-      description: formData.description.trim(),
-      status: formData.status || "Ativo",
-      iconFileName: formData.iconFileName,
+      nome_learning_path: sanitizedName,
+      descricao_learning_path: formData.description.trim(),
+      estado_a_i: formData.status === "Ativo",
+      imagem_learning_path: formData.iconFileName || "",
     };
 
     try {
       if (isEditMode && editingLearningPathId !== null) {
-        // const res = await axios.put(`${urlUpdate}/${editingLearningPathId}`, payload);
-        // setLearningPaths((prev) =>
-        //   prev.map((item) => (item.id === editingLearningPathId ? mapLearningPath(res.data) : item))
-        // );
+        const updated = await updateLearningPath(editingLearningPathId, payload);
+
+        setLearningPaths((prev) =>
+          prev.map((item) =>
+            item.id === editingLearningPathId
+              ? { ...item, ...mapLearningPath(updated) }
+              : item
+          )
+        );
       } else {
-        // const res = await axios.post(urlCreate, payload);
-        // setLearningPaths((prev) => [mapLearningPath(res.data), ...prev]);
-        // setCurrentPage(1);
+        const created = await createLearningPath({
+          ...payload,
+          data_insercao: new Date().toISOString(),
+        });
+
+        loadLearningPaths();
+        setCurrentPage(1);
       }
+
       handleCloseModal();
     } catch (error) {
       console.error(error);
