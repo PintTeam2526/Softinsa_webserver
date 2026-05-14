@@ -6,16 +6,11 @@ import { getUtilizadores, createUtilizador, inativarUtilizador, tipoByProfile } 
 
 // Mapeamento tipo_utilizador (BD) → label legível
 const profileByTipo = {
-  a: "Admin",
   c: "Consultor",
   t: "Talent Manager",
   s: "Service Line Lider",
 };
 
-// Opções estáticas (não existem na BD de Utilizadores)
-const learningPathOptions = ["Jornada Técnica", "Power Skills"];
-const serviceLineOptions = ["Hybrid Cloud", "Data & AI", "Security"];
-const areaOptions = ["LowCode (Outsystems)", "Frontend", "Backend"];
 const profileOptions = Object.values(profileByTipo);
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -28,16 +23,10 @@ const mapUtilizador = (row) => ({
   profile: profileByTipo[row.tipo_utilizador] ?? row.tipo_utilizador,
   status: row.estado_a_i ? "Ativo" : "Inativo",
   avatar: row.imagem_utilizador || defaultAvatar,
-  // campos sem FK na BD — mantidos para o form mas vazios
-  learningPath: "",
-  serviceLine: "",
-  area: "",
 });
 
 const getDefaultUserForm = () => ({
   name: "", email: "", password: "",
-  learningPath: "Jornada Técnica",
-  serviceLine: "Hybrid Cloud", area: "LowCode (Outsystems)",
   profile: "Consultor", status: "Ativo",
 });
 
@@ -166,8 +155,23 @@ const SoftinsaUsers = memo(() => {
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
 
   const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+
   const handleOpenAddUser = () => { setFormData(getDefaultUserForm()); setEditingUserId(null); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("add"); };
-  const handleOpenEditUser = (user) => { setFormData({ name: user.name, email: user.email, learningPath: user.learningPath || "Jornada Técnica", serviceLine: user.serviceLine || "Hybrid Cloud", area: user.area || "LowCode (Outsystems)", profile: user.profile, status: user.status }); setEditingUserId(user.id); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("edit"); };
+
+  const handleOpenEditUser = (user) => {
+    setFormData({
+      name: user.name,
+      email: user.email,
+      profile: user.profile,
+      status: user.status,
+    });
+
+    setEditingUserId(user.id);
+    setIsFilterOpen(false);
+    setIsExportAlertOpen(false);
+    setModalMode("edit");
+  };
+
   const handleCloseModal = () => { setModalMode(null); setEditingUserId(null); };
 
   const handleSubmitUser = async (e) => {
@@ -229,7 +233,7 @@ const SoftinsaUsers = memo(() => {
 
   const handleConfirmExport = async () => {
     if (!exportFormat) return;
-    const rowsToExport = filteredUsers.map((u) => ({ Nome: u.name, Email: u.email, "Learning Path": u.learningPath, "Service Line": u.serviceLine, Área: u.area, Perfil: u.profile, Estado: u.status }));
+    const rowsToExport = filteredUsers.map((u) => ({ Nome: u.name, Email: u.email, Perfil: u.profile, Estado: u.status }));
     const timestamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
     try {
       if (exportFormat === "xlsx") {
@@ -243,7 +247,7 @@ const SoftinsaUsers = memo(() => {
         const doc = new jsPDF({ orientation: "landscape" });
         doc.setFontSize(14);
         doc.text("Listagem de Utilizadores", 14, 14);
-        autoTable(doc, { startY: 20, head: [["Nome", "Email", "Learning Path", "Service Line", "Área", "Perfil", "Estado"]], body: rowsToExport.map((r) => [r.Nome, r.Email, r["Learning Path"], r["Service Line"], r.Área, r.Perfil, r.Estado]), styles: { fontSize: 9, cellPadding: 2.4 }, headStyles: { fillColor: [58, 87, 232] } });
+        autoTable(doc, { startY: 20, head: [["Nome", "Email", "Perfil", "Estado"]], body: rowsToExport.map((r) => [r.Nome, r.Email, r.Perfil, r.Estado]), styles: { fontSize: 9, cellPadding: 2.4 }, headStyles: { fillColor: [58, 87, 232] } });
         doc.save(`utilizadores-${timestamp}.pdf`);
       }
       setIsExportAlertOpen(false); setExportFormat("");
@@ -418,50 +422,53 @@ const SoftinsaUsers = memo(() => {
                   />
                 </div>
               ) : null}
-              <div className="softinsa-users-modal-row">
-                <div className="softinsa-users-modal-field">
-                  <label htmlFor="softinsa-user-learning-path">Learning Path:</label>
-                  <div className="softinsa-users-select-wrap">
-                    <select id="softinsa-user-learning-path" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                <div className="softinsa-users-modal-field">
-                  <label htmlFor="softinsa-user-service-line">Service Line:</label>
-                  <div className="softinsa-users-select-wrap">
-                    <select id="softinsa-user-service-line" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
-                      {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                <div className="softinsa-users-modal-field">
-                  <label htmlFor="softinsa-user-area">Área:</label>
-                  <div className="softinsa-users-select-wrap">
-                    <select id="softinsa-user-area" value={formData.area} onChange={(e) => handleFieldChange("area", e.target.value)}>
-                      {areaOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-              </div>
               <div className="softinsa-users-modal-row softinsa-users-modal-row-bottom">
-                <div className="softinsa-users-modal-field">
-                  <label htmlFor="softinsa-user-profile">Perfil:</label>
-                  <div className={`softinsa-users-select-wrap softinsa-users-select-wrap-small${isEditMode ? " is-disabled" : ""}`}>
-                    <select id="softinsa-user-profile" value={formData.profile} onChange={(e) => handleFieldChange("profile", e.target.value)} disabled={isEditMode}>
-                      {profileOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
+
+                {!isEditMode ? (
+                  <div className="softinsa-users-modal-field">
+                    <label htmlFor="softinsa-user-profile">Perfil:</label>
+
+                    <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">
+                      <select
+                        id="softinsa-user-profile"
+                        value={formData.profile}
+                        onChange={(e) => handleFieldChange("profile", e.target.value)}
+                      >
+                        {profileOptions.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
+                ) : null}
+
                 <div className="softinsa-users-modal-field">
                   <label htmlFor="softinsa-user-status">Estado:</label>
+
                   <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">
-                    <select id="softinsa-user-status" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
+                    <select
+                      id="softinsa-user-status"
+                      value={formData.status}
+                      onChange={(e) => handleFieldChange("status", e.target.value)}
+                    >
+                      {statusOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+
+                    <SelectArrowIcon />
                   </div>
                 </div>
-                <button type="submit" className="softinsa-users-modal-submit">{isEditMode ? "Confirmar" : "Adicionar"}</button>
+
+                <button type="submit" className="softinsa-users-modal-submit">
+                  {isEditMode ? "Confirmar" : "Adicionar"}
+                </button>
               </div>
             </form>
           </div>

@@ -1,7 +1,6 @@
 import api from '../services/api'
 
 const tipoByProfile = {
-  "Admin":             "a",
   "Consultor":         "c",
   "Talent Manager":    "t",
   "Service Line Lider":"s",
