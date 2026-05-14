@@ -5,7 +5,7 @@ const controllers = {};
 // Mostrar todas as Service Lines
 controllers.getAllServiceLines = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
@@ -28,7 +28,7 @@ controllers.getAllServiceLines = async (req, res) => {
 // Mostrar Service Line por ID
 controllers.getServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const id = req.params.id;
 
         const resultado = await ServiceLines.findByPk(id);
@@ -39,7 +39,7 @@ controllers.getServiceLineById = async (req, res) => {
             });
         }
 
-        if (resultado.estado_A_I_ === false && !isAdmin) {
+        if (resultado.estado_a_i === false && !isAdmin) {
             return res.status(401).json({
                 mensagem: "Utilizador não autorizado"
             });
@@ -60,7 +60,7 @@ controllers.getServiceLineById = async (req, res) => {
 // Criar Service Line
 controllers.createServiceLine = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -69,20 +69,18 @@ controllers.createServiceLine = async (req, res) => {
         }
 
         const {
-            id_service_line,
             id_learning_path,
-            nome_serviceline,
-            descricao_serviceline,
-            imagem_serviceline,
+            nome_service_line,
+            descricao_service_line,
+            imagem_service_line,
             estado_a_i
         } = req.body;
 
         await ServiceLines.create({
-            id_service_line,
             id_learning_path,
-            nome_serviceline,
-            descricao_serviceline,
-            imagem_serviceline,
+            nome_service_line,
+            descricao_service_line,
+            imagem_service_line,
             estado_a_i,
             data_insercao: new Date().toISOString().split('T')[0] // DATA ATUAL
         });
@@ -104,7 +102,7 @@ controllers.createServiceLine = async (req, res) => {
 // Eliminar Service Line (soft delete)
 controllers.deleteServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -143,7 +141,7 @@ controllers.deleteServiceLineById = async (req, res) => {
 // Atualizar Service Line
 controllers.updateServiceLineById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -163,17 +161,17 @@ controllers.updateServiceLineById = async (req, res) => {
 
         const {
             id_learning_path,
-            nome_serviceline,
-            descricao_serviceline,
-            imagem_serviceline,
-            estado_A_I_
+            nome_service_line,
+            descricao_service_line,
+            imagem_service_line,
+            estado_a_i
         } = req.body;
 
         serviceLine.id_learning_path = id_learning_path ?? serviceLine.id_learning_path;
-        serviceLine.nome_serviceline = nome_serviceline ?? serviceLine.nome_serviceline;
-        serviceLine.descricao_serviceline = descricao_serviceline ?? serviceLine.descricao_serviceline;
-        serviceLine.imagem_serviceline = imagem_serviceline ?? serviceLine.imagem_serviceline;
-        serviceLine.estado_a_i = estado_A_I_ ?? serviceLine.estado_A_I_;
+        serviceLine.nome_service_line = nome_service_line ?? serviceLine.nome_service_line;
+        serviceLine.descricao_service_line = descricao_service_line ?? serviceLine.descricao_service_line;
+        serviceLine.imagem_service_line = imagem_service_line ?? serviceLine.imagem_service_line;
+        serviceLine.estado_a_i = estado_a_i ?? serviceLine.estado_a_i;
 
         serviceLine.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 

@@ -10,13 +10,13 @@ router.get('/get', controllerAreas.getAllAreas);
 router.get('/:id/get', controllerAreas.getAreaByID);   
 
 // Adicionar areas
-router.post('/create',controllerAreas.createArea);
+router.post('/create', authVerification, controllerAreas.createArea);
 
 // Atualizar uma area com determinado id
-router.put('/:id/update', controllerAreas.updateAreaByID);
+router.put('/:id/update', authVerification, controllerAreas.updateAreaByID);
 
 // Eliminar uma area com determinado id
-router.delete('/:id/delete', controllerAreas.deleteAreaByID);
+router.delete('/:id/delete', authVerification, controllerAreas.deleteAreaByID);
 
 
 module.exports = router;

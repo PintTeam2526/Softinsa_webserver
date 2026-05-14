@@ -1,7 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var PedidoBadge = require('./PedidosBadges.models');
-var Utilizador = require('./Utilizadores.models');
 var Estado = require('./Estados.models');
 
 var HistoricoPedidos = sequelize.define('HistoricoPedidos',
@@ -35,6 +34,10 @@ var HistoricoPedidos = sequelize.define('HistoricoPedidos',
     estado_objetivo: {
         type: Sequelize.TEXT,
         allowNull: false
+    },
+    id_utilizador_avaliador: {
+        type: Sequelize.INTEGER,
+        allowNull: true
     }
 },
 {
