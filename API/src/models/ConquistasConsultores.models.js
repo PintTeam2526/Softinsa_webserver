@@ -35,7 +35,7 @@ var ConquistasConsultores = sequelize.define('ConquistasConsultores',
 
 
 {
-    timestamps: true
+    timestamps: false
 });
 
 ConquistasConsultores.belongsTo(Consultor, { foreignKey: 'id_consultor' });

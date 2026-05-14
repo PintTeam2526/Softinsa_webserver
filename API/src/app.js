@@ -29,6 +29,7 @@ const NotificacoesPedidos = require('./models/NotificacoesPedidos.models');
 const Politicas = require('./models/Politicas.models');
 const Requisitos = require('./models/Requisitos.models');
 const ConquistasConsultores = require('./models/ConquistasConsultores.models');
+const DocumentacaoTemporaria = require('./models/DocumentacaoTemporaria.models');
 const { seedDatabase } = require('./services/seed.service');
 
 var app = express();
