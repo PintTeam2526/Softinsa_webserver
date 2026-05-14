@@ -9,7 +9,6 @@ import SoftinsaBadges from './views/pages/admin/admin-badges'
 import SoftinsaAreas from './views/pages/admin/admin-areas'
 import SoftinsaServiceLines from './views/pages/admin/admin-service-lines'
 import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
-// import AccessGatewayView from './views/pages/shared/accessGatewayView'
 import LoginView from './views/pages/auth/LoginView'
 import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
 import SLLHomeView from './views/pages/SLL/SLLHomeView'
@@ -32,7 +31,6 @@ import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilP
 function App() {
   return (
     <Routes>
-      {/* <Route path="/acesso" element={<AccessGatewayView />} /> */}
       <Route path="/" element={<LoginView />} />
       <Route path="/login" element={<LoginView />} />
 
