@@ -115,7 +115,6 @@ controllers.createArea = async (req, res) => {
         }
 
         const {
-            id_area,
             id_service_line,
             nome_area,
             descricao_area,
@@ -124,7 +123,6 @@ controllers.createArea = async (req, res) => {
         } = req.body;
 
         await Areas.create({
-            id_area,
             id_service_line,
             nome_area,
             descricao_area,

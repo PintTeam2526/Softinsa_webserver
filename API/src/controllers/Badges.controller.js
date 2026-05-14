@@ -70,7 +70,6 @@ controllers.createBadge = async (req, res) => {
         }
 
         const {
-            id_badge,
             id_area,
             nome_badge,
             descricao_badge,
@@ -84,7 +83,6 @@ controllers.createBadge = async (req, res) => {
         } = req.body;
 
         await Badges.create({
-            id_badge,
             id_area,
             nome_badge,
             descricao_badge,

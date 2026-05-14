@@ -69,7 +69,6 @@ controllers.createServiceLine = async (req, res) => {
         }
 
         const {
-            id_service_line,
             id_learning_path,
             nome_service_line,
             descricao_service_line,
@@ -78,7 +77,6 @@ controllers.createServiceLine = async (req, res) => {
         } = req.body;
 
         await ServiceLines.create({
-            id_service_line,
             id_learning_path,
             nome_service_line,
             descricao_service_line,

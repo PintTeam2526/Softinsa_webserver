@@ -68,7 +68,6 @@ controllers.createLearningPath = async (req, res) => {
         }
 
         const {
-            id_learning_path,
             nome_learning_path,
             descricao_learning_path,
             imagem_learning_path,
@@ -76,7 +75,6 @@ controllers.createLearningPath = async (req, res) => {
         } = req.body;
 
         await LearningPaths.create({
-            id_learning_path,
             nome_learning_path,
             descricao_learning_path,
             imagem_learning_path,

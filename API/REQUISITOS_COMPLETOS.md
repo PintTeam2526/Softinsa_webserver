@@ -375,6 +375,7 @@ Nenhum — todas as correções foram aplicadas.
 | 38 | `seed.service.js`: COUNT query sem quotes lia tabela legado `utilizadores` em vez de `"Utilizadores"` | `seed.service.js:9` | `FROM Utilizadores` → `FROM "Utilizadores"` |
 | 39 | `sql/seed.sql`: tabelas sem quotes no seed falham em pgAdmin porque PostgreSQL lowercase bate em tabelas legado | `sql/seed.sql` (23 INSERTs) | Todos os nomes de tabela quotados: `INSERT INTO "Tabela"` |
 | 40 | `sql/seed.sql`: `INSERT INTO "Estados"` duplica seed do `afterSync` hook no model | `sql/seed.sql:90-98` | Removido bloco Estados (model `Estados.models.js` tem `afterSync` com `popularEstados()`) |
+| 41 | Create controllers aceitavam ID primário do body, sobrescrevendo auto_increment da BD | `LearningPaths/ServiceLines/Areas/Badges.controller.js` | Removido `id_learning_path`/`id_service_line`/`id_area`/`id_badge` do destructuring e do `Model.create()` — BD agora gera IDs sequenciais automaticamente |
 
 ---
 
