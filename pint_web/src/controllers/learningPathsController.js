@@ -1,19 +1,11 @@
-const API_URL = "http://localhost:3000/api/learningPaths/get";
+import api from '../services/api'
 
 export const getLearningPaths = async () => {
   try {
-    const token = localStorage.getItem("token");
-
-
-    const response = await axios.get(API_URL, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
+    const response = await api.get('/learningPaths/get')
+    return response.data
   } catch (error) {
-    console.error("Erro ao obter learning paths", error);
-    throw error;
+    console.error('Erro ao obter learning paths', error)
+    throw error
   }
-};
+}

@@ -1,10 +1,9 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-learning-paths.css";
-import axios from "axios";
 
-const urlList = "http://localhost:3000/api/learningPaths/get";
-// const urlCreate = "http://localhost:3000/api/learning-paths/create";
-// const urlUpdate = "http://localhost:3000/api/learning-paths/update";
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+// import { createLearningPaths } from '../../../controllers/learningPathsController'
+// import { updateLearningPaths } from '../../../controllers/learningPathsController'
 
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -142,15 +141,14 @@ const SoftinsaLearningPaths = memo(() => {
   }, []);
 
   function loadLearningPaths() {
-    axios
-      .get(urlList)
-      .then((res) => {
-        setLearningPaths(res.data.map(mapLearningPath));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+  getLearningPaths()
+    .then((data) => {
+      setLearningPaths(data.map(mapLearningPath))
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+}
 
   // ── derived state (unchanged) ───────────────────────────────────────────────
 
