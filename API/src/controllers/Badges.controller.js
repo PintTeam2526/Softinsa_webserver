@@ -7,7 +7,7 @@ const controllers = {};
 // Mostrar todos os badges
 controllers.getAllBadges = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
@@ -30,7 +30,7 @@ controllers.getAllBadges = async (req, res) => {
 // Mostrar badge por ID
 controllers.getBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const id = req.params.id;
 
         const resultado = await Badges.findByPk(id);
@@ -62,7 +62,7 @@ controllers.getBadgeById = async (req, res) => {
 // Criar badge
 controllers.createBadge = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -71,7 +71,6 @@ controllers.createBadge = async (req, res) => {
         }
 
         const {
-            id_badge,
             id_area,
             nome_badge,
             descricao_badge,
@@ -85,7 +84,6 @@ controllers.createBadge = async (req, res) => {
         } = req.body;
 
         await Badges.create({
-            id_badge,
             id_area,
             nome_badge,
             descricao_badge,
@@ -116,7 +114,7 @@ controllers.createBadge = async (req, res) => {
 // Eliminar badge
 controllers.deleteBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -155,7 +153,7 @@ controllers.deleteBadgeById = async (req, res) => {
 // Atualizar badge
 controllers.updateBadgeById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "admin";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({

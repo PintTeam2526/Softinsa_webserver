@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
-
+var Administrador = require('./Administradores.models');
 
 var Politicas = sequelize.define('Politicas',
 {
@@ -14,7 +14,7 @@ var Politicas = sequelize.define('Politicas',
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: Administradores,
+            model: Administrador,
             key: 'id_administrador'
         },
     },
@@ -27,5 +27,6 @@ var Politicas = sequelize.define('Politicas',
     timestamps: true
 });
 
+Politicas.belongsTo(Administrador, { foreignKey: 'id_administrador' });
 
 module.exports = Politicas;

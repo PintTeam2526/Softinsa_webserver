@@ -13,10 +13,10 @@ router.get('/:id/get', controllerBadges.getBadgeById);
 router.post('/create', authVerification,controllerBadges.createBadge);
 
 // Atualizar um badge
-router.put('/:id/update', controllerBadges.updateBadgeById);
+router.put('/:id/update', authVerification, controllerBadges.updateBadgeById);
 
 // Eliminar um  badge
-router.delete('/:id/delete', controllerBadges.deleteBadgeById);
+router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById);
 
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
@@ -37,7 +37,7 @@ router.get('/mobile/:id_badge/consultor/:id_consultor/estado', controllerBadges.
 //router.delete('/:badgeId/requisitos/:id/delete', controllerBadges.deleteRequisitoById);
 
 // Atualizar requisito num badge com um id
-//router.update('/:badgeId/requisitos/:id/update', controllerBadges.updateRequisitoById);
+//router.put('/:badgeId/requisitos/:id/update', controllerBadges.updateRequisitoById);
 
 
 //MOBILE

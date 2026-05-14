@@ -28,7 +28,7 @@ var Enviadas = sequelize.define('Enviadas',
     timestamps: false
 });
 
-Enviadas.belongsTo(Utilizador);
-Enviadas.belongsTo(NotificacaoAdmin);
+Enviadas.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
+Enviadas.belongsTo(NotificacaoAdmin, { foreignKey: 'id_notificacao_admin' });
 
 module.exports = Enviadas;

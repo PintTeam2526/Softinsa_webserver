@@ -8,6 +8,7 @@ const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const Objetivos = require('../models/Objetivos.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
+const Notificacoes = require('../models/NotificacoesPedidos.models');
 
 const controllers = {};
 
@@ -246,6 +247,66 @@ controllers.getBadgesPorObterMobile = async (req, res) => {
       error: "Erro interno no servidor ao devolver a lista de badges por concluir do consultor.",
     });
   }
+};
+
+//Adicionar um objetivo do consultor
+controllers.createObjetivo = async (req, res) => {
+    try {
+        const idConsultor = req.params.id;
+        const resultado = await Objetivos.create({
+            ...req.body,
+            id_consultor: idConsultor
+        });
+        return res.status(201).json(resultado);
+    } catch (error) {
+        return res.status(500).json({ mensagem: "Erro ao criar objetivo", erro: error.message });
+    }
+};
+
+//Apagar um objetivo do consultor
+controllers.deleteObjetivoById = async (req, res) => {
+    try {
+        const idConsultor = req.params.id;
+        const { id_objetivo } = req.body;
+        await Objetivos.destroy({
+            where: {
+                id_objetivo,
+                id_consultor: idConsultor
+            }
+        });
+        return res.json({ message: 'Objetivo eliminado' });
+    } catch (error) {
+        return res.status(500).json({ mensagem: "Erro ao eliminar objetivo", erro: error.message });
+    }
+};
+
+// Listar notificações de um utilizador
+controllers.getAllNotificacoes = async (req, res) => {
+    try {
+        const idConsultor = req.params.id;
+        const resultado = await Notificacoes.findAll({
+            where: {
+                id_consultor: idConsultor
+            }
+        });
+        return res.json(resultado);
+    } catch (error) {
+        return res.status(500).json({ mensagem: "Erro ao buscar notificações", erro: error.message });
+    }
+};
+
+// Enviar uma notificação
+controllers.createNotificacao = async (req, res) => {
+    try {
+        const idConsultor = req.params.id;
+        const resultado = await Notificacoes.create({
+            ...req.body,
+            id_consultor: idConsultor
+        });
+        return res.status(201).json(resultado);
+    } catch (error) {
+        return res.status(500).json({ mensagem: "Erro ao criar notificação", erro: error.message });
+    }
 };
 
   module.exports = controllers;

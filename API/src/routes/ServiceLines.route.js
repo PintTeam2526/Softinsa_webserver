@@ -13,10 +13,10 @@ router.get('/:id/get', controllerServiceLines.getServiceLineById);
 router.post('/create', authVerification,controllerServiceLines.createServiceLine);
 
 // Atualizar service line
-router.put('/:id/update', controllerServiceLines.updateServiceLineById);
+router.put('/:id/update', authVerification, controllerServiceLines.updateServiceLineById);
 
 // Apagar service line
-router.delete('/:id/delete', controllerServiceLines.deleteServiceLineById);
+router.delete('/:id/delete', authVerification, controllerServiceLines.deleteServiceLineById);
 
 
 //MOBILE

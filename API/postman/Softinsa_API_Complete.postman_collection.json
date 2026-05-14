@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Joao Teste\",\n  \"email\": \"joao.teste@example.com\",\n  \"password\": \"123456\"\n}",
+              "raw": "{\n  \"nome\": \"Joao Teste\",\n  \"email\": \"joao.teste@example.com\",\n  \"username\": \"joao.teste\",\n  \"password\": \"123456\",\n  \"fotoPerfil\": \"img-perfil\",\n  \"idAreaPref\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -86,20 +86,7 @@
           ]
         },
         {
-          "name": "Get Me (controller vazio)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": "{{baseUrl}}/api/autenticacao/get-me"
-          }
-        },
-        {
-          "name": "Update Me (controller vazio)",
+          "name": "Update Me",
           "request": {
             "method": "PUT",
             "header": [
@@ -114,7 +101,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome_utilizador\": \"Nome Atualizado\"\n}",
+              "raw": "{\n  \"nome\": \"Nome Atualizado\",\n  \"email\": \"novo.email@example.com\",\n  \"imagem\": \"img-nova\",\n  \"password\": \"novaPassword123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -125,7 +112,7 @@
           }
         },
         {
-          "name": "Delete Me (controller vazio)",
+          "name": "Delete Me",
           "request": {
             "method": "DELETE",
             "header": [
@@ -185,7 +172,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_area\": 999,\n  \"id_serviceline\": 1,\n  \"nome_area\": \"Área Teste\",\n  \"descricao_area\": \"Criada via Postman\",\n  \"imagem_area\": \"img-area\",\n  \"estado_A_I_\": true\n}",
+              "raw": "{\n  \"id_area\": 999,\n  \"id_service_line\": 1,\n  \"nome_area\": \"Área Teste\",\n  \"descricao_area\": \"Criada via Postman\",\n  \"imagem_area\": \"img-area\",\n  \"estado_a_i\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -269,7 +256,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_badge\": 999,\n  \"id_area\": 1,\n  \"nome_badge\": \"Badge Teste\",\n  \"descricao_badge\": \"Badge criado via Postman\",\n  \"pontos_badge\": 50,\n  \"pago\": false,\n  \"nivel_badge\": \"junior\",\n  \"imagem_badge\": \"img-badge\",\n  \"sla\": 30,\n  \"validade\": 365,\n  \"estado_A_I_\": true\n}",
+              "raw": "{\n  \"id_badge\": 999,\n  \"id_area\": 1,\n  \"nome_badge\": \"Badge Teste\",\n  \"descricao_badge\": \"Badge criado via Postman\",\n  \"pontos_badge\": 50,\n  \"pago\": false,\n  \"nivel_badge\": \"junior\",\n  \"imagem_badge\": \"img-badge\",\n  \"sla\": 30,\n  \"validade\": 365,\n  \"estado_a_i\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -317,6 +304,13 @@
             ],
             "url": "{{baseUrl}}/api/badges/{{badgeId}}/delete"
           }
+        },
+        {
+          "name": "Get Badge Estado by Consultor",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/badges/{{badgeId}}/consultor/{{userId}}/estado"
+          }
         }
       ]
     },
@@ -353,7 +347,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_service_line\": 999,\n  \"id_learning_path\": 1,\n  \"nome_serviceline\": \"Service Line Teste\",\n  \"descricao_serviceline\": \"Criada via Postman\",\n  \"imagem_serviceline\": \"img-sl\",\n  \"estado_a_i\": true\n}",
+              "raw": "{\n  \"id_service_line\": 999,\n  \"id_learning_path\": 1,\n  \"nome_service_line\": \"Service Line Teste\",\n  \"descricao_service_line\": \"Criada via Postman\",\n  \"imagem_service_line\": \"img-sl\",\n  \"estado_a_i\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -379,7 +373,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"descricao_serviceline\": \"Service Line atualizada\"\n}",
+              "raw": "{\n  \"descricao_service_line\": \"Service Line atualizada\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -527,7 +521,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_utilizador\": 999,\n  \"nome_utilizador\": \"Utilizador API\",\n  \"email_utilizador\": \"api.user@example.com\",\n  \"password_utilizador\": \"123456\",\n  \"tipo_utilizador\": \"CO\",\n  \"estado_a_i\": true\n}",
+              "raw": "{\n  \"id_utilizador\": 999,\n  \"nome_utilizador\": \"Utilizador API\",\n  \"email_utilizador\": \"api.user@example.com\",\n  \"username_utilizador\": \"api.user\",\n  \"password_utilizador\": \"123456\",\n  \"tipo_utilizador\": \"c\",\n  \"imagem_utilizador\": \"img-user\",\n  \"estado_a_i\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -565,12 +559,21 @@
             "method": "DELETE",
             "url": "{{baseUrl}}/api/utilizadores/{{userId}}/delete"
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Consultores",
+      "item": [
         {
           "name": "Create Objetivo",
           "request": {
             "method": "POST",
             "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -578,14 +581,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo_objetivo\": \"Objetivo teste\",\n  \"descricao_objetivo\": \"Descrição do objetivo\"\n}",
+              "raw": "{\n  \"id_badge\": 1,\n  \"data_limite_conclusao\": \"2026-12-31\",\n  \"nome_objetivo\": \"Objetivo Teste\",\n  \"estado_objetivo\": \"em_andamento\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/objetivo/create"
+            "url": "{{baseUrl}}/api/consultores/{{userId}}/objetivo/create"
           },
           "event": [
             {
@@ -606,7 +609,26 @@
           "name": "Delete Objetivo",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/api/utilizadores/{{objetivoId}}/objetivo/delete"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_objetivo\": {{objetivoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/consultores/{{userId}}/objetivo/delete"
           }
         },
         {
@@ -619,7 +641,7 @@
                 "value": "Bearer {{token}}"
               }
             ],
-            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/notificacoes"
+            "url": "{{baseUrl}}/api/consultores/{{userId}}/notificacoes"
           }
         },
         {
@@ -645,7 +667,7 @@
                 }
               }
             },
-            "url": "{{baseUrl}}/api/utilizadores/{{userId}}/notificacoes/create"
+            "url": "{{baseUrl}}/api/consultores/{{userId}}/notificacoes"
           }
         }
       ]
@@ -695,7 +717,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_pedido_badge\": 999,\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{userId}},\n  \"justificacao\": \"Pedido criado via Postman\"\n}",
+              "raw": "{\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{userId}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -813,11 +835,11 @@
     },
     {
       "key": "loginEmail",
-      "value": "joao.teste@example.com"
+      "value": "admin@softinsa.pt"
     },
     {
       "key": "loginPassword",
-      "value": "123456"
+      "value": "admin123"
     },
     {
       "key": "userId",
