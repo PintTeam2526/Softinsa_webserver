@@ -1,16 +1,18 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-areas.css";
-import axios from "axios";
+
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
 const BASE_URL = "http://localhost:3000/api";
-const urlAreasList        = `${BASE_URL}/areas/get`;
-const urlServiceLinesList = `${BASE_URL}/serviceLines/get`;
-const urlLearningPathsList= `${BASE_URL}/learningPaths/get`;
 
 const statusOptions = ["Ativo", "Inativo"];
 
+
 const getDefaultFilterDraft = () => ({ serviceLine: "", learningPath: "", status: "" });
-const getDefaultAreaForm    = () => ({ name: "", description: "", learningPath: "", serviceLine: "", status: "", iconFileName: "", iconFile: null });
+const getDefaultAreaForm = () => ({ name: "", description: "", learningPath: "", serviceLine: "", status: "", iconFileName: "", iconFile: null });
 
 const normalizeSearchValue = (value) =>
   String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -18,14 +20,14 @@ const normalizeSearchValue = (value) =>
 const mapArea = (row, slMap, lpMap) => {
   const sl = slMap[row.id_service_line];
   return {
-    id:           row.id_area,
-    name:         row.nome_area,
-    description:  row.descricao_area        ?? "",
-    iconFileName: row.imagem_area           ?? "",
-    status:       row.estado_a_i ? "Ativo" : "Inativo",
-    serviceLine:  sl?.name                  ?? `ID ${row.id_service_line}`,
+    id: row.id_area,
+    name: row.nome_area,
+    description: row.descricao_area ?? "",
+    iconFileName: row.imagem_area ?? "",
+    status: row.estado_a_i ? "Ativo" : "Inativo",
+    serviceLine: sl?.name ?? `ID ${row.id_service_line}`,
     learningPath: lpMap[sl?.id_learning_path] ?? "",
-    badges:       0,
+    badges: 0,
   };
 };
 
@@ -104,20 +106,20 @@ function FileSelector({ fileName, onChange, ariaLabel }) {
 // ── componente principal ──────────────────────────────────────────────────────
 
 const SoftinsaAreas = memo(() => {
-  const [areas, setAreas]                         = useState([]);
+  const [areas, setAreas] = useState([]);
   const [learningPathOptions, setLearningPathOptions] = useState([]);
-  const [serviceLineOptions, setServiceLineOptions]   = useState([]);
-  const [searchTerm, setSearchTerm]               = useState("");
-  const [isFilterOpen, setIsFilterOpen]           = useState(false);
+  const [serviceLineOptions, setServiceLineOptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
-  const [exportFormat, setExportFormat]           = useState("");
-  const [filterDraft, setFilterDraft]             = useState(getDefaultFilterDraft());
-  const [activeFilters, setActiveFilters]         = useState(getDefaultFilterDraft());
-  const [entriesPerPage, setEntriesPerPage]       = useState(10);
-  const [currentPage, setCurrentPage]             = useState(1);
-  const [modalMode, setModalMode]                 = useState(null);
-  const [editingAreaId, setEditingAreaId]         = useState(null);
-  const [formData, setFormData]                   = useState(getDefaultAreaForm());
+  const [exportFormat, setExportFormat] = useState("");
+  const [filterDraft, setFilterDraft] = useState(getDefaultFilterDraft());
+  const [activeFilters, setActiveFilters] = useState(getDefaultFilterDraft());
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modalMode, setModalMode] = useState(null);
+  const [editingAreaId, setEditingAreaId] = useState(null);
+  const [formData, setFormData] = useState(getDefaultAreaForm());
   const filterWrapRef = useRef(null);
 
   // ── fetch ─────────────────────────────────────────────────────────────────
@@ -126,25 +128,33 @@ const SoftinsaAreas = memo(() => {
 
   async function loadData() {
     try {
-      const [areasRes, slRes, lpRes] = await Promise.all([
-        axios.get(urlAreasList),
-        axios.get(urlServiceLinesList),
-        axios.get(urlLearningPathsList),
+      const [areasData, slData, lpData, badgesData] = await Promise.all([
+        getAreas(),
+        getServiceLines(),
+        getLearningPaths(),
+        getBadges(),
       ]);
 
-      // { id_learning_path: nome_learning_path }
       const lpMap = {};
-      lpRes.data.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
+      lpData.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
 
-      // { id_service_line: { name, id_learning_path } }
       const slMap = {};
-      slRes.data.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
+      slData.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
 
-      // Opções para filtros e modal (nomes únicos)
-      setLearningPathOptions(lpRes.data.map((lp) => lp.nome_learning_path));
-      setServiceLineOptions(slRes.data.map((sl) => sl.nome_service_line));
+      const badgeCountByArea = {};
+      badgesData.forEach((b) => {
+        badgeCountByArea[b.id_area] = (badgeCountByArea[b.id_area] ?? 0) + 1;
+      });
 
-      setAreas(areasRes.data.map((row) => mapArea(row, slMap, lpMap)));
+      setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
+      setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
+
+      setAreas(
+        areasData.map((row) => ({
+          ...mapArea(row, slMap, lpMap),
+          badges: badgeCountByArea[row.id_area] ?? 0,
+        }))
+      );
     } catch (error) {
       console.error(error);
     }
@@ -152,21 +162,21 @@ const SoftinsaAreas = memo(() => {
 
   // ── estado derivado ───────────────────────────────────────────────────────
 
-  const isModalOpen      = modalMode !== null;
-  const isEditMode       = modalMode === "edit";
+  const isModalOpen = modalMode !== null;
+  const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.serviceLine || activeFilters.learningPath || activeFilters.status);
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
   const filteredAreas = areas.filter((area) => {
-    const matchesSL     = !activeFilters.serviceLine  || area.serviceLine  === activeFilters.serviceLine;
-    const matchesLP     = !activeFilters.learningPath || area.learningPath === activeFilters.learningPath;
-    const matchesStatus = !activeFilters.status       || area.status       === activeFilters.status;
-    const matchesSearch = !normalizedSearchTerm       || normalizeSearchValue(`${area.name} ${area.serviceLine} ${area.learningPath}`).includes(normalizedSearchTerm);
+    const matchesSL = !activeFilters.serviceLine || area.serviceLine === activeFilters.serviceLine;
+    const matchesLP = !activeFilters.learningPath || area.learningPath === activeFilters.learningPath;
+    const matchesStatus = !activeFilters.status || area.status === activeFilters.status;
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(`${area.name} ${area.serviceLine} ${area.learningPath}`).includes(normalizedSearchTerm);
     return matchesSL && matchesLP && matchesStatus && matchesSearch;
   });
 
-  const totalPages    = Math.max(1, Math.ceil(filteredAreas.length / entriesPerPage));
-  const pageNumbers   = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const totalPages = Math.max(1, Math.ceil(filteredAreas.length / entriesPerPage));
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedAreas = filteredAreas.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
 
   // ── handlers ──────────────────────────────────────────────────────────────
@@ -185,7 +195,7 @@ const SoftinsaAreas = memo(() => {
 
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
 
-  const handleFieldChange    = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
   const handleIconFileChange = (e) => {
     const file = e.target.files?.[0] ?? null;
     setFormData((prev) => ({ ...prev, iconFile: file, iconFileName: file ? file.name : "" }));
@@ -226,17 +236,17 @@ const SoftinsaAreas = memo(() => {
     handleCloseModal();
   };
 
-  const handleToggleFilter      = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
+  const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
   const handleFilterDraftChange = (field, value) => setFilterDraft((prev) => ({ ...prev, [field]: value }));
-  const handleApplyFilters      = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleClearFilters      = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleEntriesChange     = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
-  const handleSearchChange      = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
-  const handlePreviousPage      = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const handleNextPage          = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const handlePageSelect        = (page) => setCurrentPage(page);
-  const handleOpenExportAlert   = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
-  const handleCloseExportAlert  = () => { setIsExportAlertOpen(false); setExportFormat(""); };
+  const handleApplyFilters = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleEntriesChange = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
+  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
+  const handleOpenExportAlert = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
+  const handleCloseExportAlert = () => { setIsExportAlertOpen(false); setExportFormat(""); };
 
   const handleConfirmExport = async () => {
     if (!exportFormat) return;
@@ -348,7 +358,7 @@ const SoftinsaAreas = memo(() => {
           <table className="softinsa-areas-table" aria-label="Tabela de áreas">
             <thead>
               <tr>
-                <th>NOME</th><th>SERVICE LINE</th><th>LEARNING PATH</th><th>BADGES</th><th>ESTADO</th><th aria-label="Ações"></th>
+                <th>NOME</th><th>LEARNING PATH</th><th>SERVICE LINE</th><th>BADGES</th><th>ESTADO</th><th aria-label="Ações"></th>
               </tr>
             </thead>
             <tbody>
@@ -356,8 +366,8 @@ const SoftinsaAreas = memo(() => {
                 paginatedAreas.map((area) => (
                   <tr key={area.id}>
                     <td>{area.name}</td>
-                    <td>{area.serviceLine}</td>
                     <td>{area.learningPath}</td>
+                    <td>{area.serviceLine}</td>
                     <td>{area.badges}</td>
                     <td>{area.status}</td>
                     <td>

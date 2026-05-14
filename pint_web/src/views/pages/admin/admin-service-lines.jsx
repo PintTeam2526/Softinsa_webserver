@@ -1,14 +1,15 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-service-lines.css";
-import axios from "axios";
+
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
 const BASE_URL = "http://localhost:3000/api";
-const urlServiceLinesList   = `${BASE_URL}/serviceLines/get`;
-const urlLearningPathsList  = `${BASE_URL}/learningPaths/get`;
-// const urlCreate = `${BASE_URL}/serviceLines/create`;
-// const urlUpdate = (id) => `${BASE_URL}/serviceLines/${id}/update`;
 
 const statusOptions = ["Ativo", "Inativo"];
+
 
 const getDefaultFilterDraft = () => ({
   learningPath: "",
@@ -33,14 +34,14 @@ const normalizeSearchValue = (value) =>
 
 // Mapeia linha da BD → shape usado no componente
 const mapServiceLine = (row, learningPathsMap) => ({
-  id:           row.id_service_line,
-  name:         row.nome_service_line,
-  description:  row.descricao_service_line   ?? "",
-  iconFileName: row.imagem_service_line       ?? "",
-  status:       row.estado_a_i ? "Ativo" : "Inativo",
+  id: row.id_service_line,
+  name: row.nome_service_line,
+  description: row.descricao_service_line ?? "",
+  iconFileName: row.imagem_service_line ?? "",
+  status: row.estado_a_i ? "Ativo" : "Inativo",
   learningPath: learningPathsMap[row.id_learning_path] ?? `ID ${row.id_learning_path}`,
-  areas:        0,
-  badges:       0,
+  areas: 0,
+  badges: 0,
 });
 
 // ── icons (sem alterações) ────────────────────────────────────────────────────
@@ -118,19 +119,19 @@ function FileSelector({ fileName, onChange, ariaLabel }) {
 // ── componente principal ──────────────────────────────────────────────────────
 
 const SoftinsaServiceLines = memo(() => {
-  const [serviceLines, setServiceLines]       = useState([]);
+  const [serviceLines, setServiceLines] = useState([]);
   const [learningPathOptions, setLearningPathOptions] = useState([]); // nomes para o filtro/modal
-  const [searchTerm, setSearchTerm]           = useState("");
-  const [isFilterOpen, setIsFilterOpen]       = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
-  const [exportFormat, setExportFormat]       = useState("");
-  const [filterDraft, setFilterDraft]         = useState(getDefaultFilterDraft());
-  const [activeFilters, setActiveFilters]     = useState(getDefaultFilterDraft());
-  const [entriesPerPage, setEntriesPerPage]   = useState(10);
-  const [currentPage, setCurrentPage]         = useState(1);
-  const [modalMode, setModalMode]             = useState(null);
+  const [exportFormat, setExportFormat] = useState("");
+  const [filterDraft, setFilterDraft] = useState(getDefaultFilterDraft());
+  const [activeFilters, setActiveFilters] = useState(getDefaultFilterDraft());
+  const [entriesPerPage, setEntriesPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modalMode, setModalMode] = useState(null);
   const [editingServiceLineId, setEditingServiceLineId] = useState(null);
-  const [formData, setFormData]               = useState(getDefaultServiceLineForm());
+  const [formData, setFormData] = useState(getDefaultServiceLineForm());
   const filterWrapRef = useRef(null);
 
   // ── fetch ─────────────────────────────────────────────────────────────────
@@ -141,23 +142,41 @@ const SoftinsaServiceLines = memo(() => {
 
   async function loadData() {
     try {
-      // Busca as duas listas em paralelo
-      const [slRes, lpRes] = await Promise.all([
-        axios.get(urlServiceLinesList),
-        axios.get(urlLearningPathsList),
+      const [lpData, slData, areasData, badgesData] = await Promise.all([
+        getLearningPaths(),
+        getServiceLines(),
+        getAreas(),
+        getBadges(),
       ]);
 
-      // Mapa { id_learning_path: nome_learning_path }
       const lpMap = {};
-      lpRes.data.forEach((lp) => {
-        lpMap[lp.id_learning_path] = lp.nome_learning_path;
+      lpData.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
+
+      const areaToSL = {};
+      areasData.forEach((a) => { areaToSL[a.id_area] = a.id_service_line; });
+
+      const areaCountBySL = {};
+      const badgeCountBySL = {};
+
+      areasData.forEach((a) => {
+        areaCountBySL[a.id_service_line] = (areaCountBySL[a.id_service_line] ?? 0) + 1;
       });
 
-      // Lista de nomes para filtro e modal
-      const lpNames = lpRes.data.map((lp) => lp.nome_learning_path);
-      setLearningPathOptions(lpNames);
+      badgesData.forEach((b) => {
+        const slId = areaToSL[b.id_area];
+        if (slId !== undefined)
+          badgeCountBySL[slId] = (badgeCountBySL[slId] ?? 0) + 1;
+      });
 
-      setServiceLines(slRes.data.map((row) => mapServiceLine(row, lpMap)));
+      setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
+
+      setServiceLines(
+        slData.map((row) => ({
+          ...mapServiceLine(row, lpMap),
+          areas: areaCountBySL[row.id_service_line] ?? 0,
+          badges: badgeCountBySL[row.id_service_line] ?? 0,
+        }))
+      );
     } catch (error) {
       console.error(error);
     }
@@ -165,20 +184,20 @@ const SoftinsaServiceLines = memo(() => {
 
   // ── estado derivado (sem alterações) ──────────────────────────────────────
 
-  const isModalOpen  = modalMode !== null;
-  const isEditMode   = modalMode === "edit";
+  const isModalOpen = modalMode !== null;
+  const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.learningPath || activeFilters.status);
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
   const filteredServiceLines = serviceLines.filter((item) => {
-    const matchesLP     = !activeFilters.learningPath || item.learningPath === activeFilters.learningPath;
-    const matchesStatus = !activeFilters.status       || item.status       === activeFilters.status;
-    const matchesSearch = !normalizedSearchTerm       || normalizeSearchValue(`${item.name} ${item.learningPath}`).includes(normalizedSearchTerm);
+    const matchesLP = !activeFilters.learningPath || item.learningPath === activeFilters.learningPath;
+    const matchesStatus = !activeFilters.status || item.status === activeFilters.status;
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(`${item.name} ${item.learningPath}`).includes(normalizedSearchTerm);
     return matchesLP && matchesStatus && matchesSearch;
   });
 
-  const totalPages          = Math.max(1, Math.ceil(filteredServiceLines.length / entriesPerPage));
-  const pageNumbers         = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const totalPages = Math.max(1, Math.ceil(filteredServiceLines.length / entriesPerPage));
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedServiceLines = filteredServiceLines.slice(
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
@@ -243,17 +262,17 @@ const SoftinsaServiceLines = memo(() => {
     handleCloseModal();
   };
 
-  const handleToggleFilter    = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((prev) => !prev); };
+  const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((prev) => !prev); };
   const handleFilterDraftChange = (field, value) => setFilterDraft((prev) => ({ ...prev, [field]: value }));
-  const handleApplyFilters    = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleClearFilters    = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
-  const handleEntriesChange   = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
-  const handleSearchChange    = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
-  const handlePreviousPage    = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const handleNextPage        = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const handlePageSelect      = (page) => setCurrentPage(page);
+  const handleApplyFilters = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleEntriesChange = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
+  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
   const handleOpenExportAlert = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
-  const handleCloseExportAlert= () => { setIsExportAlertOpen(false); setExportFormat(""); };
+  const handleCloseExportAlert = () => { setIsExportAlertOpen(false); setExportFormat(""); };
 
   const handleConfirmExport = async () => {
     if (!exportFormat) return;

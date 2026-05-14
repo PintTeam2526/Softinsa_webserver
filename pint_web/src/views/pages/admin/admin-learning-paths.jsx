@@ -2,10 +2,14 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-learning-paths.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
-// import { createLearningPaths } from '../../../controllers/learningPathsController'
-// import { updateLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
+
+const BASE_URL = 'http://localhost:3000/api';
 
 const statusOptions = ["Ativo", "Inativo"];
+
 
 const getDefaultFilterDraft = () => ({
   status: "",
@@ -28,13 +32,13 @@ const normalizeSearchValue = (value) =>
 
 // Maps raw DB row → normalized shape used throughout the component
 const mapLearningPath = (row) => ({
-  id:           row.id_learning_path,
-  name:         row.nome_learning_path,
-  description:  row.descricao_learning_path ?? "",
-  status:       row.estado_a_i ? "Ativo" : "Inativo",
+  id: row.id_learning_path,
+  name: row.nome_learning_path,
+  description: row.descricao_learning_path ?? "",
+  status: row.estado_a_i ? "Ativo" : "Inativo",
   serviceLines: row.service_lines ?? 0,
-  areas:        row.areas         ?? 0,
-  badges:       row.badges        ?? 0,
+  areas: row.areas ?? 0,
+  badges: row.badges ?? 0,
   iconFileName: row.imagem_learning_path ?? "",
 });
 
@@ -141,14 +145,56 @@ const SoftinsaLearningPaths = memo(() => {
   }, []);
 
   function loadLearningPaths() {
-  getLearningPaths()
-    .then((data) => {
-      setLearningPaths(data.map(mapLearningPath))
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
+    Promise.all([
+      getLearningPaths(),
+      getServiceLines(),
+      getAreas(),
+      getBadges(),
+    ])
+      .then(([lpData, slData, areasData, badgesData]) => {
+
+        const slToLP = {};
+        slData.forEach((sl) => { slToLP[sl.id_service_line] = sl.id_learning_path; });
+
+        const areaToLP = {};
+        areasData.forEach((a) => {
+          const lpId = slToLP[a.id_service_line];
+          if (lpId !== undefined) areaToLP[a.id_area] = lpId;
+        });
+
+        const slCountByLP = {};
+        const areaCountByLP = {};
+        const badgeCountByLP = {};
+
+        slData.forEach((sl) => {
+          slCountByLP[sl.id_learning_path] = (slCountByLP[sl.id_learning_path] ?? 0) + 1;
+        });
+
+        areasData.forEach((a) => {
+          const lpId = slToLP[a.id_service_line];
+          if (lpId !== undefined)
+            areaCountByLP[lpId] = (areaCountByLP[lpId] ?? 0) + 1;
+        });
+
+        badgesData.forEach((b) => {
+          const lpId = areaToLP[b.id_area];
+          if (lpId !== undefined)
+            badgeCountByLP[lpId] = (badgeCountByLP[lpId] ?? 0) + 1;
+        });
+
+        setLearningPaths(
+          lpData.map((row) => ({
+            ...mapLearningPath(row),
+            serviceLines: slCountByLP[row.id_learning_path] ?? 0,
+            areas: areaCountByLP[row.id_learning_path] ?? 0,
+            badges: badgeCountByLP[row.id_learning_path] ?? 0,
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   // ── derived state (unchanged) ───────────────────────────────────────────────
 
@@ -216,11 +262,11 @@ const SoftinsaLearningPaths = memo(() => {
 
   const handleOpenEditLearningPath = (learningPathItem) => {
     setFormData({
-      name:         learningPathItem.name        || "",
-      description:  learningPathItem.description || "",
-      status:       learningPathItem.status      || "Ativo",
-      iconFileName: learningPathItem.iconFileName|| "",
-      iconFile:     null,
+      name: learningPathItem.name || "",
+      description: learningPathItem.description || "",
+      status: learningPathItem.status || "Ativo",
+      iconFileName: learningPathItem.iconFileName || "",
+      iconFile: null,
     });
     setEditingLearningPathId(learningPathItem.id);
     setIsFilterOpen(false);
@@ -239,9 +285,9 @@ const SoftinsaLearningPaths = memo(() => {
     if (!sanitizedName) return;
 
     const payload = {
-      name:         sanitizedName,
-      description:  formData.description.trim(),
-      status:       formData.status || "Ativo",
+      name: sanitizedName,
+      description: formData.description.trim(),
+      status: formData.status || "Ativo",
       iconFileName: formData.iconFileName,
     };
 
@@ -296,8 +342,8 @@ const SoftinsaLearningPaths = memo(() => {
   };
 
   const handlePreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage    = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  const handlePageSelect  = (page) => setCurrentPage(page);
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
 
   const handleOpenExportAlert = () => {
     setIsFilterOpen(false);
@@ -314,11 +360,11 @@ const SoftinsaLearningPaths = memo(() => {
     if (!exportFormat) return;
 
     const rowsToExport = filteredLearningPaths.map((item) => ({
-      Nome:          item.name,
+      Nome: item.name,
       "Service Lines": item.serviceLines,
-      Áreas:         item.areas,
-      Badges:        item.badges,
-      Estado:        item.status,
+      Áreas: item.areas,
+      Badges: item.badges,
+      Estado: item.status,
     }));
 
     const timestamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);

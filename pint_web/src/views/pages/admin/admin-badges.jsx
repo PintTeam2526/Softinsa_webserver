@@ -1,24 +1,18 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
-import badgeJuniorCitizenDeveloper from "../../../assets/images/badges/outsystems_1.png";
-import badgeOutsystemsAdvanced from "../../../assets/images/badges/outsystems_3.png";
-import badgeOutsystemsSpecial from "../../../assets/images/badges/outsystems_special.png";
-import badgeTmJunior from "../../../assets/images/badges/tm_1.png";
-import badgeTmAdvanced from "../../../assets/images/badges/tm_3.png";
-import badgeTmSpecial from "../../../assets/images/badges/tm_special.png";
-import badgeDevopsIntermediate from "../../../assets/images/badges/devops_2.png";
-import badgeDevopsAdvanced from "../../../assets/images/badges/devops_4.png";
 import "./admin-badges.css";
 import axios from "axios";
 
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
+
 const BASE_URL = "http://localhost:3000/api";
-const urlBadgesList = `${BASE_URL}/badges/get`;
-const urlAreasList = `${BASE_URL}/areas/get`;
-const urlServiceLinesList = `${BASE_URL}/serviceLines/get`;
-const urlLearningPathsList = `${BASE_URL}/learningPaths/get`;
 
 const defaultBadgeImage = "https://www.figma.com/api/mcp/asset/8ac1b8c7-eccc-423b-8373-e25bf82c55b4";
 
 const statusOptions = ["Ativo", "Inativo"];
+
 const badgeLevelRankOptions = ["1", "2", "3", "4", "5"];
 
 const levelLabelByRank = {
@@ -28,6 +22,7 @@ const levelLabelByRank = {
   "4": "Especialista",
   "5": "Master",
 };
+
 
 const rankByLevelLabel = Object.fromEntries(
   Object.entries(levelLabelByRank).map(([rank, label]) => [label, rank])
@@ -174,30 +169,27 @@ const SoftinsaBadges = memo(() => {
 
   async function loadData() {
     try {
-      const [badgesRes, areasRes, slRes, lpRes] = await Promise.all([
-        axios.get(urlBadgesList),
-        axios.get(urlAreasList),
-        axios.get(urlServiceLinesList),
-        axios.get(urlLearningPathsList),
+      const [badgesData, areasData, slData, lpData] = await Promise.all([
+        getBadges(),
+        getAreas(),
+        getServiceLines(),
+        getLearningPaths(),
       ]);
 
-      // { id_learning_path: nome_learning_path }
       const lpMap = {};
-      lpRes.data.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
+      lpData.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
 
-      // { id_service_line: { name, id_learning_path } }
       const slMap = {};
-      slRes.data.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
+      slData.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
 
-      // { id_area: { name, id_service_line } }
       const areaMap = {};
-      areasRes.data.forEach((a) => { areaMap[a.id_area] = { name: a.nome_area, id_service_line: a.id_service_line }; });
+      areasData.forEach((a) => { areaMap[a.id_area] = { name: a.nome_area, id_service_line: a.id_service_line }; });
 
-      setLearningPathOptions(lpRes.data.map((lp) => lp.nome_learning_path));
-      setServiceLineOptions(slRes.data.map((sl) => sl.nome_service_line));
-      setAreaOptions(areasRes.data.map((a) => a.nome_area));
+      setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
+      setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
+      setAreaOptions(areasData.map((a) => a.nome_area));
 
-      setBadges(badgesRes.data.map((row) => mapBadge(row, areaMap, slMap, lpMap)));
+      setBadges(badgesData.map((row) => mapBadge(row, areaMap, slMap, lpMap)));
     } catch (error) {
       console.error(error);
     }
