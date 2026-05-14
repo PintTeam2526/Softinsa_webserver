@@ -31,14 +31,10 @@ var HistoricoPedidos = sequelize.define('HistoricoPedidos',
     data: {
         type: Sequelize.DATE,
         allowNull: false
-    },
-    estado_objetivo: {
-        type: Sequelize.TEXT,
-        allowNull: false
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 HistoricoPedidos.belongsTo(PedidoBadge, { foreignKey: 'id_pedido_badge' });

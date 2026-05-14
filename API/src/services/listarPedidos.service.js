@@ -5,7 +5,7 @@ const ServiceLineLider = require('../models/ServiceLineLiders.models');
 const Badge = require('../models/Badges.models');
 const Estado = require('../models/Estados.models');
 
-const { devolverEstadoBadge } = require('./devolverEstadoBadge'); // ajustar path
+const { devolverEstadoBadge } = require('./devolverEstadoBadge.service');
 
 async function listarPedidosPorCargo(cargo, id_utilizador = null) {
 

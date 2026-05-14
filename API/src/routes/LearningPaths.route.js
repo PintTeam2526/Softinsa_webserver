@@ -18,4 +18,11 @@ router.put('/:id/update', controllerLearningPaths.updateLearningPathById);
 // Apagar Learning Path
 router.delete('/:id/delete', controllerLearningPaths.deleteLearningPathById);
 
+// Mostrar todas as Learning Paths MOBILE
+router.get('/get/mobile', controllerLearningPaths.getAllLearningPathsMobile);
+router.get('/get/mobile/:id', controllerLearningPaths.getLearningPathByIdMobile);
+
+
+
+
 module.exports = router;

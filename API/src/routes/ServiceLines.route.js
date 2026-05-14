@@ -18,4 +18,8 @@ router.put('/:id/update', controllerServiceLines.updateServiceLineById);
 // Apagar service line
 router.delete('/:id/delete', controllerServiceLines.deleteServiceLineById);
 
+
+//MOBILE
+router.get('/get/mobile', controllerServiceLines.getAllServiceLinesMobile);
+router.get('/get/mobile/:id', controllerServiceLines.getServiceLineByIdMobile);
 module.exports = router;
