@@ -9,3 +9,34 @@ export const getServiceLines = async () => {
     throw error
   }
 }
+
+export const createServiceLine = async (payload) => {
+  try {
+    const response = await api.post(
+      '/serviceLines/create',
+      payload
+    )
+
+    return response.data
+  } catch (error) {
+    console.error('Erro ao criar service line', error)
+    throw error
+  }
+}
+
+export const updateServiceLine = async (
+  id,
+  payload
+) => {
+  try {
+    const response = await api.put(
+      `/serviceLines/update/${id}`,
+      payload
+    )
+
+    return response.data.dados
+  } catch (error) {
+    console.error('Erro ao atualizar service line', error)
+    throw error
+  }
+}

@@ -2,7 +2,7 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-service-lines.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
-import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getServiceLines, createServiceLine, updateServiceLine } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
 
@@ -39,7 +39,13 @@ const mapServiceLine = (row, learningPathsMap) => ({
   description: row.descricao_service_line ?? "",
   iconFileName: row.imagem_service_line ?? "",
   status: row.estado_a_i ? "Ativo" : "Inativo",
-  learningPath: learningPathsMap[row.id_learning_path] ?? `ID ${row.id_learning_path}`,
+
+  learningPathId: row.id_learning_path,
+
+  learningPath:
+    learningPathsMap[row.id_learning_path] ??
+    `ID ${row.id_learning_path}`,
+
   areas: 0,
   badges: 0,
 });
@@ -120,7 +126,7 @@ function FileSelector({ fileName, onChange, ariaLabel }) {
 
 const SoftinsaServiceLines = memo(() => {
   const [serviceLines, setServiceLines] = useState([]);
-  const [learningPathOptions, setLearningPathOptions] = useState([]); // nomes para o filtro/modal
+  const [learningPathOptions, setLearningPathOptions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -168,7 +174,7 @@ const SoftinsaServiceLines = memo(() => {
           badgeCountBySL[slId] = (badgeCountBySL[slId] ?? 0) + 1;
       });
 
-      setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
+      setLearningPathOptions(lpData.filter((lp) => lp.estado_a_i));
 
       setServiceLines(
         slData.map((row) => ({
@@ -228,7 +234,7 @@ const SoftinsaServiceLines = memo(() => {
   };
 
   const handleOpenAddServiceLine = () => {
-    setFormData({ ...getDefaultServiceLineForm(), learningPath: learningPathOptions[0] ?? "" });
+    setFormData({ ...getDefaultServiceLineForm(), learningPath: learningPathOptions[0]?.id_learning_path ?? "", });
     setEditingServiceLineId(null);
     setIsFilterOpen(false);
     setIsExportAlertOpen(false);
@@ -236,30 +242,47 @@ const SoftinsaServiceLines = memo(() => {
   };
 
   const handleOpenEditServiceLine = (item) => {
-    setFormData({ name: item.name || "", description: item.description || "", learningPath: item.learningPath || learningPathOptions[0] || "", status: item.status || "Ativo", iconFileName: item.iconFileName || "", iconFile: null });
+    setFormData({
+      name: item.name || "",
+      description: item.description || "",
+      learningPath: String(item.learningPathId), // 🔥 importante
+      status: item.status || "Ativo",
+      iconFileName: item.iconFileName || "",
+      iconFile: null,
+    });
+
     setEditingServiceLineId(item.id);
-    setIsFilterOpen(false);
-    setIsExportAlertOpen(false);
     setModalMode("edit");
   };
 
   const handleCloseModal = () => { setModalMode(null); setEditingServiceLineId(null); };
 
-  const handleSubmitServiceLine = (e) => {
+  const handleSubmitServiceLine = async (e) => {
     e.preventDefault();
+
     const sanitizedName = formData.name.trim();
     if (!sanitizedName) return;
-    const payload = { name: sanitizedName, description: formData.description.trim(), learningPath: formData.learningPath, status: formData.status || "Ativo", iconFileName: formData.iconFileName };
-    if (isEditMode && editingServiceLineId !== null) {
-      setServiceLines((prev) => prev.map((item) => item.id === editingServiceLineId ? { ...item, ...payload } : item));
-    } else {
-      setServiceLines((prev) => {
-        const nextId = prev.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-        return [{ id: nextId, areas: 0, badges: 0, ...payload }, ...prev];
-      });
-      setCurrentPage(1);
+
+    const payload = {
+      nome_service_line: sanitizedName,
+      descricao_service_line: formData.description.trim(),
+      id_learning_path: Number(formData.learningPath),
+      estado_a_i: formData.status === "Ativo",
+      imagem_service_line: formData.iconFileName || null,
+    };
+
+    try {
+      if (isEditMode && editingServiceLineId !== null) {
+        await updateServiceLine(editingServiceLineId, payload);
+      } else {
+        await createServiceLine(payload);
+      }
+
+      await loadData(); // 🔥 sincroniza com BD
+      handleCloseModal();
+    } catch (err) {
+      console.error("Erro ao guardar service line", err);
     }
-    handleCloseModal();
   };
 
   const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((prev) => !prev); };
@@ -462,7 +485,14 @@ const SoftinsaServiceLines = memo(() => {
                   <label htmlFor="softinsa-service-line-learning-path">Learning Path Associada</label>
                   <div className="softinsa-service-lines-select-wrap">
                     <select id="softinsa-service-line-learning-path" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      {learningPathOptions.map((lp) => (
+                        <option
+                          key={lp.id_learning_path}
+                          value={lp.id_learning_path}
+                        >
+                          {lp.nome_learning_path}
+                        </option>
+                      ))}
                     </select>
                     <SelectArrowIcon />
                   </div>

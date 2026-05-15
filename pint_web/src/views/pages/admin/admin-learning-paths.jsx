@@ -291,14 +291,35 @@ const SoftinsaLearningPaths = memo(() => {
 
     try {
       if (isEditMode && editingLearningPathId !== null) {
-        const updated = await updateLearningPath(editingLearningPathId, payload);
+
+        const response = await updateLearningPath(
+          editingLearningPathId,
+          payload
+        );
+
+        const updated = response.dados;
 
         setLearningPaths((prev) =>
-          prev.map((item) =>
-            item.id === editingLearningPathId
-              ? { ...item, ...mapLearningPath(updated) }
-              : item
-          )
+          prev.map((item) => {
+
+            if (item.id !== editingLearningPathId) {
+              return item;
+            }
+
+            return {
+              ...item,
+
+              name: updated.nome_learning_path,
+
+              description: updated.descricao_learning_path ?? "",
+
+              status: updated.estado_a_i
+                ? "Ativo"
+                : "Inativo",
+
+              iconFileName: updated.imagem_learning_path ?? "",
+            };
+          })
         );
       } else {
         const created = await createLearningPath({
@@ -312,7 +333,13 @@ const SoftinsaLearningPaths = memo(() => {
 
       handleCloseModal();
     } catch (error) {
+
       console.error(error);
+
+      alert(
+        error?.response?.data?.message ||
+        "Ocorreu um erro ao guardar a Learning Path."
+      );
     }
   };
 
@@ -639,9 +666,27 @@ const SoftinsaLearningPaths = memo(() => {
                   <div className="softinsa-learning-paths-select-wrap">
                     <select id="softinsa-learning-path-status" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
                       <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
+                      {statusOptions.map((option) => {
+
+                        const cannotDeactivate =
+                          option === "Inativo" &&
+                          isEditMode &&
+                          (
+                            formData.serviceLines > 0 ||
+                            formData.areas > 0 ||
+                            formData.badges > 0
+                          );
+
+                        return (
+                          <option
+                            key={option}
+                            value={option}
+                            disabled={cannotDeactivate}
+                          >
+                            {option}
+                          </option>
+                        );
+                      })}
                     </select>
                     <SelectArrowIcon />
                   </div>
