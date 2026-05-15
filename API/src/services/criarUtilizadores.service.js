@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const sequelize = require('../../database');
 const Utilizadores = require('../models/Utilizadores.models');
 const Consultores = require('../models/Consultores.models');
@@ -34,7 +35,7 @@ async function criarUtilizador({
         const novoUtilizador = await Utilizadores.create({
             nome_utilizador,
             email_utilizador,
-            password_utilizador,
+            password_utilizador: await bcrypt.hash(password_utilizador, 10),
             username_utilizador,
             tipo_utilizador,
             imagem_utilizador,

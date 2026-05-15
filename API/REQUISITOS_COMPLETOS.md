@@ -336,7 +336,7 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 
 ### 2.3 Correções Técnicas Conhecidas na BD / Código
 
-Nenhum — todas as correções foram aplicadas.
+Nenhuma — todas as correções foram aplicadas.
 
 #### Corrigidas (13/05/2026) + (14/05/2026)
 | # | Problema | Ficheiro | Fix |
@@ -376,6 +376,12 @@ Nenhum — todas as correções foram aplicadas.
 | 39 | `sql/seed.sql`: tabelas sem quotes no seed falham em pgAdmin porque PostgreSQL lowercase bate em tabelas legado | `sql/seed.sql` (23 INSERTs) | Todos os nomes de tabela quotados: `INSERT INTO "Tabela"` |
 | 40 | `sql/seed.sql`: `INSERT INTO "Estados"` duplica seed do `afterSync` hook no model | `sql/seed.sql:90-98` | Removido bloco Estados (model `Estados.models.js` tem `afterSync` com `popularEstados()`) |
 | 41 | Create controllers aceitavam ID primário do body, sobrescrevendo auto_increment da BD | `LearningPaths/ServiceLines/Areas/Badges.controller.js` | Removido `id_learning_path`/`id_service_line`/`id_area`/`id_badge` do destructuring e do `Model.create()` — BD agora gera IDs sequenciais automaticamente |
+| 42 | DELETE/UPDATE não cascateia `estado_a_i` para filhos | `LearningPaths/ServiceLines/Areas.controller.js` | Adicionado cascade recursivo: LP → SLs → Áreas → Badges ao inativar (delete ou update) |
+| 43 | CREATE não valida se o parent está ativo | `ServiceLines/Areas/Badges.controller.js` | Adicionada validação: rejeita criar entidade ativa se o pai estiver inativo |
+| 44 | UPDATE com mudança de parent não valida estado do novo parent | `ServiceLines/Areas/Badges.controller.js` | Adicionada validação ao alterar FK do parent (rejeita associar a pai inativo) |
+| 45 | `getAllUtilizadores` retorna admins e inativos para todos os perfis | `Utilizadores.controller.js` | Admin não vê a si próprio; TM/SL veem ativos + não-admin; CO vê só próprio; Guest 401 |
+| 46 | `criarUtilizadores.service.js` guarda password em texto plano | `criarUtilizadores.service.js` | Adicionado `bcrypt.hash(password, 10)` antes de criar o utilizador |
+| 47 | `seed.sql` usava strings placeholder (`img-*`) para imagens | `sql/seed.sql` | Substituídas por base64 da `placeholder.jpg` (34 campos) |
 
 ---
 
@@ -602,6 +608,8 @@ Nenhum — todas as correções foram aplicadas.
 - Se o user não é admin, apenas vê entidades com `estado_a_i = true`
 - Admins veem todas as entidades (ativas e inativas)
 - Soft delete: `estado_a_i = false` em vez de DELETE físico
+- **Utilizadores (lista — `GET /api/utilizadores/get`):** Admin vê todos menos ele próprio; TM/SL veem ativos + não-admin; CO vê só próprio; Guest 401
+- **Utilizadores (detalhe — `GET /api/utilizadores/:id/get`):** Admin vê qualquer ID; TM/SL veem apenas ativos + não-admin; CO vê só próprio; Guest 401
 
 ---
 
@@ -707,7 +715,8 @@ Nenhum — todas as correções foram aplicadas.
 | | `afterSync` hook em `Estados.models.js` — popula automaticamente os 6 estados |
 | | `seedDatabase()` — verifica `"Utilizadores"` (quotes forçam case-sensitive); se vazia, lê e executa `sql/seed.sql` |
 | | `app.listen(3000)` — só inicia após sync + seed |
-| **Nota:** | `sql/seed.sql` usa nomes de tabela quotados (`"Utilizadores"`, `"Areas"`, etc.) para compatibilidade com PostgreSQL (case-sensitive) e pgAdmin |
+| **Nota 1:** | `sql/seed.sql` usa nomes de tabela quotados (`"Utilizadores"`, `"Areas"`, etc.) para compatibilidade com PostgreSQL (case-sensitive) e pgAdmin |
+| **Nota 2:** | Todas as imagens no seed usam `placeholder.jpg` (base64) — 34 campos em Utilizadores, LearningPaths, ServiceLines, Areas, Badges, Conquistas e Requisitos |
 
 ### 5.2 Endpoints com Rotas Comentadas (Por Implementar)
 
@@ -870,7 +879,7 @@ Nenhum — todas as correções foram aplicadas.
 | Admin — Gestão | 4 | 0 | 1 | 3 |
 | Bónus/Integrações | 5 | 0 | 0 | 5 |
 | **Total** | **38** | **0** | **6** | **32** |
-| Correções técnicas (código) | 19 | 19 | 0 | 0 |
+| Correções técnicas (código) | 25 | 25 | 0 | 0 |
 
 ---
 
