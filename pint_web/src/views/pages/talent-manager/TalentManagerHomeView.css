@@ -308,10 +308,10 @@
 }
 
 .tm-notification-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: #3a57e8;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: #3699ff;
   color: #ffffff;
   display: grid;
   place-items: center;
@@ -319,8 +319,8 @@
 }
 
 .tm-notification-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 36px;
+  height: 36px;
 }
 
 .tm-notification-callout h2 {
@@ -381,8 +381,8 @@
 }
 
 .tm-panel-badge svg {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
 }
 
 .tm-panel-header h2,
@@ -454,10 +454,11 @@
   color: #00b8e0;
 }
 
-.tm-pending-deadline img {
+.tm-pending-deadline svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  color: #8a92a6;
 }
 
 .tm-pending-image-wrap {
