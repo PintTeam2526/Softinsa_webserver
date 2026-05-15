@@ -60,6 +60,101 @@ function RequestBadge({ tone, children }) {
   return <div className={`sll-pending-request-avatar is-${tone}`}>{children}</div>
 }
 
+const ALERT_COPY = {
+  accept: {
+    title: 'Aceitar Pedido de Badge',
+    subtitle: 'Deseja mesmo realizar esta ação?',
+    withReason: false,
+  },
+  return: {
+    title: 'Devolver Pedido de Badge',
+    subtitle: 'Deseja mesmo realizar esta ação?',
+    withReason: true,
+  },
+  reject: {
+    title: 'Rejeitar Pedido de Badge',
+    subtitle: 'Deseja mesmo realizar esta ação?',
+    withReason: true,
+  },
+}
+
+function ConfirmActionDialog({ action, onConfirm, onCancel }) {
+  const [reason, setReason] = useState('')
+  const dialogRef = useRef(null)
+  const copy = ALERT_COPY[action]
+
+  useEffect(() => {
+    function handleKey(event) {
+      if (event.key === 'Escape') {
+        onCancel()
+      }
+    }
+
+    document.addEventListener('keydown', handleKey)
+
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onCancel])
+
+  function handleBackdropClick(event) {
+    if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+      onCancel()
+    }
+  }
+
+  function handleConfirm() {
+    onConfirm(copy.withReason ? reason.trim() : undefined)
+  }
+
+  return (
+    <div className="sll-pending-alert-backdrop" onMouseDown={handleBackdropClick}>
+      <div
+        className="sll-pending-alert-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="sll-pending-alert-title"
+        ref={dialogRef}
+      >
+        <div className="sll-pending-alert-header">
+          <span className="sll-pending-alert-eyebrow" id="sll-pending-alert-title">Alerta</span>
+          <button
+            type="button"
+            className="sll-pending-alert-close"
+            onClick={onCancel}
+            aria-label="Fechar"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="sll-pending-alert-body">
+          <h2 className="sll-pending-alert-title">{copy.title}</h2>
+          <p className="sll-pending-alert-subtitle">{copy.subtitle}</p>
+
+          {copy.withReason ? (
+            <textarea
+              className="sll-pending-alert-textarea"
+              placeholder="Insira o motivo"
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+            />
+          ) : null}
+        </div>
+
+        <div className="sll-pending-alert-actions">
+          <button type="button" className="sll-pending-alert-btn is-secondary" onClick={onCancel}>
+            Não
+          </button>
+          <button type="button" className="sll-pending-alert-btn is-primary" onClick={handleConfirm}>
+            Sim
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function PendingRequestCard({ request }) {
   return (
     <article className="sll-pending-card">
@@ -131,6 +226,7 @@ function SLLPendentesView() {
   const [appliedArea, setAppliedArea] = useState('')
   const [requests, setRequests] = useState(pendingRequests)
   const [currentPage, setCurrentPage] = useState(1)
+  const [pendingAction, setPendingAction] = useState(null)
   const filterPopoverRef = useRef(null)
 
   const areaOptions = useMemo(() => [...new Set(requests.map((request) => request.area))], [requests])
@@ -199,21 +295,23 @@ function SLLPendentesView() {
     setIsFilterOpen(false)
   }
 
-  function handleRequestAction(requestTitle, action) {
-    setRequests((currentRequests) => currentRequests.filter((request) => request.title !== requestTitle))
+  function requestAction(requestTitle, action) {
+    setPendingAction({ requestTitle, action })
+  }
 
-    if (action === 'accept') {
-      // Accepted items leave the pending queue.
+  function confirmPendingAction() {
+    if (!pendingAction) {
       return
     }
 
-    if (action === 'reject') {
-      return
-    }
+    setRequests((currentRequests) =>
+      currentRequests.filter((request) => request.title !== pendingAction.requestTitle),
+    )
+    setPendingAction(null)
+  }
 
-    if (action === 'return') {
-      return
-    }
+  function cancelPendingAction() {
+    setPendingAction(null)
   }
 
   return (
@@ -296,7 +394,7 @@ function SLLPendentesView() {
                 key={request.title}
                 request={{
                   ...request,
-                  onAction: (action) => handleRequestAction(request.title, action),
+                  onAction: (action) => requestAction(request.title, action),
                 }}
               />
             ))}
@@ -314,6 +412,14 @@ function SLLPendentesView() {
           />
         </div>
       </main>
+
+      {pendingAction ? (
+        <ConfirmActionDialog
+          action={pendingAction.action}
+          onConfirm={confirmPendingAction}
+          onCancel={cancelPendingAction}
+        />
+      ) : null}
     </div>
   )
 }

@@ -445,7 +445,7 @@
   margin: 0;
   padding: 18px 16px 10px;
   color: #232d42;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1.4;
   font-weight: 700;
 }
@@ -587,6 +587,6 @@
   }
 
   .sll-team-table-card h2 {
-    font-size: 16px;
+    font-size: 19px;
   }
 }

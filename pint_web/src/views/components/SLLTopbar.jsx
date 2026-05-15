@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { forwardRef, memo, useImperativeHandle } from 'react'
 import { Link } from 'react-router-dom'
 import { useTopbarController } from '../../controllers/topbar.controller'
 import './SLLTopbar.css'
@@ -111,7 +111,7 @@ function NotificationRepository({ items, expandedId, onToggleItem, onClose }) {
   )
 }
 
-const SLLTopbar = memo(() => {
+const SLLTopbar = memo(forwardRef(function SLLTopbar(_, ref) {
   const {
     notificationWrapRef,
     isNotificationsOpen,
@@ -121,6 +121,14 @@ const SLLTopbar = memo(() => {
     closeNotifications,
     toggleNotificationMessage,
   } = useTopbarController()
+
+  useImperativeHandle(ref, () => ({
+    openNotifications() {
+      if (!isNotificationsOpen) {
+        toggleNotifications()
+      }
+    },
+  }), [isNotificationsOpen, toggleNotifications])
 
   return (
     <div className="softinsa-shell-topbar">
@@ -162,6 +170,6 @@ const SLLTopbar = memo(() => {
       </div>
     </div>
   )
-})
+}))
 
 export default SLLTopbar

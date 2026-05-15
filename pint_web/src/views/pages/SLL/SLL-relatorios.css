@@ -88,14 +88,18 @@
 
 .sll-relatorios-hero-copy {
   position: absolute;
-  left: 24px;
-  top: 14px;
+  inset: 0;
   z-index: 1;
   color: #ffffff;
+  padding: 20px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
 }
 
 .sll-relatorios-hero-copy h1 {
-  margin: 0 0 4px;
+  margin: 0;
   color: #ffffff;
   font-size: 40px;
   line-height: 1;
@@ -121,10 +125,40 @@
 }
 
 .sll-relatorios-filters-card {
-  padding: 15px 24px;
+  padding: 18px 28px 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+}
+
+.sll-relatorios-filters-card::before,
+.sll-relatorios-filters-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: #39639c;
+}
+
+.sll-relatorios-filters-card::before {
+  left: 0;
+  border-radius: 8px 0 0 8px;
+}
+
+.sll-relatorios-filters-card::after {
+  right: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.sll-relatorios-filters-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .sll-relatorios-filters-heading h2,
@@ -138,23 +172,23 @@
 }
 
 .sll-relatorios-filters-help {
-  margin-top: 5px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
   color: #8a92a6;
 }
 
 .sll-relatorios-filters-help img {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   display: block;
+  flex-shrink: 0;
 }
 
 .sll-relatorios-filters-help p {
   margin: 0;
   font-size: 14px;
-  line-height: 21px;
+  line-height: 1.3;
   font-weight: 500;
 }
 

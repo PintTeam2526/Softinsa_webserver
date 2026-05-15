@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { FaFilter, FaInfoCircle, FaSearch, FaTimes, FaUpload } from 'react-icons/fa'
+import { FaFilter, FaSearch, FaTimes, FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
@@ -126,30 +126,132 @@ function HistoryBadge({ status }) {
   return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{status}</span>
 }
 
-function HistoryRequestCard({ request }) {
+function HistoryClockIcon() {
   return (
-    <article className="sll-history-card">
-      <div className="sll-history-card-avatar" aria-hidden="true">
-        <img src={requestAvatar} alt="" />
-        <span className="sll-history-card-avatar-ring" />
-      </div>
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8 4.5V8L10.4 9.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
 
-      <div className="sll-history-card-copy">
-        <h3>{request.title}</h3>
-        <p>{request.consultant}</p>
-        <div className="sll-history-card-approved">
-          <img src={statusIcon} alt="" aria-hidden="true" />
-          <span>{request.approvedAt}</span>
-        </div>
-      </div>
+function HistoryCheckIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M3.5 8.5L6.5 11.5L12.5 4.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
-      <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
-        <HistoryBadge status={request.status} />
-        <div className="sll-history-progress">
-          <span className="is-track" />
-          <span className="is-fill" />
+function HistoryRejectIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M4 4L12 12M4 12L12 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function buildHistorySteps(request) {
+  if (request.status === 'Em progresso') {
+    return [
+      {
+        responsible: 'António Portugal / Talent Manager',
+        state: 'Em Andamento',
+        stateClass: 'is-progress',
+        icon: <HistoryClockIcon />,
+        date: '2023/06/23',
+      },
+    ]
+  }
+
+  if (request.status === 'Rejeitado') {
+    return [
+      {
+        responsible: 'António Portugal / Talent Manager',
+        state: 'Em Andamento',
+        stateClass: 'is-progress',
+        icon: <HistoryClockIcon />,
+        date: '2023/06/23',
+      },
+      {
+        responsible: 'João Silva / Service Line Lider',
+        state: 'Rejeitado',
+        stateClass: 'is-rejected',
+        icon: <HistoryRejectIcon />,
+        date: '2023/06/23',
+      },
+    ]
+  }
+
+  return [
+    {
+      responsible: 'António Portugal / Talent Manager',
+      state: 'Em Andamento',
+      stateClass: 'is-progress',
+      icon: <HistoryClockIcon />,
+      date: '2023/06/23',
+    },
+    {
+      responsible: 'João Silva / Service Line Lider',
+      state: 'Concluído',
+      stateClass: 'is-approved',
+      icon: <HistoryCheckIcon />,
+      date: '2023/06/23',
+    },
+  ]
+}
+
+function HistoryRequestCard({ request, isExpanded, onToggle }) {
+  const steps = buildHistorySteps(request)
+
+  return (
+    <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
+      <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
+        <div className="sll-history-card-avatar" aria-hidden="true">
+          <img src={requestAvatar} alt="" />
+          <span className="sll-history-card-avatar-ring" />
         </div>
-      </div>
+
+        <div className="sll-history-card-copy">
+          <h3>{request.title}</h3>
+          <p>{request.consultant}</p>
+          <div className="sll-history-card-approved">
+            <img src={statusIcon} alt="" aria-hidden="true" />
+            <span>{request.approvedAt}</span>
+          </div>
+        </div>
+
+        <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
+          <HistoryBadge status={request.status} />
+          <div className="sll-history-progress">
+            <span className="is-track" />
+            <span className="is-fill" />
+          </div>
+        </div>
+      </button>
+
+      {isExpanded ? (
+        <div className="sll-history-detail">
+          <h4 className="sll-history-detail-title">Historico:</h4>
+          <div className="sll-history-detail-table" role="table">
+            <div className="sll-history-detail-row sll-history-detail-head" role="row">
+              <span role="columnheader">RESPONSÁVEL/CARGO</span>
+              <span role="columnheader">ESTADO</span>
+              <span role="columnheader">DATA</span>
+            </div>
+            {steps.map((step, index) => (
+              <div className="sll-history-detail-row" role="row" key={`${request.title}-${index}`}>
+                <span role="cell">{step.responsible}</span>
+                <span role="cell" className={`sll-history-detail-state ${step.stateClass}`}>
+                  <span>{step.state}</span>
+                  {step.icon}
+                </span>
+                <span role="cell">{step.date}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </article>
   )
 }
@@ -171,6 +273,7 @@ function SLLHistoricoView() {
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState('Aprovado')
   const [currentPage, setCurrentPage] = useState(1)
+  const [expandedKey, setExpandedKey] = useState(null)
   const [selectedExportFormat, setSelectedExportFormat] = useState('excel')
   const [draftFilters, setDraftFilters] = useState({
     dateFrom: '',
@@ -228,6 +331,7 @@ function SLLHistoricoView() {
 
   useEffect(() => {
     setCurrentPage(1)
+    setExpandedKey(null)
   }, [activeTab, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm])
 
   useEffect(() => {
@@ -330,9 +434,6 @@ function SLLHistoricoView() {
               </button>
               <button type="button" className={`sll-history-tab-button ${activeTab === 'Em progresso' ? 'is-active is-progress' : ''}`} onClick={() => setActiveTab('Em progresso')}>
                 Em progresso
-              </button>
-              <button type="button" className="sll-history-info-btn" aria-label="Mais informação">
-                <FaInfoCircle aria-hidden="true" />
               </button>
             </div>
 
@@ -446,9 +547,18 @@ function SLLHistoricoView() {
           </section>
 
           <section className="sll-history-list" aria-label="Lista do histórico">
-            {paginatedRequests.map((request) => (
-              <HistoryRequestCard key={`${request.title}-${request.consultant}`} request={request} />
-            ))}
+            {paginatedRequests.map((request) => {
+              const key = `${request.title}-${request.consultant}`
+
+              return (
+                <HistoryRequestCard
+                  key={key}
+                  request={request}
+                  isExpanded={expandedKey === key}
+                  onToggle={() => setExpandedKey((current) => (current === key ? null : key))}
+                />
+              )
+            })}
           </section>
 
           {showExport ? (
