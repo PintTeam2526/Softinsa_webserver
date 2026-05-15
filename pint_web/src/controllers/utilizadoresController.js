@@ -1,9 +1,9 @@
 import api from '../services/api'
 
 const tipoByProfile = {
-  "Consultor":         "c",
-  "Talent Manager":    "t",
-  "Service Line Lider":"s",
+  "Consultor": "c",
+  "Talent Manager": "t",
+  "Service Line Lider": "s",
 }
 
 export const getUtilizadores = async () => {
@@ -21,8 +21,8 @@ export const createUtilizador = async (payload) => {
   return response.data
 }
 
-export const inativarUtilizador = async (id) => {
-  const response = await api.delete(`/utilizadores/${id}/delete`)
+export const updateUtilizador = async (id, payload) => {
+  const response = await api.put(`/utilizadores/${id}/update`, payload)
   return response.data
 }
 

@@ -1,14 +1,17 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import "./admin-users.css";
 
-import { getUtilizadores, createUtilizador, inativarUtilizador, tipoByProfile } from '../../../controllers/utilizadoresController'
+import { getUtilizadores, createUtilizador, updateUtilizador, tipoByProfile } from '../../../controllers/utilizadoresController'
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
 
 
 // Mapeamento tipo_utilizador (BD) → label legível
 const profileByTipo = {
   c: "Consultor",
-  t: "Talent Manager",
   s: "Service Line Lider",
+  t: "Talent Manager",
 };
 
 const profileOptions = Object.values(profileByTipo);
@@ -26,8 +29,15 @@ const mapUtilizador = (row) => ({
 });
 
 const getDefaultUserForm = () => ({
-  name: "", email: "", password: "",
-  profile: "Consultor", status: "Ativo",
+  name: "",
+  email: "",
+  password: "",
+  profile: "Consultor",
+  status: "Ativo",
+
+  learningPath: "",
+  serviceLine: "",
+  area: "",
 });
 
 const getDefaultFilterDraft = () => ({ profile: "", status: "" });
@@ -112,11 +122,49 @@ const SoftinsaUsers = memo(() => {
   const [modalMode, setModalMode] = useState(null);
   const [editingUserId, setEditingUserId] = useState(null);
   const [formData, setFormData] = useState(getDefaultUserForm());
+  const [learningPaths, setLearningPaths] = useState([]);
+  const [serviceLines, setServiceLines] = useState([]);
+  const [areas, setAreas] = useState([]);
   const filterWrapRef = useRef(null);
 
   // ── fetch ─────────────────────────────────────────────────────────────────
 
   useEffect(() => { loadUsers(); }, []);
+
+  useEffect(() => {
+
+    loadLearningPaths();
+    loadServiceLines();
+    loadAreas();
+
+  }, []);
+
+  async function loadLearningPaths() {
+    try {
+      const data = await getLearningPaths();
+      setLearningPaths(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadServiceLines() {
+    try {
+      const data = await getServiceLines();
+      setServiceLines(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function loadAreas() {
+    try {
+      const data = await getAreas();
+      setAreas(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   function loadUsers() {
     getUtilizadores()
@@ -154,7 +202,27 @@ const SoftinsaUsers = memo(() => {
 
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
 
-  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleFieldChange = (field, value) => {
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      };
+
+      // Mudou LP -> limpa SL e Área
+      if (field === "learningPath") {
+        updated.serviceLine = "";
+        updated.area = "";
+      }
+
+      // Mudou SL -> limpa Área
+      if (field === "serviceLine") {
+        updated.area = "";
+      }
+
+      return updated;
+    });
+  };
 
   const handleOpenAddUser = () => { setFormData(getDefaultUserForm()); setEditingUserId(null); setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode("add"); };
 
@@ -178,24 +246,59 @@ const SoftinsaUsers = memo(() => {
     e.preventDefault();
 
     if (isEditMode && editingUserId !== null) {
-      if (formData.status === "Inativo") {
-        try {
-          await inativarUtilizador(editingUserId);
-          setUsers((prev) =>
-            prev.map((u) => u.id === editingUserId ? { ...u, status: "Inativo" } : u)
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
+
+      const payload = {
+        nome_utilizador: formData.name.trim(),
+        email_utilizador: formData.email.trim(),
+        estado_a_i: formData.status === "Ativo",
+      };
+
+      try {
+
+        await updateUtilizador(editingUserId, payload);
+
         setUsers((prev) =>
-          prev.map((u) => u.id === editingUserId ? { ...u, ...formData } : u)
+          prev.map((u) =>
+            u.id === editingUserId
+              ? {
+                ...u,
+                name: formData.name,
+                email: formData.email,
+                status: formData.status,
+              }
+              : u
+          )
         );
+
+      } catch (error) {
+        console.error(error);
       }
+
     } else {
       const sanitizedName = formData.name.trim();
       const sanitizedEmail = formData.email.trim();
       if (!sanitizedName || !sanitizedEmail || !formData.password) return;
+
+      if (
+        formData.profile === "Consultor" &&
+        (
+          !formData.learningPath ||
+          !formData.serviceLine ||
+          !formData.area
+        )
+      ) {
+        return;
+      }
+
+      if (
+        formData.profile === "Service Line Lider" &&
+        (
+          !formData.learningPath ||
+          !formData.serviceLine
+        )
+      ) {
+        return;
+      }
 
       const payload = {
         nome_utilizador: sanitizedName,
@@ -205,11 +308,28 @@ const SoftinsaUsers = memo(() => {
         tipo_utilizador: tipoByProfile[formData.profile] ?? "c",
         imagem_utilizador: "",
         estado_a_i: formData.status === "Ativo",
+
+        id_learning_path:
+          formData.profile === "Consultor" ||
+            formData.profile === "Service Line Lider"
+            ? Number(formData.learningPath)
+            : null,
+
+        id_service_line:
+          formData.profile === "Consultor" ||
+            formData.profile === "Service Line Lider"
+            ? Number(formData.serviceLine)
+            : null,
+
+        id_area:
+          formData.profile === "Consultor"
+            ? Number(formData.area)
+            : null,
       };
 
       try {
         const created = await createUtilizador(payload);
-        setUsers((prev) => [mapUtilizador(created), ...prev]);
+        await loadUsers();
         setCurrentPage(1);
       } catch (error) {
         console.error(error);
@@ -253,6 +373,18 @@ const SoftinsaUsers = memo(() => {
       setIsExportAlertOpen(false); setExportFormat("");
     } catch (error) { console.error("Erro ao exportar listagem:", error); }
   };
+
+  const filteredServiceLines = serviceLines.filter(
+    (sl) =>
+      !formData.learningPath ||
+      Number(sl.id_learning_path) === Number(formData.learningPath)
+  );
+
+  const filteredAreas = areas.filter(
+    (area) =>
+      !formData.serviceLine ||
+      Number(area.id_service_line) === Number(formData.serviceLine)
+  );
 
   // ── render (sem alterações) ───────────────────────────────────────────────
 
@@ -422,6 +554,151 @@ const SoftinsaUsers = memo(() => {
                   />
                 </div>
               ) : null}
+              {!isEditMode && formData.profile === "Consultor" ? (
+                <div className="softinsa-users-modal-row">
+
+                  <div className="softinsa-users-modal-field">
+                    <label>Learning Path:</label>
+
+                    <div className="softinsa-users-select-wrap">
+                      <select
+                        value={formData.learningPath}
+                        onChange={(e) =>
+                          handleFieldChange("learningPath", e.target.value)
+                        }
+                      >
+                        <option value="">Selecionar</option>
+
+                        {learningPaths.map((lp) => (
+                          <option
+                            key={lp.id_learning_path}
+                            value={lp.id_learning_path}
+                          >
+                            {lp.nome_learning_path}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
+                  </div>
+
+                  <div className="softinsa-users-modal-field">
+                    <label>Service Line:</label>
+
+                    <div className="softinsa-users-select-wrap">
+                      <select
+                        value={formData.serviceLine}
+                        onChange={(e) =>
+                          handleFieldChange("serviceLine", e.target.value)
+                        }
+                        disabled={!formData.learningPath}
+                      >
+                        <option value="">Selecionar</option>
+
+                        {filteredServiceLines.map((sl) => (
+                          <option
+                            key={sl.id_service_line}
+                            value={sl.id_service_line}
+                          >
+                            {sl.nome_service_line}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
+                  </div>
+
+                  <div className="softinsa-users-modal-field">
+                    <label>Área:</label>
+
+                    <div className="softinsa-users-select-wrap">
+                      <select
+                        value={formData.area}
+                        onChange={(e) =>
+                          handleFieldChange("area", e.target.value)
+                        }
+                        disabled={!formData.serviceLine}
+                      >
+                        <option value="">Selecionar</option>
+
+                        {filteredAreas.map((area) => (
+                          <option
+                            key={area.id_area}
+                            value={area.id_area}
+                          >
+                            {area.nome_area}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
+                  </div>
+
+                </div>
+              ) : null}
+
+              {!isEditMode && formData.profile === "Service Line Lider" ? (
+                <div className="softinsa-users-modal-row">
+
+                  <div className="softinsa-users-modal-field">
+                    <label>Learning Path:</label>
+
+                    <div className="softinsa-users-select-wrap">
+                      <select
+                        value={formData.learningPath}
+                        onChange={(e) =>
+                          handleFieldChange("learningPath", e.target.value)
+                        }
+                      >
+                        <option value="">Selecionar</option>
+
+                        {learningPaths.map((lp) => (
+                          <option
+                            key={lp.id_learning_path}
+                            value={lp.id_learning_path}
+                          >
+                            {lp.nome_learning_path}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
+                  </div>
+
+                  <div className="softinsa-users-modal-field">
+                    <label>Service Line:</label>
+
+                    <div className="softinsa-users-select-wrap">
+                      <select
+                        value={formData.serviceLine}
+                        onChange={(e) =>
+                          handleFieldChange("serviceLine", e.target.value)
+                        }
+                        disabled={!formData.learningPath}
+                      >
+                        <option value="">Selecionar</option>
+
+                        {filteredServiceLines.map((sl) => (
+                          <option
+                            key={sl.id_service_line}
+                            value={sl.id_service_line}
+                          >
+                            {sl.nome_service_line}
+                          </option>
+                        ))}
+                      </select>
+
+                      <SelectArrowIcon />
+                    </div>
+                  </div>
+
+                </div>
+              ) : null}
+
               <div className="softinsa-users-modal-row softinsa-users-modal-row-bottom">
 
                 {!isEditMode ? (
@@ -446,25 +723,27 @@ const SoftinsaUsers = memo(() => {
                   </div>
                 ) : null}
 
-                <div className="softinsa-users-modal-field">
-                  <label htmlFor="softinsa-user-status">Estado:</label>
+                {isEditMode ? (
+                  <div className="softinsa-users-modal-field">
+                    <label htmlFor="softinsa-user-status">Estado:</label>
 
-                  <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">
-                    <select
-                      id="softinsa-user-status"
-                      value={formData.status}
-                      onChange={(e) => handleFieldChange("status", e.target.value)}
-                    >
-                      {statusOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">
+                      <select
+                        id="softinsa-user-status"
+                        value={formData.status}
+                        onChange={(e) => handleFieldChange("status", e.target.value)}
+                      >
+                        {statusOptions.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
 
-                    <SelectArrowIcon />
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
+                ) : null}
 
                 <button type="submit" className="softinsa-users-modal-submit">
                   {isEditMode ? "Confirmar" : "Adicionar"}
