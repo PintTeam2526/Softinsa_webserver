@@ -356,18 +356,6 @@
   min-width: 0;
 }
 
-.sll-alert-cta {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: #edf2ff;
-  color: #3a57e8;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
 .sll-alert-icon {
   width: 64px;
   height: 64px;

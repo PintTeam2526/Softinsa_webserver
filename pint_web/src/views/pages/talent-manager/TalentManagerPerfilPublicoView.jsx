@@ -1,5 +1,5 @@
-import './TalentManagerPerfilPublicoView.css'
 import { useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 import './TalentManagerPerfilPublicoView.css'
 
 const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
@@ -36,6 +36,21 @@ function BadgeItem({ image, name, date }) {
 }
 
 function TalentManagerPerfilPublicoView() {
+  const location = useLocation()
+  const selectedNameFromQuery = new URLSearchParams(location.search).get('name')
+  const selectedName = location.state?.name ?? selectedNameFromQuery ?? 'António Portugal'
+
+  const profile = useMemo(() => ({
+    name: selectedName,
+    role: 'Consultor',
+    area: 'LowCode (Outsystems)',
+    serviceLine: 'Hybrid Cloud',
+    learningPath: 'Jornada Técnica',
+    points: '550 Pontos',
+    badges: '9 Badges Obtidos',
+    email: 'antoniopt@gmail.com',
+  }), [selectedName])
+
   // This view intentionally reuses SLL styles but does not render SLLSidebar/SLLTopbar
   return (
     <div className="sll-profile-page">
@@ -59,17 +74,17 @@ function TalentManagerPerfilPublicoView() {
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={profileAvatar} alt="António Portugal" />
+                <img src={profileAvatar} alt={profile.name} />
               </div>
 
               <div className="sll-profile-copy">
                 <div className="sll-profile-name-row">
-                  <h2>António Portugal</h2>
-                  <span className="sll-profile-role-pill">Consultor</span>
+                  <h2>{profile.name}</h2>
+                  <span className="sll-profile-role-pill">{profile.role}</span>
                 </div>
-                <p>Área: LowCode (Outsystems)</p>
-                <p>Service Line: Hybrid Cloud</p>
-                <p>Learning Path: Jornada Técnica</p>
+                <p>Área: {profile.area}</p>
+                <p>Service Line: {profile.serviceLine}</p>
+                <p>Learning Path: {profile.learningPath}</p>
               </div>
             </div>
 
@@ -78,15 +93,15 @@ function TalentManagerPerfilPublicoView() {
             <div className="sll-profile-stats">
               <div className="sll-profile-stat-item">
                 <img src={pointsIcon} alt="Pontos" />
-                <span>550 Pontos</span>
+                <span>{profile.points}</span>
               </div>
               <div className="sll-profile-stat-item">
                 <img src={badgesIcon} alt="Badges obtidos" />
-                <span>9 Badges Obtidos</span>
+                <span>{profile.badges}</span>
               </div>
               <div className="sll-profile-stat-item">
                 <img src={emailIcon} alt="Email" />
-                <span>antoniopt@gmail.com</span>
+                <span>{profile.email}</span>
               </div>
             </div>
           </section>

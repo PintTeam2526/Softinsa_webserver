@@ -33,7 +33,7 @@ const levelChartSegments = [
 
 const areaChartLabels = [
   { text: 'LowCode (Outsystems) 34%', tone: 'is-dark', className: 'is-top-right' },
-  { text: 'DevSecOps & IT Automation 29%', tone: 'is-medium', className: 'is-left' },
+  { text: 'DevSecOps & IT Automation 29%', tone: 'is-medium', className: 'is-left is-area-left' },
   { text: 'Sourcing & Talent Management\n37%', tone: 'is-light', className: 'is-bottom-right' },
 ]
 
@@ -66,16 +66,14 @@ const reportEntries = [
 
 const reportAreaOptions = [...new Set(reportEntries.map((entry) => entry.area))]
 
-function buildConicGradient(segments) {
-  let current = 0
-
-  return segments
-    .map((segment) => {
-      const start = current
-      current += segment.value
-      return `${segment.color} ${start}% ${current}%`
-    })
-    .join(', ')
+function PieGraphic() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="161" height="161" viewBox="0 0 161 161" fill="none" aria-hidden="true" className="sll-relatorios-pie-svg">
+      <path d="M160.5 80.5C160.5 66.0559 156.589 51.8813 149.183 39.4805C141.777 27.0797 131.152 16.9153 118.435 10.0661C105.718 3.2169 91.384 -0.0615638 76.9542 0.578633C62.5243 1.21883 48.537 5.7538 36.4766 13.7023L80.5 80.5H160.5Z" fill="#1E3A5F" stroke="white" />
+      <path d="M36.4766 13.7021C26.2783 20.4234 17.7543 29.3906 11.5582 39.9162C5.36215 50.4419 1.65842 62.2465 0.730979 74.4252C-0.196466 86.604 1.677 98.8333 6.20777 110.176C10.7385 121.518 17.8063 131.673 26.8692 139.861L80.5 80.4999L36.4766 13.7021Z" fill="#39639C" stroke="white" />
+      <path d="M26.8691 139.861C38.3536 150.237 52.6013 157.059 67.8851 159.499C83.1689 161.94 98.8325 159.894 112.977 153.611C127.122 147.328 139.14 137.076 147.575 124.099C156.01 111.123 160.5 95.9774 160.5 80.5H80.4999L26.8691 139.861Z" fill="#7A9CCD" stroke="white" />
+    </svg>
+  )
 }
 
 function PieChartCard({ title, segments, labels }) {
@@ -84,8 +82,7 @@ function PieChartCard({ title, segments, labels }) {
       <h3>{title}</h3>
 
       <div className="sll-relatorios-chart-visual" aria-hidden="true">
-        <div className="sll-relatorios-pie" style={{ background: `conic-gradient(${buildConicGradient(segments)})` }} />
-        <div className="sll-relatorios-pie-hole" />
+        <PieGraphic />
 
         {labels.map((label) => (
           <span key={label.text} className={`sll-relatorios-chart-label ${label.className} ${label.tone}`}>

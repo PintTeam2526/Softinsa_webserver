@@ -349,28 +349,15 @@
 .sll-relatorios-chart-visual {
   position: relative;
   height: 300px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sll-relatorios-pie {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 160px;
-  height: 160px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-
-.sll-relatorios-pie-hole {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 84px;
-  height: 84px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: #ffffff;
+.sll-relatorios-pie-svg {
+  width: 161px;
+  height: 161px;
+  display: block;
 }
 
 .sll-relatorios-chart-label {
@@ -394,19 +381,26 @@
 }
 
 .sll-relatorios-chart-label.is-top-right {
-  top: 22px;
-  right: 28px;
+  top: 66px;
+  left: calc(50% + 66px);
 }
 
 .sll-relatorios-chart-label.is-left {
-  left: 26px;
-  top: 140px;
+  left: calc(50% - 190px);
+  top: 146px;
   text-align: right;
 }
 
+.sll-relatorios-chart-label.is-area-left {
+  left: calc(50% - 308px);
+  width: 220px;
+  white-space: normal;
+  z-index: 1;
+}
+
 .sll-relatorios-chart-label.is-bottom-right {
-  right: 44px;
-  bottom: 44px;
+  left: calc(50% + 72px);
+  bottom: 66px;
 }
 
 .sll-relatorios-table-card {

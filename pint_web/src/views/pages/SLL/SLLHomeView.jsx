@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   FaCheckCircle,
-  FaChevronRight,
   FaClipboardList,
   FaClock,
   FaMedal,
@@ -300,10 +299,6 @@ function SLLHomeView() {
               <h3>Tem 5 alertas por ler</h3>
               <p>Aceda agora aos alertas</p>
             </div>
-
-            <span className="sll-alert-cta" aria-hidden="true">
-              <FaChevronRight />
-            </span>
           </button>
 
           <section className="sll-dashboard-grid">

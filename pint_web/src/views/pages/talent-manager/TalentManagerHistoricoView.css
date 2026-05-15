@@ -549,10 +549,14 @@
   line-height: 21px;
 }
 
-.sll-history-card-approved img {
+.sll-history-card-approved svg {
   width: 18px;
   height: 18px;
   display: block;
+}
+
+.sll-history-card-approved.is-rejeitado {
+  color: #dc3545;
 }
 
 .sll-history-card-status {
@@ -645,12 +649,6 @@
 
 .sll-history-pagination button:last-child {
   border-radius: 0 8px 8px 0;
-}
-
-.sll-history-pagination button img {
-  width: 10px;
-  height: 10px;
-  display: block;
 }
 
 .sll-history-pagination button.is-active {

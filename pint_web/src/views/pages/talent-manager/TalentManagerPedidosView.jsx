@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { FaDownload, FaFileAlt, FaFilter, FaSearch, FaStar } from 'react-icons/fa'
+import { FaDownload, FaFileAlt, FaFilter, FaSearch } from 'react-icons/fa'
 import SLLPagination from '../../components/SLLPagination'
 import './TalentManagerPedidosView.css'
 
@@ -148,6 +148,14 @@ function ConfirmActionDialog({ action, onConfirm, onCancel }) {
   )
 }
 
+function RequirementStarIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M16 2L19.5 12H30L21.5 18.5L25 28.5L16 22L7 28.5L10.5 18.5L2 12H12.5L16 2Z" fill="#8A92A6" />
+    </svg>
+  )
+}
+
 function PendingRequestCard({ request }) {
   return (
     <article className="sll-pending-card">
@@ -173,7 +181,7 @@ function PendingRequestCard({ request }) {
                 <span>{requirement}</span>
               </div>
               <div className="sll-pending-requirement-star" aria-hidden="true">
-                <FaStar />
+                <RequirementStarIcon />
               </div>
             </div>
           ))}

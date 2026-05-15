@@ -407,12 +407,29 @@
 
 .sll-pending-document-icon,
 .sll-pending-document-download {
-  width: 16px;
-  height: 16px;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #8a92a6;
   flex-shrink: 0;
+  line-height: 0;
+}
+
+.sll-pending-document-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sll-pending-document-download {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
 }
 
 .sll-pending-document-main strong,
@@ -464,7 +481,7 @@
 
 .sll-pending-action.is-accept {
   color: #ffffff;
-  background: #39639c;
+  background: #5d86bf;
   border-color: #39639c;
 }
 

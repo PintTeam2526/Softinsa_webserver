@@ -42,6 +42,24 @@ function TeamProgressBar({ value, tone }) {
   )
 }
 
+function getRankClass(rank) {
+  const numericRank = Number.parseInt(rank, 10)
+
+  if (numericRank === 1) {
+    return 'is-gold'
+  }
+
+  if (numericRank === 2) {
+    return 'is-silver'
+  }
+
+  if (numericRank === 3) {
+    return 'is-bronze'
+  }
+
+  return 'is-default'
+}
+
 function ExportFormatOption({ label, selected, onClick }) {
   return (
     <button type="button" className="sll-team-export-option" onClick={onClick} aria-pressed={selected}>
@@ -293,7 +311,7 @@ function SLLMinhaEquipaView() {
                 <tbody>
                   {paginatedMembers.map((member) => (
                     <tr key={`${member.rank}-${member.name}`}>
-                      <td className="sll-team-rank">{member.rank}</td>
+                      <td className={`sll-team-rank ${getRankClass(member.rank)}`}>{member.rank}</td>
                       <td className="sll-team-name">{member.name}</td>
                       <td>{member.area}</td>
                       <td>{member.badges}</td>

@@ -3,7 +3,6 @@ import { FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import './TalentManagerCertificadosView.css'
 
-const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
 const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
 const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
@@ -219,7 +218,6 @@ function TalentManagerCertificadosView() {
           <div className="sll-certificates-preview">
             {!hasPreview ? (
               <div className="sll-certificates-preview-empty">
-                <img src={profileAvatar} alt="" aria-hidden="true" />
                 <p>Selecione um consultor e um badge para visualizar o certificado</p>
               </div>
             ) : (

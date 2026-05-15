@@ -313,28 +313,15 @@
 .sll-relatorios-chart-visual {
   position: relative;
   height: 300px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sll-relatorios-pie {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 160px;
-  height: 160px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-
-.sll-relatorios-pie-hole {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 84px;
-  height: 84px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: #ffffff;
+.sll-relatorios-pie-svg {
+  width: 161px;
+  height: 161px;
+  display: block;
 }
 
 .sll-relatorios-chart-label {
