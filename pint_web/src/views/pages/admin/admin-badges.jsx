@@ -356,7 +356,7 @@ const SoftinsaBadges = memo(() => {
 
     try {
       if (isEditMode && editingBadgeId !== null) {
-        await updateBadges(editingBadgeId, payload);
+        await updateBadge(editingBadgeId, payload);
       } else {
         await createBadge(payload);
       }
