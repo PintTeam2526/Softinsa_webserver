@@ -23,6 +23,7 @@ const getDefaultServiceLineForm = () => ({
   status: "",
   iconFileName: "",
   iconFile: null,
+  image: "",
 });
 
 const normalizeSearchValue = (value) =>
@@ -32,20 +33,21 @@ const normalizeSearchValue = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-// Mapeia linha da BD → shape usado no componente
+const formatSLImage = (img) => {
+  if (!img) return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
+
 const mapServiceLine = (row, learningPathsMap) => ({
   id: row.id_service_line,
   name: row.nome_service_line,
   description: row.descricao_service_line ?? "",
   iconFileName: row.imagem_service_line ?? "",
+  image: formatSLImage(row.imagem_service_line),
   status: row.estado_a_i ? "Ativo" : "Inativo",
-
   learningPathId: row.id_learning_path,
-
-  learningPath:
-    learningPathsMap[row.id_learning_path] ??
-    `ID ${row.id_learning_path}`,
-
+  learningPath: learningPathsMap[row.id_learning_path] ?? `ID ${row.id_learning_path}`,
   areas: 0,
   badges: 0,
 });
@@ -230,7 +232,19 @@ const SoftinsaServiceLines = memo(() => {
 
   const handleIconFileChange = (e) => {
     const file = e.target.files?.[0] ?? null;
-    setFormData((prev) => ({ ...prev, iconFile: file, iconFileName: file ? file.name : "" }));
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddServiceLine = () => {
@@ -245,12 +259,12 @@ const SoftinsaServiceLines = memo(() => {
     setFormData({
       name: item.name || "",
       description: item.description || "",
-      learningPath: String(item.learningPathId), // 🔥 importante
+      learningPath: String(item.learningPathId),
       status: item.status || "Ativo",
       iconFileName: item.iconFileName || "",
       iconFile: null,
+      image: item.image || "",
     });
-
     setEditingServiceLineId(item.id);
     setModalMode("edit");
   };
@@ -263,12 +277,16 @@ const SoftinsaServiceLines = memo(() => {
     const sanitizedName = formData.name.trim();
     if (!sanitizedName) return;
 
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : null;
+
     const payload = {
       nome_service_line: sanitizedName,
       descricao_service_line: formData.description.trim(),
       id_learning_path: Number(formData.learningPath),
       estado_a_i: formData.status === "Ativo",
-      imagem_service_line: formData.iconFileName || null,
+      imagem_service_line: rawBase64 || null,
     };
 
     try {
@@ -278,7 +296,7 @@ const SoftinsaServiceLines = memo(() => {
         await createServiceLine(payload);
       }
 
-      await loadData(); // 🔥 sincroniza com BD
+      await loadData();
       handleCloseModal();
     } catch (err) {
       console.error("Erro ao guardar service line", err);
@@ -350,7 +368,11 @@ const SoftinsaServiceLines = memo(() => {
                 <div className="softinsa-service-lines-select-wrap">
                   <select id="softinsa-service-lines-filter-learning-path" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
                     <option value="">Selecione a Learning Path</option>
-                    {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                    {learningPathOptions.map((lp) => (
+                      <option key={lp.id_learning_path} value={lp.nome_learning_path}>
+                        {lp.nome_learning_path}
+                      </option>
+                    ))}
                   </select>
                   <SelectArrowIcon />
                 </div>
@@ -512,6 +534,19 @@ const SoftinsaServiceLines = memo(() => {
                 <div className="softinsa-service-lines-modal-field">
                   <label>Icon</label>
                   <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da service line" />
+                  {formData.image ? (
+                    <img
+                      src={formData.image}
+                      alt="Pré-visualização"
+                      style={{
+                        display: "block",
+                        marginTop: 8,
+                        maxHeight: 64,
+                        maxWidth: 64,
+                        objectFit: "contain",
+                      }}
+                    />
+                  ) : null}
                 </div>
                 <button type="submit" className="softinsa-service-lines-modal-submit">
                   {isEditMode ? "Editar" : "Adicionar"}

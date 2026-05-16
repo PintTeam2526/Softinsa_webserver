@@ -18,7 +18,7 @@ const getDefaultLearningPathForm = () => ({
   description: "",
   status: "",
   iconFileName: "",
-  iconFile: null,
+  iconFile: "",
 });
 
 const normalizeSearchValue = (value) =>
@@ -28,7 +28,12 @@ const normalizeSearchValue = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-// Maps raw DB row → normalized shape used throughout the component
+const formatLPImage = (img) => {
+  if (!img) return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
+
 const mapLearningPath = (row) => ({
   id: row.id_learning_path,
   name: row.nome_learning_path,
@@ -38,6 +43,7 @@ const mapLearningPath = (row) => ({
   areas: row.areas ?? 0,
   badges: row.badges ?? 0,
   iconFileName: row.imagem_learning_path ?? "",
+  image: formatLPImage(row.imagem_learning_path),
 });
 
 // ── icons (unchanged) ────────────────────────────────────────────────────────
@@ -247,7 +253,19 @@ const SoftinsaLearningPaths = memo(() => {
 
   const handleIconFileChange = (event) => {
     const file = event.target.files?.[0] ?? null;
-    setFormData((prev) => ({ ...prev, iconFile: file, iconFileName: file ? file.name : "" }));
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddLearningPath = () => {
@@ -265,6 +283,7 @@ const SoftinsaLearningPaths = memo(() => {
       status: learningPathItem.status || "Ativo",
       iconFileName: learningPathItem.iconFileName || "",
       iconFile: null,
+      image: learningPathItem.image || "",
     });
     setEditingLearningPathId(learningPathItem.id);
     setIsFilterOpen(false);
@@ -282,64 +301,45 @@ const SoftinsaLearningPaths = memo(() => {
     const sanitizedName = formData.name.trim();
     if (!sanitizedName) return;
 
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : "";
+
     const payload = {
       nome_learning_path: sanitizedName,
       descricao_learning_path: formData.description.trim(),
       estado_a_i: formData.status === "Ativo",
-      imagem_learning_path: formData.iconFileName || "",
+      imagem_learning_path: rawBase64 || null,
     };
 
     try {
       if (isEditMode && editingLearningPathId !== null) {
-
-        const response = await updateLearningPath(
-          editingLearningPathId,
-          payload
-        );
-
+        const response = await updateLearningPath(editingLearningPathId, payload);
         const updated = response.dados;
 
         setLearningPaths((prev) =>
           prev.map((item) => {
-
-            if (item.id !== editingLearningPathId) {
-              return item;
-            }
-
+            if (item.id !== editingLearningPathId) return item;
             return {
               ...item,
-
               name: updated.nome_learning_path,
-
               description: updated.descricao_learning_path ?? "",
-
-              status: updated.estado_a_i
-                ? "Ativo"
-                : "Inativo",
-
+              status: updated.estado_a_i ? "Ativo" : "Inativo",
               iconFileName: updated.imagem_learning_path ?? "",
+              image: formatLPImage(updated.imagem_learning_path),
             };
           })
         );
       } else {
-        const created = await createLearningPath({
-          ...payload,
-          data_insercao: new Date().toISOString(),
-        });
-
+        await createLearningPath({ ...payload, data_insercao: new Date().toISOString() });
         loadLearningPaths();
         setCurrentPage(1);
       }
 
       handleCloseModal();
     } catch (error) {
-
       console.error(error);
-
-      alert(
-        error?.response?.data?.message ||
-        "Ocorreu um erro ao guardar a Learning Path."
-      );
+      alert(error?.response?.data?.message || "Ocorreu um erro ao guardar a Learning Path.");
     }
   };
 
@@ -694,6 +694,13 @@ const SoftinsaLearningPaths = memo(() => {
                 <div className="softinsa-learning-paths-modal-field">
                   <label>Icon</label>
                   <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da learning path" />
+                  {formData.image ? (
+                    <img
+                      src={formData.image}
+                      alt="Pré-visualização"
+                      style={{ marginTop: 8, maxHeight: 64, objectFit: "contain" }}
+                    />
+                  ) : null}
                 </div>
                 <button type="submit" className="softinsa-learning-paths-modal-submit">
                   {isEditMode ? "Editar" : "Adicionar"}

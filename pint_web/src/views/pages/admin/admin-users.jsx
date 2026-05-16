@@ -19,13 +19,19 @@ const statusOptions = ["Ativo", "Inativo"];
 
 const defaultAvatar = "https://www.figma.com/api/mcp/asset/54902fd0-73ae-42f2-b5e5-a9d96163e1e2";
 
+const formatAvatar = (img) => {
+  if (!img) return defaultAvatar;
+  if (img.startsWith("data:")) return img;
+  return `data:image/jpeg;base64,${img}`;
+};
+
 const mapUtilizador = (row) => ({
   id: row.id_utilizador,
   name: row.nome_utilizador,
   email: row.email_utilizador,
   profile: profileByTipo[row.tipo_utilizador] ?? row.tipo_utilizador,
   status: row.estado_a_i ? "Ativo" : "Inativo",
-  avatar: row.imagem_utilizador || defaultAvatar,
+  avatar: formatAvatar(row.imagem_utilizador),
 });
 
 const getDefaultUserForm = () => ({

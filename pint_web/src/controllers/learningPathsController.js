@@ -14,4 +14,3 @@ export const updateLearningPath = async (id, payload) => {
   const response = await api.put(`/learningPaths/${id}/update`, payload)
   return response.data
 }
-

@@ -3,7 +3,7 @@ import "./admin-areas.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
-import { getAreas } from '../../../controllers/areasController'
+import { getAreas, createArea, updateArea } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
 
 const BASE_URL = "http://localhost:3000/api";
@@ -12,10 +12,20 @@ const statusOptions = ["Ativo", "Inativo"];
 
 
 const getDefaultFilterDraft = () => ({ serviceLine: "", learningPath: "", status: "" });
-const getDefaultAreaForm = () => ({ name: "", description: "", learningPath: "", serviceLine: "", status: "", iconFileName: "", iconFile: null });
+
+const getDefaultAreaForm = () => ({
+  name: "", description: "", learningPath: "", serviceLine: "",
+  status: "", iconFileName: "", iconFile: null, image: "",
+});
 
 const normalizeSearchValue = (value) =>
   String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+const formatAreaImage = (img) => {
+  if (!img || typeof img !== "string" || img.trim() === "") return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
 
 const mapArea = (row, slMap, lpMap) => {
   const sl = slMap[row.id_service_line];
@@ -24,7 +34,9 @@ const mapArea = (row, slMap, lpMap) => {
     name: row.nome_area,
     description: row.descricao_area ?? "",
     iconFileName: row.imagem_area ?? "",
+    image: formatAreaImage(row.imagem_area),
     status: row.estado_a_i ? "Ativo" : "Inativo",
+    serviceLineId: row.id_service_line,
     serviceLine: sl?.name ?? `ID ${row.id_service_line}`,
     learningPath: lpMap[sl?.id_learning_path] ?? "",
     badges: 0,
@@ -120,6 +132,7 @@ const SoftinsaAreas = memo(() => {
   const [modalMode, setModalMode] = useState(null);
   const [editingAreaId, setEditingAreaId] = useState(null);
   const [formData, setFormData] = useState(getDefaultAreaForm());
+  const [slRaw, setSlRaw] = useState([]);
   const filterWrapRef = useRef(null);
 
   // ── fetch ─────────────────────────────────────────────────────────────────
@@ -140,6 +153,8 @@ const SoftinsaAreas = memo(() => {
 
       const slMap = {};
       slData.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
+
+      setSlRaw(slData);
 
       const badgeCountByArea = {};
       badgesData.forEach((b) => {
@@ -196,13 +211,31 @@ const SoftinsaAreas = memo(() => {
   useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
 
   const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+
   const handleIconFileChange = (e) => {
     const file = e.target.files?.[0] ?? null;
-    setFormData((prev) => ({ ...prev, iconFile: file, iconFileName: file ? file.name : "" }));
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddArea = () => {
-    setFormData({ ...getDefaultAreaForm(), learningPath: learningPathOptions[0] ?? "", serviceLine: serviceLineOptions[0] ?? "" });
+    setFormData({
+      ...getDefaultAreaForm(),
+      learningPath: learningPathOptions[0] ?? "",
+      serviceLine: serviceLineOptions[0] ?? "",
+      status: "Ativo",
+    });
     setEditingAreaId(null);
     setIsFilterOpen(false);
     setIsExportAlertOpen(false);
@@ -210,7 +243,17 @@ const SoftinsaAreas = memo(() => {
   };
 
   const handleOpenEditArea = (area) => {
-    setFormData({ name: area.name || "", description: area.description || "", learningPath: area.learningPath || learningPathOptions[0] || "", serviceLine: area.serviceLine || serviceLineOptions[0] || "", status: area.status || "Ativo", iconFileName: area.iconFileName || "", iconFile: null });
+    setFormData({
+      name: area.name || "",
+      description: area.description || "",
+      learningPath: area.learningPath || learningPathOptions[0] || "",
+      serviceLine: area.serviceLine || serviceLineOptions[0] || "",
+      serviceLineId: area.serviceLineId,
+      status: area.status || "Ativo",
+      iconFileName: area.iconFileName || "",
+      iconFile: null,
+      image: area.image || "",
+    });
     setEditingAreaId(area.id);
     setIsFilterOpen(false);
     setIsExportAlertOpen(false);
@@ -219,21 +262,43 @@ const SoftinsaAreas = memo(() => {
 
   const handleCloseModal = () => { setModalMode(null); setEditingAreaId(null); };
 
-  const handleSubmitArea = (e) => {
+  const handleSubmitArea = async (e) => {
     e.preventDefault();
     const sanitizedName = formData.name.trim();
     if (!sanitizedName) return;
-    const payload = { name: sanitizedName, description: formData.description.trim(), learningPath: formData.learningPath, serviceLine: formData.serviceLine, status: formData.status || "Ativo", iconFileName: formData.iconFileName };
-    if (isEditMode && editingAreaId !== null) {
-      setAreas((prev) => prev.map((item) => item.id === editingAreaId ? { ...item, ...payload } : item));
-    } else {
-      setAreas((prev) => {
-        const nextId = prev.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-        return [{ id: nextId, badges: 0, ...payload }, ...prev];
-      });
-      setCurrentPage(1);
+
+    const resolvedSlId = formData.serviceLineId
+      ? Number(formData.serviceLineId)
+      : slRaw.find((sl) => sl.nome_service_line === formData.serviceLine)?.id_service_line ?? null;
+
+    if (!resolvedSlId) {
+      console.error("Service Line não encontrada");
+      return;
     }
-    handleCloseModal();
+
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : null;
+
+    const payload = {
+      nome_area: sanitizedName,
+      descricao_area: formData.description.trim(),
+      id_service_line: resolvedSlId,
+      estado_a_i: formData.status === "Ativo",
+      imagem_area: rawBase64 || null,
+    };
+
+    try {
+      if (isEditMode && editingAreaId !== null) {
+        await updateArea(editingAreaId, payload);
+      } else {
+        await createArea(payload);
+      }
+      await loadData();
+      handleCloseModal();
+    } catch (err) {
+      console.error("Erro ao guardar área", err);
+    }
   };
 
   const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
@@ -475,6 +540,13 @@ const SoftinsaAreas = memo(() => {
                 <div className="softinsa-areas-modal-field">
                   <label>Icon</label>
                   <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
+                  {formData.image ? (
+                    <img
+                      src={formData.image}
+                      alt="Pré-visualização"
+                      style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
+                    />
+                  ) : null}
                 </div>
                 <button type="submit" className="softinsa-areas-modal-submit">
                   {isEditMode ? "Editar" : "Adicionar"}

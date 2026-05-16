@@ -5,7 +5,7 @@ import axios from "axios";
 import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
-import { getBadges } from '../../../controllers/badgesController'
+import { getBadges, createBadge, updateBadge } from '../../../controllers/badgesController'
 
 const BASE_URL = "http://localhost:3000/api";
 
@@ -46,6 +46,12 @@ const normalizeSearchValue = (value) =>
 
 // Mapeia linha da BD → shape usado no componente
 // nivel_badge guarda a label ("Júnior", "Pleno", …)
+const formatBadgeImage = (img) => {
+  if (!img) return defaultBadgeImage;
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;   // badges costumam ser PNG
+};
+
 const mapBadge = (row, areaMap, slMap, lpMap) => {
   const area = areaMap[row.id_area];
   const sl = slMap[area?.id_service_line];
@@ -59,7 +65,7 @@ const mapBadge = (row, areaMap, slMap, lpMap) => {
     isSpecial: row.pago ?? false,
     badgeLevel: rankByLevelLabel[levelLabel] ?? "1",
     level: levelLabel,
-    image: row.imagem_badge || defaultBadgeImage,
+    image: formatBadgeImage(row.imagem_badge),      // ← única linha alterada
     logoFileName: row.imagem_badge ?? "",
     validityDate: row.validade ? String(row.validade) : "",
     status: row.estado_a_i ? "Ativo" : "Inativo",
@@ -153,6 +159,7 @@ const SoftinsaBadges = memo(() => {
   const [requirementFormData, setRequirementFormData] = useState(getDefaultRequirementForm(false));
   const [requirementFormError, setRequirementFormError] = useState("");
   const [editingRequirementIndex, setEditingRequirementIndex] = useState(null);
+  const [areasRaw, setAreasRaw] = useState([]);
   const filterWrapRef = useRef(null);
 
   const cardsPerPage = 8;
@@ -184,6 +191,8 @@ const SoftinsaBadges = memo(() => {
 
       const areaMap = {};
       areasData.forEach((a) => { areaMap[a.id_area] = { name: a.nome_area, id_service_line: a.id_service_line }; });
+
+      setAreasRaw(areasData);
 
       setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
       setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
@@ -237,8 +246,17 @@ const SoftinsaBadges = memo(() => {
   const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
 
   const handleOpenAddBadge = () => {
-    setFormData({ ...getDefaultBadgeForm(), learningPath: learningPathOptions[0] ?? "", serviceLine: serviceLineOptions[0] ?? "", area: areaOptions[0] ?? "" });
-    setEditingBadgeId(null); setEditingRequirementIndex(null); setIsFilterOpen(false); setModalMode("add");
+    setFormData({
+      ...getDefaultBadgeForm(),
+      learningPath: learningPathOptions[0] ?? "",
+      serviceLine: serviceLineOptions[0] ?? "",
+      area: areaOptions[0] ?? "",
+      status: "Ativo",
+    });
+    setEditingBadgeId(null);
+    setEditingRequirementIndex(null);
+    setIsFilterOpen(false);
+    setModalMode("add");
   };
 
   const handleOpenEditBadge = (badge) => {
@@ -308,20 +326,45 @@ const SoftinsaBadges = memo(() => {
   const handleAddMoreRequirements = () => { if (appendRequirementFromDraft()) setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); };
   const handleConfirmRequirement = (e) => { e.preventDefault(); if (!appendRequirementFromDraft()) return; setIsRequirementModalOpen(false); setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); setEditingRequirementIndex(null); };
 
-  const handleSubmitBadge = (e) => {
+  const handleSubmitBadge = async (e) => {
     e.preventDefault();
     const sanitizedName = formData.name.trim();
     const parsedPoints = Number(formData.points);
     const badgeLevel = formData.badgeLevel || "1";
     if (!sanitizedName || Number.isNaN(parsedPoints)) return;
-    const payload = { name: sanitizedName, description: formData.description.trim(), learningPath: formData.learningPath, serviceLine: formData.serviceLine, area: formData.area, validityDate: formData.validityDate, status: formData.status || "Ativo", badgeLevel, level: levelLabelByRank[badgeLevel] || "Júnior", points: parsedPoints, isSpecial: Boolean(formData.isSpecial), logoFileName: formData.logoFileName, image: formData.image || defaultBadgeImage, requirements: formData.requirements };
-    if (isEditMode && editingBadgeId !== null) {
-      setBadges((prev) => prev.map((b) => b.id === editingBadgeId ? { ...b, ...payload } : b));
-    } else {
-      setBadges((prev) => { const nextId = prev.reduce((max, b) => Math.max(max, Number(b.id) || 0), 0) + 1; return [{ id: nextId, ...payload }, ...prev]; });
-      setCurrentPage(1);
+
+    // resolve id_area pelo nome
+    const resolvedArea = areasRaw.find((a) => a.nome_area === formData.area);
+    if (!resolvedArea) { console.error("Área não encontrada"); return; }
+
+    // strip do prefixo Base64
+    const rawBase64 = formData.image && !formData.image.startsWith("http")
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : null;
+
+    const payload = {
+      nome_badge: sanitizedName,
+      descricao_badge: formData.description.trim(),
+      id_area: resolvedArea.id_area,
+      pontos_badge: parsedPoints,
+      pago: Boolean(formData.isSpecial),
+      nivel_badge: levelLabelByRank[badgeLevel] || "Júnior",
+      imagem_badge: rawBase64 || null,
+      estado_a_i: formData.status === "Ativo",
+      validade: formData.validityDate || null,
+    };
+
+    try {
+      if (isEditMode && editingBadgeId !== null) {
+        await updateBadges(editingBadgeId, payload);
+      } else {
+        await createBadge(payload);
+      }
+      await loadData();
+      handleCloseModal();
+    } catch (err) {
+      console.error("Erro ao guardar badge", err);
     }
-    handleCloseModal();
   };
 
   const handlePreviousPage = () => setCurrentPage((p) => Math.max(Math.min(p, totalPages) - 1, 1));

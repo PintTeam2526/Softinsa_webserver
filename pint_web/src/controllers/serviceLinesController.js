@@ -30,7 +30,7 @@ export const updateServiceLine = async (
 ) => {
   try {
     const response = await api.put(
-      `/serviceLines/update/${id}`,
+      `/serviceLines/${id}/update`,
       payload
     )
 
