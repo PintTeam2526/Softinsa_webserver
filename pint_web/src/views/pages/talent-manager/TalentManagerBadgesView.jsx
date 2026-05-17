@@ -1,5 +1,4 @@
 import { FaTimes, FaUpload } from 'react-icons/fa'
-import { HiOutlineStar } from 'react-icons/hi2'
 import { useState } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -23,6 +22,22 @@ import tm3 from '../../../assets/images/badges/tm_3.png'
 import tm4 from '../../../assets/images/badges/tm_4.png'
 import tm5 from '../../../assets/images/badges/tm_5.png'
 import tmSpecial from '../../../assets/images/badges/tm_special.png'
+
+function IconPoints({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M4.76567 1.60996C5.47447 1.31826 6.23337 1.16767 6.99984 1.16663C7.76401 1.16663 8.52234 1.31829 9.23401 1.60996C9.93984 1.90163 10.5815 2.33329 11.124 2.87579C11.6665 3.41829 12.0982 4.05996 12.3898 4.76579C12.6815 5.47746 12.8332 6.23579 12.8332 6.99996C12.8332 8.54579 12.2207 10.0333 11.124 11.1241C10.583 11.6666 9.9402 12.0969 9.23245 12.3902C8.5247 12.6835 7.76596 12.8341 6.99984 12.8333C6.23337 12.8322 5.47447 12.6817 4.76567 12.39C4.05871 12.0961 3.4165 11.666 2.87567 11.1241C2.33318 10.5832 1.90293 9.94032 1.60961 9.23257C1.3163 8.52482 1.16572 7.76608 1.16651 6.99996C1.16651 5.45413 1.77901 3.96663 2.87567 2.87579C3.41817 2.33329 4.05984 1.90163 4.76567 1.60996ZM6.99984 9.91663L7.90984 7.92163L9.91651 6.99996L7.90984 6.08996L6.99984 4.08329L6.08401 6.08996L4.08317 6.99996L6.08401 7.92163L6.99984 9.91663Z" fill="#8A92A6" />
+    </svg>
+  )
+}
 
 function IconAreaMenu({ className }) {
   return (
@@ -101,7 +116,7 @@ function BadgeCard({ icon, title, level, onClick, cp }) {
         <div className={`${cp}-card-title`}>{title}</div>
         <div className={`${cp}-card-level`}>{level}</div>
         <div className={`${cp}-card-points`}>
-          <HiOutlineStar className={`${cp}-card-points-icon`} aria-hidden="true" />
+          <IconPoints className={`${cp}-card-points-icon`} />
           <span>550 Pontos</span>
         </div>
       </div>

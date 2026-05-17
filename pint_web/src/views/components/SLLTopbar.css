@@ -1,5 +1,10 @@
 @import './AdminTopbar.css';
 
+.softinsa-shell-topbar {
+	position: static;
+	top: auto;
+}
+
 .softinsa-shell-profile-btn {
 	display: inline-flex;
 	text-decoration: none;
