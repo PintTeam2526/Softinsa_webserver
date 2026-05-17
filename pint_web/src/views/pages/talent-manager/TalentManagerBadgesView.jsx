@@ -24,12 +24,6 @@ const imgModalBadge = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b2
 
 // ── utilitário base64 ─────────────────────────────────────────────────────────
 
-/**
- * Normaliza a imagem vinda do backend:
- * - Se já vier com o prefixo "data:" devolve tal-e-qual
- * - Se vier como string base64 pura, adiciona o prefixo PNG
- * - Se vier vazia/null devolve o placeholder
- */
 function normalizeImage(raw, fallback = imgModalBadge) {
   if (!raw) return fallback
   if (raw.startsWith('data:')) return raw
@@ -99,7 +93,6 @@ function TalentManagerBadgesView({
 
   async function loadData() {
     try {
-      // Todos os controllers já usam api.js (token + baseURL) internamente
       const [lpData, slData, areasData, badgesData] = await Promise.all([
         getLearningPaths(),
         getServiceLines(),
@@ -107,7 +100,6 @@ function TalentManagerBadgesView({
         getBadges(),
       ])
 
-      // badges por área: { id_area: [badge, …] }
       const badgesByArea = {}
       badgesData.forEach((b) => {
         if (!badgesByArea[b.id_area]) badgesByArea[b.id_area] = []
@@ -122,7 +114,6 @@ function TalentManagerBadgesView({
         })
       })
 
-      // áreas por service line: { id_service_line: [area, …] }
       const areasBySL = {}
       areasData.forEach((a) => {
         if (!areasBySL[a.id_service_line]) areasBySL[a.id_service_line] = []
@@ -133,7 +124,6 @@ function TalentManagerBadgesView({
         })
       })
 
-      // service lines por learning path: { id_learning_path: [sl, …] }
       const slByLP = {}
       slData.forEach((sl) => {
         if (!slByLP[sl.id_learning_path]) slByLP[sl.id_learning_path] = []
@@ -144,7 +134,6 @@ function TalentManagerBadgesView({
         })
       })
 
-      // learning paths completas
       const lps = lpData.map((lp) => ({
         id: lp.id_learning_path,
         title: lp.nome_learning_path,

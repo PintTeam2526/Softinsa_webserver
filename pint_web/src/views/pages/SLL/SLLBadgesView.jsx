@@ -1,61 +1,55 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { FaSearch, FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
-import badgeEntryLevel from '../../../assets/images/badges/outsystems_1.png'
-import badgeTeamLeader from '../../../assets/images/badges/tm_1.png'
-import badgeDevOps from '../../../assets/images/badges/devops_2.png'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 import './SLL-badges.css'
+
 const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
 const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
 const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
 const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
 const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 
-const badgeGroups = [
-  {
-    title: 'Área: LowCode (Outsystems)',
-    badges: [
-      { name: 'Low-Code (Outsystems)', level: 'Junior', image: badgeEntryLevel },
-      { name: 'Low-Code (Outsystems)', level: 'Intermédio', image: badgeTeamLeader },
-      { name: 'Low-Code (Outsystems)', level: 'Sénior', image: badgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Especialista', image: badgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Líder de conhecimento', image: badgeDevOps },
-      { name: 'Low-Code (Outsystems)', level: 'Conquista Especial', image: badgeDevOps },
-    ],
-  },
-  {
-    title: 'Área: Automation',
-    badges: [
-      { name: 'Automation', level: 'Junior', image: badgeEntryLevel },
-      { name: 'Automation', level: 'Intermédio', image: badgeEntryLevel },
-      { name: 'Automation', level: 'Nível Sénior', image: badgeEntryLevel },
-      { name: 'Automation', level: 'Especialista', image: badgeEntryLevel },
-      { name: 'Automation', level: 'Líder de conhecimento', image: badgeEntryLevel },
-      { name: 'Automation', level: 'Conquista Especial', image: badgeEntryLevel },
-    ],
-  },
-  {
-    title: 'Área: Cloud Architecture',
-    badges: [
-      { name: 'Cloud Architecture', level: 'Junior', image: badgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Intermédio', image: badgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Nível Sénior', image: badgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Especialista', image: badgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Líder de conhecimento', image: badgeEntryLevel },
-      { name: 'Cloud Architecture', level: 'Conquista Especial', image: badgeEntryLevel },
-    ],
-  },
-]
+const imgBadgeFallback = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
+
+// ── utilitários ───────────────────────────────────────────────────────────────
+
+/** Extrai o payload do JWT guardado no localStorage sem biblioteca externa */
+function getTokenPayload() {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) return null
+    const payload = token.split('.')[1]
+    return JSON.parse(atob(payload))
+  } catch {
+    return null
+  }
+}
+
+/** Normaliza imagens base64 vindas do backend */
+function normalizeImage(raw) {
+  if (!raw) return imgBadgeFallback
+  if (raw.startsWith('data:')) return raw
+  return `data:image/png;base64,${raw}`
+}
+
+// ── sub-componentes ───────────────────────────────────────────────────────────
 
 function BadgeCard({ badge }) {
   return (
     <article className="sll-badges-card">
       <div className="sll-badges-card-image-wrap">
-        <img src={badge.image} alt={badge.name} className="sll-badges-card-image" />
+        <img
+          src={badge.image}
+          alt={badge.name}
+          className="sll-badges-card-image"
+          onError={(e) => { e.target.src = imgBadgeFallback }}
+        />
       </div>
 
       <div className="sll-badges-card-copy">
@@ -63,82 +57,125 @@ function BadgeCard({ badge }) {
         <p>{badge.level}</p>
       </div>
 
-      <div className="sll-badges-card-meta">550 Pontos</div>
+      <div className="sll-badges-card-meta">{badge.points} Pontos</div>
     </article>
   )
 }
 
+// ── componente principal ──────────────────────────────────────────────────────
+
 function SLLBadgesView() {
+  const [badgeGroups, setBadgeGroups] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [selectedArea, setSelectedArea] = useState('')
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
 
-  const areaOptions = badgeGroups.map((group) => group.title.replace('Área: ', ''))
+  // ── fetch ─────────────────────────────────────────────────────────────────
+
+  useEffect(() => { loadData() }, [])
+
+  async function loadData() {
+    try {
+      // Extrai o id da service line do utilizador autenticado a partir do JWT
+      const payload = getTokenPayload()
+      const idServiceLine = payload?.id_service_line_lider
+      if (!idServiceLine) {
+        console.error('Não foi possível determinar a service line do utilizador.')
+        return
+      }
+
+      const [areasData, badgesData] = await Promise.all([
+        getAreas(),
+        getBadges(),
+      ])
+
+      // Filtra apenas as áreas da service line do utilizador
+      const areasDaSL = areasData.filter((a) => a.id_service_line === idServiceLine)
+
+      // Mapeia badges por área
+      const badgesByArea = {}
+      badgesData.forEach((b) => {
+        if (!badgesByArea[b.id_area]) badgesByArea[b.id_area] = []
+        badgesByArea[b.id_area].push({
+          name: b.nome_badge,
+          level: b.nivel_badge,
+          image: normalizeImage(b.imagem_badge),
+          points: b.pontos_badge ?? 0,
+        })
+      })
+
+      // Constrói os grupos (uma entrada por área)
+      const groups = areasDaSL.map((area) => ({
+        id: area.id_area,
+        title: area.nome_area,
+        badges: badgesByArea[area.id_area] || [],
+      }))
+
+      setBadgeGroups(groups)
+    } catch (error) {
+      console.error('Erro ao carregar badges:', error)
+    }
+  }
+
+  // ── filtragem por pesquisa ────────────────────────────────────────────────
 
   const filteredBadgeGroups = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
+    const term = searchTerm.trim().toLowerCase()
+    if (!term) return badgeGroups
 
     return badgeGroups
       .map((group) => ({
         ...group,
-        badges: group.badges.filter((badge) => {
-          const searchableText = [group.title, badge.name, badge.level].join(' ').toLowerCase()
-          return !normalizedSearch || searchableText.includes(normalizedSearch)
-        }),
+        badges: group.badges.filter((badge) =>
+          [group.title, badge.name, badge.level].join(' ').toLowerCase().includes(term)
+        ),
       }))
       .filter((group) => group.badges.length > 0)
-  }, [searchTerm])
+  }, [searchTerm, badgeGroups])
 
   const filteredBadgeCount = useMemo(
     () => filteredBadgeGroups.reduce((sum, group) => sum + group.badges.length, 0),
     [filteredBadgeGroups]
   )
 
-  const selectedGroup = badgeGroups.find((group) => group.title.replace('Área: ', '') === selectedArea)
-  const badgesToExport = selectedGroup ? [selectedGroup] : badgeGroups
+  // ── export ────────────────────────────────────────────────────────────────
 
-  function openExportDialog() {
-    setShowExportDialog(true)
-  }
+  const areaOptions = badgeGroups.map((g) => g.title)
 
-  function closeExportDialog() {
-    setShowExportDialog(false)
-  }
+  const groupsToExport = selectedArea
+    ? badgeGroups.filter((g) => g.title === selectedArea)
+    : badgeGroups
 
   function exportBadges() {
-    const rows = badgesToExport.flatMap((group) =>
+    const rows = groupsToExport.flatMap((group) =>
       group.badges.map((badge) => ({
-        Area: group.title.replace('Área: ', ''),
+        Área: group.title,
         Badge: badge.name,
-        Level: badge.level,
-        Points: 550,
+        Nível: badge.level,
+        Pontos: badge.points,
       }))
     )
 
     if (selectedExportFormat === 'pdf') {
-      const documentPdf = new jsPDF({ orientation: 'landscape' })
-
-      documentPdf.setFontSize(16)
-      documentPdf.text('Badges', 14, 16)
-
-      autoTable(documentPdf, {
+      const doc = new jsPDF({ orientation: 'landscape' })
+      doc.setFontSize(16)
+      doc.text('Badges', 14, 16)
+      autoTable(doc, {
         startY: 24,
-        head: [['Área', 'Badge', 'Level', 'Points']],
-        body: rows.map((row) => [row.Area, row.Badge, row.Level, row.Points]),
+        head: [['Área', 'Badge', 'Nível', 'Pontos']],
+        body: rows.map((r) => [r['Área'], r['Badge'], r['Nível'], String(r['Pontos'])]),
         styles: { fontSize: 10 },
       })
-
-      documentPdf.save('sll-badges.pdf')
-      closeExportDialog()
-      return
+      doc.save('sll-badges.pdf')
+    } else {
+      const ws = XLSX.utils.json_to_sheet(rows)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Badges')
+      XLSX.writeFile(wb, 'sll-badges.xlsx')
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(rows)
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Badges')
-    XLSX.writeFile(workbook, 'sll-badges.xlsx')
-    closeExportDialog()
+    setShowExportDialog(false)
   }
 
   function ExportFormatOption({ label, value }) {
@@ -149,13 +186,18 @@ function SLLBadgesView() {
         onClick={() => setSelectedExportFormat(value)}
         aria-pressed={selectedExportFormat === value}
       >
-        <span className={`sll-badges-export-option-toggle${selectedExportFormat === value ? ' is-selected' : ''}`} aria-hidden="true">
+        <span
+          className={`sll-badges-export-option-toggle${selectedExportFormat === value ? ' is-selected' : ''}`}
+          aria-hidden="true"
+        >
           {selectedExportFormat === value ? <span className="sll-badges-export-option-dot" /> : null}
         </span>
         <span>{label}</span>
       </button>
     )
   }
+
+  // ── render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="sll-badges-page">
@@ -176,7 +218,7 @@ function SLLBadgesView() {
 
             <div className="sll-badges-hero-copy">
               <h1>Badges</h1>
-              <p>{filteredBadgeCount} badges disponíveis</p>
+              <p>{filteredBadgeCount} badge{filteredBadgeCount !== 1 ? 's' : ''} disponíve{filteredBadgeCount !== 1 ? 'is' : 'l'}</p>
             </div>
           </section>
 
@@ -187,48 +229,50 @@ function SLLBadgesView() {
                 type="text"
                 placeholder="Search..."
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </label>
 
-            <button type="button" className="sll-badges-export-btn" onClick={openExportDialog}>
+            <button type="button" className="sll-badges-export-btn" onClick={() => setShowExportDialog(true)}>
               <FaUpload aria-hidden="true" />
               <span>Exportar</span>
             </button>
           </section>
 
           <section className="sll-badges-groups" aria-label="Lista de badges">
-            {filteredBadgeGroups.map((group) => (
-              <div key={group.title} className="sll-badges-group">
-                <h2>{group.title}</h2>
+            {filteredBadgeGroups.length === 0 ? (
+              <p style={{ padding: '1rem', opacity: 0.6 }}>Sem badges disponíveis.</p>
+            ) : (
+              filteredBadgeGroups.map((group) => (
+                <div key={group.id} className="sll-badges-group">
+                  <h2>{group.title} - {group.badges.length} badge{group.badges.length !== 1 ? 's' : ''}</h2>
 
-                <div className="sll-badges-grid">
-                  {group.badges.map((badge) => (
-                    <BadgeCard key={`${group.title}-${badge.name}-${badge.level}`} badge={badge} />
-                  ))}
+                  <div className="sll-badges-grid">
+                    {group.badges.map((badge) => (
+                      <BadgeCard key={`${group.id}-${badge.name}-${badge.level}`} badge={badge} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </section>
 
           {showExportDialog ? (
-            <div className="sll-badges-export-backdrop" role="presentation" onClick={closeExportDialog}>
+            <div className="sll-badges-export-backdrop" role="presentation" onClick={() => setShowExportDialog(false)}>
               <div
                 className="sll-badges-export-modal"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Filtro de exportação"
-                onClick={(event) => event.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
               >
                 <div className="sll-badges-export-field">
                   <label>Área</label>
                   <div className="sll-badges-export-select-wrap">
-                    <select value={selectedArea} onChange={(event) => setSelectedArea(event.target.value)}>
-                      <option value="">Selecione a Área</option>
+                    <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
+                      <option value="">Todas as áreas</option>
                       {areaOptions.map((area) => (
-                        <option key={area} value={area}>
-                          {area}
-                        </option>
+                        <option key={area} value={area}>{area}</option>
                       ))}
                     </select>
                   </div>
