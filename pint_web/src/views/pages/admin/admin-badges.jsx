@@ -166,6 +166,7 @@ const SoftinsaBadges = memo(() => {
   const [requirementFormError, setRequirementFormError] = useState("");
   const [editingRequirementIndex, setEditingRequirementIndex] = useState(null);
   const [areasRaw, setAreasRaw] = useState([]);
+  const [slRaw, setSlRaw] = useState([]);
   const filterWrapRef = useRef(null);
 
   const cardsPerPage = 8;
@@ -199,6 +200,7 @@ const SoftinsaBadges = memo(() => {
       areasData.forEach((a) => { areaMap[a.id_area] = { name: a.nome_area, id_service_line: a.id_service_line }; });
 
       setAreasRaw(areasData);
+      setSlRaw(slData);
 
       setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
       setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
@@ -339,9 +341,11 @@ const SoftinsaBadges = memo(() => {
     const badgeLevel = formData.badgeLevel || "1";
     if (!sanitizedName || Number.isNaN(parsedPoints)) return;
 
-    // resolve id_area pelo nome
     const resolvedArea = areasRaw.find((a) => a.nome_area === formData.area);
     if (!resolvedArea) { console.error("Área não encontrada"); return; }
+
+    const resolvedSL = slRaw.find((sl) => sl.nome_service_line === formData.serviceLine);
+    if (!resolvedSL) { console.error("Service Line não encontrada"); return; }
 
     // strip do prefixo Base64
     const rawBase64 = formData.image && !formData.image.startsWith("http")
@@ -356,8 +360,9 @@ const SoftinsaBadges = memo(() => {
       pago: Boolean(formData.isSpecial),
       nivel_badge: levelLabelByRank[badgeLevel] || "Júnior",
       imagem_badge: rawBase64 || null,
+      sla: resolvedSL.id_service_line,
       estado_a_i: formData.status === "Ativo",
-      validade: formData.validityDate || null,
+      validade: formData.validityDate !== "" ? parseInt(formData.validityDate, 10) : null,
     };
 
     try {
@@ -518,7 +523,14 @@ const SoftinsaBadges = memo(() => {
                 </div>
                 <div className="softinsa-badges-modal-field">
                   <label htmlFor="softinsa-badge-validity">Tempo de Validade:</label>
-                  <input id="softinsa-badge-validity" type="date" value={formData.validityDate} onChange={(e) => handleFieldChange("validityDate", e.target.value)} />
+                  <input
+                    id="softinsa-badge-validity"
+                    type="number"
+                    min={0}
+                    placeholder="Nº de dias"
+                    value={formData.validityDate}
+                    onChange={(e) => handleFieldChange("validityDate", e.target.value)}
+                  />
                 </div>
                 <div className="softinsa-badges-modal-field">
                   <label htmlFor="softinsa-badge-status">Estado:</label>
