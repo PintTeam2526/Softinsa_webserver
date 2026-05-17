@@ -238,14 +238,6 @@
   pointer-events: none;
 }
 
-.sll-certificates-preview-empty img {
-  width: 76px;
-  height: 76px;
-  border-radius: 999px;
-  object-fit: cover;
-  opacity: 0.75;
-}
-
 .sll-certificates-preview-empty p {
   margin: 0;
   font-size: 14px;
@@ -279,7 +271,7 @@
 
 .sll-certificates-certificate-topbar {
   height: 76px;
-  background: linear-gradient(180deg, #3f6aa7 0%, #3c67a2 100%);
+  background: linear-gradient(180deg, #39639c 0%, #39639c 100%);
   display: grid;
   place-items: center;
 }
@@ -335,7 +327,7 @@
 
 .sll-certificates-certificate-name {
   margin: 10px 0 14px;
-  color: #3f6aa7;
+  color: #39639c;
   font-size: 28px;
   line-height: 1.1;
   font-weight: 700;

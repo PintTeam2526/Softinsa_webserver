@@ -269,6 +269,11 @@
   margin-bottom: 64px;
 }
 
+.consultor-dashboard-bottom-grid.is-single {
+  grid-template-columns: minmax(0, 720px);
+  justify-content: center;
+}
+
 .consultor-dashboard-card {
   background: #ffffff;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);

@@ -138,35 +138,13 @@
   box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
 }
 
-.sll-history-tab-button.is-active {
-  background: #39639c;
-  color: #ffffff;
-}
-
-.sll-history-tab-button.is-active.is-rejected {
-  background: #dc3545;
-  border-color: #dc3545;
-}
-
-.sll-history-tab-button.is-active.is-progress {
-  background: #f0ad4e;
-  border-color: #f0ad4e;
-  color: #ffffff;
-}
-
+.sll-history-tab-button.is-active,
+.sll-history-tab-button.is-active.is-rejected,
+.sll-history-tab-button.is-active.is-progress,
 .sll-history-tab-button.is-active.is-approved {
-  background: #1aa053;
-  border-color: #1aa053;
-}
-
-.sll-history-info-btn {
-  width: 24px;
-  padding: 0;
-  border: 0;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #8a92a6;
-  font-size: 16px;
+  background: #39639c;
+  border-color: #39639c;
+  color: #ffffff;
 }
 
 .sll-history-export-btn {
@@ -481,20 +459,41 @@
   padding-top: 2px;
 }
 
-.sll-history-card {
+.sll-history-card-wrap {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  overflow: hidden;
+}
+
+.sll-history-card-wrap + .sll-history-card-wrap {
+  margin-top: 2px;
+}
+
+.sll-history-card {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
   min-height: 113px;
   padding: 17px 18px 17px 10px;
   display: grid;
   grid-template-columns: 80px minmax(0, 1fr) 188px;
   gap: 16px;
   align-items: center;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
-.sll-history-card + .sll-history-card {
-  margin-top: 2px;
+.sll-history-card:focus-visible {
+  outline: 2px solid rgba(57, 99, 156, 0.45);
+  outline-offset: -2px;
+}
+
+.sll-history-card-wrap.is-expanded .sll-history-card {
+  border-radius: 8px 8px 0 0;
 }
 
 .sll-history-card-avatar {
@@ -549,10 +548,18 @@
   line-height: 21px;
 }
 
-.sll-history-card-approved img {
+.sll-history-card-approved svg {
   width: 18px;
   height: 18px;
   display: block;
+}
+
+.sll-history-card-approved.is-rejeitado {
+  color: #dc3545;
+}
+
+.sll-history-card-approved span.is-progress {
+  color: #8a92a6;
 }
 
 .sll-history-card-status {
@@ -580,7 +587,7 @@
 }
 
 .sll-history-status-badge.is-em-progresso {
-  color: #f0ad4e;
+  color: #39639c;
 }
 
 .sll-history-progress {
@@ -606,12 +613,17 @@
   background: #1aa053;
 }
 
+.sll-history-progress .is-fill.is-partial {
+  width: 28%;
+  background: #39639c;
+}
+
 .sll-history-card-status.is-rejeitado .sll-history-progress .is-fill {
   background: #dc3545;
 }
 
 .sll-history-card-status.is-em-progresso .sll-history-progress .is-fill {
-  background: #f0ad4e;
+  background: #39639c;
 }
 
 .sll-history-pagination {
@@ -647,14 +659,106 @@
   border-radius: 0 8px 8px 0;
 }
 
-.sll-history-pagination button img {
-  width: 10px;
-  height: 10px;
-  display: block;
-}
-
 .sll-history-pagination button.is-active {
   color: #3a57e8;
+}
+
+.sll-history-detail {
+  border-top: 1px solid #e9ecef;
+  padding: 12px 18px 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-history-detail-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+  color: #232d42;
+}
+
+.sll-history-detail-table {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #f1f3f5;
+}
+
+.sll-history-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
+  line-height: 21px;
+  color: #232d42;
+}
+
+.sll-history-detail-row + .sll-history-detail-row {
+  border-top: 1px solid #f1f3f5;
+}
+
+.sll-history-detail-row.sll-history-detail-head {
+  background: #f8f9fa;
+  color: #8a92a6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.sll-history-detail-row > span:first-child {
+  justify-self: start;
+}
+
+.sll-history-detail-row > span:nth-child(2) {
+  justify-self: center;
+}
+
+.sll-history-detail-row > span:last-child {
+  justify-self: end;
+}
+
+.sll-history-detail-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-progress {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-approved {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-rejected {
+  color: #dc3545;
+}
+
+.sll-history-step-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sll-history-detail-state.is-progress .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-approved .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-rejected .sll-history-step-icon {
+  color: #dc3545;
 }
 
 @media (max-width: 1200px) {

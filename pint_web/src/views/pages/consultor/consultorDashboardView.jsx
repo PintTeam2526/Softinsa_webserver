@@ -291,23 +291,7 @@ function DashboardView() {
         ))}
       </section>
 
-      <section className="consultor-dashboard-bottom-grid" aria-label="Badges">
-        <article className="consultor-dashboard-card">
-          <header className="consultor-dashboard-card-header">
-            <h2>Badges Recomendados</h2>
-          </header>
-
-          <div className="consultor-dashboard-card-body">
-            {recommendedBadges.map((badge, i) => (
-              <BadgeRow
-                key={i}
-                badge={badge}
-                onClick={() => navigate(`/consultor/badge/${slugify(badge.name)}`)}
-              />
-            ))}
-          </div>
-        </article>
-
+      <section className="consultor-dashboard-bottom-grid is-single" aria-label="Badges">
         <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
           <button
             type="button"

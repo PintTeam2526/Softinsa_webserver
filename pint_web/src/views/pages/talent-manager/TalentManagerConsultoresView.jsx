@@ -45,6 +45,13 @@ function AvatarBadge() {
   )
 }
 
+function getRankingTone(ranking) {
+  if (ranking === '1º') return 'is-gold'
+  if (ranking === '2º') return 'is-silver'
+  if (ranking === '3º') return 'is-bronze'
+  return ''
+}
+
 function PaginationButton({ children, active = false, disabled = false, narrow = false, onClick }) {
   return (
     <button
@@ -367,7 +374,11 @@ function TalentManagerConsultoresView() {
                       <span className="tm-consultores-point-dot" aria-hidden="true" />
                     </span>
                   </td>
-                  <td>{consultant.ranking}</td>
+                  <td>
+                    <span className={`tm-consultores-ranking ${getRankingTone(consultant.ranking)}`}>
+                      {consultant.ranking}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

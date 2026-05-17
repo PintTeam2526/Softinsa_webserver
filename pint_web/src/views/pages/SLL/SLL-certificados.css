@@ -25,7 +25,7 @@
   height: 155px;
   overflow: hidden;
   border-radius: 0 0 16px 16px;
-  background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
+  background: radial-gradient(circle at 52% 52%, #6f8fb8 0%, #587aa9 46%, #456996 76%, #39639c 100%);
   box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
 }
 
@@ -111,8 +111,8 @@
 
 .sll-certificates-layout {
   display: grid;
-  grid-template-columns: 287px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: 356px minmax(0, 1fr);
+  gap: 18px;
   align-items: start;
 }
 
@@ -125,23 +125,23 @@
 }
 
 .sll-certificates-form-card {
-  padding: 22px 20px 16px;
+  padding: 22px 18px 18px;
 }
 
 .sll-certificates-form-card h2,
 .sll-certificates-preview-card h2 {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   color: #232d42;
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 20px;
+  line-height: 1.4;
   font-weight: 700;
 }
 
 .sll-certificates-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
 .sll-certificates-field label {
@@ -153,6 +153,8 @@
 
 .sll-certificates-select-wrap {
   position: relative;
+  width: 100%;
+  max-width: 206px;
 }
 
 .sll-certificates-select-wrap::after {
@@ -186,30 +188,30 @@
 }
 
 .sll-certificates-select-wrap select:focus {
-  outline: 1px solid rgba(58, 87, 232, 0.35);
+  outline: 1px solid rgba(57, 99, 156, 0.35);
   outline-offset: 1px;
 }
 
 .sll-certificates-visualize-btn,
 .sll-certificates-download-btn {
   width: 100%;
-  height: 26px;
+  height: 48px;
   border: 0;
-  border-radius: 4px;
-  background: #3a57e8;
+  border-radius: 8px;
+  background: #39639c;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.2;
   font-weight: 600;
 }
 
 .sll-certificates-download-btn {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .sll-certificates-preview-card {
@@ -236,14 +238,6 @@
   color: #8a92a6;
   text-align: center;
   pointer-events: none;
-}
-
-.sll-certificates-preview-empty img {
-  width: 76px;
-  height: 76px;
-  border-radius: 999px;
-  object-fit: cover;
-  opacity: 0.75;
 }
 
 .sll-certificates-preview-empty p {
@@ -412,7 +406,7 @@
 }
 
 .sll-certificates-badge-option.is-selected {
-  border-color: #3a57e8;
+  border-color: #39639c;
   color: #232d42;
 }
 
