@@ -19,8 +19,8 @@ const summaryCards = [
 
 const areaChartLabels = [
   { text: 'LowCode (Outsystems) 34%', tone: 'is-dark', className: 'is-top-right' },
-  { text: 'DevSecOps & IT Automation 29%', tone: 'is-medium', className: 'is-left' },
-  { text: 'Sourcing & Talent Management\n37%', tone: 'is-light', className: 'is-bottom-right' },
+  { text: 'DevOps 29%', tone: 'is-medium', className: 'is-left' },
+  { text: 'Sourc. & Talent Manag.\n37%', tone: 'is-light', className: 'is-bottom-right' },
 ]
 
 const levelChartLabels = [
@@ -31,8 +31,8 @@ const levelChartLabels = [
 
 const reportRows = [
   { area: 'LowCode (Outsystems)', junior: 32, intermediate: 28, senior: 25, total: 85 },
-  { area: 'DevSecOps & IT Automation', junior: 28, intermediate: 24, senior: 20, total: 72 },
-  { area: 'Sourcing & Talent Management', junior: 38, intermediate: 30, senior: 23, total: 91 },
+  { area: 'DevOps', junior: 28, intermediate: 24, senior: 20, total: 72 },
+  { area: 'Sourc. & Talent Manag.', junior: 38, intermediate: 30, senior: 23, total: 91 },
 ]
 
 const reportEntries = [
@@ -40,14 +40,14 @@ const reportEntries = [
   { area: 'LowCode (Outsystems)', level: 'Junior', date: '2024-11-20', status: 'Aprovado' },
   { area: 'LowCode (Outsystems)', level: 'Intermédio', date: '2024-11-08', status: 'Aprovado' },
   { area: 'LowCode (Outsystems)', level: 'Senior', date: '2024-10-13', status: 'Rejeitado' },
-  { area: 'DevSecOps & IT Automation', level: 'Junior', date: '2024-12-01', status: 'Aprovado' },
-  { area: 'DevSecOps & IT Automation', level: 'Intermédio', date: '2024-11-15', status: 'Aprovado' },
-  { area: 'DevSecOps & IT Automation', level: 'Senior', date: '2024-10-30', status: 'Aprovado' },
-  { area: 'DevSecOps & IT Automation', level: 'Senior', date: '2024-09-17', status: 'Rejeitado' },
-  { area: 'Sourcing & Talent Management', level: 'Junior', date: '2024-12-06', status: 'Aprovado' },
-  { area: 'Sourcing & Talent Management', level: 'Intermédio', date: '2024-11-11', status: 'Aprovado' },
-  { area: 'Sourcing & Talent Management', level: 'Senior', date: '2024-10-22', status: 'Aprovado' },
-  { area: 'Sourcing & Talent Management', level: 'Senior', date: '2024-09-05', status: 'Rejeitado' },
+  { area: 'DevOps', level: 'Junior', date: '2024-12-01', status: 'Aprovado' },
+  { area: 'DevOps', level: 'Intermédio', date: '2024-11-15', status: 'Aprovado' },
+  { area: 'DevOps', level: 'Senior', date: '2024-10-30', status: 'Aprovado' },
+  { area: 'DevOps', level: 'Senior', date: '2024-09-17', status: 'Rejeitado' },
+  { area: 'Sourc. & Talent Manag', level: 'Junior', date: '2024-12-06', status: 'Aprovado' },
+  { area: 'Sourc. & Talent Manag', level: 'Intermédio', date: '2024-11-11', status: 'Aprovado' },
+  { area: 'Sourc. & Talent Manag', level: 'Senior', date: '2024-10-22', status: 'Aprovado' },
+  { area: 'Sourc. & Talent Manag', level: 'Senior', date: '2024-09-05', status: 'Rejeitado' },
 ]
 
 const reportAreaOptions = [...new Set(reportEntries.map((entry) => entry.area))]

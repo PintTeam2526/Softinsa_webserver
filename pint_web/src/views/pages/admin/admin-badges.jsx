@@ -15,8 +15,6 @@ import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges, createBadge, updateBadge } from '../../../controllers/badgesController'
 
-const BASE_URL = "http://localhost:3000/api";
-
 const defaultBadgeImage = "https://www.figma.com/api/mcp/asset/8ac1b8c7-eccc-423b-8373-e25bf82c55b4";
 
 const statusOptions = ["Ativo", "Inativo"];

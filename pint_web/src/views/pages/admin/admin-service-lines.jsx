@@ -6,7 +6,6 @@ import { getServiceLines, createServiceLine, updateServiceLine } from '../../../
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
 
-const BASE_URL = "http://localhost:3000/api";
 
 const statusOptions = ["Ativo", "Inativo"];
 

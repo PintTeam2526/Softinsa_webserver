@@ -4,23 +4,39 @@ import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
-import axios from 'axios'
 import './TalentManagerBadgesView.css'
 
-const BASE_URL = 'http://localhost:3000/api'
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
-// Imagens decorativas (sem alterações)
-const imgChevron    = 'https://www.figma.com/api/mcp/asset/848d08f5-8f59-4d13-afe5-f69bf9c9060b'
-const imgEllipse5   = 'https://www.figma.com/api/mcp/asset/f69dab14-0120-404d-b38a-c3716974273d'
-const imgEllipse4   = 'https://www.figma.com/api/mcp/asset/b09d6b9d-08a5-4acb-8d54-c13928775d60'
-const imgEllipse3   = 'https://www.figma.com/api/mcp/asset/8afce139-66a4-4e0f-8a2a-dbfea84cefad'
-const imgEllipse2   = 'https://www.figma.com/api/mcp/asset/8cbf430c-6968-487b-bd47-da4fe592bb73'
-const imgEllipse1   = 'https://www.figma.com/api/mcp/asset/a62526d5-25ef-4809-a07d-a1dc9c9d4492'
-const imgReqPoints  = 'https://www.figma.com/api/mcp/asset/b7777185-c1de-4b26-b019-6b2d0147dd6c'
+// Imagens decorativas
+const imgChevron = 'https://www.figma.com/api/mcp/asset/848d08f5-8f59-4d13-afe5-f69bf9c9060b'
+const imgEllipse5 = 'https://www.figma.com/api/mcp/asset/f69dab14-0120-404d-b38a-c3716974273d'
+const imgEllipse4 = 'https://www.figma.com/api/mcp/asset/b09d6b9d-08a5-4acb-8d54-c13928775d60'
+const imgEllipse3 = 'https://www.figma.com/api/mcp/asset/8afce139-66a4-4e0f-8a2a-dbfea84cefad'
+const imgEllipse2 = 'https://www.figma.com/api/mcp/asset/8cbf430c-6968-487b-bd47-da4fe592bb73'
+const imgEllipse1 = 'https://www.figma.com/api/mcp/asset/a62526d5-25ef-4809-a07d-a1dc9c9d4492'
+const imgReqPoints = 'https://www.figma.com/api/mcp/asset/b7777185-c1de-4b26-b019-6b2d0147dd6c'
 const imgReqSpecial = 'https://www.figma.com/api/mcp/asset/e3c31530-d63f-438b-90ea-6b99c6fcc7ed'
 const imgModalBadge = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
 
-// ── sub-componentes (sem alterações) ─────────────────────────────────────────
+// ── utilitário base64 ─────────────────────────────────────────────────────────
+
+/**
+ * Normaliza a imagem vinda do backend:
+ * - Se já vier com o prefixo "data:" devolve tal-e-qual
+ * - Se vier como string base64 pura, adiciona o prefixo PNG
+ * - Se vier vazia/null devolve o placeholder
+ */
+function normalizeImage(raw, fallback = imgModalBadge) {
+  if (!raw) return fallback
+  if (raw.startsWith('data:')) return raw
+  return `data:image/png;base64,${raw}`
+}
+
+// ── sub-componentes ───────────────────────────────────────────────────────────
 
 function IconAreaMenu({ className }) {
   return (
@@ -34,7 +50,7 @@ function BadgeCard({ icon, title, level, points, onClick, cp }) {
   return (
     <button type="button" className={`${cp}-card`} onClick={onClick}>
       <div className={`${cp}-card-icon`}>
-        <img alt="" src={icon || imgModalBadge} onError={(e) => { e.target.src = imgModalBadge }} />
+        <img alt="" src={icon} onError={(e) => { e.target.src = imgModalBadge }} />
       </div>
       <div className={`${cp}-card-copy`}>
         <div className={`${cp}-card-title`}>{title}</div>
@@ -68,10 +84,10 @@ function TalentManagerBadgesView({
   classPrefix = 'tm-badges',
   onBadgeClick = null,
 } = {}) {
-  const [learningPaths, setLearningPaths] = useState([])  // [{ id, title, serviceLines }]
-  const [activeTabId, setActiveTabId]     = useState(null)
-  const [openSection, setOpenSection]     = useState(null) // id da SL aberta
-  const [showExport, setShowExport]       = useState(false)
+  const [learningPaths, setLearningPaths] = useState([])
+  const [activeTabId, setActiveTabId] = useState(null)
+  const [openSection, setOpenSection] = useState(null)
+  const [showExport, setShowExport] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState(null)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
 
@@ -83,54 +99,55 @@ function TalentManagerBadgesView({
 
   async function loadData() {
     try {
-      const [lpRes, slRes, areasRes, badgesRes] = await Promise.all([
-        axios.get(`${BASE_URL}/learningPaths/get`),
-        axios.get(`${BASE_URL}/serviceLines/get`),
-        axios.get(`${BASE_URL}/areas/get`),
-        axios.get(`${BASE_URL}/badges/get`),
+      // Todos os controllers já usam api.js (token + baseURL) internamente
+      const [lpData, slData, areasData, badgesData] = await Promise.all([
+        getLearningPaths(),
+        getServiceLines(),
+        getAreas(),
+        getBadges(),
       ])
 
       // badges por área: { id_area: [badge, …] }
       const badgesByArea = {}
-      badgesRes.data.forEach((b) => {
+      badgesData.forEach((b) => {
         if (!badgesByArea[b.id_area]) badgesByArea[b.id_area] = []
         badgesByArea[b.id_area].push({
-          id:          b.id_badge,
-          title:       b.nome_badge,
-          level:       b.nivel_badge,
-          icon:        b.imagem_badge || imgModalBadge,
-          points:      b.pontos_badge ?? 0,
-          isSpecial:   b.pago ?? false,
+          id: b.id_badge,
+          title: b.nome_badge,
+          level: b.nivel_badge,
+          icon: normalizeImage(b.imagem_badge),
+          points: b.pontos_badge ?? 0,
+          isSpecial: b.pago ?? false,
           description: b.descricao_badge ?? '',
         })
       })
 
       // áreas por service line: { id_service_line: [area, …] }
       const areasBySL = {}
-      areasRes.data.forEach((a) => {
+      areasData.forEach((a) => {
         if (!areasBySL[a.id_service_line]) areasBySL[a.id_service_line] = []
         areasBySL[a.id_service_line].push({
-          id:     a.id_area,
-          title:  a.nome_area,
+          id: a.id_area,
+          title: a.nome_area,
           badges: badgesByArea[a.id_area] || [],
         })
       })
 
       // service lines por learning path: { id_learning_path: [sl, …] }
       const slByLP = {}
-      slRes.data.forEach((sl) => {
+      slData.forEach((sl) => {
         if (!slByLP[sl.id_learning_path]) slByLP[sl.id_learning_path] = []
         slByLP[sl.id_learning_path].push({
-          id:    sl.id_service_line,
+          id: sl.id_service_line,
           title: sl.nome_service_line,
           areas: areasBySL[sl.id_service_line] || [],
         })
       })
 
       // learning paths completas
-      const lps = lpRes.data.map((lp) => ({
-        id:           lp.id_learning_path,
-        title:        lp.nome_learning_path,
+      const lps = lpData.map((lp) => ({
+        id: lp.id_learning_path,
+        title: lp.nome_learning_path,
         serviceLines: slByLP[lp.id_learning_path] || [],
       }))
 
@@ -138,19 +155,18 @@ function TalentManagerBadgesView({
 
       if (lps.length > 0) {
         setActiveTabId(lps[0].id)
-        // Abre a primeira service line automaticamente
         const firstSL = lps[0].serviceLines[0]
         if (firstSL) setOpenSection(firstSL.id)
       }
     } catch (error) {
-      console.error(error)
+      console.error('Erro ao carregar badges:', error)
     }
   }
 
   // ── estado derivado ───────────────────────────────────────────────────────
 
   const activeLearningPath = learningPaths.find((lp) => lp.id === activeTabId) ?? null
-  const serviceLines       = activeLearningPath?.serviceLines ?? []
+  const serviceLines = activeLearningPath?.serviceLines ?? []
 
   const totalBadges = learningPaths.reduce((sum, lp) =>
     sum + lp.serviceLines.reduce((s2, sl) =>
@@ -164,11 +180,11 @@ function TalentManagerBadgesView({
     sl.areas.flatMap((area) =>
       area.badges.map((badge) => ({
         'Learning Path': activeLearningPath?.title ?? '',
-        'Service Line':  sl.title,
-        'Área':          area.title,
-        'Badge':         badge.title,
-        'Nível':         badge.level,
-        'Pontos':        badge.points,
+        'Service Line': sl.title,
+        'Área': area.title,
+        'Badge': badge.title,
+        'Nível': badge.level,
+        'Pontos': badge.points,
       }))
     )
   )
@@ -272,11 +288,11 @@ function TalentManagerBadgesView({
                 <p>Escolha o formato que pretende descarregar.</p>
                 <div className={`${cp}-export-options`}>
                   <ExportFormatOption cp={cp} label="Excel (.xlsx)" value="xlsx" selected={selectedExportFormat === 'xlsx'} onSelect={setSelectedExportFormat} />
-                  <ExportFormatOption cp={cp} label="PDF (.pdf)"   value="pdf"  selected={selectedExportFormat === 'pdf'}  onSelect={setSelectedExportFormat} />
+                  <ExportFormatOption cp={cp} label="PDF (.pdf)" value="pdf" selected={selectedExportFormat === 'pdf'} onSelect={setSelectedExportFormat} />
                 </div>
               </div>
               <div className={`${cp}-export-actions`}>
-                <button type="button" className={`${cp}-export-cancel`}  onClick={closeExportModal}>Cancelar</button>
+                <button type="button" className={`${cp}-export-cancel`} onClick={closeExportModal}>Cancelar</button>
                 <button type="button" className={`${cp}-export-confirm`} onClick={handleExport}>Exportar</button>
               </div>
             </div>
@@ -289,18 +305,16 @@ function TalentManagerBadgesView({
             <p style={{ padding: '1rem' }}>Sem dados disponíveis.</p>
           ) : (
             serviceLines.map((sl, index) => {
-              const isOpen    = openSection === sl.id
+              const isOpen = openSection === sl.id
               const areaCount = sl.areas.length
-              const badgeCount= sl.areas.reduce((sum, a) => sum + a.badges.length, 0)
-              const detail    = `${areaCount} área${areaCount !== 1 ? 's' : ''} • ${badgeCount} badge${badgeCount !== 1 ? 's' : ''}`
+              const badgeCount = sl.areas.reduce((sum, a) => sum + a.badges.length, 0)
+              const detail = `${areaCount} área${areaCount !== 1 ? 's' : ''} • ${badgeCount} badge${badgeCount !== 1 ? 's' : ''}`
 
               return (
                 <div key={sl.id}>
-                  {/* Separador entre secções */}
                   {index > 0 ? <div className={`${cp}-divider`} aria-hidden="true" /> : null}
 
                   <div className={`${cp}-area-section${isOpen ? ' is-open' : ''}`}>
-                    {/* Trigger do acordeão */}
                     <button
                       type="button"
                       className={`${cp}-area-trigger`}
@@ -321,7 +335,6 @@ function TalentManagerBadgesView({
                       </div>
                     </button>
 
-                    {/* Corpo: áreas e badges */}
                     {isOpen ? (
                       <div className={`${cp}-area-body`}>
                         {sl.areas.length === 0 ? (
@@ -330,10 +343,7 @@ function TalentManagerBadgesView({
                           sl.areas.map((area) => (
                             <div key={area.id} className={`${cp}-badge-group`}>
                               <div className={`${cp}-badge-group-title`}>
-                                <span>{area.title}</span>
-                                <span className={`${cp}-badge-group-progress`}>
-                                  {area.badges.length} badge{area.badges.length !== 1 ? 's' : ''}
-                                </span>
+                                <span>{area.title} - {area.badges.length} badge{area.badges.length !== 1 ? 's' : ''}</span>
                               </div>
 
                               {area.badges.length === 0 ? (
@@ -370,7 +380,12 @@ function TalentManagerBadgesView({
               <div className={`${cp}-detail-modal`} role="dialog" aria-modal="true" aria-label="Detalhes do badge" onClick={(e) => e.stopPropagation()}>
                 <div className={`${cp}-detail-top`}>
                   <div className={`${cp}-detail-badge-wrap`}>
-                    <img alt="" src={selectedBadge.icon || imgModalBadge} className={`${cp}-detail-badge`} onError={(e) => { e.target.src = imgModalBadge }} />
+                    <img
+                      alt=""
+                      src={selectedBadge.icon}
+                      className={`${cp}-detail-badge`}
+                      onError={(e) => { e.target.src = imgModalBadge }}
+                    />
                   </div>
                   <button type="button" className={`${cp}-detail-close`} onClick={closeBadgeModal} aria-label="Fechar detalhes">
                     <FaTimes aria-hidden="true" />
