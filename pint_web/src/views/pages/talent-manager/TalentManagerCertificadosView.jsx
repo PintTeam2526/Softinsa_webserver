@@ -6,12 +6,6 @@ import './TalentManagerCertificadosView.css'
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
 const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
 const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
-const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
-const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
-const heroEllipse3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
-const heroEllipse4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
-const heroEllipse5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
-
 const consultants = [
   { id: 'antonio', name: 'António Portugal', role: 'Consultor', area: 'LowCode (Outsystems)', serviceLine: 'Hybrid Cloud', learningPath: 'Jornada Técnica', points: 550, email: 'antoniopt@gmail.com' },
   { id: 'austin', name: 'Austin Robertson', role: 'Service Line Lider', area: 'Cloud Architecture', serviceLine: 'Hybrid Cloud', learningPath: 'Arquitetura Cloud', points: 620, email: 'austin.robertson@softinsa.pt' },
@@ -156,14 +150,6 @@ function TalentManagerCertificadosView() {
   return (
     <div className="sll-certificates-content">
       <section className="sll-certificates-hero" aria-label="Certificados de Badges">
-        <div className="sll-certificates-hero-art" aria-hidden="true">
-          <img className="sll-certificates-hero-circle sll-certificates-hero-circle-5" src={heroEllipse5} alt="" />
-          <img className="sll-certificates-hero-circle sll-certificates-hero-circle-4" src={heroEllipse4} alt="" />
-          <img className="sll-certificates-hero-circle sll-certificates-hero-circle-3" src={heroEllipse3} alt="" />
-          <img className="sll-certificates-hero-circle sll-certificates-hero-circle-2" src={heroEllipse2} alt="" />
-          <img className="sll-certificates-hero-circle sll-certificates-hero-circle-1" src={heroEllipse1} alt="" />
-        </div>
-
         <div className="sll-certificates-hero-copy">
           <h1>Certificados de Badges</h1>
           <p>Cria e exporta certificados de badges personalizados</p>

@@ -259,14 +259,6 @@ function DashboardView() {
   return (
     <section className="consultor-dashboard-page">
       <header className="consultor-dashboard-hero">
-        <div className="consultor-dashboard-hero-art" aria-hidden="true">
-          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-5" />
-          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-4" />
-          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-3" />
-          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-2" />
-          <div className="consultor-dashboard-hero-circle consultor-dashboard-hero-circle-1" />
-        </div>
-
         <div className="consultor-dashboard-hero-copy">
           <h1>Olá, António Portugal!</h1>
           <p>Estamos aqui para te ajudar a melhorar o currículo</p>

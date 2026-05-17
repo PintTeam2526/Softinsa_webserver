@@ -159,14 +159,6 @@ function ConsultorListaBadgesView() {
   return (
     <section className="consultor-lista-page">
       <header className="consultor-lista-hero">
-        <div className="consultor-lista-hero-art" aria-hidden="true">
-          <div className="consultor-lista-hero-circle consultor-lista-hero-circle-5" />
-          <div className="consultor-lista-hero-circle consultor-lista-hero-circle-4" />
-          <div className="consultor-lista-hero-circle consultor-lista-hero-circle-3" />
-          <div className="consultor-lista-hero-circle consultor-lista-hero-circle-2" />
-          <div className="consultor-lista-hero-circle consultor-lista-hero-circle-1" />
-        </div>
-
         <div className="consultor-lista-hero-copy">
           <h1>Listas de Badges</h1>
           <p>Encontra os teus badges de forma mais eficiente</p>

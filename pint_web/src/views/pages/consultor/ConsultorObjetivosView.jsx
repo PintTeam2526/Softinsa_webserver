@@ -159,14 +159,6 @@ function ConsultorObjetivosView() {
   return (
     <section className="consultor-objetivos-page">
       <header className="consultor-objetivos-hero">
-        <div className="consultor-objetivos-hero-art" aria-hidden="true">
-          <div className="consultor-objetivos-hero-circle consultor-objetivos-hero-circle-5" />
-          <div className="consultor-objetivos-hero-circle consultor-objetivos-hero-circle-4" />
-          <div className="consultor-objetivos-hero-circle consultor-objetivos-hero-circle-3" />
-          <div className="consultor-objetivos-hero-circle consultor-objetivos-hero-circle-2" />
-          <div className="consultor-objetivos-hero-circle consultor-objetivos-hero-circle-1" />
-        </div>
-
         <div className="consultor-objetivos-hero-copy">
           <h1>Objetivos</h1>
           <p>Define objetivos para melhorar a tua organização</p>

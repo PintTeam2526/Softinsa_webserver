@@ -5,12 +5,6 @@ import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import './TalentManagerConsultoresView.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/339fc7a8-ef40-41aa-8c54-3476bec2dcaf'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/c588a3a9-3a76-47a2-ade6-19caa82a126e'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/123ab2b1-3a8f-477c-b33f-8850bcc74e90'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/9f840511-0d20-4221-a7e1-fc730932100f'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/da377474-e3d5-46bc-8c1b-8ff2c8c59ed9'
-
 const consultantRows = [
   { name: 'João Silva', badges: 34, points: 520, ranking: '1º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-12-04' },
   { name: 'Ana Matos', badges: 37, points: 500, ranking: '2º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-09-15' },
@@ -196,14 +190,6 @@ function TalentManagerConsultoresView() {
   return (
     <div className="tm-consultores-page">
       <section className="tm-consultores-hero" aria-label="Consultores">
-        <div className="tm-consultores-hero-art" aria-hidden="true">
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-5" src={heroCircle5} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-4" src={heroCircle4} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-3" src={heroCircle3} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-2" src={heroCircle2} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-1" src={heroCircle1} alt="" />
-        </div>
-
         <div className="tm-consultores-hero-copy">
           <h1>Consultores</h1>
           <p>Consulta aqui informação detalhada sobre todos os consultores</p>
