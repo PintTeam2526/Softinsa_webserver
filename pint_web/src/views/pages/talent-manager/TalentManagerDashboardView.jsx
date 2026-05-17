@@ -134,7 +134,12 @@ function TalentManagerDashboardView() {
         </div>
       </section>
 
-      <section className="tm-notification-callout">
+      <button
+        type="button"
+        className="tm-notification-callout"
+        onClick={() => window.dispatchEvent(new CustomEvent('softinsa:open-notifications'))}
+        aria-label="Abrir notificações: tem 5 notificações por ler"
+      >
         <div className="tm-notification-icon">
           <IconAlertBell />
         </div>
@@ -143,7 +148,7 @@ function TalentManagerDashboardView() {
           <h2>Tem 5 notificações por ler</h2>
           <p>Aceda agora às notificações</p>
         </div>
-      </section>
+      </button>
 
       <section className="tm-dashboard-grid" aria-label="Conteúdo principal">
         <article className="tm-panel tm-pending-panel">
