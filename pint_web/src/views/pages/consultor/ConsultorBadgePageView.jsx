@@ -480,14 +480,6 @@ function ConsultorBadgePageView() {
   return (
     <section className="consultor-badge-page">
       <header className="consultor-badge-hero">
-        <div className="consultor-badge-hero-art" aria-hidden="true">
-          <div className="consultor-badge-hero-circle consultor-badge-hero-circle-5" />
-          <div className="consultor-badge-hero-circle consultor-badge-hero-circle-4" />
-          <div className="consultor-badge-hero-circle consultor-badge-hero-circle-3" />
-          <div className="consultor-badge-hero-circle consultor-badge-hero-circle-2" />
-          <div className="consultor-badge-hero-circle consultor-badge-hero-circle-1" />
-        </div>
-
         <div className="consultor-badge-hero-copy">
           <h1>Badge: {badge.name}</h1>
           <div className="consultor-badge-hero-meta">

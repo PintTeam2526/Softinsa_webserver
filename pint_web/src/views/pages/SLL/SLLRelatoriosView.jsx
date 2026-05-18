@@ -3,11 +3,6 @@ import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-relatorios.css'
 
-const heroEllipse1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
-const heroEllipse2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
-const heroEllipse3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
-const heroEllipse4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
-const heroEllipse5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 const infoIcon = 'https://www.figma.com/api/mcp/asset/e9cb1122-307c-4ebc-938d-34bf0718335c'
 const calendarIcon = 'https://www.figma.com/api/mcp/asset/3d4c9dd9-6d87-4575-baf8-e93232ba25fd'
 const selectArrow = 'https://www.figma.com/api/mcp/asset/3ccd3cf8-7fc5-47f6-9509-a387af5d81f7'
@@ -233,14 +228,6 @@ function SLLRelatoriosView() {
 
         <div className="sll-relatorios-content">
           <section className="sll-relatorios-hero" aria-label="Relatórios e Estatísticas">
-            <div className="sll-relatorios-hero-art" aria-hidden="true">
-              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-5" src={heroEllipse5} alt="" />
-              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-4" src={heroEllipse4} alt="" />
-              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-3" src={heroEllipse3} alt="" />
-              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-2" src={heroEllipse2} alt="" />
-              <img className="sll-relatorios-hero-circle sll-relatorios-hero-circle-1" src={heroEllipse1} alt="" />
-            </div>
-
             <div className="sll-relatorios-hero-copy">
               <h1>Relatórios e Estatísticas</h1>
               <p>Cria relatórios de badges atribuídos em função da área e do período</p>

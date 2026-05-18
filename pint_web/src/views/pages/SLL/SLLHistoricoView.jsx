@@ -8,11 +8,6 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-historico.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
 const requestAvatar = 'https://www.figma.com/api/mcp/asset/cf64d835-06cf-435b-8bfd-8b387bf43fa7'
 
 function PaginationArrow({ direction = 'left', double = false }) {
@@ -459,14 +454,6 @@ function SLLHistoricoView() {
 
         <div className="sll-history-content">
           <section className="sll-history-hero" aria-label="Histórico de pedidos">
-            <div className="sll-history-hero-art" aria-hidden="true">
-              <img className="sll-history-hero-circle sll-history-hero-circle-5" src={heroCircle5} alt="" />
-              <img className="sll-history-hero-circle sll-history-hero-circle-4" src={heroCircle4} alt="" />
-              <img className="sll-history-hero-circle sll-history-hero-circle-3" src={heroCircle3} alt="" />
-              <img className="sll-history-hero-circle sll-history-hero-circle-2" src={heroCircle2} alt="" />
-              <img className="sll-history-hero-circle sll-history-hero-circle-1" src={heroCircle1} alt="" />
-            </div>
-
             <div className="sll-history-hero-copy">
               <h1>Histórico de pedidos</h1>
               <p>Consulta aqui todos os pedidos já respondidos e por responder</p>

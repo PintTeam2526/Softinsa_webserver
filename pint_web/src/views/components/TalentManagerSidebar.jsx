@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import './TalentManagerSidebar.css'
+import './softinsa-sidebar.css'
 
 function DashboardIcon(props) {
   return (
@@ -11,7 +11,7 @@ function DashboardIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path
@@ -36,7 +36,7 @@ function PendingIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path d="M5.25 1.5C5.05109 1.5 4.86032 1.57902 4.71967 1.71967C4.57902 1.86032 4.5 2.05109 4.5 2.25V21.75C4.5 21.9489 4.57902 22.1397 4.71967 22.2803C4.86032 22.421 5.05109 22.5 5.25 22.5H9.75V21H6V3H18V10.5H19.5V2.25C19.5 2.05109 19.421 1.86032 19.2803 1.71967C19.1397 1.57902 18.9489 1.5 18.75 1.5H5.25Z" fill="currentColor" />
@@ -61,7 +61,7 @@ function HistoricoIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path d="M21 3H3C2.44772 3 2 3.44772 2 4V7C2 7.55228 2.44772 8 3 8H21C21.5523 8 22 7.55228 22 7V4C22 3.44772 21.5523 3 21 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -79,7 +79,7 @@ function BadgesIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <g clipPath="url(#tm_badges_clip)">
@@ -104,7 +104,7 @@ function CertificadosIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path d="M4.61539 0C3.60739 0 2.76923 0.838154 2.76923 1.84615V19.3846C2.76923 20.3926 3.60739 21.2308 4.61539 21.2308H6.46154V24L9.23077 22.1538L12 24V17.3945C11.8726 17.4679 11.7369 17.5258 11.5957 17.5671C11.497 17.7801 11.357 17.9714 11.1838 18.1298C11.0106 18.2883 10.8077 18.4108 10.5868 18.4902C10.3916 18.5543 10.1866 18.5837 9.98123 18.5769C9.72277 18.5769 9.46431 18.5437 9.23077 18.4329C8.99424 18.5355 8.73801 18.5847 8.48031 18.5769C8.27354 18.5769 8.07139 18.5612 7.87477 18.4902C7.42925 18.3282 7.0661 17.9963 6.86493 17.5671C6.72408 17.5258 6.58866 17.4678 6.46154 17.3945V19.3846H4.61539V1.84615H19.3846V19.3846H14.7692C14.5244 19.3846 14.2896 19.4819 14.1165 19.655C13.9434 19.8281 13.8462 20.0629 13.8462 20.3077C13.8462 20.5525 13.9434 20.7873 14.1165 20.9604C14.2896 21.1335 14.5244 21.2308 14.7692 21.2308H19.3846C20.3926 21.2308 21.2308 20.3926 21.2308 19.3846V1.84615C21.2308 0.838154 20.3926 0 19.3846 0H4.61539ZM7.212 4.61538C6.96719 4.63827 6.74149 4.75748 6.58457 4.94678C6.42764 5.13607 6.35234 5.37995 6.37523 5.62477C6.39812 5.86958 6.51733 6.09528 6.70663 6.2522C6.89592 6.40913 7.1398 6.48443 7.38462 6.46154H16.6154C16.8602 6.46154 17.095 6.36429 17.2681 6.19118C17.4412 6.01806 17.5385 5.78328 17.5385 5.53846C17.5385 5.29365 17.4412 5.05886 17.2681 4.88575C17.095 4.71264 16.8602 4.61538 16.6154 4.61538H7.38462C7.35571 4.61402 7.32676 4.61402 7.29785 4.61538C7.26925 4.61405 7.2406 4.61405 7.212 4.61538ZM7.212 8.30769C6.96719 8.33058 6.74149 8.44979 6.58457 8.63908C6.42764 8.82838 6.35234 9.07226 6.37523 9.31708C6.39812 9.56189 6.51733 9.78759 6.70663 9.94451C6.89592 10.1014 7.1398 10.1767 7.38462 10.1538H13.8462C14.091 10.1538 14.3258 10.0566 14.4989 9.88348C14.672 9.71037 14.7692 9.47558 14.7692 9.23077C14.7692 8.98595 14.672 8.75117 14.4989 8.57806C14.3258 8.40495 14.091 8.30769 13.8462 8.30769H7.38462C7.35571 8.30633 7.32676 8.30633 7.29785 8.30769C7.26925 8.30636 7.2406 8.30636 7.212 8.30769ZM9.23077 11.6825C9.04541 11.6827 8.86483 11.7413 8.71469 11.85C8.56455 11.9587 8.4525 12.112 8.39446 12.288C8.35662 12.3009 8.31508 12.3028 8.27908 12.3175C8.1229 12.2243 7.94138 12.1826 7.76017 12.1981C7.57896 12.2137 7.40723 12.2858 7.26923 12.4043C7.12979 12.5207 7.02994 12.6776 6.98348 12.8532C6.93701 13.0288 6.94623 13.2145 7.00985 13.3846C6.98493 13.4225 6.97477 13.4603 6.9517 13.5C6.77138 13.53 6.60496 13.6157 6.4757 13.7449C6.34644 13.8742 6.26081 14.0406 6.23077 14.2209C6.20127 14.3965 6.22709 14.5769 6.30466 14.7372C6.38222 14.8974 6.50769 15.0296 6.6637 15.1154C6.67016 15.1735 6.6517 15.2326 6.6637 15.2889C6.55225 15.4246 6.48435 15.5908 6.46886 15.7657C6.45338 15.9406 6.49105 16.1161 6.57693 16.2692C6.756 16.5803 7.11231 16.7538 7.47139 16.7022C7.51754 16.7455 7.56462 16.7778 7.61539 16.8175C7.62462 17.1748 7.85262 17.5006 8.19231 17.6252C8.52831 17.748 8.90862 17.6298 9.144 17.3649C9.17816 17.3668 9.1957 17.3945 9.23077 17.3945C9.26862 17.3945 9.30831 17.3668 9.34616 17.3649C9.42589 17.4549 9.52362 17.527 9.63302 17.5768C9.74242 17.6266 9.86105 17.6528 9.98123 17.6538C10.0809 17.6538 10.1714 17.6603 10.2692 17.6252C10.435 17.5636 10.5786 17.4537 10.6814 17.3097C10.7842 17.1658 10.8416 16.9944 10.8462 16.8175C10.8951 16.7788 10.9431 16.7455 10.9902 16.7022C11.1654 16.727 11.3441 16.6991 11.5034 16.622C11.6627 16.5449 11.7954 16.4221 11.8846 16.2692C11.9707 16.116 12.0085 15.9403 11.993 15.7652C11.9775 15.5901 11.9095 15.4238 11.7978 15.288C11.8108 15.2326 11.7895 15.1717 11.7978 15.1154C11.9548 15.0306 12.0811 14.8986 12.1588 14.7381C12.2365 14.5775 12.2617 14.3966 12.2308 14.2209C12.2007 14.0406 12.1151 13.8742 11.9858 13.7449C11.8566 13.6157 11.6902 13.53 11.5098 13.5C11.4877 13.4594 11.4766 13.4234 11.4517 13.3846C11.5155 13.2144 11.5249 13.0285 11.4784 12.8527C11.4319 12.6769 11.3319 12.5199 11.1923 12.4034C11.0545 12.2844 10.8827 12.212 10.7013 12.1966C10.5199 12.1812 10.3383 12.2235 10.1825 12.3175C10.1455 12.3028 10.1049 12.3009 10.0671 12.2889C10.0092 12.1127 9.89722 11.9592 9.74707 11.8504C9.59692 11.7415 9.41625 11.6827 9.23077 11.6825ZM9.23077 13.2978C10.0486 13.2978 10.7022 13.9514 10.7022 14.7692C10.7022 15.5889 10.0495 16.2406 9.23077 16.2406C9.03724 16.2417 8.84541 16.2044 8.6664 16.1309C8.48738 16.0573 8.32474 15.949 8.18789 15.8121C8.05104 15.6753 7.9427 15.5126 7.86915 15.3336C7.79559 15.1546 7.75829 14.9628 7.75939 14.7692C7.75939 13.9505 8.41293 13.2978 9.23077 13.2978Z" fill="currentColor" />
@@ -121,7 +121,7 @@ function ConsultoresIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path d="M11.949 14.5399C8.49904 14.5399 5.58809 15.1037 5.58809 17.2794C5.58809 19.4561 8.51785 20 11.949 20C15.399 20 18.31 19.4362 18.31 17.2605C18.31 15.0839 15.3802 14.5399 11.949 14.5399Z" fill="currentColor" />
@@ -143,7 +143,7 @@ function RelatoriosIcon(props) {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={`tm-sidebar-icon${props.className ? ` ${props.className}` : ''}`}
+      className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`}
       aria-hidden="true"
     >
       <path opacity="0.4" d="M7.5 13.5H13.5V15H7.5V13.5ZM7.5 9.75H16.5V11.25H7.5V9.75ZM7.5 17.25H11.25V18.75H7.5V17.25Z" fill="currentColor" />
@@ -182,19 +182,19 @@ function SidebarItem({ item }) {
   const Icon = item.icon
 
   return (
-    <NavLink to={item.to} end={item.end === true} className={({ isActive }) => `tm-sidebar-item${isActive ? ' is-active' : ''}`}>
-      <span className="tm-sidebar-icon-wrap">
-        <Icon aria-hidden="true" className="tm-sidebar-icon" />
+    <NavLink to={item.to} end={item.end === true} className={({ isActive }) => `softinsa-sidebar-item${isActive ? ' active' : ''}`}>
+      <span className="softinsa-sidebar-item-icon-wrap">
+        <Icon aria-hidden="true" className="softinsa-sidebar-item-icon" />
       </span>
-      <span className="tm-sidebar-item-text">{item.text}</span>
+      <span className="softinsa-sidebar-item-text">{item.text}</span>
     </NavLink>
   )
 }
 
 function SidebarSection({ section }) {
   return (
-    <section className="tm-sidebar-section">
-      <div className="tm-sidebar-title">
+    <section className="softinsa-sidebar-section">
+      <div className="softinsa-sidebar-title">
         <span>{section.title}</span>
       </div>
 
@@ -202,15 +202,15 @@ function SidebarSection({ section }) {
         <SidebarItem key={item.text} item={item} />
       ))}
 
-      <div className="tm-sidebar-divider" />
+      <div className="softinsa-sidebar-divider" />
     </section>
   )
 }
 
 function TalentManagerLogo() {
   return (
-    <div className="tm-sidebar-logo-pill" aria-label="Softinsa">
-      <span className="tm-sidebar-logo-text">
+    <div className="softinsa-sidebar-logo-pill" aria-label="Softinsa">
+      <span className="softinsa-sidebar-logo-text">
         <svg xmlns="http://www.w3.org/2000/svg" width="204" height="69" viewBox="0 0 204 69" fill="none" aria-hidden="true">
         <g filter="url(#filter0_d_4852_3941)">
           <rect x="10" y="10" width="184" height="49" rx="24.5" fill="white" />
@@ -247,10 +247,10 @@ function TalentManagerLogo() {
 }
 
 function TalentManagerSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('tm-sidebar-collapsed') === 'true')
+  const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('softinsa-sidebar-collapsed') === 'true')
 
   useEffect(() => {
-    localStorage.setItem('tm-sidebar-collapsed', String(isCollapsed))
+    localStorage.setItem('softinsa-sidebar-collapsed', String(isCollapsed))
   }, [isCollapsed])
 
   function toggleSidebar() {
@@ -258,28 +258,28 @@ function TalentManagerSidebar() {
   }
 
   return (
-    <aside className={`tm-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
-      <div className="tm-sidebar-panel">
-        <div className="tm-sidebar-header">
-          <TalentManagerLogo />
+    <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
+      <button
+        type="button"
+        className="softinsa-sidebar-toggle"
+        onClick={toggleSidebar}
+        aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'}
+        aria-expanded={!isCollapsed}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" className="softinsa-sidebar-toggle-arrow" aria-hidden="true">
+          <path d="M3.18752 9.20553L14.4375 9.20553" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7.72496 13.724L3.18746 9.20595L7.72496 4.6872" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
 
-          <button
-            type="button"
-            className="tm-sidebar-toggle"
-            onClick={toggleSidebar}
-            aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'}
-            aria-expanded={!isCollapsed}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" className="tm-sidebar-toggle-arrow" aria-hidden="true">
-              <path d="M3.18752 9.20553L14.4375 9.20553" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M7.72496 13.724L3.18746 9.20595L7.72496 4.6872" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+      <div className="softinsa-sidebar-panel">
+        <div className="softinsa-sidebar-header">
+          <TalentManagerLogo />
         </div>
 
-        <div className="tm-sidebar-top-line" />
+        <div className="softinsa-sidebar-top-line" />
 
-        <div className="tm-sidebar-sections">
+        <div className="softinsa-sidebar-sections">
           {sidebarSections.map((section) => (
             <SidebarSection key={section.title} section={section} />
           ))}

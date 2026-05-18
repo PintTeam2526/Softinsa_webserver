@@ -559,6 +559,10 @@
   color: #dc3545;
 }
 
+.sll-history-card-approved.is-em-progresso {
+  color: #8a92a6;
+}
+
 .sll-history-card-status {
   display: flex;
   flex-direction: column;
@@ -584,7 +588,7 @@
 }
 
 .sll-history-status-badge.is-em-progresso {
-  color: #f0ad4e;
+  color: #39639c;
 }
 
 .sll-history-progress {
@@ -615,7 +619,9 @@
 }
 
 .sll-history-card-status.is-em-progresso .sll-history-progress .is-fill {
-  background: #f0ad4e;
+  background: #39639c;
+  right: auto;
+  width: 28%;
 }
 
 .sll-history-pagination {

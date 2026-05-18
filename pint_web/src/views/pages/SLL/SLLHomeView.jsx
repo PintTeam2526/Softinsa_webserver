@@ -271,14 +271,6 @@ function SLLHomeView() {
 
         <div className="sll-main-scroll">
           <section className="sll-hero" aria-label="Resumo de boas-vindas">
-            <div className="sll-hero-art" aria-hidden="true">
-              <div className="sll-hero-circle sll-hero-circle-5" />
-              <div className="sll-hero-circle sll-hero-circle-4" />
-              <div className="sll-hero-circle sll-hero-circle-3" />
-              <div className="sll-hero-circle sll-hero-circle-2" />
-              <div className="sll-hero-circle sll-hero-circle-1" />
-            </div>
-
             <div className="sll-hero-copy">
               <h1>Olá, João Silva!</h1>
               <p>Hybrid Cloud</p>

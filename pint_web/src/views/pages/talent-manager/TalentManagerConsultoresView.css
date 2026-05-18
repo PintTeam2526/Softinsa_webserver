@@ -569,6 +569,11 @@
   display: inline-block;
 }
 
+.tm-consultores-point-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
 .tm-consultores-pagination {
   display: flex;
   align-items: center;

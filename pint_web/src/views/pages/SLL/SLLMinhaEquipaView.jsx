@@ -8,12 +8,6 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-minha-equipa.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/d52bcef6-8633-4aef-a46d-620628b11422'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/015d6486-d269-4542-b2af-cbffe841b87a'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/a95d40bd-58a1-4651-b2be-51b95d3ff5d3'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/c31d8d2e-032c-42c1-90ad-576563f8c6c7'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/83a3d8e4-0fed-4f71-a3dc-985cb88a65cc'
-
 const filterOptions = {
   areas: ['Outsystems', 'Data', 'Cloud'],
 }
@@ -203,14 +197,6 @@ function SLLMinhaEquipaView() {
 
         <div className="sll-team-content">
           <section className="sll-team-hero" aria-label="A minha equipa">
-            <div className="sll-team-hero-art" aria-hidden="true">
-              <img className="sll-team-hero-circle sll-team-hero-circle-5" src={heroCircle5} alt="" />
-              <img className="sll-team-hero-circle sll-team-hero-circle-4" src={heroCircle4} alt="" />
-              <img className="sll-team-hero-circle sll-team-hero-circle-3" src={heroCircle3} alt="" />
-              <img className="sll-team-hero-circle sll-team-hero-circle-2" src={heroCircle2} alt="" />
-              <img className="sll-team-hero-circle sll-team-hero-circle-1" src={heroCircle1} alt="" />
-            </div>
-
             <div className="sll-team-hero-copy">
               <h1>A minha equipa</h1>
               <p>Consulta aqui a informação sobre todos os consultores da tua equipa</p>

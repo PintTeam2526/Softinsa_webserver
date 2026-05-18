@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useSidebarController } from '../../controllers/sidebar.controller'
-import './AdminSidebar.css'
+import './softinsa-sidebar.css'
 
 function MenuTitle({ text }) {
   return (
@@ -18,7 +18,7 @@ function DashboardIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -42,7 +42,7 @@ function UsersIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -84,7 +84,7 @@ function PedidosIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -115,7 +115,7 @@ function RgpdIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -139,7 +139,7 @@ function BadgesIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <g clipPath="url(#clip0_4772_683)">
@@ -173,7 +173,7 @@ function AreasIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -192,7 +192,7 @@ function ServiceLinesIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -213,7 +213,7 @@ function LearningPathsIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -265,7 +265,7 @@ function MenuItem({ text, icon, to = '/softinsa', end = false }) {
       end={end}
       className={({ isActive }) => `softinsa-sidebar-item${isActive ? ' active' : ''}`}
     >
-      <span className="softinsa-sidebar-icon-wrap">
+      <span className="softinsa-sidebar-item-icon-wrap">
         <SidebarIcon type={icon} />
       </span>
       <span className="softinsa-sidebar-item-text">{text}</span>
@@ -281,7 +281,7 @@ function SoftinsaSidebar() {
   const { isCollapsed, sections, toggleSidebar } = useSidebarController()
 
   return (
-    <aside className={`softinsa-sidebar${isCollapsed ? ' is-collapsed' : ''}`}>
+    <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
       <div className="softinsa-sidebar-panel">
         <div className="softinsa-sidebar-header">
           <div className="softinsa-sidebar-logo-pill">

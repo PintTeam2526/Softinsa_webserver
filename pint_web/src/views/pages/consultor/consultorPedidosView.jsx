@@ -183,14 +183,6 @@ function ConsultorPedidosView() {
   return (
     <section className="consultor-pedidos-page">
       <header className="consultor-pedidos-hero">
-        <div className="consultor-pedidos-hero-art" aria-hidden="true">
-          <div className="consultor-pedidos-hero-circle consultor-pedidos-hero-circle-5" />
-          <div className="consultor-pedidos-hero-circle consultor-pedidos-hero-circle-4" />
-          <div className="consultor-pedidos-hero-circle consultor-pedidos-hero-circle-3" />
-          <div className="consultor-pedidos-hero-circle consultor-pedidos-hero-circle-2" />
-          <div className="consultor-pedidos-hero-circle consultor-pedidos-hero-circle-1" />
-        </div>
-
         <div className="consultor-pedidos-hero-copy">
           <h1>Pedidos</h1>
           <p>Aqui podes acompanhar o estado das tuas candidaturas a badges e submeter novos pedidos</p>

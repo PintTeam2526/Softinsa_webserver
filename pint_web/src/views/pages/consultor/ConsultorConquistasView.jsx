@@ -79,14 +79,6 @@ function ConsultorConquistasView() {
   return (
     <section className="consultor-conquistas-page">
       <header className="consultor-conquistas-hero">
-        <div className="consultor-conquistas-hero-art" aria-hidden="true">
-          <div className="consultor-conquistas-hero-circle consultor-conquistas-hero-circle-5" />
-          <div className="consultor-conquistas-hero-circle consultor-conquistas-hero-circle-4" />
-          <div className="consultor-conquistas-hero-circle consultor-conquistas-hero-circle-3" />
-          <div className="consultor-conquistas-hero-circle consultor-conquistas-hero-circle-2" />
-          <div className="consultor-conquistas-hero-circle consultor-conquistas-hero-circle-1" />
-        </div>
-
         <div className="consultor-conquistas-hero-copy">
           <h1>Conquistas</h1>
           <p>Alcança estes marcos e progride na carreira</p>

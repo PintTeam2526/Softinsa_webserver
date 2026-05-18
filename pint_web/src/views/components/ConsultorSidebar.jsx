@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { HiOutlineChevronRight } from 'react-icons/hi2'
-import './ConsultorSidebar.css'
+import './softinsa-sidebar.css'
 
 const iconSvgProps = {
   xmlns: 'http://www.w3.org/2000/svg',
@@ -80,11 +80,11 @@ function SoftinsaLogo() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 204 69"
       fill="none"
-      className="consultor-sidebar-logo-image"
+      className="softinsa-sidebar-logo-image"
       aria-label="Softinsa"
       role="img"
     >
-      <g filter="url(#consultor-sidebar-logo-shadow)">
+      <g filter="url(#softinsa-sidebar-logo-shadow)">
         <rect x="10" y="10" width="184" height="49" rx="24.5" fill="white" />
         <path fillRule="evenodd" clipRule="evenodd" d="M33.1185 28.7737C33.0955 28.2401 32.9578 27.7177 32.7149 27.2423C32.4719 26.7669 32.1295 26.3497 31.711 26.0193C30.8991 25.4164 29.6813 25.1145 28.0575 25.1138C25.0633 25.1138 23.5663 26.0921 23.5667 28.0486C23.5673 28.3957 23.6527 28.7374 23.8153 29.0438C23.9779 29.3502 24.2129 29.612 24.4997 29.8064C25.4069 30.3953 26.4226 30.7959 27.4868 30.9845C29.1102 31.3462 30.5183 31.6842 31.711 31.9983C32.8256 32.2866 33.9196 32.6497 34.9856 33.0852C35.5385 33.3004 36.0673 33.5735 36.5631 33.9C37.054 34.2219 37.4802 34.6336 37.8194 35.1135C38.1844 35.6448 38.4607 36.2321 38.6375 36.8525C38.8566 37.6547 38.9592 38.4844 38.9421 39.316C38.9624 40.3919 38.7002 41.4542 38.1817 42.3962C37.6702 43.2931 36.9684 44.0661 36.126 44.6607C35.2005 45.3058 34.1699 45.7842 33.0806 46.0744C31.8783 46.4047 30.6368 46.569 29.3902 46.5628C25.7112 46.5628 22.9459 45.8865 21.0941 44.534C19.2423 43.1815 18.2653 41.1768 18.1631 38.52H23.2621C23.2603 39.1 23.4041 39.671 23.6801 40.1806C23.9562 40.6902 24.3556 41.1219 24.8417 41.4361C25.9885 42.1837 27.3378 42.5573 28.7046 42.5057C30.3793 42.5057 31.6479 42.2155 32.5104 41.6352C32.9125 41.3903 33.2436 41.044 33.4706 40.6308C33.6976 40.2175 33.8126 39.7518 33.8041 39.2801C33.8078 38.9185 33.7565 38.5585 33.6518 38.2125C33.5387 37.8684 33.335 37.5614 33.0624 37.3237C32.7064 37.021 32.3009 36.7822 31.8638 36.6179C31.2211 36.3743 30.5587 36.1863 29.884 36.056C27.956 35.6706 26.288 35.2782 24.8801 34.8789C23.6525 34.5586 22.479 34.0578 21.3976 33.3928C20.5458 32.8674 19.8495 32.1232 19.3809 31.2373C18.9149 30.2286 18.6935 29.1236 18.7348 28.0127C18.7287 27.0528 18.9235 26.1024 19.3066 25.2228C19.6988 24.3376 20.2987 23.5607 21.0551 22.9584C21.9232 22.275 22.9102 21.7589 23.9658 21.4362C25.2924 21.0372 26.6728 20.8476 28.0575 20.8743C29.4478 20.8561 30.8331 21.0455 32.1679 21.4362C33.3036 21.7688 34.3682 22.3093 35.3078 23.0303C36.1668 23.6989 36.8632 24.5545 37.3443 25.5324C37.8342 26.5453 38.1062 27.6502 38.1427 28.7753L33.1185 28.7737Z" fill="#39639C" />
         <path fillRule="evenodd" clipRule="evenodd" d="M53.7852 42.2503C54.6958 42.2558 55.5994 42.0899 56.449 41.7613C57.2811 41.4387 58.0293 40.9309 58.6373 40.2762C59.3009 39.5394 59.8002 38.6691 60.102 37.7235C60.4809 36.5294 60.6612 35.281 60.6358 34.0282C60.6358 31.1785 60.0521 29.0166 58.8847 27.5424C57.7173 26.0683 56.0176 25.3315 53.7857 25.3322C51.5524 25.3322 49.8398 26.069 48.6477 27.5424C47.4557 29.0159 46.8592 31.1773 46.8582 34.0266C46.8582 36.8763 47.4607 38.9594 48.6659 40.2762C49.8711 41.5929 51.5775 42.251 53.7852 42.2503ZM53.7852 46.5623C49.8779 46.5623 46.8776 45.4752 44.7843 43.3012C42.691 41.1271 41.6443 37.9994 41.6443 33.9182C41.6182 32.0626 41.8881 30.2149 42.4437 28.4448C42.923 26.9186 43.7281 25.5155 44.803 24.3329C45.8613 23.1981 47.1628 22.319 48.6093 21.762C50.2637 21.1428 52.0197 20.8421 53.7852 20.8758C55.544 20.8457 57.2929 21.1462 58.9413 21.762C60.3902 22.3127 61.6879 23.2004 62.7279 24.3522C63.7817 25.5578 64.5725 26.971 65.0497 28.5011C65.6058 30.2889 65.8755 32.154 65.8486 34.0266C65.8486 38.1808 64.8148 41.3085 62.7471 43.4096C60.6795 45.5107 57.6922 46.5616 53.7852 46.5623Z" fill="#39639C" />
@@ -101,7 +101,7 @@ function SoftinsaLogo() {
         <path fillRule="evenodd" clipRule="evenodd" d="M68.9133 25.8744H86.9152V21.6719H68.9133V25.8744Z" fill="#39639C" />
       </g>
       <defs>
-        <filter id="consultor-sidebar-logo-shadow" x="0" y="0" width="204" height="69" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <filter id="softinsa-sidebar-logo-shadow" x="0" y="0" width="204" height="69" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
           <feOffset />
@@ -116,7 +116,7 @@ function SoftinsaLogo() {
   )
 }
 
-const storageKey = 'consultor-sidebar-collapsed'
+const storageKey = 'softinsa-sidebar-collapsed'
 
 const navigationSections = [
   {
@@ -188,16 +188,16 @@ function SidebarItem({ item, collapsed, isOpen, onToggle }) {
       end={item.end}
       onClick={handleClick}
       className={({ isActive }) =>
-        `consultor-sidebar-item${isActive ? ' active' : ''}${collapsed ? ' is-collapsed' : ''}`
+        `softinsa-sidebar-item${isActive ? ' active' : ''}${collapsed ? ' is-collapsed' : ''}`
       }
       title={item.text.replace(/\n/g, ' ')}
     >
-      <span className="consultor-sidebar-item-icon-shell">
-        <Icon className="consultor-sidebar-item-icon" aria-hidden="true" />
+      <span className="softinsa-sidebar-item-icon-wrap">
+        <Icon className="softinsa-sidebar-item-icon" aria-hidden="true" />
       </span>
 
       {!collapsed ? (
-        <span className="consultor-sidebar-item-label">
+        <span className="softinsa-sidebar-item-text">
           {item.text.split('\n').map((line) => (
             <span key={line}>{line}</span>
           ))}
@@ -206,7 +206,7 @@ function SidebarItem({ item, collapsed, isOpen, onToggle }) {
 
       {!collapsed && item.hasDropdown ? (
         <HiOutlineChevronRight
-          className={`consultor-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
+          className={`softinsa-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
           aria-hidden="true"
         />
       ) : null}
@@ -216,17 +216,17 @@ function SidebarItem({ item, collapsed, isOpen, onToggle }) {
 
 function SidebarSubItems({ items }) {
   return (
-    <ul className="consultor-sidebar-subitems">
+    <ul className="softinsa-sidebar-subitems">
       {items.map((subItem) => (
         <li key={subItem.to}>
           <NavLink
             to={subItem.to}
             className={({ isActive }) =>
-              `consultor-sidebar-subitem${isActive ? ' active' : ''}`
+              `softinsa-sidebar-subitem${isActive ? ' active' : ''}`
             }
           >
-            <span className="consultor-sidebar-subitem-bullet" aria-hidden="true" />
-            <span className="consultor-sidebar-subitem-text">{subItem.text}</span>
+            <span className="softinsa-sidebar-subitem-bullet" aria-hidden="true" />
+            <span className="softinsa-sidebar-subitem-text">{subItem.text}</span>
           </NavLink>
         </li>
       ))}
@@ -254,10 +254,10 @@ function ConsultorSidebar() {
   }, [isCollapsed])
 
   return (
-    <aside className={`consultor-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
+    <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
       <button
         type="button"
-        className="consultor-sidebar-toggle"
+        className="softinsa-sidebar-toggle"
         onClick={() => setIsCollapsed((previousValue) => !previousValue)}
         aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'}
         aria-expanded={!isCollapsed}
@@ -268,7 +268,7 @@ function ConsultorSidebar() {
           height="18"
           viewBox="0 0 18 18"
           fill="none"
-          className="consultor-sidebar-toggle-arrow"
+          className="softinsa-sidebar-toggle-arrow"
           aria-hidden="true"
         >
           <path d="M3.18752 9.20553L14.4375 9.20553" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -276,30 +276,30 @@ function ConsultorSidebar() {
         </svg>
       </button>
 
-      <div className="consultor-sidebar-panel">
-        <div className="consultor-sidebar-header">
+      <div className="softinsa-sidebar-panel">
+        <div className="softinsa-sidebar-header">
           {!isCollapsed ? (
-            <div className="consultor-sidebar-logo-pill">
+            <div className="softinsa-sidebar-logo-pill">
               <SoftinsaLogo />
             </div>
           ) : null}
         </div>
 
-        <div className="consultor-sidebar-top-line" />
+        <div className="softinsa-sidebar-top-line" />
 
-        <div className="consultor-sidebar-sections">
+        <div className="softinsa-sidebar-sections">
           {navigationSections.map((section) => (
-            <section key={section.title} className="consultor-sidebar-section" aria-label={section.title}>
-              {!isCollapsed ? <div className="consultor-sidebar-title">{section.title}</div> : null}
+            <section key={section.title} className="softinsa-sidebar-section" aria-label={section.title}>
+              {!isCollapsed ? <div className="softinsa-sidebar-title">{section.title}</div> : null}
 
-              <div className="consultor-sidebar-items">
+              <div className="softinsa-sidebar-items">
                 {section.items.map((item) => {
                   const isOpen = Boolean(openDropdowns[item.to])
                   const showSubItems =
                     !isCollapsed && item.subItems && item.subItems.length > 0 && isOpen
 
                   return (
-                    <div key={item.to} className="consultor-sidebar-item-group">
+                    <div key={item.to} className="softinsa-sidebar-item-group">
                       <SidebarItem
                         item={item}
                         collapsed={isCollapsed}
@@ -312,7 +312,7 @@ function ConsultorSidebar() {
                 })}
               </div>
 
-              {!isCollapsed ? <div className="consultor-sidebar-divider" /> : null}
+              {!isCollapsed ? <div className="softinsa-sidebar-divider" /> : null}
             </section>
           ))}
         </div>

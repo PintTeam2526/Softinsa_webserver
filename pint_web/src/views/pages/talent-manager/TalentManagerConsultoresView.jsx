@@ -5,12 +5,6 @@ import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import './TalentManagerConsultoresView.css'
 
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/339fc7a8-ef40-41aa-8c54-3476bec2dcaf'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/c588a3a9-3a76-47a2-ade6-19caa82a126e'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/123ab2b1-3a8f-477c-b33f-8850bcc74e90'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/9f840511-0d20-4221-a7e1-fc730932100f'
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/da377474-e3d5-46bc-8c1b-8ff2c8c59ed9'
-
 const consultantRows = [
   { name: 'João Silva', badges: 34, points: 520, ranking: '1º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-12-04' },
   { name: 'Ana Matos', badges: 37, points: 500, ranking: '2º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-09-15' },
@@ -196,14 +190,6 @@ function TalentManagerConsultoresView() {
   return (
     <div className="tm-consultores-page">
       <section className="tm-consultores-hero" aria-label="Consultores">
-        <div className="tm-consultores-hero-art" aria-hidden="true">
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-5" src={heroCircle5} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-4" src={heroCircle4} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-3" src={heroCircle3} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-2" src={heroCircle2} alt="" />
-          <img className="tm-consultores-hero-circle tm-consultores-hero-circle-1" src={heroCircle1} alt="" />
-        </div>
-
         <div className="tm-consultores-hero-copy">
           <h1>Consultores</h1>
           <p>Consulta aqui informação detalhada sobre todos os consultores</p>
@@ -371,7 +357,9 @@ function TalentManagerConsultoresView() {
                   <td>
                     <span className="tm-consultores-points">
                       {consultant.points}
-                      <span className="tm-consultores-point-dot" aria-hidden="true" />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="tm-consultores-point-icon">
+                        <path d="M3.702 0.456C4.43105 0.155969 5.21163 0.00107491 6 0C6.786 0 7.566 0.156 8.298 0.456C9.024 0.756 9.684 1.2 10.242 1.758C10.8 2.316 11.244 2.976 11.544 3.702C11.844 4.434 12 5.214 12 6C12 7.59 11.37 9.12 10.242 10.242C9.68557 10.8 9.02438 11.2425 8.2964 11.5442C7.56843 11.8459 6.78802 12.0008 6 12C5.21163 11.9989 4.43105 11.844 3.702 11.544C2.97484 11.2418 2.31428 10.7994 1.758 10.242C1.20001 9.68557 0.757463 9.02437 0.45577 8.2964C0.154077 7.56842 -0.000810844 6.78801 3.1921e-06 6C3.1921e-06 4.41 0.630003 2.88 1.758 1.758C2.316 1.2 2.976 0.756 3.702 0.456ZM6 9L6.936 6.948L9 6L6.936 5.064L6 3L5.058 5.064L3 6L5.058 6.948L6 9Z" fill="#232D42" />
+                      </svg>
                     </span>
                   </td>
                   <td>

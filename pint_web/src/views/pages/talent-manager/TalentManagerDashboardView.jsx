@@ -61,11 +61,6 @@ import badge6 from '../../../assets/images/badges/tm_special.png'
 import badge7 from '../../../assets/images/badges/outsystems_special.png'
 
 
-const heroCircle5 = 'https://www.figma.com/api/mcp/asset/739430e1-57f7-4057-8b30-e4e9ac3df7a9'
-const heroCircle4 = 'https://www.figma.com/api/mcp/asset/31ef0c85-37c3-4902-831e-06a6e32c1a31'
-const heroCircle3 = 'https://www.figma.com/api/mcp/asset/fb86f390-2b2f-4a33-87ed-0360cd912651'
-const heroCircle2 = 'https://www.figma.com/api/mcp/asset/4d42a602-3e7c-4d29-914a-c936496586f7'
-const heroCircle1 = 'https://www.figma.com/api/mcp/asset/8e0c1c48-1af5-4053-870f-1e35ff081df1'
 const pendingImage1 = 'https://www.figma.com/api/mcp/asset/351dcc52-b438-4039-8032-2145a7543488'
 const pendingImage2 = 'https://www.figma.com/api/mcp/asset/cc1850d2-ede7-4d3f-b410-76c7191d8812'
 const pendingImage3 = 'https://www.figma.com/api/mcp/asset/fdcac280-e852-47a8-a018-ef47d87ca4b6'
@@ -134,20 +129,17 @@ function TalentManagerDashboardView() {
   return (
     <>
       <section className="tm-hero" aria-label="Dashboard Talent Manager">
-        <div className="tm-hero-art" aria-hidden="true">
-          <img className="tm-hero-circle tm-hero-circle-5" src={heroCircle5} alt="" />
-          <img className="tm-hero-circle tm-hero-circle-4" src={heroCircle4} alt="" />
-          <img className="tm-hero-circle tm-hero-circle-3" src={heroCircle3} alt="" />
-          <img className="tm-hero-circle tm-hero-circle-2" src={heroCircle2} alt="" />
-          <img className="tm-hero-circle tm-hero-circle-1" src={heroCircle1} alt="" />
-        </div>
-
         <div className="tm-hero-copy">
           <h1>Olá, Austin Robertson!</h1>
         </div>
       </section>
 
-      <section className="tm-notification-callout">
+      <button
+        type="button"
+        className="tm-notification-callout"
+        onClick={() => window.dispatchEvent(new CustomEvent('softinsa:open-notifications'))}
+        aria-label="Abrir notificações: tem 5 notificações por ler"
+      >
         <div className="tm-notification-icon">
           <IconAlertBell />
         </div>
@@ -156,7 +148,7 @@ function TalentManagerDashboardView() {
           <h2>Tem 5 notificações por ler</h2>
           <p>Aceda agora às notificações</p>
         </div>
-      </section>
+      </button>
 
       <section className="tm-dashboard-grid" aria-label="Conteúdo principal">
         <article className="tm-panel tm-pending-panel">
