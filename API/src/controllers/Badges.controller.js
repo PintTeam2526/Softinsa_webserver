@@ -1,6 +1,9 @@
 const Badges = require('../models/Badges.models');
 const devolverEstadoBadgeService = require('../services/devolverEstadoBadge.service');
 const Areas = require('../models/Areas.models');
+const ServiceLines = require('../models/ServiceLines.models');
+const BadgesConcluidos = require('../models/BadgesConcluidos.models');
+const PedidosBadges = require('../models/PedidosBadges.models');
 
 const controllers = {};
 
@@ -341,5 +344,64 @@ controllers.getBadgeByIdMobile = async (req, res) => {
   res.json([dados]);
   
 }
+
+//BADGES CONCLUIDOS MOBILE
+//BADGES CONCLUIDOS MOBILE
+controllers.getBadgesObtidosConsultorMobile = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      if (!id) {
+        return res.status(400).json({ error: "ID do consultor é obrigatório" });
+      }
+  
+      // Usamos BadgesConcluidos como base para garantir que trazemos tudo o que existe na tabela
+      const conquistas = await BadgesConcluidos.findAll({
+        where: { id_consultor: id },
+        include: [
+          {
+            model: Badges,
+            include: [
+              {
+                model: Areas,
+                include: [ServiceLines]
+              }
+            ]
+          }
+        ]
+      });
+      
+      if (!conquistas || conquistas.length === 0) {
+        return res.json([]);
+      }
+
+      // Formatação exata para o factory BadgesConcluidosModel.fromJson do Dart
+      const resultado = conquistas.map(c => {
+        const b = c.Badge;
+        const area = b?.Area;
+        const sl = area?.ServiceLine;
+
+        return {
+          ID_BADGE_CONCLUIDO: c.id_badge_concluido,
+          ID_BADGE: b?.id_badge,
+          NOME_BADGE: b?.nome_badge || "Sem Nome",
+          nome_area_pai: area?.nome_area || "Sem Área", // Lowercase como no Dart
+          NIVEL_BADGE: b?.nivel_badge || "",
+          PONTOS_BADGE: b?.pontos_badge || 0, // Adicionado (faltava)
+          IMAGEM_BADGE: b?.imagem_badge || "",
+          nome_sl_pai: sl?.nome_service_line || "N/A", // Lowercase como no Dart
+          DATA_CONCLUSAO: c.data_conclusao_badge,
+          VALIDADE: b?.validade // Adicionado para o cálculo da expiração no Dart
+        };
+      });
+  
+      res.json(resultado);
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Erro ao procurar Badges concluidos do consultor", details: err.message });
+    }
+};
+
 
 module.exports = controllers;

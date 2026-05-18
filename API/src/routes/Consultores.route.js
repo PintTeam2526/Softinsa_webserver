@@ -21,4 +21,6 @@ router.delete('/:id/objetivo/delete', authVerification, consultoresController.de
 router.get('/:id/notificacoes', authVerification, consultoresController.getAllNotificacoes);
 router.post('/:id/notificacoes', authVerification, consultoresController.createNotificacao);
 
+//ALTERAR DEFINICOES CONSULTOR MOBILE
+router.put('/mobile/update', consultoresController.editarDadosConsultorMobile);
 module.exports = router;

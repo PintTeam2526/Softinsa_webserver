@@ -55,8 +55,9 @@ app.get('/api', (req, res) => {
 });
 
 async function start() {
-    try {
-        await sequelize.sync({ force: true });
+  try {
+        //await sequelize.sync({force : true});
+        await sequelize.sync({ alter: true });
         console.log('✅ Tabelas sincronizadas!');
 
         await seedDatabase();

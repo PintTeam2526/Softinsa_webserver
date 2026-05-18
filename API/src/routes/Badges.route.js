@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var controllerBadges = require('../controllers/Badges.controller');
-var authVerification = require('../middleware/requireAuth.middleware')
+var authVerification = require('../middleware/requireAuth.middleware');
+const controller = require('../controllers/Dashboard.controller');
 
 // Mostrar todos os badges
 router.get('/get', controllerBadges.getAllBadges);
@@ -43,4 +44,8 @@ router.get('/mobile/:id_badge/consultor/:id_consultor/estado', controllerBadges.
 //MOBILE
 router.get('/get/area/:id',controllerBadges.getBadgesByAreaIDMobile);
 router.get('/get/:id', controllerBadges.getBadgeByIdMobile);
+router.get('/get/obtidos/:id', controllerBadges.getBadgesObtidosConsultorMobile);
+
+
+
 module.exports = router;

@@ -15,6 +15,7 @@ var pedidosBadgesRouter = require('../routes/PedidosBadges.route');
 var consultoresRoutes = require('../routes/Consultores.route');
 var candidaturasRoutes = require('../routes/Candidaturas.route');
 var requisitosRoutes = require('../routes/Requisitos.route');
+var objetivosRoutes = require('../routes/Objetivos.route');
 
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.use('/pedidos', pedidosBadgesRouter);
 router.use('/consultores', consultoresRoutes);
 router.use('/candidaturas', candidaturasRoutes);
 router.use('/requisitos', requisitosRoutes);
+router.use('/objetivos', objetivosRoutes);
 
 module.exports = router;

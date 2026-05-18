@@ -40,4 +40,8 @@ router.post('/:id/sl-review', controllerPedidos.slReview);
 // Reenviar pedido
 router.post('/:id/resubmit', controllerPedidos.resubmitPedido);
 
+
+//MOBILE (MOSTRAR ESTADO DO PEDIDO DO CONSULTOR)
+router.get('/estado/consultor/:idConsultor',controllerPedidos.getBadgesCandidatadosMobile);
+
 module.exports = router;

@@ -7,7 +7,8 @@ const TalentManager = require("../models/TalentManagers.models");
 const Badges = require("../models/Badges.models");
 const Area = require("../models/Areas.models");
 const ServiceLineLider = require("../models/ServiceLineLiders.models");
-
+const PedidosBadges = require("../models/PedidosBadges.models");
+const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.service");
 const controllers = {};
 
 /* =====================================================
@@ -398,7 +399,7 @@ controllers.slReview = async (req, res) => {
 };
 
 /* =====================================================
-   CONSULTOR 
+   CONSULTOR
 ===================================================== */
 
 controllers.resubmitPedido = async (req, res) => {
@@ -457,6 +458,51 @@ controllers.resubmitPedido = async (req, res) => {
     }
 };
 
+controllers.getBadgesCandidatadosMobile = async (req, res) => {
+  try {
+    const { idConsultor } = req.params;
+
+    if (!idConsultor) {
+      return res.status(400).json({ error: "ID do consultor é obrigatório" });
+    }
+
+    // 1. Procurar todos os pedidos deste consultor incluindo os dados do Badge
+    // Equivalente ao INNER JOIN PEDIDOS_BADGE ON BADGES.ID_BADGE = PEDIDOS_BADGE.ID_BADGE
+    const pedidos = await PedidosBadges.findAll({
+      where: { id_consultor: idConsultor },
+      include: [{
+        model: Badges,
+        attributes: ['id_badge', 'nome_badge', 'nivel_badge', 'imagem_badge']
+      }]
+    });
+
+    // 2. Aplicar o serviço devolverEstadoBadge a cada resultado
+    // Usamos Promise.all porque o serviço é assíncrono
+    const resultados = await Promise.all(pedidos.map(async (pedido) => {
+      const badge = pedido.Badge;
+
+      // Chamada ao seu serviço JS para obter o estado dinâmico
+      const estado = await devolverEstadoBadgeService.devolverEstadoBadge(
+        badge.id_badge,
+        idConsultor
+      );
+
+      return {
+        ID_BADGE: badge.id_badge,
+        NOME_BADGE: badge.nome_badge,
+        NIVEL_BADGE: badge.nivel_badge,
+        IMAGEM_BADGE: badge.imagem_badge,
+        ESTADO_BADGE: estado // Resultado do serviço
+      };
+    }));
+
+    res.json(resultados);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao procurar badges do consultor" });
+  }
+};
 
 
 module.exports = controllers;
