@@ -4,6 +4,7 @@ const Areas = require('../models/Areas.models');
 const ServiceLines = require('../models/ServiceLines.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
+const Consultor = require('../models/Consultores.models')
 
 const controllers = {};
 
@@ -450,6 +451,57 @@ controllers.getBadgesObtidosConsultorMobile = async (req, res) => {
       res.status(500).json({ error: "Erro ao procurar Badges concluidos do consultor", details: err.message });
     }
 };
+
+controllers.getBadgesRecomendados = async (req, res) => {
+  try {
+    const { idConsultor } = req.user.id_consultor;
+
+    // Buscar consultor para obter a área
+    const consultor = await Consultor.findByPk(idConsultor);
+    if (!consultor) {
+      return res.status(404).json({ mensagem: "Consultor não encontrado" });
+    }
+
+    // Buscar IDs dos badges já concluídos pelo consultor
+    const concluidos = await BadgesConcluidos.findAll({
+      where: { id_consultor: idConsultor },
+      attributes: ["id_badge"],
+    });
+    const idsConcluidos = concluidos.map((b) => b.id_badge);
+
+    // Badges recomendados: da área do consultor e não concluídos
+    const recomendados = await Badges.findAll({
+      where: {
+        id_area: consultor.id_area,
+        estado_a_i: true,
+        ...(idsConcluidos.length > 0 && {
+          id_badge: { [Sequelize.Op.notIn]: idsConcluidos },
+        }),
+      },
+    });
+    const idsRecomendados = recomendados.map((b) => b.id_badge);
+
+    // Restantes: não concluídos e não recomendados
+    const excluir = [...idsConcluidos, ...idsRecomendados];
+    const restantes = await Badges.findAll({
+      where: {
+        estado_a_i: true,
+        ...(excluir.length > 0 && {
+          id_badge: { [Sequelize.Op.notIn]: excluir },
+        }),
+      },
+    });
+
+    return res.status(200).json({ recomendados, restantes });
+  } catch (error) {
+    return res.status(500).json({
+      mensagem: "Erro ao buscar badges recomendados",
+      erro: error.message,
+    });
+  }
+};
+
+
 
 
 module.exports = controllers;

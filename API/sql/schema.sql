@@ -250,14 +250,10 @@ CREATE TABLE PedidosBadges (
 -- ============================================================
 CREATE TABLE Documentacoes (
     id_documentacao  SERIAL  PRIMARY KEY,
-    id_pedido_badge  INTEGER NOT NULL REFERENCES PedidosBadges(id_pedido_badge),
+    id_historico     INTEGER NOT NULL REFERENCES HistoricoPedidos(id_historico),
     id_consultor     INTEGER NOT NULL REFERENCES Consultores(id_consultor),
-    id_requisito     INTEGER NOT NULL REFERENCES Requisitos(id_requisito),
+    id_requisito     INTEGER REFERENCES Requisitos(id_requisito),
     documentacao     TEXT    NOT NULL,
-    validado         BOOLEAN,
-    id_utilizador_validador INTEGER,
-    data_validacao   TIMESTAMP WITH TIME ZONE,
-    observacao_validacao TEXT,
     "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
     "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );

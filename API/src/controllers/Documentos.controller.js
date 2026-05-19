@@ -1,6 +1,7 @@
 const Documentacoes = require('../models/Documentacoes.models');
 const Pedidos = require('../models/PedidosBadges.models');
 const Requisitos = require('../models/Requisitos.models');
+const HistoricoPedidos = require('../models/HistoricoPedidos.models');
 
 const controllers = {};
 
@@ -81,25 +82,13 @@ controllers.getDocumentosByPedido = async (req, res) => {
 
         const { id_pedido } = req.params;
 
-        const pedido = await Pedidos.findByPk(id_pedido);
-        if (!pedido) {
-            return res.status(404).json({ error: "Pedido não encontrado" });
-        }
-
-        const accessMap = {
-            c: pedido.id_consultor === req.user.id_consultor,
-            t: pedido.id_talent_manager === req.user.id_talent_manager,
-            s: pedido.id_service_line_lider === req.user.id_service_line_lider,
-            a: true
-        };
-
-        if (!accessMap[req.user.role]) {
-            return res.status(401).json({ error: "Utilizador não autorizado" });
-        }
-
         const documentos = await Documentacoes.findAll({
-            where: { id_pedido_badge: id_pedido },
             include: [
+                { 
+                    model: HistoricoPedidos, 
+                    where: { id_pedido_badge: id_pedido },
+                    attributes: [] 
+                },
                 { model: Requisitos, attributes: ['id_requisito', 'nome_requisito', 'descricao_requisito'] }
             ]
         });
@@ -121,33 +110,19 @@ controllers.getDocumentoByRequisito = async (req, res) => {
 
         const doc = await Documentacoes.findOne({
             where: {
-                id_pedido_badge: id_pedido,
                 id_requisito: id_requisito
             },
             include: [
-                { model: Requisitos, attributes: ['id_requisito', 'nome_requisito'] },
-                { model: Pedidos, attributes: ['id_consultor', 'id_talent_manager', 'id_service_line_lider'] }
+                { 
+                    model: HistoricoPedidos, 
+                    where: { id_pedido_badge: id_pedido }
+                },
+                { model: Requisitos, attributes: ['id_requisito', 'nome_requisito'] }
             ]
         });
 
         if (!doc) {
             return res.status(404).json({ error: "Documento não encontrado para este requisito" });
-        }
-
-        const pedido = doc.PedidosBadge;
-        if (!pedido) {
-            return res.status(400).json({ error: "Documento sem pedido associado" });
-        }
-
-        const accessMap = {
-            c: pedido.id_consultor === req.user.id_consultor,
-            t: pedido.id_talent_manager === req.user.id_talent_manager,
-            s: pedido.id_service_line_lider === req.user.id_service_line_lider,
-            a: true
-        };
-
-        if (!accessMap[req.user.role]) {
-            return res.status(401).json({ error: "Utilizador não autorizado" });
         }
 
         return res.status(200).json(doc);
@@ -163,38 +138,17 @@ controllers.createDocumento = async (req, res) => {
             return res.status(401).json({ error: "Utilizador não autorizado" });
         }
 
-        const { id_pedido_badge, id_requisito, documentacao } = req.body;
+        const { id_historico, id_requisito, documentacao } = req.body;
 
-        if (!id_pedido_badge || !id_requisito || !documentacao) {
-            return res.status(400).json({ error: "id_pedido_badge, id_requisito e documentacao são obrigatórios" });
-        }
-
-        const pedido = await Pedidos.findByPk(id_pedido_badge);
-        if (!pedido) {
-            return res.status(404).json({ error: "Pedido não encontrado" });
-        }
-
-        if (isConsultor(req) && pedido.id_consultor !== req.user.id_consultor) {
-            return res.status(401).json({ error: "Utilizador não autorizado" });
-        }
-
-        const docExistente = await Documentacoes.findOne({
-            where: {
-                id_pedido_badge,
-                id_requisito
-            }
-        });
-
-        if (docExistente) {
-            return res.status(400).json({ error: "Já existe um documento para este requisito neste pedido" });
+        if (!id_historico || !id_requisito || !documentacao) {
+            return res.status(400).json({ error: "id_historico, id_requisito e documentacao são obrigatórios" });
         }
 
         const doc = await Documentacoes.create({
-            id_pedido_badge,
-            id_consultor: pedido.id_consultor,
+            id_historico,
+            id_consultor: req.user.id_consultor,
             id_requisito,
-            documentacao,
-            validado: null
+            documentacao
         });
 
         return res.status(201).json({
@@ -212,20 +166,14 @@ controllers.updateDocumento = async (req, res) => {
         const { id } = req.params;
         const { documentacao } = req.body;
 
-        const doc = await Documentacoes.findByPk(id, {
-            include: [{ model: Pedidos }]
-        });
+        const doc = await Documentacoes.findByPk(id);
 
         if (!doc) {
             return res.status(404).json({ error: "Documento não encontrado" });
         }
 
-        if (isConsultor(req) && doc.PedidosBadge?.id_consultor !== req.user.id_consultor) {
+        if (isConsultor(req) && doc.id_consultor !== req.user.id_consultor) {
             return res.status(401).json({ error: "Utilizador não autorizado" });
-        }
-
-        if (doc.validado === true) {
-            return res.status(400).json({ error: "Não é possível editar um documento já validado" });
         }
 
         if (!documentacao) {
@@ -233,7 +181,6 @@ controllers.updateDocumento = async (req, res) => {
         }
 
         doc.documentacao = documentacao;
-        doc.validado = null;
         await doc.save();
 
         return res.status(200).json({
