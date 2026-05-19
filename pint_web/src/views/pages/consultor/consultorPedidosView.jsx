@@ -64,6 +64,14 @@ function deriveEvaluators(estado) {
   return []
 }
 
+function resolveImage(raw) {
+  if (!raw) return null
+  if (raw.startsWith('data:')) return raw
+  if (raw.startsWith('http')) return raw
+  if (/\.(png|jpe?g|gif|webp)$/i.test(raw)) return raw
+  return `data:image/png;base64,${raw}`
+}
+
 function normalizePedido(raw) {
   const estado = raw.estado_atual ?? 1
   const badge = raw.Badge ?? {}
@@ -72,7 +80,7 @@ function normalizePedido(raw) {
     id: raw.id_pedido_badge,
     badgeId: raw.id_badge,
     name: badge.nome_badge ?? raw.nome_badge ?? '—',
-    image: badge.imagem_badge ?? raw.imagem_badge ?? null,
+    image: resolveImage(badge.imagem_badge ?? raw.imagem_badge ?? null),
     evaluators: deriveEvaluators(estado),
     status: ESTADO_STATUS_MAP[estado] ?? 'analysis',
     progress: ESTADO_PROGRESS_MAP[estado] ?? 0,
@@ -144,7 +152,7 @@ const EVALUATOR_CONFIG = {
 // ─── sub-componentes ─────────────────────────────────────────────────────────
 
 function BadgeThumbnail({ badge }) {
-  const image = badge.image || BADGE_IMAGE_BY_NAME[badge.name]
+  const image = badge.image ?? BADGE_IMAGE_BY_NAME[badge.name] ?? outsystems1
   return <img src={image} alt={badge.name} className="consultor-pedidos-badge-thumb" />
 }
 

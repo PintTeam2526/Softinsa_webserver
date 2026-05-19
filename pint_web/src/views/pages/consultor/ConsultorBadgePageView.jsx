@@ -7,55 +7,31 @@ import {
 } from 'react-icons/hi2'
 import './ConsultorBadgePageView.css'
 
-// imagens locais — usadas como fallback enquanto o back não serve URLs
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
-import outsystems2 from '../../../assets/images/badges/outsystems_2.png'
-import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
-import outsystems4 from '../../../assets/images/badges/outsystems_4.png'
-import outsystems5 from '../../../assets/images/badges/outsystems_5.png'
-import devops1 from '../../../assets/images/badges/devops_1.png'
-import devops2 from '../../../assets/images/badges/devops_2.png'
-import devops3 from '../../../assets/images/badges/devops_3.png'
-import devops4 from '../../../assets/images/badges/devops_4.png'
-import devops5 from '../../../assets/images/badges/devops_5.png'
-import tm1 from '../../../assets/images/badges/tm_1.png'
-import tm2 from '../../../assets/images/badges/tm_2.png'
-import tm3 from '../../../assets/images/badges/tm_3.png'
-import tm4 from '../../../assets/images/badges/tm_4.png'
-import tm5 from '../../../assets/images/badges/tm_5.png'
 
 import { getBadgeById } from '../../../controllers/badgesController'
+import { getRequisitosByBadge } from '../../../controllers/requisitosController'
 import { createPedido, uploadDocumentacao } from '../../../controllers/pedidosController'
 
-// ─── fallback de imagens ──────────────────────────────────────────────────────
-// Enquanto o back não servir URLs de imagens, mapeia pelo nome do ficheiro
-// que o back devolve em badge.imagem (ex: "outsystems_1.png")
-
-const IMAGE_MAP = {
-  outsystems_1: outsystems1, outsystems_2: outsystems2, outsystems_3: outsystems3,
-  outsystems_4: outsystems4, outsystems_5: outsystems5,
-  devops_1: devops1, devops_2: devops2, devops_3: devops3,
-  devops_4: devops4, devops_5: devops5,
-  tm_1: tm1, tm_2: tm2, tm_3: tm3, tm_4: tm4, tm_5: tm5,
-}
+// ─── imagem ───────────────────────────────────────────────────────────────────
+// As imagens vêm da BD como base64 puro ou com prefixo data URL.
+// O outsystems1 é só fallback genérico para quando não há imagem.
 
 function resolveImage(raw) {
-  if (!raw) return outsystems1 // fallback genérico
-  // se vier uma URL completa usa directamente
-  if (raw.startsWith('http')) return raw
-  // senão tenta mapear pelo nome do ficheiro (sem extensão)
-  const key = raw.replace(/\.[^.]+$/, '')
-  return IMAGE_MAP[key] ?? outsystems1
+  if (!raw) return outsystems1
+  if (raw.startsWith('data:')) return raw                    // já tem prefixo
+  if (raw.startsWith('http')) return raw                    // URL externa
+  if (/\.(png|jpe?g|gif|webp)$/i.test(raw)) return raw      // caminho de ficheiro
+  return `data:image/png;base64,${raw}`                     // base64 puro
 }
 
-// ─── normalização do badge ────────────────────────────────────────────────────
-// Adapta o shape do back ao shape que a view consome.
-// ⚠️  Ajusta os nomes dos campos conforme o que o Sequelize devolve.
+// ─── normalização ─────────────────────────────────────────────────────────────
+// Campos reais do Sequelize: nome_badge, nivel_badge, imagem_badge, etc.
+// As relações (Area, ServiceLine, LearningPath) podem vir como objectos aninhados.
 
 const LOREM_LONG =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
 
-// TODO: substituir pelos requisitos reais quando a rota /requisitos existir
 const REQUISITOS_PLACEHOLDER = [
   { id: 1, title: 'Curso de Fundamentos', descricao: LOREM_LONG },
   { id: 2, title: 'Curso Intermédio', descricao: LOREM_LONG },
@@ -64,33 +40,36 @@ const REQUISITOS_PLACEHOLDER = [
   { id: 5, title: 'Formação equivalente reconhecida', descricao: LOREM_LONG },
 ]
 
-function normalizeBadge(raw) {
+function normalizeRequisito(r, i) {
   return {
-    id: raw.id,
-    name: raw.nome ?? raw.name ?? '—',
-    level: raw.nivel ?? raw.level ?? '—',
-    description: raw.descricao ?? raw.description ?? '',
-    points: raw.pontos ?? raw.points ?? 550,
+    id: r.id_requisito ?? r.id ?? i + 1,
+    title: r.nome_requisito ?? r.titulo ?? r.title ?? `Requisito ${i + 1}`,
+    descricao: r.descricao_requisito ?? r.descricao ?? r.description ?? '',
+  }
+}
+
+function normalizeBadge(raw, requisitosRaw = []) {
+  return {
+    id: raw.id_badge ?? raw.id,
+    name: raw.nome_badge ?? raw.nome ?? raw.name ?? '—',
+    level: raw.nivel_badge ?? raw.nivel ?? raw.level ?? '—',
+    description: raw.descricao_badge ?? raw.descricao ?? raw.description ?? '',
+    points: raw.pontos_badge ?? raw.pontos ?? raw.points ?? 550,
     isSpecial: raw.especial ?? raw.isSpecial ?? false,
     isFavorite: raw.favorito ?? raw.isFavorite ?? false,
-    image: resolveImage(raw.imagem ?? raw.image ?? null),
-    // relações — o back pode devolver objecto ou só o nome directamente
-    area: raw.area?.nome ?? raw.area ?? '—',
-    serviceLine: raw.serviceLine?.nome ?? raw.service_line ?? raw.serviceLine ?? '—',
-    learningPath: raw.learningPath?.nome ?? raw.learning_path ?? raw.learningPath ?? '—',
+    image: resolveImage(raw.imagem_badge ?? raw.imagem ?? raw.image ?? null),
+    // relações — Sequelize capitaliza o nome do modelo (Area, ServiceLine, LearningPath)
+    area: raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
+    serviceLine: raw.ServiceLine?.nome_service_line ?? raw.serviceLine?.nome ?? raw.serviceLine ?? '—',
+    learningPath: raw.LearningPath?.nome_learning_path ?? raw.learningPath?.nome ?? raw.learningPath ?? '—',
     status: raw.status ?? 'Em Análise',
     devolucao: {
-      data: raw.devolucao?.data ?? raw.dataDevolucao ?? '—',
+      data: raw.devolucao?.data ?? '—',
       avaliador: raw.devolucao?.avaliador ?? '—',
       motivo: raw.devolucao?.motivo ?? '—',
     },
-    // TODO: substituir por raw.requisitos quando a rota existir
-    requisitos: raw.requisitos?.length
-      ? raw.requisitos.map((r, i) => ({
-        id: r.id ?? i + 1,
-        title: r.titulo ?? r.title ?? `Requisito ${i + 1}`,
-        descricao: r.descricao ?? r.description ?? '',
-      }))
+    requisitos: requisitosRaw.length > 0
+      ? requisitosRaw.map(normalizeRequisito)
       : REQUISITOS_PLACEHOLDER,
   }
 }
@@ -188,7 +167,8 @@ function ShareModal({ badge, onClose }) {
     doc.setFillColor(57, 99, 156); doc.roundedRect(cx, cy, cw, 24, 3, 3, 'F'); doc.rect(cx, cy + 20, cw, 4, 'F')
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(22)
     doc.text('SOFTINSA', mx, cy + 15, { align: 'center' })
-    doc.setTextColor(0, 184, 224); doc.text('TI', mx - doc.getTextWidth('SOFTINSA') / 2 + doc.getTextWidth('SOF') + doc.getTextWidth('TI') / 2, cy + 15, { align: 'center' })
+    doc.setTextColor(0, 184, 224)
+    doc.text('TI', mx - doc.getTextWidth('SOFTINSA') / 2 + doc.getTextWidth('SOF') + doc.getTextWidth('TI') / 2, cy + 15, { align: 'center' })
     doc.setTextColor(30, 58, 95); doc.setFontSize(21); doc.text('CERTIFICADO DE CONQUISTA', mx, cy + 39, { align: 'center' })
     doc.setDrawColor(146, 174, 215); doc.setLineWidth(0.5); doc.line(mx - 28, cy + 46, mx + 28, cy + 46)
     doc.setTextColor(108, 117, 125); doc.setFont('helvetica', 'normal'); doc.setFontSize(10)
@@ -301,18 +281,31 @@ function ConsultorBadgePageView() {
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState(null)
 
-  // ── fetch do badge ──────────────────────────────────────────────────────────
+  // ── fetch badge + requisitos em paralelo ────────────────────────────────────
 
   useEffect(() => {
     let cancelled = false
 
-    async function fetchBadge() {
+    async function fetchAll() {
       try {
         setLoading(true)
         setError(null)
-        const data = await getBadgeById(badgeId)
+
+        const [badgeData, requisitosData] = await Promise.all([
+          getBadgeById(badgeId),
+          getRequisitosByBadge(badgeId),
+        ])
+
         if (!cancelled) {
-          const normalized = normalizeBadge(data?.badge ?? data?.data ?? data)
+          const raw = badgeData?.badge ?? badgeData?.data ?? badgeData
+          const reqs = Array.isArray(requisitosData)
+            ? requisitosData
+            : (requisitosData?.requisitos ?? requisitosData?.data ?? [])
+
+          console.log('DEBUG badge raw:', raw)       // confirmar shape
+          console.log('DEBUG requisitos raw:', reqs) // confirmar shape
+
+          const normalized = normalizeBadge(raw, reqs)
           setBadge(normalized)
           setIsFavorite(normalized.isFavorite)
         }
@@ -325,7 +318,7 @@ function ConsultorBadgePageView() {
     }
 
     if (badgeId) {
-      fetchBadge()
+      fetchAll()
     } else {
       setError('ID do badge em falta. Verifica a rota.')
       setLoading(false)
@@ -353,7 +346,6 @@ function ConsultorBadgePageView() {
       const sessaoId = crypto.randomUUID()
       const idConsultor = getConsultorIdFromToken()
 
-      // 1. upload de documentação por requisito
       await Promise.all(
         badge.requisitos
           .filter((r) => files[r.id])
@@ -363,7 +355,6 @@ function ConsultorBadgePageView() {
           })
       )
 
-      // 2. criar o pedido
       await createPedido({ id_badge: badge.id, id_consultor: idConsultor, sessao_id: sessaoId })
 
       setSubmitSuccess(true)
@@ -376,22 +367,14 @@ function ConsultorBadgePageView() {
     }
   }
 
-  // ── estados de loading / erro da página ─────────────────────────────────────
+  // ── loading / erro ───────────────────────────────────────────────────────────
 
   if (loading) {
-    return (
-      <section className="consultor-badge-page">
-        <div className="consultor-badge-page-feedback">A carregar badge…</div>
-      </section>
-    )
+    return <section className="consultor-badge-page"><div className="consultor-badge-page-feedback">A carregar badge…</div></section>
   }
 
   if (error || !badge) {
-    return (
-      <section className="consultor-badge-page">
-        <div className="consultor-badge-page-feedback is-error">{error ?? 'Badge não encontrado.'}</div>
-      </section>
-    )
+    return <section className="consultor-badge-page"><div className="consultor-badge-page-feedback is-error">{error ?? 'Badge não encontrado.'}</div></section>
   }
 
   // ── render ───────────────────────────────────────────────────────────────────
