@@ -58,7 +58,7 @@ var PedidosBadges = sequelize.define('PedidosBadges',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 PedidosBadges.belongsTo(Consultor, { foreignKey: 'id_consultor' });

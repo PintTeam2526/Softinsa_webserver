@@ -244,7 +244,6 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 | id_badge_concluido | SERIAL PK | |
 | id_badge | INTEGER FK → Badges | |
 | id_consultor | INTEGER FK → Consultores | |
-| data_limite_conclusao | DATE NOT NULL | |
 | data_conclusao_badge | DATE NOT NULL | |
 | url_validacao | TEXT NOT NULL | Link de verificação |
 
@@ -266,14 +265,29 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 | id_badge | INTEGER FK → Badges | |
 | estado_atual | INTEGER FK → Estados | 1-6 (ou 7-8 no controller) |
 
+#### DocumentacaoTemporaria
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| id | SERIAL PK | |
+| sessao_id | UUID NOT NULL | Identificador de sessão de upload |
+| id_requisito | INTEGER FK → Requisitos | Requisito ao qual este documento temporário pertence |
+| documentacao | TEXT NOT NULL | Evidência em base64 |
+| data_insercao | DATE NOT NULL | DEFAULT NOW() |
+
 #### Documentacoes
-| Campo | Tipo |
-|-------|------|
-| id_documentacao | SERIAL PK |
-| id_pedido_badge | INTEGER FK → PedidosBadges |
-| id_consultor | INTEGER FK → Consultores |
-| documentacao | TEXT NOT NULL | Evidência (ex: base64 ou URL) |
-| validado | BOOLEAN | NULL = pendente |
+| Campo | Tipo | Notas |
+|-------|------|-------|
+| id_documentacao | SERIAL PK | |
+| id_pedido_badge | INTEGER FK → PedidosBadges | |
+| id_consultor | INTEGER FK → Consultores | |
+| id_requisito | INTEGER FK → Requisitos | Requisito ao qual este documento responde |
+| documentacao | TEXT NOT NULL | Evidência (base64) |
+| validado | BOOLEAN | NULL = pendente, true = válido, false = inválido |
+| id_utilizador_validador | INTEGER | Quem validou (TM/SL/Admin) |
+| data_validacao | DATE | Quando foi validado |
+| observacao_validacao | TEXT | Feedback do validador |
+
+**Unique index:** `(id_pedido_badge, id_requisito)` — garante 1 documento por requisito por pedido.
 
 #### HistoricoPedidos
 | Campo | Tipo | Notas |
@@ -333,12 +347,17 @@ Quando um pedido é criado, o TM com **menos pedidos ativos** (estados fora de 7
 - `PedidosBadges.belongsTo(Badge, { foreignKey: 'id_badge' })`
 - `PedidosBadges.belongsTo(Estado, { foreignKey: 'estado_atual' })`
 - `Badge.hasMany(PedidosBadges, { foreignKey: 'id_badge' })`
+- `Badge.hasMany(Requisitos, { foreignKey: 'id_badge' })`
+- `Requisitos.belongsTo(Badge, { foreignKey: 'id_badge' })`
+- `Documentacoes.belongsTo(Requisito, { foreignKey: 'id_requisito' })`
+- `Requisito.hasMany(Documentacoes, { foreignKey: 'id_requisito' })`
+- `DocumentacaoTemporaria.belongsTo(Requisito, { foreignKey: 'id_requisito' })`
 
 ### 2.3 Correções Técnicas Conhecidas na BD / Código
 
 Nenhuma — todas as correções foram aplicadas.
 
-#### Corrigidas (13/05/2026) + (14/05/2026)
+#### Corrigidas (13/05/2026) + (14/05/2026) + (16/05/2026) + (17/05/2026)
 | # | Problema | Ficheiro | Fix |
 |---|----------|----------|-----|
 | 6 | `RGPD.models.js` e `Politicas.models.js` duplicam modelo `Politicas`; `Politicas.models.js` sem require de `Administradores` | ambos | `Politicas.models.js` sobrescrito com conteúdo correto; `RGPD.models.js` apagado; `setup.js:26` descomentado |
@@ -382,6 +401,88 @@ Nenhuma — todas as correções foram aplicadas.
 | 45 | `getAllUtilizadores` retorna admins e inativos para todos os perfis | `Utilizadores.controller.js` | Admin não vê a si próprio; TM/SL veem ativos + não-admin; CO vê só próprio; Guest 401 |
 | 46 | `criarUtilizadores.service.js` guarda password em texto plano | `criarUtilizadores.service.js` | Adicionado `bcrypt.hash(password, 10)` antes de criar o utilizador |
 | 47 | `seed.sql` usava strings placeholder (`img-*`) para imagens | `sql/seed.sql` | Substituídas por base64 da `placeholder.jpg` (34 campos) |
+| 48 | `listarPedidos.service.js` usava nomes de campos errados (`nome` em Consultor/TM/SL, `nome` em Badge, `descricao` em Estado) | `listarPedidos.service.js:42-58` | Includes corrigidos: `Utilizador` aninhado para obter `nome_utilizador`, `Badge.nome_badge`, `Estado.descricao_estado` |
+| 49 | Rotas `tm-review`, `sl-review` e `resubmit` sem middleware `requireAuth` | `PedidosBadges.route.js:35,38,41` | Adicionado `authVerification` nas 3 rotas |
+| 50 | `getHistoricoPedido` — rota comentada + controller inexistente | `PedidosBadges.route.js:18` + `PedidosBadges.controller.js` | Rota descomentada + novo controller com access control por role (consultor, TM, SL, admin) |
+| 51 | `createPedido` não suportava submissão de documentos (ao contrário do fluxo de candidatura) | `PedidosBadges.controller.js:152-234` | Adicionado `sessao_id` no body + transaction + move docs de `DocumentacaoTemporaria` para `Documentacoes` |
+| 52 | `BadgesConcluidos.data_limite_conclusao` redundante — expiração calculada por `data_conclusao_badge + badge.validade` | `BadgesConcluidos.models.js`, `sql/schema.sql`, `sql/seed.sql`, `PedidosBadges.controller.js` | Campo removido do model, schema, seed e controller |
+| 53 | `app.js`: `sync({ force: true })` destrutivo perdia dados ao reiniciar | `app.js:59` | Mudado para `sync({ alter: true })` — preserva dados existentes |
+| 54 | **Implementação de Requisitos por Badge (3-5 máx) e Documentos com validação individual** | Vários ficheiros | Ver implementação completa abaixo |
+| 55 | **Testes automatizados para Requisitos e Documentos** | `tests/Requisitos.test.js`, `tests/Documentos.test.js` | 59 testes no total (24 Requisitos + 35 Documentos) — CRUD, controlo de acesso por role, validações, soft-delete. Todos passam. |
+
+### 2.4 Implementação: Requisitos e Documentos (16-17/05/2026)
+
+#### Modelos Alterados
+
+| Modelo | Alterações |
+|--------|-----------|
+| `Documentacoes` | Novo campo `id_requisito` (FK → Requisitos, NOT NULL), `id_utilizador_validador`, `data_validacao`, `observacao_validacao`. Unique index `(id_pedido_badge, id_requisito)`. Associações `belongsTo(Requisito)` e `Requisito.hasMany(Documentacoes)` |
+| `DocumentacaoTemporaria` | Novo campo `id_requisito` (FK → Requisitos, NOT NULL). Uploads temporários passam a registar o requisito alvo |
+| `Requisitos` | Nova associação `Badge.hasMany(Requisitos)` |
+
+#### Controller Requisitos
+
+| Função | Descrição | Permissão |
+|--------|-----------|-----------|
+| `getAllRequisitos` | Listar todos os requisitos | Admin |
+| `getRequisitoById` | Obter requisito por ID | Admin |
+| `getRequisitosBadgeMobile` | Listar requisitos de um badge (mantido do mobile) | Todos |
+| `createRequisito` | Criar requisito (valida: badge ativo, máx 5 ativos) | Admin |
+| `updateRequisito` | Atualizar requisito | Admin |
+| `deleteRequisito` | Soft-delete (`estado_a_i = false`) | Admin |
+
+#### Controller Documentos (NOVO)
+
+| Função | Descrição | Permissão |
+|--------|-----------|-----------|
+| `getAllDocumentos` | Listar todos os documentos | Admin |
+| `getDocumentoById` | Obter documento por ID | Dono/TM/SL/Admin |
+| `getDocumentosByPedido` | Listar documentos de um pedido (com access control: verifica role vs id_consultor/id_talent_manager/id_service_line_lider do pedido) | Dono/TM/SL/Admin |
+| `getDocumentoByRequisito` | Obter documento de um requisito específico num pedido (com access control: verifica role vs donos do pedido) | Dono/TM/SL/Admin |
+| `createDocumento` | Upload de documento | Consultor |
+| `updateDocumento` | Atualizar documento (só se não validado) | Consultor |
+| `deleteDocumento` | Hard delete | Admin |
+| `validateDocumento` | Validar/invalidar documento individual — regista `validado`, `id_utilizador_validador`, `data_validacao`, `observacao_validacao` | TM/SL |
+
+#### Rotas
+
+**Requisitos** (montado em `/requisitos`):
+| Método | Rota | Auth |
+|--------|------|------|
+| GET | `/get` | requireAuth |
+| GET | `/:id/get` | requireAuth |
+| GET | `/get/badge/:id` | - (público, mobile) |
+| POST | `/create` | requireAuth |
+| PUT | `/:id/update` | requireAuth |
+| DELETE | `/:id/delete` | requireAuth |
+
+**Documentos** (montado em `/documentos` — NOVO):
+| Método | Rota | Auth |
+|--------|------|------|
+| GET | `/get` | requireAuth |
+| GET | `/:id/get` | requireAuth |
+| GET | `/pedido/:id_pedido` | requireAuth |
+| GET | `/pedido/:id_pedido/requisito/:id_requisito` | requireAuth |
+| POST | `/create` | requireAuth |
+| PUT | `/:id/update` | requireAuth |
+| DELETE | `/:id/delete` | requireAuth |
+| PUT | `/:id/validate` | requireAuth |
+
+#### Integração com Pedidos
+
+- `createPedido` (PedidosBadges.controller.js): Ao mover documentos temporários para `Documentacoes`, preserva o `id_requisito` de cada `DocumentacaoTemporaria`
+- `inserirDocumentacaoBadge` (Candidaturas.controller.js): Aceita `id_requisito` no body para uploads temporários
+- `candidatarBadge` (Candidaturas.controller.js): Move docs temporários com `id_requisito`
+- `candidaturas.service.js` (`submeterCandidatura`): Aceita array de `{documento, id_requisito}` em vez de array simples de strings
+
+#### Testes Automatizados
+
+| Ficheiro | Testes | Cobertura |
+|----------|--------|-----------|
+| `tests/Requisitos.test.js` | 24 testes | CRUD completo: GET, GET/:id, GET/badge/:id, POST, PUT, DELETE; controlo de acesso por role (guest, admin, consultor, TM); soft-delete; validações (campos obrigatórios, badge inexistente, limite de ativos) |
+| `tests/Documentos.test.js` | 35 testes | CRUD completo: GET, GET/:id, GET/pedido/:id, GET/pedido/:id/requisito/:id, POST, PUT, DELETE, validate; controlo de acesso por role (guest, admin, consultor, TM, SL); validação de documentos alheios; validação de documentos já validados |
+
+**Total: 59 testes, 0 falhas.** Ambos os ficheiros usam `node:test` + `node:assert/strict`, com helper partilhado (`tests/helper.js`) para JWT simulado, conexão PostgreSQL, e funções de cleanup. Execução: `node --test tests/*.test.js`.
 
 ---
 
@@ -396,11 +497,11 @@ Nenhuma — todas as correções foram aplicadas.
 | 3 | Escolher área preferencial no registo para ver badges recomendados | ✅ (parcial) |
 | 4 | Consultar badges disponíveis mesmo de outras áreas | ❌ |
 | 5 | Dashboard pessoal com progresso nos Learning Paths | ❌ |
-| 6 | Upload de evidências (certificados, diplomas, relatórios) | ⚠️ (modelo Documentacoes existe, upload não) |
+| 6 | Upload de evidências (certificados, diplomas, relatórios) | ✅ (API: Documentos controller com create/update/validate) |
 | 7 | Visualizar status dos pedidos em tempo real | ❌ |
 | 8 | Consultar histórico de badges obtidos e em processo | ❌ |
 | 9 | Catálogo de badges disponíveis com descrições | ⚠️ (API tem getBadges, frontend parcial) |
-| 10 | Consultar requisitos de cada badge | ❌ (rotas comentadas) |
+| 10 | Consultar requisitos de cada badge | ✅ (API: GET /requisitos/get/badge/:id e GET /requisitos/get) |
 | 11 | Aceitar termos RGPD para publicação e partilha | ❌ |
 | 12 | Partilhar badge no LinkedIn | ❌ |
 | 13 | Sistema de pontos por badges obtidos | ⚠️ (modelo tem total_pontos, lógica parcial) |
@@ -434,7 +535,7 @@ Nenhuma — todas as correções foram aplicadas.
 | 3 | Visualizar status de pedidos da sua SL/área em tempo real | ❌ |
 | 4 | Consultar histórico de badges da sua SL/área | ❌ |
 | 5 | Catálogo de badges com descrições | ⚠️ |
-| 6 | Consultar requisitos de cada badge | ❌ |
+| 6 | Consultar requisitos de cada badge | ✅ (API: GET /requisitos/get/badge/:id) |
 | 7 | Ver sistema de pontos da sua área | ⚠️ |
 | 8 | Ver badges de conquistas especiais (Badges Premium) | ❌ |
 | 9 | Gerar relatórios de badges atribuídos na sua área/período | ❌ |
@@ -465,7 +566,7 @@ Nenhuma — todas as correções foram aplicadas.
 | 4 | Visualizar status de pedidos em tempo real | ❌ |
 | 5 | Consultar histórico de badges obtidos e em processo | ❌ |
 | 6 | Catálogo de badges com descrições | ⚠️ |
-| 7 | Consultar requisitos de cada badge | ❌ |
+| 7 | Consultar requisitos de cada badge | ✅ (API: GET /requisitos/get/badge/:id) |
 | 8 | Gerar relatórios de badges atribuídos por área/período | ❌ |
 | 9 | Exportar pedidos para Excel/PDF | ❌ |
 | 10 | Exportar badges para Excel/PDF | ❌ |
@@ -493,7 +594,7 @@ Nenhuma — todas as correções foram aplicadas.
 | 1 | Gestão de utilizadores e permissões | ⚠️ (CRUD Utilizadores existe, mas sem endpoints de perfil) |
 | 2 | Criar utilizadores e definir perfil (SL, TM) | ✅ (parcial, criarUtilizadores.service.js) |
 | 3 | Acrescentar/eliminar badges | ✅ (CRUD Badges implementado) |
-| 4 | Acrescentar/eliminar Learning Paths / SLs / Áreas / Níveis / Requisitos | ⚠️ (LP, SL, Área OK; Requisitos comentados) |
+| 4 | Acrescentar/eliminar Learning Paths / SLs / Áreas / Níveis / Requisitos | ✅ (LP, SL, Área, Requisitos OK — CRUD completo em /requisitos) |
 | 5 | Exportação de dados para Excel/PDF | ❌ |
 | 7 | Gestão de badges (expiração, pontos) | ⚠️ (modelo tem campos, CRUD parcial) |
 | 8 | Configuração de notificações | ❌ |
@@ -522,7 +623,7 @@ Nenhuma — todas as correções foram aplicadas.
 | 7 | Status de pedidos em tempo real | ❌ |
 | 8 | Histórico de badges | ❌ |
 | 9 | Catálogo de badges | ⚠️ |
-| 10 | Consultar requisitos | ❌ |
+| 10 | Consultar requisitos | ✅ (API: GET /requisitos/get/badge/:id) |
 | 11 | Aceitação RGPD | ❌ |
 | 12 | Partilha LinkedIn | ❌ |
 | 13 | Ver pontos por badges | ⚠️ (total_pontos no modelo) |
@@ -668,10 +769,11 @@ Nenhuma — todas as correções foram aplicadas.
 |--------|------|------|-----------|
 | GET | /api/pedidos/get | requireAuth | Listar pedidos (filtrados por role) |
 | GET | /api/pedidos/:id/get | requireAuth | Pedido por ID |
-| POST | /api/pedidos/create | requireAuth | Criar pedido (consultor) |
-| POST | /api/pedidos/:id/tm-review | - | TM: aprovar(2 - correto) / devolver(3 - incorreto) |
-| POST | /api/pedidos/:id/sl-review | - | SL: aprovar(4) / devolver(6) / rejeitar(5) |
-| POST | /api/pedidos/:id/resubmit | - | Consultor reenviar pedido |
+| GET | /api/pedidos/:id/historico | requireAuth | Histórico do pedido (com access control por role) |
+| POST | /api/pedidos/create | requireAuth | Criar pedido (consultor, com suporte a documentos via sessao_id) |
+| POST | /api/pedidos/:id/tm-review | requireAuth | TM: aprovar(2 - correto) / devolver(3 - incorreto) |
+| POST | /api/pedidos/:id/sl-review | requireAuth | SL: aprovar(4) / devolver(6) / rejeitar(5) |
+| POST | /api/pedidos/:id/resubmit | requireAuth | Consultor reenviar pedido |
 
 #### Consultores
 | Método | Rota | Auth | Descrição |
@@ -697,10 +799,34 @@ Nenhuma — todas as correções foram aplicadas.
 | PUT | /api/utilizadores/:id/update | requireAuth | Atualizar utilizador (com bcrypt hash na password) |
 | DELETE | /api/utilizadores/:id/delete | requireAuth | Soft delete utilizador |
 
+#### Requisitos
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | /api/requisitos/get | requireAuth | Listar requisitos (admin) |
+| GET | /api/requisitos/:id/get | requireAuth | Requisito por ID (admin) |
+| GET | /api/requisitos/get/badge/:id | - | Requisitos de um badge (público) |
+| POST | /api/requisitos/create | requireAuth | Criar requisito (admin, valida máx 5) |
+| PUT | /api/requisitos/:id/update | requireAuth | Atualizar requisito (admin) |
+| DELETE | /api/requisitos/:id/delete | requireAuth | Soft delete requisito (admin) |
+
+#### Documentos
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | /api/documentos/get | requireAuth | Listar documentos (admin) |
+| GET | /api/documentos/:id/get | requireAuth | Documento por ID (dono/TM/SL/admin) |
+| GET | /api/documentos/pedido/:id_pedido | requireAuth | Documentos de um pedido |
+| GET | /api/documentos/pedido/:id_pedido/requisito/:id_requisito | requireAuth | Documento de requisito num pedido |
+| POST | /api/documentos/create | requireAuth | Upload de documento (consultor) |
+| PUT | /api/documentos/:id/update | requireAuth | Atualizar documento (consultor, só se não validado) |
+| DELETE | /api/documentos/:id/delete | requireAuth | Eliminar documento (admin) |
+| PUT | /api/documentos/:id/validate | requireAuth | Validar/invalidar documento individual (TM/SL) |
+
 #### Candidaturas
 | Método | Rota | Auth | Descrição |
 |--------|------|------|-----------|
-| POST | /api/candidaturas | - | Submeter candidatura com evidências |
+| POST | /api/candidaturas | - | Submeter candidatura com evidências (formato: array de {documento, id_requisito}) |
+| POST | /api/candidaturas/inserir-documentacao | - | Upload temporário de documento (body: documentacao, sessaoId, id_requisito) |
+| POST | /api/candidaturas/candidatar | - | Finalizar candidatura (body: idConsultor, SessaoID, idBadge) |
 
 #### Dashboard
 | Método | Rota | Auth | Descrição |
@@ -711,7 +837,7 @@ Nenhuma — todas as correções foram aplicadas.
 | Comportamento | Descrição |
 |---------------|-----------|
 | Ao iniciar (`npm start`) | Importa 24 modelos Sequelize |
-| | `sequelize.sync({ force: true })` — recria tabelas conforme os modelos (destrutivo) |
+| | `sequelize.sync({ alter: true })` — sincroniza tabelas preservando dados existentes |
 | | `afterSync` hook em `Estados.models.js` — popula automaticamente os 6 estados |
 | | `seedDatabase()` — verifica `"Utilizadores"` (quotes forçam case-sensitive); se vazia, lê e executa `sql/seed.sql` |
 | | `app.listen(3000)` — só inicia após sync + seed |
@@ -719,15 +845,6 @@ Nenhuma — todas as correções foram aplicadas.
 | **Nota 2:** | Todas as imagens no seed usam `placeholder.jpg` (base64) — 34 campos em Utilizadores, LearningPaths, ServiceLines, Areas, Badges, Conquistas e Requisitos |
 
 ### 5.2 Endpoints com Rotas Comentadas (Por Implementar)
-
-#### Requisitos (em Badges.route.js)
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | /api/badges/:badgeId/requisitos | Listar requisitos de um badge |
-| GET | /api/badges/:badgeId/requisitos/:id | Requisito por ID |
-| POST | /api/badges/:badgeId/requisitos/create | Criar requisito |
-| DELETE | /api/badges/:badgeId/requisitos/:id/delete | Apagar requisito |
-| PUT | /api/badges/:badgeId/requisitos/:id/update | Atualizar requisito |
 
 #### Conquistas (em Conquistas.route.js — comentado)
 | Método | Rota | Descrição |
@@ -777,7 +894,7 @@ Nenhuma — todas as correções foram aplicadas.
 | GET | /api/relatorios/consultores/export | Exportar consultores |
 | GET | /api/relatorios/aprovacoes/export | Exportar aprovações |
 | GET | /api/relatorios/rejeicoes/export | Exportar rejeições |
-| POST | /api/documentacoes/upload | Upload de evidências |
+| - | /api/documentacoes/upload | ✅ Substituído por /api/documentos/create (com id_requisito) |
 | PUT | /api/admin/utilizadores/:id/perfil | Gestão de permissões |
 | GET | /api/admin/avisos | Listar avisos |
 | POST | /api/admin/avisos/create | Criar aviso |
@@ -798,6 +915,7 @@ Nenhuma — todas as correções foram aplicadas.
 - Remove badge concluído anterior
 - Se não existe pedido: escolhe TM com menos pedidos, cria pedido (estado=1), cria histórico, guarda documentos, cria notificação
 - Se já existe pedido: atualiza estado para 1, cria novo histórico, documentação e notificação
+- **Atualizado (16/05/2026):** Aceita array de `{ documento, id_requisito }` — cada documento obrigatoriamente associado a um requisito do badge
 
 ### 6.2 `devolverEstadoBadge.service.js`
 - Retorna: "Concluido" (válido ou sem validade), "Expirado" (validade ultrapassada), "Em análise" (estado 1-2), "Por Obter" (estado 3,5,6), "Erro no script!"
@@ -814,6 +932,7 @@ Nenhuma — todas as correções foram aplicadas.
 ### 6.5 `listarPedidos.service.js`
 - Lista pedidos por cargo (consultor, talent_manager, service_line_lider, admin)
 - Adiciona estado calculado via `devolverEstadoBadge`
+- Inclui dados do Utilizador (nome) através de include aninhado em Consultor/TM/SL
 
 ---
 
@@ -872,14 +991,15 @@ Nenhuma — todas as correções foram aplicadas.
 |-----------|:----:|:----------:|:----------:|:----------:|
 | Autenticação/Registo | 4 | 0 | 1 | 3 |
 | Consultor — Dashboard | 4 | 0 | 0 | 4 |
-| Badges/Requisitos | 6 | 0 | 2 | 4 |
+| Badges/Requisitos | 6 | 3 | 0 | 3 |
 | Conquistas/Gamification | 3 | 0 | 1 | 2 |
 | Exportações/Relatórios | 7 | 0 | 0 | 7 |
 | Notificações/Emails | 5 | 0 | 1 | 4 |
-| Admin — Gestão | 4 | 0 | 1 | 3 |
+| Admin — Gestão | 4 | 2 | 0 | 2 |
+| Documentos/Evidências | 8 | 8 | 0 | 0 |
 | Bónus/Integrações | 5 | 0 | 0 | 5 |
-| **Total** | **38** | **0** | **6** | **32** |
-| Correções técnicas (código) | 25 | 25 | 0 | 0 |
+| **Total** | **46** | **13** | **3** | **30** |
+| Correções técnicas (código) | 55 | 55 | 0 | 0 |
 
 ---
 
@@ -957,14 +1077,14 @@ API/
   src/
     app.js                 # Entry point Express
     config/                # (vazio — config via .env)
-    controllers/           # Lógica dos endpoints
+    controllers/           # 11 controllers (Requisitos + Documentos adicionados)
     middleware/
       auth.middleware.js   # JWT verification
       requireAuth.middleware.js  # Role check
     models/                # 24 modelos Sequelize
     routes/
       Rotas.js             # Agregador de rotas
-      # +12 ficheiros de rota individuais
+      # +13 ficheiros de rota individuais (Documentos.route.js adicionado)
     services/              # 6 serviços: lógica de negócio + seedDatabase()
     public/                # Ficheiros estáticos
   docs/

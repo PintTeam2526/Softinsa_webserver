@@ -24,7 +24,7 @@ var DocumentacaoTemporaria = sequelize.define('DocumentacaoTemporaria',
     }
 },
 {
-    timestamps: false,
+    timestamps: true,
     tableName: 'DocumentacaoTemporaria'
 });
 

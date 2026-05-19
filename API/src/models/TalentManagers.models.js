@@ -22,7 +22,7 @@ var TalentManagers = sequelize.define('TalentManagers',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 

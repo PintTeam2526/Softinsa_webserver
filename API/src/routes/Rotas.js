@@ -10,11 +10,12 @@ var serviceLinesRouter = require('../routes/ServiceLines.route');
 var learningPathsRouter = require('../routes/LearningPaths.route');
 var pedidosBadgesRouter = require('../routes/PedidosBadges.route');
 //var conquistasRouter = require('../routes/Conquistas.route');
-//var documentosRouter = require('../routes/Documentos.route');
+var documentosRouter = require('../routes/Documentos.route');
 //var notificacoesRouter = require('../routes/Notificacoes.route');
 var consultoresRoutes = require('../routes/Consultores.route');
 var candidaturasRoutes = require('../routes/Candidaturas.route');
 var requisitosRoutes = require('../routes/Requisitos.route');
+var objetivosRoutes = require('../routes/Objetivos.route');
 
 const router = express.Router();
 
@@ -28,10 +29,11 @@ router.use('/serviceLines', serviceLinesRouter);
 router.use('/learningPaths', learningPathsRouter);
 router.use('/pedidos', pedidosBadgesRouter);
 //router.use('/conquistas', conquistasRouter);
-//router.use('/documentos', documentosRouter);
+router.use('/documentos', documentosRouter);
 //router.use('/notificacoes', notificacoesRouter);
 router.use('/consultores', consultoresRoutes);
 router.use('/candidaturas', candidaturasRoutes);
 router.use('/requisitos', requisitosRoutes);
+router.use('/objetivos', objetivosRoutes);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const sequelize = require('../../database');
 const { Op } = require('sequelize');
+const bcrypt = require('bcrypt');
 const editarDadosService = require('../services/editarDados.service');
 const Consultores = require('../models/Consultores.models');
 const Utilizador = require('../models/Utilizadores.models');
@@ -28,6 +29,122 @@ controllers.editarDados = async (req, res) => {
     }
 };
 
+//MOBILE (EDITAR DADOS)
+controllers.editarDadosConsultorMobile = async (req, res) => {
+  try {
+    const {
+      idConsultor,
+      nome,
+      email,
+      idAreaPreferencia,
+      fotoPerfil,
+      passwordNova,
+      passwordAtual,
+    } = req.body;
+    let passNovaHash = null;
+
+    if (!idConsultor) {
+      return res
+        .status(400)
+        .json({ error: "Campo idConsultor é obrigatório." });
+    }
+
+    // 1. Verificar a password atual se fornecida
+    if (passwordAtual) {
+      const consultor = await Consultores.findOne({
+        where: { id_consultor: idConsultor },
+        include: [{ model: Utilizador }]
+      });
+
+      if (!consultor) {
+        return res.status(404).json({ error: "Consultor não encontrado." });
+      }
+
+      const passHashBD = consultor.Utilizadore.password_utilizador;
+      const passwordAtualValida = await bcrypt.compare(passwordAtual, passHashBD);
+
+      if (!passwordAtualValida) {
+        return res.status(401).json({ error: "A password atual está incorreta." });
+      }
+
+      // SE EXISTIR UMA PASSNOVA ENCRIPTA
+      if (passwordNova) {
+        const saltRounds = 10;
+        passNovaHash = await bcrypt.hash(passwordNova, saltRounds);
+      }
+    }
+
+    // 2. Realizar a atualização
+    const transaction = await sequelize.transaction();
+
+    try {
+      const consultorParaUpdate = await Consultores.findOne({
+        where: { id_consultor: idConsultor },
+        transaction
+      });
+
+      if (!consultorParaUpdate) {
+        await transaction.rollback();
+        return res.status(404).json({ error: "Consultor não encontrado." });
+      }
+
+      // Atualizar Utilizador
+      const updateDataUtilizador = {};
+      if (nome) updateDataUtilizador.nome_utilizador = nome;
+      if (email) updateDataUtilizador.email_utilizador = email;
+      if (fotoPerfil) updateDataUtilizador.imagem_utilizador = fotoPerfil;
+      if (passNovaHash) updateDataUtilizador.password_utilizador = passNovaHash;
+
+      if (Object.keys(updateDataUtilizador).length > 0) {
+        await Utilizador.update(updateDataUtilizador, {
+          where: { id_utilizador: consultorParaUpdate.id_utilizador },
+          transaction
+        });
+      }
+
+      // Atualizar Consultor (área de preferência)
+      if (idAreaPreferencia) {
+        await Consultores.update({ id_area: idAreaPreferencia }, {
+          where: { id_consultor: idConsultor },
+          transaction
+        });
+      }
+
+      await transaction.commit();
+
+      // Buscar dados atualizados para retornar (estilo SQL Server result.recordset)
+      const consultorAtualizado = await Consultores.findOne({
+        where: { id_consultor: idConsultor },
+        include: [
+          { model: Utilizador },
+          { model: Area }
+        ]
+      });
+
+      const respostaParaFlutter = {
+        ID_CONSULTOR: consultorAtualizado.id_consultor,
+        NOME_UTILIZADOR: consultorAtualizado.Utilizadore?.nome_utilizador ?? "",
+        EMAIL_UTILIZADOR: consultorAtualizado.Utilizadore?.email_utilizador ?? "",
+        ID_AREA_PREFERENCIA: consultorAtualizado.id_area,
+        IMAGEM_PERFIL: consultorAtualizado.Utilizadore?.imagem_utilizador ?? ""
+      };
+
+      return res.status(200).json({
+        message: "Dados atualizados com sucesso!",
+        data: [respostaParaFlutter]
+      });
+
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: "Erro interno no servidor ao atualizar dados do consultor.",
+    });
+  }
+}
 
 controllers.getConsultorByIdMobile = async (req, res) => {
   const { id } = req.params;

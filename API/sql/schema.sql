@@ -39,7 +39,9 @@ CREATE TABLE Utilizadores (
     username_utilizador TEXT     NOT NULL,
     tipo_utilizador VARCHAR(2)   NOT NULL,
     imagem_utilizador TEXT       NOT NULL,
-    estado_a_i      BOOLEAN      NOT NULL
+    estado_a_i      BOOLEAN      NOT NULL,
+    "createdAt"     TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -51,7 +53,9 @@ CREATE TABLE LearningPaths (
     descricao_learning_path TEXT   NOT NULL,
     imagem_learning_path   TEXT    NOT NULL,
     estado_a_i             BOOLEAN NOT NULL DEFAULT TRUE,
-    data_insercao          DATE    NOT NULL
+    data_insercao          TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -64,7 +68,9 @@ CREATE TABLE ServiceLines (
     descricao_service_line TEXT    NOT NULL,
     imagem_service_line    TEXT    NOT NULL,
     estado_a_i             BOOLEAN NOT NULL,
-    data_insercao          DATE    NOT NULL
+    data_insercao          TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -77,7 +83,9 @@ CREATE TABLE Areas (
     descricao_area   TEXT    NOT NULL,
     imagem_area      TEXT    NOT NULL,
     estado_a_i       BOOLEAN NOT NULL,
-    data_insercao    DATE    NOT NULL
+    data_insercao    TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -87,7 +95,9 @@ CREATE TABLE Consultores (
     id_consultor    SERIAL  PRIMARY KEY,
     id_utilizador   INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador),
     total_pontos    INTEGER,
-    id_area         INTEGER NOT NULL REFERENCES Areas(id_area)
+    id_area         INTEGER NOT NULL REFERENCES Areas(id_area),
+    "createdAt"     TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -95,7 +105,9 @@ CREATE TABLE Consultores (
 -- ============================================================
 CREATE TABLE Administradores (
     id_administrador SERIAL  PRIMARY KEY,
-    id_utilizador    INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador)
+    id_utilizador    INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador),
+    "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -103,7 +115,9 @@ CREATE TABLE Administradores (
 -- ============================================================
 CREATE TABLE TalentManagers (
     id_talent_manager SERIAL  PRIMARY KEY,
-    id_utilizador     INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador)
+    id_utilizador     INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador),
+    "createdAt"       TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"       TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -112,7 +126,9 @@ CREATE TABLE TalentManagers (
 CREATE TABLE ServiceLineLiders (
     id_service_line_lider SERIAL  PRIMARY KEY,
     id_utilizador         INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador),
-    id_service_line       INTEGER NOT NULL REFERENCES ServiceLines(id_service_line)
+    id_service_line       INTEGER NOT NULL REFERENCES ServiceLines(id_service_line),
+    "createdAt"           TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"           TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -130,7 +146,9 @@ CREATE TABLE Badges (
     sla              INTEGER      NOT NULL,
     validade         INTEGER      NOT NULL,
     estado_a_i       BOOLEAN      NOT NULL,
-    data_insercao    DATE         NOT NULL
+    data_insercao    TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -142,7 +160,9 @@ CREATE TABLE Conquistas (
     pontos_conquista   INTEGER NOT NULL,
     imagem_conquista   TEXT    NOT NULL,
     estado_a_i         BOOLEAN NOT NULL,
-    data_insercao      DATE    NOT NULL
+    data_insercao      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"        TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"        TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -151,7 +171,9 @@ CREATE TABLE Conquistas (
 CREATE TABLE Estados (
     id_estado      SERIAL  PRIMARY KEY,
     nome_estado    TEXT    NOT NULL,
-    descricao_estado TEXT  NOT NULL
+    descricao_estado TEXT  NOT NULL,
+    "createdAt"    TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"    TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -163,8 +185,10 @@ CREATE TABLE Requisitos (
     nome_requisito    TEXT    NOT NULL,
     descricao_requisito TEXT,
     imagem_requisito  TEXT,
-    data_insercao     DATE    NOT NULL,
-    estado_a_i        BOOLEAN NOT NULL
+    data_insercao     TIMESTAMP WITH TIME ZONE NOT NULL,
+    estado_a_i        BOOLEAN NOT NULL,
+    "createdAt"       TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"       TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -174,10 +198,12 @@ CREATE TABLE Objetivos (
     id_objetivo              SERIAL  PRIMARY KEY,
     id_badge                 INTEGER NOT NULL REFERENCES Badges(id_badge),
     id_consultor             INTEGER NOT NULL REFERENCES Consultores(id_consultor),
-    data_limite_conclusao    DATE    NOT NULL,
+    data_limite_conclusao    TIMESTAMP WITH TIME ZONE NOT NULL,
     nome_objetivo            TEXT    NOT NULL,
-    data_conclusao_objetivo  DATE,
-    estado_objetivo          TEXT    NOT NULL
+    data_conclusao_objetivo  TIMESTAMP WITH TIME ZONE,
+    estado_objetivo          TEXT    NOT NULL,
+    "createdAt"              TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"              TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -187,9 +213,10 @@ CREATE TABLE BadgesConcluidos (
     id_badge_concluido     SERIAL  PRIMARY KEY,
     id_badge               INTEGER NOT NULL REFERENCES Badges(id_badge),
     id_consultor           INTEGER NOT NULL REFERENCES Consultores(id_consultor),
-    data_limite_conclusao  DATE    NOT NULL,
-    data_conclusao_badge   DATE    NOT NULL,
-    url_validacao          TEXT    NOT NULL
+    data_conclusao_badge   TIMESTAMP WITH TIME ZONE NOT NULL,
+    url_validacao          TEXT    NOT NULL,
+    "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -199,7 +226,9 @@ CREATE TABLE ConquistasConsultores (
     id_conquista_consultor SERIAL  PRIMARY KEY,
     id_consultor           INTEGER NOT NULL REFERENCES Consultores(id_consultor),
     id_conquista           INTEGER NOT NULL REFERENCES Conquistas(id_conquista),
-    progresso              INTEGER NOT NULL
+    progresso              INTEGER NOT NULL,
+    "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -211,7 +240,9 @@ CREATE TABLE PedidosBadges (
     id_talent_manager    INTEGER NOT NULL REFERENCES TalentManagers(id_talent_manager),
     id_service_line_lider INTEGER NOT NULL REFERENCES ServiceLineLiders(id_service_line_lider),
     id_badge             INTEGER NOT NULL REFERENCES Badges(id_badge),
-    estado_atual         INTEGER NOT NULL REFERENCES Estados(id_estado)
+    estado_atual         INTEGER NOT NULL REFERENCES Estados(id_estado),
+    "createdAt"          TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"          TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -221,8 +252,14 @@ CREATE TABLE Documentacoes (
     id_documentacao  SERIAL  PRIMARY KEY,
     id_pedido_badge  INTEGER NOT NULL REFERENCES PedidosBadges(id_pedido_badge),
     id_consultor     INTEGER NOT NULL REFERENCES Consultores(id_consultor),
+    id_requisito     INTEGER NOT NULL REFERENCES Requisitos(id_requisito),
     documentacao     TEXT    NOT NULL,
-    validado         BOOLEAN
+    validado         BOOLEAN,
+    id_utilizador_validador INTEGER,
+    data_validacao   TIMESTAMP WITH TIME ZONE,
+    observacao_validacao TEXT,
+    "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -232,8 +269,9 @@ CREATE TABLE HistoricoPedidos (
     id_historico     SERIAL  PRIMARY KEY,
     id_estado        INTEGER NOT NULL REFERENCES Estados(id_estado),
     id_pedido_badge  INTEGER NOT NULL REFERENCES PedidosBadges(id_pedido_badge),
-    data             DATE    NOT NULL,
-    estado_objetivo  TEXT    NOT NULL
+    data             TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"      TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -242,7 +280,9 @@ CREATE TABLE HistoricoPedidos (
 CREATE TABLE NotificacoesAdmins (
     id_notificacao_admin SERIAL  PRIMARY KEY,
     id_administrador     INTEGER NOT NULL REFERENCES Administradores(id_administrador),
-    notificacao          TEXT
+    notificacao          TEXT,
+    "createdAt"          TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"          TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
@@ -253,24 +293,30 @@ CREATE TABLE NotificacoesPedidos (
     id_consultor           INTEGER NOT NULL REFERENCES Consultores(id_consultor),
     id_pedido_badge        INTEGER NOT NULL REFERENCES PedidosBadges(id_pedido_badge),
     justificacao           TEXT,
-    data_envio_notificacao DATE    NOT NULL
+    data_envio_notificacao TIMESTAMP WITH TIME ZONE NOT NULL,
+    "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -- ============================================================
--- 21. Enviadas (PK composta)
+-- 21. Enviadas
 -- ============================================================
 CREATE TABLE Enviadas (
     id_notificacao_admin INTEGER NOT NULL REFERENCES NotificacoesAdmins(id_notificacao_admin),
     id_utilizador        INTEGER NOT NULL REFERENCES Utilizadores(id_utilizador),
+    "createdAt"          TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"          TIMESTAMP WITH TIME ZONE NOT NULL,
     PRIMARY KEY (id_notificacao_admin, id_utilizador)
 );
 
 -- ============================================================
--- 22. Favoritos (PK composta)
+-- 22. Favoritos
 -- ============================================================
 CREATE TABLE Favoritos (
     id_consultor INTEGER NOT NULL REFERENCES Consultores(id_consultor),
     id_badge     INTEGER NOT NULL REFERENCES Badges(id_badge),
+    "createdAt"  TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"  TIMESTAMP WITH TIME ZONE NOT NULL,
     PRIMARY KEY (id_consultor, id_badge)
 );
 
@@ -281,6 +327,6 @@ CREATE TABLE Politicas (
     id_politica     SERIAL  PRIMARY KEY,
     id_administrador INTEGER NOT NULL REFERENCES Administradores(id_administrador),
     politica        TEXT    NOT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE,
-    updated_at      TIMESTAMP WITH TIME ZONE
+    "createdAt"     TIMESTAMP WITH TIME ZONE NOT NULL,
+    "updatedAt"     TIMESTAMP WITH TIME ZONE NOT NULL
 );

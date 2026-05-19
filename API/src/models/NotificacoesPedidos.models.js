@@ -37,7 +37,7 @@ var NotificacoesPedidos = sequelize.define('NotificacoesPedidos',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 NotificacoesPedidos.belongsTo(Consultor, { foreignKey: 'id_consultor' });

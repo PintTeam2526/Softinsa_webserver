@@ -33,7 +33,7 @@ var Conquistas = sequelize.define('Conquistas',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 
