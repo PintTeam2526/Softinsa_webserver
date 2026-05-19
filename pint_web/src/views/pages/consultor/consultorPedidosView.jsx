@@ -80,7 +80,7 @@ function normalizePedido(raw) {
     id: raw.id_pedido_badge,
     badgeId: raw.id_badge,
     name: badge.nome_badge ?? raw.nome_badge ?? '—',
-    image: resolveImage(badge.imagem_badge ?? raw.imagem_badge ?? null),
+    image: badge.imagem_badge ?? raw.imagem_badge ?? null,
     evaluators: deriveEvaluators(estado),
     status: ESTADO_STATUS_MAP[estado] ?? 'analysis',
     progress: ESTADO_PROGRESS_MAP[estado] ?? 0,
@@ -152,8 +152,18 @@ const EVALUATOR_CONFIG = {
 // ─── sub-componentes ─────────────────────────────────────────────────────────
 
 function BadgeThumbnail({ badge }) {
-  const image = badge.image ?? BADGE_IMAGE_BY_NAME[badge.name] ?? outsystems1
-  return <img src={image} alt={badge.name} className="consultor-pedidos-badge-thumb" />
+  const image =
+    resolveImage(badge.image) ||
+    BADGE_IMAGE_BY_NAME[badge.name] ||
+    outsystems1
+
+  return (
+    <img
+      src={image}
+      alt={badge.name}
+      className="consultor-pedidos-badge-thumb"
+    />
+  )
 }
 
 function HistoryRow({ row, onClick }) {
