@@ -7,6 +7,10 @@ const controller = require('../controllers/Dashboard.controller');
 // Mostrar todos os badges
 router.get('/get', controllerBadges.getAllBadges);
 
+// Mobile
+router.get('/', controllerBadges.getAllBadgesMobile);
+router.get('/get/mobile', controllerBadges.getAllBadgesMobile);
+
 // Mostrar um badge por ID
 router.get('/:id/get', controllerBadges.getBadgeById);
 
@@ -18,6 +22,9 @@ router.put('/:id/update', authVerification, controllerBadges.updateBadgeById);
 
 // Eliminar um  badge
 router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById);
+
+// Mostrar badges recomendados
+router.get("/recomendados", controllerBadges.getBadgesRecomendados);
 
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);

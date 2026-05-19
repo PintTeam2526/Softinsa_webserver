@@ -102,6 +102,7 @@ controllers.getAllPedidos = async (req, res) => {
 
     const pedidos = await Pedidos.findAll({
       where: whereClause,
+      include: [{ model: Badges }],
     });
 
     return res.status(200).json(pedidos);
@@ -125,7 +126,9 @@ controllers.getPedidoById = async (req, res) => {
       });
     }
 
-    const pedido = await Pedidos.findByPk(req.params.id);
+    const pedido = await Pedidos.findByPk(req.params.id, {
+      include: [{ model: Badges }],
+    });
 
     if (!pedido) {
       return res.status(404).json({
@@ -241,8 +244,7 @@ controllers.createPedido = async (req, res) => {
           await Documentacoes.create({
             id_historico: historico.id_historico,   // <-- mudança chave
             id_consultor,
-            documentacao: doc.documentacao,
-            validado: null,
+            documentacao: doc.documentacao
           }, { transaction });
         }
 

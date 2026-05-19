@@ -115,13 +115,15 @@ controllers.candidatarBadge = async (req, res) => {
         }
 
         // 3. Criar histórico
-        await HistoricoPedidos.create({
+        const historico = await HistoricoPedidos.create({
             id_estado: 1,
-            id_utilizador_avaliador: 1, // Sistema ou Admin default
             id_pedido_badge: pedido.id_pedido_badge,
-            data: new Date(),
-            estado_objetivo: 'Submetido'
+            data: new Date()
         }, { transaction });
+
+        if (!historico || !historico.id_historico) {
+            throw new Error("Erro ao gerar ID do histórico do pedido");
+        }
 
         // 4. Mover documentos da tabela temporária para a definitiva
         const docsTemporarios = await DocumentacaoTemporaria.findAll({
@@ -131,10 +133,9 @@ controllers.candidatarBadge = async (req, res) => {
 
         for (const doc of docsTemporarios) {
             await Documentacoes.create({
-                id_pedido_badge: pedido.id_pedido_badge,
+                id_historico: historico.id_historico,
                 id_consultor: idConsultor,
-                documentacao: doc.documentacao, // A string já está em Base64
-                validado: null
+                documentacao: doc.documentacao // A string já está em Base64
             }, { transaction });
         }
 

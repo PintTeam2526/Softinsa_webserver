@@ -164,12 +164,12 @@ INSERT INTO "HistoricoPedidos" (id_estado, id_pedido_badge, data, "createdAt", "
 -- Apenas entradas de tipo submissao/reenvio transportam documentos;
 -- entradas de avaliação não têm documentos associados.
 -- ============================================================
-INSERT INTO "Documentacoes" (id_historico, id_consultor, id_requisito, documentacao, validado, "createdAt", "updatedAt") VALUES
+INSERT INTO "Documentacoes" (id_historico, id_consultor, id_requisito, documentacao, "createdAt", "updatedAt") VALUES
 -- Submissão inicial do Pedido 1 — João envia certificado para requisito "Subqueries" (id 3)
-(1, 1, 3, 'Certificado SQL Avançado - João', NULL,  NOW(), NOW()),
+(1, 1, 3, 'Certificado SQL Avançado - João',  NOW(), NOW()),
 
 -- Submissão inicial do Pedido 2 — Maria envia repositório para requisito "Express" (id 7)
-(2, 2, 7, 'Repositório GitHub com API Node.js', TRUE, NOW(), NOW());
+(2, 2, 7, 'Repositório GitHub com API Node.js', NOW(), NOW());
 
 -- ============================================================
 -- 18. NotificacoesAdmins
