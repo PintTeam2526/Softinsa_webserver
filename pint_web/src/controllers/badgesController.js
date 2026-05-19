@@ -10,6 +10,16 @@ export const getBadges = async () => {
   }
 }
 
+export const getBadgeById = async (id) => {
+  try {
+    const response = await api.get(`/badges/${id}/get`)
+    return response.data
+  } catch (error) {
+    console.error(`Erro ao obter badge ${id}`, error)
+    throw error
+  }
+}
+
 export const createBadge = async (payload) => {
   try {
     const response = await api.post('/badges/create', payload)

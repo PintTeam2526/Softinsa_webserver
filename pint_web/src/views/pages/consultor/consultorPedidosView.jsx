@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   HiOutlineMagnifyingGlass,
@@ -13,16 +13,103 @@ import tm1 from '../../../assets/images/badges/tm_1.png'
 import devops2 from '../../../assets/images/badges/devops_2.png'
 import './ConsultorPedidosView.css'
 
+import { getPedidos } from '../../../controllers/pedidosController'
+
+// ─── helpers ────────────────────────────────────────────────────────────────
+
 function slugify(value) {
   return value
     .toString()
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+// ─── normalização dos dados da API ──────────────────────────────────────────
+
+// Mapeamento de estado_atual → chave interna
+// 1 = submetido (aguarda TM)
+// 2 = aprovado TM (aguarda SL)
+// 3 = devolvido TM
+// 4 = aprovado SL (aceite)
+// 5 = rejeitado
+// 6 = devolvido SL
+
+const ESTADO_STATUS_MAP = {
+  1: 'analysis',
+  2: 'analysis',
+  3: 'returned',
+  4: 'accepted',
+  5: 'rejected',
+  6: 'returned',
+}
+
+const ESTADO_PROGRESS_MAP = {
+  1: 25,
+  2: 50,
+  3: 25,
+  4: 100,
+  5: 100,
+  6: 50,
+}
+
+function deriveEvaluators(estado) {
+  if (estado === 1) return ['TM']
+  if (estado === 2) return ['TM', 'SL']
+  if (estado === 3) return ['TM']
+  if (estado === 4 || estado === 5 || estado === 6) return ['TM', 'SL']
+  return []
+}
+
+function normalizePedido(raw) {
+  const estado = raw.estado_atual ?? 1
+  const badge = raw.Badge ?? {}
+
+  return {
+    id: raw.id_pedido_badge,
+    badgeId: raw.id_badge,
+    name: badge.nome_badge ?? raw.nome_badge ?? '—',
+    image: badge.imagem_badge ?? raw.imagem_badge ?? null,
+    evaluators: deriveEvaluators(estado),
+    status: ESTADO_STATUS_MAP[estado] ?? 'analysis',
+    progress: ESTADO_PROGRESS_MAP[estado] ?? 0,
+  }
+}
+
+const STATUS_MAP = {
+  // português → chave interna
+  'em analise': 'analysis',
+  'badge aceite': 'accepted',
+  'badge recusado': 'rejected',
+  'devolvido': 'returned',
+}
+
+function normalizeStatus(raw = '') {
+  const known = ['analysis', 'accepted', 'rejected', 'returned']
+  if (known.includes(raw)) return raw
+  return STATUS_MAP[raw.toLowerCase()] ?? 'analysis'
+}
+
+// ─── fallback de imagem local (enquanto o back não servir imagens) ───────────
+
+const BADGE_IMAGE_BY_NAME = {
+  'Citizen Developer': outsystems1,
+  'Team Lider Beginner': tm1,
+  'DevOps Intermediate': devops2,
+}
+
+// ─── candidaturas sugeridas (estáticas por agora) ────────────────────────────
+
+const candidateBadges = [
+  { id: 1, name: 'Citizen Developer', area: 'LowCode (Outsystems)', image: outsystems1 },
+  { id: 2, name: 'Team Lider Beginner', area: 'Talent Management', image: tm1 },
+  { id: 3, name: 'DevOps Intermediate', area: 'DevOps', image: devops2 },
+]
+
+// ─── ícone svg ───────────────────────────────────────────────────────────────
 
 function IconPedidos({ className }) {
   return (
@@ -40,38 +127,21 @@ function IconPedidos({ className }) {
   )
 }
 
+// ─── config de estado / avaliador ────────────────────────────────────────────
+
 const STATUS_CONFIG = {
-  analysis: { label: 'Em Análise',      Icon: HiOutlineClock,           cls: 'is-analysis' },
-  accepted: { label: 'Badge Aceite',    Icon: HiOutlineCheckCircle,     cls: 'is-accepted' },
-  rejected: { label: 'Badge Recusado',  Icon: HiOutlineXCircle,         cls: 'is-rejected' },
-  returned: { label: 'Devolvido',       Icon: HiOutlineArrowUturnLeft,  cls: 'is-returned' },
+  analysis: { label: 'Em Análise', Icon: HiOutlineClock, cls: 'is-analysis' },
+  accepted: { label: 'Badge Aceite', Icon: HiOutlineCheckCircle, cls: 'is-accepted' },
+  rejected: { label: 'Badge Recusado', Icon: HiOutlineXCircle, cls: 'is-rejected' },
+  returned: { label: 'Devolvido', Icon: HiOutlineArrowUturnLeft, cls: 'is-returned' },
 }
 
 const EVALUATOR_CONFIG = {
-  TM: { label: 'Talent Manager',      cls: 'is-tm' },
-  SL: { label: 'Service Line Lider',  cls: 'is-sl' },
+  TM: { label: 'Talent Manager', cls: 'is-tm' },
+  SL: { label: 'Service Line Lider', cls: 'is-sl' },
 }
 
-const historyRows = [
-  { id: 1, name: 'Citizen Developer',    evaluators: ['TM'],       status: 'analysis', progress: 25  },
-  { id: 2, name: 'Team Lider Beginner',  evaluators: ['TM', 'SL'], status: 'analysis', progress: 64  },
-  { id: 3, name: 'DevOps Intermediate',  evaluators: ['TM', 'SL'], status: 'accepted', progress: 100 },
-  { id: 4, name: 'Citizen Developer',    evaluators: ['TM', 'SL'], status: 'rejected', progress: 100 },
-  { id: 5, name: 'Team Lider Beginner',  evaluators: ['TM'],       status: 'returned', progress: 25  },
-  { id: 6, name: 'DevOps Intermediate',  evaluators: ['TM', 'SL'], status: 'returned', progress: 76  },
-]
-
-const candidateBadges = [
-  { id: 1, name: 'Citizen Developer',    area: 'LowCode (Outsystems)', image: outsystems1 },
-  { id: 2, name: 'Team Lider Beginner',  area: 'Talent Management',     image: tm1 },
-  { id: 3, name: 'DevOps Intermediate',  area: 'DevOps',                image: devops2 },
-]
-
-const BADGE_IMAGE_BY_NAME = {
-  'Citizen Developer': outsystems1,
-  'Team Lider Beginner': tm1,
-  'DevOps Intermediate': devops2,
-}
+// ─── sub-componentes ─────────────────────────────────────────────────────────
 
 function BadgeThumbnail({ badge }) {
   const image = badge.image || BADGE_IMAGE_BY_NAME[badge.name]
@@ -79,14 +149,11 @@ function BadgeThumbnail({ badge }) {
 }
 
 function HistoryRow({ row, onClick }) {
-  const status = STATUS_CONFIG[row.status]
+  const status = STATUS_CONFIG[row.status] ?? STATUS_CONFIG.analysis
   const StatusIcon = status.Icon
 
-  function handleKeyDown(event) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      onClick()
-    }
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() }
   }
 
   return (
@@ -107,14 +174,10 @@ function HistoryRow({ row, onClick }) {
 
       <td>
         <div className="consultor-pedidos-evaluators">
-          {row.evaluators.map((code, index) => {
+          {row.evaluators.map((code, i) => {
             const cfg = EVALUATOR_CONFIG[code] ?? { label: code, cls: '' }
             return (
-              <span
-                key={index}
-                className={`consultor-pedidos-evaluator-tag ${cfg.cls}`}
-                title={cfg.label}
-              >
+              <span key={i} className={`consultor-pedidos-evaluator-tag ${cfg.cls}`} title={cfg.label}>
                 {code}
               </span>
             )
@@ -128,7 +191,13 @@ function HistoryRow({ row, onClick }) {
             <span>{status.label}</span>
             <StatusIcon className={`consultor-pedidos-status-icon ${status.cls}`} aria-hidden="true" />
           </div>
-          <div className="consultor-pedidos-progress" role="progressbar" aria-valuenow={row.progress} aria-valuemin={0} aria-valuemax={100}>
+          <div
+            className="consultor-pedidos-progress"
+            role="progressbar"
+            aria-valuenow={row.progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div
               className={`consultor-pedidos-progress-bar ${status.cls}`}
               style={{ width: `${row.progress}%` }}
@@ -144,12 +213,10 @@ function CandidateRow({ badge, onApply }) {
   return (
     <div className="consultor-pedidos-suggestion">
       <BadgeThumbnail badge={badge} />
-
       <div className="consultor-pedidos-suggestion-copy">
         <h4>{badge.name}</h4>
         <p>{badge.area}</p>
       </div>
-
       <button
         type="button"
         className="consultor-pedidos-apply-btn"
@@ -162,22 +229,90 @@ function CandidateRow({ badge, onApply }) {
   )
 }
 
+// ─── view principal ───────────────────────────────────────────────────────────
+
 function ConsultorPedidosView() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
 
+  // ── estado da listagem ──
+  const [historyRows, setHistoryRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function fetchPedidos() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getPedidos()                   // GET /pedidos/get
+        if (!cancelled) {
+          // A API pode devolver o array directamente ou dentro de uma chave
+          const rows = Array.isArray(data) ? data : (data.pedidos ?? data.data ?? [])
+          setHistoryRows(rows.map(normalizePedido))
+        }
+      } catch (err) {
+        if (!cancelled) setError('Não foi possível carregar os pedidos. Tenta novamente.')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchPedidos()
+    return () => { cancelled = true }
+  }, [])
+
+  // ── filtragem dos badges candidatáveis ──
   const filteredCandidates = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
     if (!term) return candidateBadges
-    return candidateBadges.filter((b) => `${b.name} ${b.area}`.toLowerCase().includes(term))
+    return candidateBadges.filter((b) =>
+      `${b.name} ${b.area}`.toLowerCase().includes(term)
+    )
   }, [searchTerm])
 
-  function goToBadge(name) {
-    navigate(`/consultor/badge/${slugify(name)}`)
+  function goToBadge(id, name) {
+    navigate(`/consultor/badge/${id}`)
   }
 
   function goToOutrasAreas() {
     navigate('/consultor/badges/outras-areas')
+  }
+
+  // ── render do corpo da tabela ──
+  function renderTableBody() {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan={3} className="consultor-pedidos-feedback">
+            A carregar pedidos…
+          </td>
+        </tr>
+      )
+    }
+    if (error) {
+      return (
+        <tr>
+          <td colSpan={3} className="consultor-pedidos-feedback is-error">
+            {error}
+          </td>
+        </tr>
+      )
+    }
+    if (historyRows.length === 0) {
+      return (
+        <tr>
+          <td colSpan={3} className="consultor-pedidos-feedback">
+            Ainda não tens pedidos submetidos.
+          </td>
+        </tr>
+      )
+    }
+    return historyRows.map((row) => (
+      <HistoryRow key={row.id} row={row} onClick={() => goToBadge(row.badgeId, row.name)} />
+    ))
   }
 
   return (
@@ -203,11 +338,7 @@ function ConsultorPedidosView() {
               <th className="consultor-pedidos-col-status" scope="col">ESTADO</th>
             </tr>
           </thead>
-          <tbody>
-            {historyRows.map((row) => (
-              <HistoryRow key={row.id} row={row} onClick={() => goToBadge(row.name)} />
-            ))}
-          </tbody>
+          <tbody>{renderTableBody()}</tbody>
         </table>
       </article>
 
@@ -222,7 +353,7 @@ function ConsultorPedidosView() {
             type="text"
             placeholder="Pesquisar por nome do badge..."
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Pesquisar badges"
           />
         </label>
@@ -230,7 +361,7 @@ function ConsultorPedidosView() {
         <div className="consultor-pedidos-suggestions">
           {filteredCandidates.length > 0 ? (
             filteredCandidates.map((badge) => (
-              <CandidateRow key={badge.id} badge={badge} onApply={(b) => goToBadge(b.name)} />
+              <CandidateRow key={badge.id} badge={badge} onApply={(b) => goToBadge(b.id, b.name)} />
             ))
           ) : (
             <div className="consultor-pedidos-empty">Nenhum badge encontrado.</div>

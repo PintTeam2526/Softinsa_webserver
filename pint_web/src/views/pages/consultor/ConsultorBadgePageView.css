@@ -7,6 +7,16 @@
   gap: 24px;
 }
 
+.consultor-badge-page-feedback {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.consultor-badge-page-feedback.is-error {
+  color: var(--color-danger, #ef4444);
+}
+
 /* ── HERO ──────────────────────────────────────────────── */
 .consultor-badge-hero {
   position: relative;
@@ -34,11 +44,40 @@
   transform: rotate(90deg);
 }
 
-.consultor-badge-hero-circle-5 { width: 2156px;     height: 2112.615px; left: -194px;   top: -233px; }
-.consultor-badge-hero-circle-4 { width: 1670.328px; height: 1635.378px; left: -194px;   top: 5.62px; }
-.consultor-badge-hero-circle-3 { width: 1418.453px; height: 1389.529px; left: -100px;   top: 206.88px; }
-.consultor-badge-hero-circle-2 { width: 1041.243px; height: 1041.243px; left: -33.72px; top: 334.62px; }
-.consultor-badge-hero-circle-1 { width: 827.933px;  height: 827.933px;  left: 48.23px;  top: 380.42px; }
+.consultor-badge-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-badge-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-badge-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-badge-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-badge-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+}
 
 .consultor-badge-hero-copy {
   position: absolute;
@@ -606,6 +645,23 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.consultor-badge-submit-feedback {
+  margin: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.consultor-badge-submit-feedback.is-success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.consultor-badge-submit-feedback.is-error {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .consultor-badge-card-actions {

@@ -72,8 +72,8 @@ function App() {
         <Route path="badges/conquistas" element={<ConsultorConquistasView />} />
         <Route path="outras-areas" element={<ConsultorOutrasAreasView />} />
         <Route path="badges/outras-areas" element={<ConsultorOutrasAreasView />} />
-        <Route path="badge/:slug" element={<ConsultorBadgePageView />} />
-        <Route path="area/lowcode/:slug" element={<ConsultorBadgePageView />} />
+        <Route path="badge/:badgeId" element={<ConsultorBadgePageView />} />
+        <Route path="area/lowcode/:badgeId" element={<ConsultorBadgePageView />} />
         <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
         <Route path="badges" element={<ConsultorDashboardView />} />
         <Route path="mensagens" element={<ConsultorDashboardView />} />
