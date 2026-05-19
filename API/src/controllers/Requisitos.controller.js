@@ -71,12 +71,12 @@ controllers.getRequisitosBadgeMobile = async (req, res) => {
 controllers.getRequisitosBadge = async (req, res) => {
     try {
         const { id_badge } = req.params;
-        if (!id) {
+        if (!id_badge) {
             return res.status(400).json({ error: "Tens de enviar o id do badge por parametro" });
         }
 
         const response = await Requisitos.findAll({
-            where: { id_badge: id }
+            where: { id_badge: id_badge }
         });
 
         res.json(response);
