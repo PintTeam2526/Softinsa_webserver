@@ -7,6 +7,10 @@ const controller = require('../controllers/Dashboard.controller');
 // Mostrar todos os badges
 router.get('/get', controllerBadges.getAllBadges);
 
+// Mobile
+router.get('/', controllerBadges.getAllBadgesMobile);
+router.get('/get/mobile', controllerBadges.getAllBadgesMobile);
+
 // Mostrar um badge por ID
 router.get('/:id/get', controllerBadges.getBadgeById);
 
