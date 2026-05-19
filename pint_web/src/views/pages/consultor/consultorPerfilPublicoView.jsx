@@ -1,5 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import {
+  HiOutlineCog6Tooth,
+  HiOutlineLockClosed,
+  HiOutlineEnvelope,
+  HiOutlineMapPin,
+  HiOutlineCamera,
+  HiOutlineChevronRight,
+  HiOutlineXMark,
+} from 'react-icons/hi2'
 import './ConsultorPerfilPublicoView.css'
+import '../shared/profile-settings.css'
 
 const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
@@ -17,6 +27,15 @@ const badges = [
   { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
 ]
 
+const PREFERRED_AREAS = [
+  'LowCode (Outsystems)',
+  'Talent Management',
+  'DevOps',
+  'Hybrid Cloud',
+  'Data & Analytics',
+  'Cybersecurity',
+]
+
 function BadgeItem({ image, name, date }) {
   return (
     <div className="sll-profile-badge-item">
@@ -29,15 +48,125 @@ function BadgeItem({ image, name, date }) {
   )
 }
 
+function SettingsRow({ Icon, label, description, onClick }) {
+  return (
+    <button type="button" className="sll-profile-settings-row" onClick={onClick}>
+      <span className="sll-profile-settings-icon">
+        <Icon aria-hidden="true" />
+      </span>
+      <span className="sll-profile-settings-copy">
+        <strong>{label}</strong>
+        <span>{description}</span>
+      </span>
+      <HiOutlineChevronRight className="sll-profile-settings-chevron" aria-hidden="true" />
+    </button>
+  )
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="sll-profile-modal-backdrop" role="presentation" onClick={onClose}>
+      <div
+        className="sll-profile-modal"
+        role="dialog"
+        aria-label={title}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="sll-profile-modal-header">
+          <h3>{title}</h3>
+          <button
+            type="button"
+            className="sll-profile-modal-close"
+            onClick={onClose}
+            aria-label="Fechar"
+          >
+            <HiOutlineXMark aria-hidden="true" />
+          </button>
+        </header>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 function ConsultorPerfilPublicoView() {
+  const [activeModal, setActiveModal] = useState(null)
+  const [feedback, setFeedback] = useState('')
+
+  const [email, setEmail] = useState('antoniopt@gmail.com')
+  const [preferredArea, setPreferredArea] = useState('LowCode (Outsystems)')
+  const [avatarUrl, setAvatarUrl] = useState(profileAvatar)
+
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' })
+  const [emailForm, setEmailForm] = useState({ next: email, password: '' })
+  const [areaDraft, setAreaDraft] = useState(preferredArea)
+  const [avatarDraft, setAvatarDraft] = useState(avatarUrl)
+  const fileInputRef = useRef(null)
+
   const profileStats = useMemo(
     () => [
       { icon: pointsIcon, label: '550 Pontos' },
       { icon: badgesIcon, label: '9 Badges Obtidos' },
-      { icon: emailIcon, label: 'antoniopt@gmail.com' },
+      { icon: emailIcon, label: email },
     ],
-    [],
+    [email],
   )
+
+  function openModal(name) {
+    setFeedback('')
+    if (name === 'email') setEmailForm({ next: email, password: '' })
+    if (name === 'area') setAreaDraft(preferredArea)
+    if (name === 'image') setAvatarDraft(avatarUrl)
+    if (name === 'password') setPasswordForm({ current: '', next: '', confirm: '' })
+    setActiveModal(name)
+  }
+
+  function closeModal() {
+    setActiveModal(null)
+  }
+
+  function flashFeedback(message) {
+    setFeedback(message)
+    window.setTimeout(() => setFeedback(''), 2400)
+  }
+
+  function handlePasswordSubmit(event) {
+    event.preventDefault()
+    const { current, next, confirm } = passwordForm
+    if (!current || !next || next !== confirm) return
+    closeModal()
+    flashFeedback('Password atualizada com sucesso.')
+  }
+
+  function handleEmailSubmit(event) {
+    event.preventDefault()
+    if (!emailForm.next.trim()) return
+    setEmail(emailForm.next.trim())
+    closeModal()
+    flashFeedback('Email atualizado.')
+  }
+
+  function handleAreaSubmit(event) {
+    event.preventDefault()
+    setPreferredArea(areaDraft)
+    closeModal()
+    flashFeedback('Área de preferência atualizada.')
+  }
+
+  function handleAvatarFile(event) {
+    const [file] = event.target.files || []
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setAvatarDraft(String(reader.result))
+    reader.readAsDataURL(file)
+  }
+
+  function handleAvatarSubmit(event) {
+    event.preventDefault()
+    setAvatarUrl(avatarDraft)
+    closeModal()
+    flashFeedback('Imagem de perfil atualizada.')
+  }
 
   return (
     <div className="sll-profile-page">
@@ -50,10 +179,16 @@ function ConsultorPerfilPublicoView() {
             </div>
           </section>
 
+          {feedback ? (
+            <div className="sll-profile-feedback" role="status">
+              {feedback}
+            </div>
+          ) : null}
+
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={profileAvatar} alt="António Portugal" />
+                <img src={avatarUrl} alt="António Portugal" />
               </div>
 
               <div className="sll-profile-copy">
@@ -61,7 +196,7 @@ function ConsultorPerfilPublicoView() {
                   <h2>António Portugal</h2>
                   <span className="sll-profile-role-pill">Consultor</span>
                 </div>
-                <p>Área: LowCode (Outsystems)</p>
+                <p>Área: {preferredArea}</p>
                 <p>Service Line: Hybrid Cloud</p>
                 <p>Learning Path: Jornada Técnica</p>
               </div>
@@ -79,6 +214,40 @@ function ConsultorPerfilPublicoView() {
             </div>
           </section>
 
+          <section className="sll-profile-settings-card" aria-label="Definições da conta">
+            <header className="sll-profile-settings-header">
+              <HiOutlineCog6Tooth aria-hidden="true" />
+              <h3>Definições da conta</h3>
+            </header>
+
+            <div className="sll-profile-settings-list">
+              <SettingsRow
+                Icon={HiOutlineLockClosed}
+                label="Alterar password"
+                description="Atualiza a tua password de acesso"
+                onClick={() => openModal('password')}
+              />
+              <SettingsRow
+                Icon={HiOutlineEnvelope}
+                label="Alterar email"
+                description={email}
+                onClick={() => openModal('email')}
+              />
+              <SettingsRow
+                Icon={HiOutlineMapPin}
+                label="Área de preferência"
+                description={preferredArea}
+                onClick={() => openModal('area')}
+              />
+              <SettingsRow
+                Icon={HiOutlineCamera}
+                label="Trocar imagem de perfil"
+                description="Carrega uma nova fotografia"
+                onClick={() => openModal('image')}
+              />
+            </div>
+          </section>
+
           <section className="sll-profile-badges-card">
             <div className="sll-profile-badges-header">
               <img src={badgesHeaderIcon} alt="Badges" />
@@ -93,6 +262,152 @@ function ConsultorPerfilPublicoView() {
           </section>
         </div>
       </main>
+
+      {activeModal === 'password' ? (
+        <Modal title="Alterar password" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handlePasswordSubmit}>
+            <label className="sll-profile-field">
+              <span>Password atual</span>
+              <input
+                type="password"
+                value={passwordForm.current}
+                onChange={(event) => setPasswordForm({ ...passwordForm, current: event.target.value })}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Nova password</span>
+              <input
+                type="password"
+                value={passwordForm.next}
+                onChange={(event) => setPasswordForm({ ...passwordForm, next: event.target.value })}
+                minLength={6}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Confirmar nova password</span>
+              <input
+                type="password"
+                value={passwordForm.confirm}
+                onChange={(event) => setPasswordForm({ ...passwordForm, confirm: event.target.value })}
+                required
+              />
+              {passwordForm.confirm && passwordForm.confirm !== passwordForm.next ? (
+                <small className="sll-profile-field-error">As passwords não coincidem.</small>
+              ) : null}
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'email' ? (
+        <Modal title="Alterar email" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleEmailSubmit}>
+            <label className="sll-profile-field">
+              <span>Novo email</span>
+              <input
+                type="email"
+                value={emailForm.next}
+                onChange={(event) => setEmailForm({ ...emailForm, next: event.target.value })}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Password (confirmação)</span>
+              <input
+                type="password"
+                value={emailForm.password}
+                onChange={(event) => setEmailForm({ ...emailForm, password: event.target.value })}
+                required
+              />
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'area' ? (
+        <Modal title="Área de preferência" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleAreaSubmit}>
+            <label className="sll-profile-field">
+              <span>Seleciona a área que te interessa mais</span>
+              <select
+                value={areaDraft}
+                onChange={(event) => setAreaDraft(event.target.value)}
+              >
+                {PREFERRED_AREAS.map((area) => (
+                  <option key={area} value={area}>{area}</option>
+                ))}
+              </select>
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'image' ? (
+        <Modal title="Trocar imagem de perfil" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleAvatarSubmit}>
+            <div className="sll-profile-avatar-preview">
+              <img src={avatarDraft || profileAvatar} alt="Pré-visualização" />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarFile}
+              className="sll-profile-file-hidden"
+            />
+            <button
+              type="button"
+              className="sll-profile-btn-secondary"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Escolher ficheiro…
+            </button>
+            <label className="sll-profile-field">
+              <span>ou cola um link para a imagem</span>
+              <input
+                type="url"
+                value={avatarDraft.startsWith('data:') ? '' : avatarDraft}
+                onChange={(event) => setAvatarDraft(event.target.value)}
+                placeholder="https://…"
+              />
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
     </div>
   )
 }

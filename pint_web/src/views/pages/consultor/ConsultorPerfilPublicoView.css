@@ -113,6 +113,9 @@
   .sll-profile-badges-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* Os estilos das "Definições da conta" e modais vivem em
+ * `../shared/profile-settings.css` e são importados pelo JSX desta view. */
+
 @media (max-width: 768px) {
   .sll-profile-scroll { padding: 0 16px 16px; }
   .sll-profile-hero-copy { left: 24px; top: 24px; }
