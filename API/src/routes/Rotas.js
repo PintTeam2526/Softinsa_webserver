@@ -16,6 +16,7 @@ var consultoresRoutes = require('../routes/Consultores.route');
 var candidaturasRoutes = require('../routes/Candidaturas.route');
 var requisitosRoutes = require('../routes/Requisitos.route');
 var objetivosRoutes = require('../routes/Objetivos.route');
+var syncMobileRoutes = require('../routes/SyncMobile.route');
 
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.use('/consultores', consultoresRoutes);
 router.use('/candidaturas', candidaturasRoutes);
 router.use('/requisitos', requisitosRoutes);
 router.use('/objetivos', objetivosRoutes);
+router.use('/syncMobile', syncMobileRoutes);
 
 module.exports = router;
