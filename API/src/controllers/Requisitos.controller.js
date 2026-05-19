@@ -76,7 +76,7 @@ controllers.getRequisitosBadge = async (req, res) => {
         }
 
         const response = await Requisitos.findAll({
-            where: { id_badge: id }
+            where: { id_badge: id_badge }
         });
 
         res.json(response);
