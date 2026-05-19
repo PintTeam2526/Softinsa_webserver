@@ -9,9 +9,12 @@ import './ConsultorBadgePageView.css'
 
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
 
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
 import { getBadgeById } from '../../../controllers/badgesController'
 import { getRequisitosByBadge } from '../../../controllers/requisitosController'
-import { createPedido, uploadDocumentacao } from '../../../controllers/pedidosController'
+import { getPedidos, uploadDocumentacao, createPedido } from '../../../controllers/pedidosController'
 
 // ─── imagem ───────────────────────────────────────────────────────────────────
 // As imagens vêm da BD como base64 puro ou com prefixo data URL.
@@ -19,26 +22,13 @@ import { createPedido, uploadDocumentacao } from '../../../controllers/pedidosCo
 
 function resolveImage(raw) {
   if (!raw) return outsystems1
-  if (raw.startsWith('data:')) return raw                    // já tem prefixo
-  if (raw.startsWith('http')) return raw                    // URL externa
-  if (/\.(png|jpe?g|gif|webp)$/i.test(raw)) return raw      // caminho de ficheiro
-  return `data:image/png;base64,${raw}`                     // base64 puro
+  if (raw.startsWith('data:')) return raw
+  if (raw.startsWith('http')) return raw
+  if (/\.(png|jpe?g|gif|webp)$/i.test(raw)) return raw
+  return `data:image/png;base64,${raw}`
 }
 
 // ─── normalização ─────────────────────────────────────────────────────────────
-// Campos reais do Sequelize: nome_badge, nivel_badge, imagem_badge, etc.
-// As relações (Area, ServiceLine, LearningPath) podem vir como objectos aninhados.
-
-const LOREM_LONG =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-
-const REQUISITOS_PLACEHOLDER = [
-  { id: 1, title: 'Curso de Fundamentos', descricao: LOREM_LONG },
-  { id: 2, title: 'Curso Intermédio', descricao: LOREM_LONG },
-  { id: 3, title: 'Curso Avançado', descricao: LOREM_LONG },
-  { id: 4, title: 'Avaliação prática', descricao: LOREM_LONG.slice(0, 120) },
-  { id: 5, title: 'Formação equivalente reconhecida', descricao: LOREM_LONG },
-]
 
 function normalizeRequisito(r, i) {
   return {
@@ -48,7 +38,7 @@ function normalizeRequisito(r, i) {
   }
 }
 
-function normalizeBadge(raw, requisitosRaw = []) {
+function normalizeBadge(raw, requisitosRaw = [], resolved = {}) {
   return {
     id: raw.id_badge ?? raw.id,
     name: raw.nome_badge ?? raw.nome ?? raw.name ?? '—',
@@ -58,10 +48,9 @@ function normalizeBadge(raw, requisitosRaw = []) {
     isSpecial: raw.especial ?? raw.isSpecial ?? false,
     isFavorite: raw.favorito ?? raw.isFavorite ?? false,
     image: resolveImage(raw.imagem_badge ?? raw.imagem ?? raw.image ?? null),
-    // relações — Sequelize capitaliza o nome do modelo (Area, ServiceLine, LearningPath)
-    area: raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
-    serviceLine: raw.ServiceLine?.nome_service_line ?? raw.serviceLine?.nome ?? raw.serviceLine ?? '—',
-    learningPath: raw.LearningPath?.nome_learning_path ?? raw.learningPath?.nome ?? raw.learningPath ?? '—',
+    area: resolved.area ?? raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
+    serviceLine: resolved.serviceLine ?? raw.ServiceLine?.nome_service_line ?? raw.serviceLine?.nome ?? raw.serviceLine ?? '—',
+    learningPath: resolved.learningPath ?? raw.LearningPath?.nome_learning_path ?? raw.learningPath?.nome ?? raw.learningPath ?? '—',
     status: raw.status ?? 'Em Análise',
     devolucao: {
       data: raw.devolucao?.data ?? '—',
@@ -81,8 +70,7 @@ function getConsultorIdFromToken() {
     const token = localStorage.getItem('token')
     if (!token) return null
     const payload = JSON.parse(atob(token.split('.')[1]))
-    console.log('JWT payload:', payload) // -> TESTE #############################################################################
-    return payload.id ?? payload.userId ?? payload.id_consultor ?? null
+    return payload.id_consultor ?? payload.id ?? null  // id_consultor primeiro
   } catch { return null }
 }
 
@@ -192,6 +180,7 @@ function ShareModal({ badge, onClose }) {
     onClose()
   }
 
+
   return (
     <div className="consultor-badge-share-backdrop" role="presentation">
       <div ref={modalRef} className={`consultor-badge-share-modal is-${activeTab}`} role="dialog" aria-modal="true" aria-label="Partilhar Badge">
@@ -292,9 +281,13 @@ function ConsultorBadgePageView() {
         setLoading(true)
         setError(null)
 
-        const [badgeData, requisitosData] = await Promise.all([
+        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData] = await Promise.all([
           getBadgeById(badgeId),
           getRequisitosByBadge(badgeId),
+          getAreas(),
+          getServiceLines(),
+          getLearningPaths(),
+          getPedidos(),
         ])
 
         if (!cancelled) {
@@ -303,10 +296,38 @@ function ConsultorBadgePageView() {
             ? requisitosData
             : (requisitosData?.requisitos ?? requisitosData?.data ?? [])
 
-          console.log('DEBUG badge raw:', raw)       // confirmar shape
-          console.log('DEBUG requisitos raw:', reqs) // confirmar shape
+          // ── cruzar IDs para obter nomes ──────────────────────────────
+          const area = areasData.find((a) => a.id_area === raw.id_area)
+          const sl = slData.find((s) => s.id_service_line === area?.id_service_line)
+          const lp = lpData.find((l) => l.id_learning_path === sl?.id_learning_path)
 
-          const normalized = normalizeBadge(raw, reqs)
+          const resolvedNames = {
+            area: area?.nome_area ?? '—',
+            serviceLine: sl?.nome_service_line ?? '—',
+            learningPath: lp?.nome_learning_path ?? '—',
+          }
+
+          const normalized = normalizeBadge(raw, reqs, resolvedNames)
+
+          const pedidos = Array.isArray(pedidosData)
+            ? pedidosData
+            : (pedidosData?.pedidos ?? pedidosData?.data ?? [])
+
+          const pedidoDoBadge = pedidos.find((p) => p.id_badge === normalized.id)
+
+          if (pedidoDoBadge) {
+            const ESTADO_MAP = {
+              1: 'submetido',
+              2: 'correto',
+              3: 'incorreto',
+              4: 'aprovado',
+              5: 'rejeitado',
+              6: 'devolvido',
+            }
+            normalized.status = ESTADO_MAP[pedidoDoBadge.estado_atual] ?? 'submetido'
+            normalized.pedidoId = pedidoDoBadge.id_pedido_badge
+          }
+
           setBadge(normalized)
           setIsFavorite(normalized.isFavorite)
         }
@@ -382,7 +403,9 @@ function ConsultorBadgePageView() {
       console.error('Erro ao submeter candidatura', err)
 
       setSubmitError(
-        err?.response?.data?.mensagem ||
+        err?.response?.data?.mensagem ??
+        err?.response?.data?.message ??
+        err?.message ??
         'Ocorreu um erro ao submeter a candidatura.'
       )
     } finally {
@@ -400,6 +423,13 @@ function ConsultorBadgePageView() {
     return <section className="consultor-badge-page"><div className="consultor-badge-page-feedback is-error">{error ?? 'Badge não encontrado.'}</div></section>
   }
 
+  const STATUS_ACEITE = ['aprovado']
+  const STATUS_DEVOLVIDO = ['incorreto', 'devolvido']
+
+  const statusNorm = badge.status?.toLowerCase().trim() ?? ''
+  const badgeAceite = STATUS_ACEITE.includes(statusNorm)
+  const badgeDevolvido = STATUS_DEVOLVIDO.includes(statusNorm)
+
   // ── render ───────────────────────────────────────────────────────────────────
 
   return (
@@ -415,7 +445,7 @@ function ConsultorBadgePageView() {
         </div>
       </header>
 
-      <div className="consultor-badge-top-grid">
+      <div className={`consultor-badge-top-grid${!badgeDevolvido ? ' is-single' : ''}`}>
         <article className="consultor-badge-card" aria-label={`Detalhes do badge ${badge.name}`}>
           <header className="consultor-badge-info-header">
             <h2>{badge.name}</h2>
@@ -438,25 +468,36 @@ function ConsultorBadgePageView() {
               {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
               <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
             </button>
-            <button type="button" className="consultor-badge-info-action-btn" onClick={() => setIsShareOpen(true)} aria-haspopup="dialog" aria-expanded={isShareOpen}>
-              <HiOutlineShare aria-hidden="true" /><span>Partilhar Badge</span>
+            <button
+              type="button"
+              className="consultor-badge-info-action-btn"
+              onClick={() => setIsShareOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={isShareOpen}
+              disabled={!badgeAceite}
+              title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
+            >
+              <HiOutlineShare aria-hidden="true" />
+              <span>Partilhar Badge</span>
             </button>
           </div>
         </article>
 
-        <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
-          <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
-          <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
-          <div className="consultor-badge-devolucoes-field"><label>Avaliador e Cargo:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span></div>
-          <div className="consultor-badge-devolucoes-field"><label>Motivo:</label><span className="consultor-badge-devolucoes-field-value is-motivo">{badge.devolucao.motivo}</span></div>
-          <div className="consultor-badge-devolucoes-upload">
-            <span className="consultor-badge-devolucoes-upload-label">Nova Documentação:</span>
-            <UploadRow />
-          </div>
-          <div className="consultor-badge-card-actions">
-            <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
-          </div>
-        </article>
+        {badgeDevolvido && (
+          <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
+            <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
+            <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
+            <div className="consultor-badge-devolucoes-field"><label>Avaliador e Cargo:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span></div>
+            <div className="consultor-badge-devolucoes-field"><label>Motivo:</label><span className="consultor-badge-devolucoes-field-value is-motivo">{badge.devolucao.motivo}</span></div>
+            <div className="consultor-badge-devolucoes-upload">
+              <span className="consultor-badge-devolucoes-upload-label">Nova Documentação:</span>
+              <UploadRow />
+            </div>
+            <div className="consultor-badge-card-actions">
+              <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
+            </div>
+          </article>
+        )}
       </div>
 
       <article className="consultor-badge-card" aria-label="Lista de Requisitos">
