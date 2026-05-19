@@ -68,6 +68,24 @@ controllers.getRequisitosBadgeMobile = async (req, res) => {
     }
 };
 
+controllers.getRequisitosBadge = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: "Tens de enviar o id do badge por parametro" });
+        }
+
+        const response = await Requisitos.findAll({
+            where: { id_badge: id }
+        });
+
+        res.json(response);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro interno no servidor" });
+    }
+};
+
 controllers.createRequisito = async (req, res) => {
     try {
         if (!isAdmin(req)) {
