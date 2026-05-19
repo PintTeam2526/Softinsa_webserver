@@ -133,19 +133,17 @@ async function submeterCandidatura({
         }
 
         // Criar histórico
-        const historico =
-            await HistoricoPedidos.create(
-                {
-                    id_estado: 1,
-                    id_utilizador_avaliador: 1,
-                    id_pedido_badge: pedido.id_pedido_badge,
-                    data: new Date(),
-                    estado_objetivo: 'Submetido'
-                },
-                {
-                    transaction
-                }
-            );
+        // Criar histórico
+        const historico = await HistoricoPedidos.create(
+            {
+                id_estado: 1,
+                id_pedido_badge: pedido.id_pedido_badge,
+                data: new Date()
+            },
+            {
+                transaction
+            }
+        );
 
         // Guardar documentos
         for (const doc of documentos) {
@@ -155,11 +153,10 @@ async function submeterCandidatura({
 
             await Documentacoes.create(
                 {
-                    id_pedido_badge: pedido.id_pedido_badge,
+                    id_historico: historico.id_historico,
                     id_consultor,
                     id_requisito: doc.id_requisito,
-                    documentacao: doc.documento,
-                    validado: null
+                    documentacao: doc.documento
                 },
                 {
                     transaction

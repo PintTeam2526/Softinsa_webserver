@@ -241,8 +241,7 @@ controllers.createPedido = async (req, res) => {
           await Documentacoes.create({
             id_historico: historico.id_historico,   // <-- mudança chave
             id_consultor,
-            documentacao: doc.documentacao,
-            validado: null,
+            documentacao: doc.documentacao
           }, { transaction });
         }
 
