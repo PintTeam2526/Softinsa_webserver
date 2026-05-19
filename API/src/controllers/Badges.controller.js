@@ -280,6 +280,38 @@ controllers.devolverEstadoBadgeMobile = async (req, res) => {
     }
 };
 
+controllers.getAllBadgesMobile = async (req, res) => {
+  try {
+    const response = await Badges.findAll({
+      where: { estado_a_i: true },
+      include: [
+        {
+          model: Areas,
+          attributes: ['nome_area']
+        }
+      ]
+    });
+
+    const dados = response.map(item => ({
+      ID_BADGE: item.id_badge,
+      ID_AREA: item.id_area,
+      NOME_BADGE: item.nome_badge,
+      DESCRICAO_BADGE: item.descricao_badge,
+      PONTOS_BADGE: item.pontos_badge,
+      PAGO: item.pago,
+      NIVEL_BADGE: item.nivel_badge,
+      IMAGEM_BADGE: item.imagem_badge,
+      nome_area_pai: item.Area?.nome_area || "Sem Área",
+      ESTADO_A_I_: item.estado_a_i,
+      DATA_INSERCAO: item.data_insercao
+    }));
+
+    res.json(dados);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 controllers.getBadgesByAreaIDMobile = async (req, res) => {
   const { id } = req.params;
 
