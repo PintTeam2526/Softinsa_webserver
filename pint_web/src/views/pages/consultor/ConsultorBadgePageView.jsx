@@ -81,6 +81,7 @@ function getConsultorIdFromToken() {
     const token = localStorage.getItem('token')
     if (!token) return null
     const payload = JSON.parse(atob(token.split('.')[1]))
+    console.log('JWT payload:', payload) // -> TESTE #############################################################################
     return payload.id ?? payload.userId ?? payload.id_consultor ?? null
   } catch { return null }
 }
@@ -343,25 +344,47 @@ function ConsultorBadgePageView() {
     setSubmitError(null)
 
     try {
+      // sessão única para ligar docs + pedido
       const sessaoId = crypto.randomUUID()
+
+      // id do consultor do token
       const idConsultor = getConsultorIdFromToken()
 
+      if (!idConsultor) {
+        throw new Error('Consultor não autenticado')
+      }
+
+      // 1. upload dos documentos temporários
       await Promise.all(
         badge.requisitos
           .filter((r) => files[r.id])
           .map(async (req) => {
             const base64 = await fileToBase64(files[req.id])
-            await uploadDocumentacao({ sessaoId, id_requisito: req.id, documentacao: base64 })
+
+            await uploadDocumentacao({
+              sessaoId,
+              id_requisito: req.id,
+              documentacao: base64,
+            })
           })
       )
 
-      await createPedido({ id_badge: badge.id, id_consultor: idConsultor, sessao_id: sessaoId })
+      // 2. criar pedido
+      await createPedido({
+        id_badge: badge.id,
+        id_consultor: idConsultor,
+        sessao_id: sessaoId,
+      })
 
       setSubmitSuccess(true)
       setFiles({})
     } catch (err) {
       console.error('Erro ao submeter candidatura', err)
-      setSubmitError('Ocorreu um erro ao submeter a candidatura. Tenta novamente.')
+
+      setSubmitError(
+        err?.response?.data?.mensagem ||
+        'Ocorreu um erro ao submeter a candidatura.'
+      )
     } finally {
       setIsSubmitting(false)
     }

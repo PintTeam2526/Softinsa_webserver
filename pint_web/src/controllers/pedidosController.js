@@ -72,7 +72,7 @@ export const getDocumentacao = async () => {
 
 export const uploadDocumentacao = async (payload) => {
     try {
-        const response = await api.post('/candidaturas/documentacao', payload)
+        const response = await api.post('/candidaturas/documentacao', payload,)
         return response.data
     } catch (error) {
         console.error('Erro ao enviar documentação', error)
