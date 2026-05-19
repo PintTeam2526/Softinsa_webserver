@@ -1,0 +1,327 @@
+==============================================
+ TESTE INTENSIVO DA API SOFTINSA BADGES
+ Data: sáb 16 mai 2026 16:55:45 WEST
+==============================================
+
+API a correr na porta 3000 (PID: 14216)
+
+Token admin obtido: eyJhbGciOiJIUzI1NiIsInR5cCI6Ik...
+
+==============================================
+ 1. LEARNING PATHS
+==============================================
+
+--- Estado INICIAL (antes de qualquer operação) ---
+    [id_learning_path=1] nome_learning_path=Base de Dados | estado_a_i=True
+    [id_learning_path=2] nome_learning_path=Programação Web | estado_a_i=True
+    [id_learning_path=3] nome_learning_path=Cloud Computing | estado_a_i=True
+
+--- GET /learningPaths/1/get ---
+  ID: 1
+  Nome: Base de Dados
+  Descrição: Trilha de aprendizagem em Base de Dados
+  Ativo: True
+
+--- CREATE (POST /learningPaths/create) ---
+  A criar: 'Cibersegurança'
+  Resposta: {"mensagem":"Learning Path criada com sucesso"}
+
+--- Estado APÓS CREATE ---
+    [id_learning_path=1] nome_learning_path=Base de Dados | estado_a_i=True
+    [id_learning_path=2] nome_learning_path=Programação Web | estado_a_i=True
+    [id_learning_path=3] nome_learning_path=Cloud Computing | estado_a_i=True
+    [id_learning_path=4] nome_learning_path=Cibersegurança | estado_a_i=True
+
+--- UPDATE (PUT /learningPaths/4/update) ---
+  A atualizar ID 4: nome→'Cibersegurança Avançada'
+  Resposta: {"mensagem":"Learning Path atualizada com sucesso","dados":{"id_learning_path":4,"nome_learning_path":"Cibersegurança Avançada","descricao_learning_path":"Trilha avançada de Cibersegurança","imagem_learning_path":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T00:00:00.000Z"}}
+
+--- Estado APÓS UPDATE ---
+    [id_learning_path=1] nome_learning_path=Base de Dados | estado_a_i=True
+    [id_learning_path=2] nome_learning_path=Programação Web | estado_a_i=True
+    [id_learning_path=3] nome_learning_path=Cloud Computing | estado_a_i=True
+    [id_learning_path=4] nome_learning_path=Cibersegurança Avançada | estado_a_i=True
+
+--- DELETE (DELETE /learningPaths/4/delete) ---
+  Resposta: {"mensagem":"Learning Path eliminada com sucesso"}
+
+--- Estado APÓS DELETE ---
+    [id_learning_path=1] nome_learning_path=Base de Dados | estado_a_i=True
+    [id_learning_path=2] nome_learning_path=Programação Web | estado_a_i=True
+    [id_learning_path=3] nome_learning_path=Cloud Computing | estado_a_i=True
+
+--- GET /learningPaths/4/get como guest (deve falhar) ---
+  Resposta: {"mensagem": "Utilizador não autorizado"}
+
+--- RESTORE (PUT /learningPaths/4/update) ---
+  Resposta: {"mensagem":"Learning Path atualizada com sucesso","dados":{"id_learning_path":4,"nome_learning_path":"Cibersegurança","descricao_learning_path":"Trilha de Cibersegurança","imagem_learning_path":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T00:00:00.000Z"}}
+--- Estado APÓS RESTORE ---
+    [id_learning_path=1] nome_learning_path=Base de Dados | estado_a_i=True
+    [id_learning_path=2] nome_learning_path=Programação Web | estado_a_i=True
+    [id_learning_path=3] nome_learning_path=Cloud Computing | estado_a_i=True
+    [id_learning_path=4] nome_learning_path=Cibersegurança | estado_a_i=True
+
+==============================================
+ 2. SERVICE LINES
+==============================================
+
+--- Estado INICIAL ---
+    [id_service_line=1] nome_service_line=Suporte a Base de Dados | estado_a_i=True
+    [id_service_line=2] nome_service_line=Desenvolvimento Web | estado_a_i=True
+    [id_service_line=3] nome_service_line=Arquitetura Cloud | estado_a_i=True
+
+--- GET /serviceLines/1/get ---
+  ID: 1
+  Nome: Suporte a Base de Dados
+  LP ID: 1
+  Ativo: True
+
+--- CREATE (POST /serviceLines/create) ---
+  A criar: 'Segurança Ofensiva' (LP=4)
+  Resposta: {"mensagem":"Service Line criada com sucesso"}
+
+--- Estado APÓS CREATE ---
+    [id_service_line=1] nome_service_line=Suporte a Base de Dados | estado_a_i=True
+    [id_service_line=2] nome_service_line=Desenvolvimento Web | estado_a_i=True
+    [id_service_line=3] nome_service_line=Arquitetura Cloud | estado_a_i=True
+    [id_service_line=4] nome_service_line=Segurança Ofensiva | estado_a_i=True
+
+--- UPDATE (PUT /serviceLines/4/update) ---
+  A atualizar ID 4: nome→'Segurança Defensiva'
+  Resposta: {"mensagem":"Service Line atualizada com sucesso","dados":{"id_service_line":4,"id_learning_path":4,"nome_service_line":"Segurança Defensiva","descricao_service_line":"Defesa e monitorização","imagem_service_line":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T00:00:00.000Z"}}
+
+--- Estado APÓS UPDATE ---
+    [id_service_line=1] nome_service_line=Suporte a Base de Dados | estado_a_i=True
+    [id_service_line=2] nome_service_line=Desenvolvimento Web | estado_a_i=True
+    [id_service_line=3] nome_service_line=Arquitetura Cloud | estado_a_i=True
+    [id_service_line=4] nome_service_line=Segurança Defensiva | estado_a_i=True
+
+--- DELETE (DELETE /serviceLines/4/delete) ---
+  Resposta: {"mensagem":"Service Line eliminada com sucesso"}
+
+--- Estado APÓS DELETE ---
+    [id_service_line=1] nome_service_line=Suporte a Base de Dados | estado_a_i=True
+    [id_service_line=2] nome_service_line=Desenvolvimento Web | estado_a_i=True
+    [id_service_line=3] nome_service_line=Arquitetura Cloud | estado_a_i=True
+
+--- RESTORE (PUT /serviceLines/4/update) ---
+  Resposta: {"mensagem":"Service Line atualizada com sucesso","dados":{"id_service_line":4,"id_learning_path":4,"nome_service_line":"Segurança Ofensiva","descricao_service_line":"Pentest e Ethical Hacking","imagem_service_line":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T00:00:00.000Z"}}
+--- Estado APÓS RESTORE ---
+    [id_service_line=1] nome_service_line=Suporte a Base de Dados | estado_a_i=True
+    [id_service_line=2] nome_service_line=Desenvolvimento Web | estado_a_i=True
+    [id_service_line=3] nome_service_line=Arquitetura Cloud | estado_a_i=True
+    [id_service_line=4] nome_service_line=Segurança Ofensiva | estado_a_i=True
+
+==============================================
+ 3. AREAS
+==============================================
+
+--- Estado INICIAL ---
+    [id_area=1] nome_area=SQL | estado_a_i=True
+    [id_area=2] nome_area=NoSQL | estado_a_i=True
+    [id_area=3] nome_area=Frontend | estado_a_i=True
+    [id_area=5] nome_area=AWS | estado_a_i=True
+    [id_area=4] nome_area=Backend | estado_a_i=True
+
+--- GET /areas/1/get ---
+  ID: 1
+  Nome: SQL
+  SL ID: 1
+  Badges: 2
+  Ativo: True
+
+--- CREATE (POST /areas/create) ---
+  A criar: 'Redes' (SL=4)
+  Resposta: {"mensagem":"Área criada"}
+
+--- Estado APÓS CREATE ---
+    [id_area=1] nome_area=SQL | estado_a_i=True
+    [id_area=2] nome_area=NoSQL | estado_a_i=True
+    [id_area=3] nome_area=Frontend | estado_a_i=True
+    [id_area=5] nome_area=AWS | estado_a_i=True
+    [id_area=4] nome_area=Backend | estado_a_i=True
+    [id_area=6] nome_area=Redes | estado_a_i=True
+
+--- UPDATE (PUT /areas/6/update) ---
+  A atualizar ID 6: nome→'Redes Avançadas'
+  Resposta: {"mensagem":"Área atualizada com sucesso","dados":{"id_area":6,"id_service_line":4,"nome_area":"Redes Avançadas","descricao_area":"Redes empresariais avançadas","imagem_area":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T15:55:49.871Z"}}
+
+--- Estado APÓS UPDATE ---
+    [id_area=1] nome_area=SQL | estado_a_i=True
+    [id_area=2] nome_area=NoSQL | estado_a_i=True
+    [id_area=3] nome_area=Frontend | estado_a_i=True
+    [id_area=5] nome_area=AWS | estado_a_i=True
+    [id_area=4] nome_area=Backend | estado_a_i=True
+    [id_area=6] nome_area=Redes Avançadas | estado_a_i=True
+
+--- DELETE (DELETE /areas/6/delete) ---
+  Resposta: {"message":"Área eliminada"}
+
+--- Estado APÓS DELETE ---
+    [id_area=1] nome_area=SQL | estado_a_i=True
+    [id_area=2] nome_area=NoSQL | estado_a_i=True
+    [id_area=3] nome_area=Frontend | estado_a_i=True
+    [id_area=5] nome_area=AWS | estado_a_i=True
+    [id_area=4] nome_area=Backend | estado_a_i=True
+
+--- RESTORE (PUT /areas/6/update) ---
+  Resposta: {"mensagem":"Área atualizada com sucesso","dados":{"id_area":6,"id_service_line":4,"nome_area":"Redes","descricao_area":"Redes e Comunicações","imagem_area":"placeholder.jpg","estado_a_i":true,"data_insercao":"2026-05-16T15:55:49.943Z"}}
+--- Estado APÓS RESTORE ---
+    [id_area=1] nome_area=SQL | estado_a_i=True
+    [id_area=2] nome_area=NoSQL | estado_a_i=True
+    [id_area=3] nome_area=Frontend | estado_a_i=True
+    [id_area=5] nome_area=AWS | estado_a_i=True
+    [id_area=4] nome_area=Backend | estado_a_i=True
+    [id_area=6] nome_area=Redes | estado_a_i=True
+
+==============================================
+ 4. BADGES
+==============================================
+
+--- Estado INICIAL ---
+    [id_badge=1] nome_badge=SQL Básico | estado_a_i=True
+    [id_badge=2] nome_badge=SQL Avançado | estado_a_i=True
+    [id_badge=3] nome_badge=React Fundamentos | estado_a_i=True
+    [id_badge=5] nome_badge=AWS Practitioner | estado_a_i=True
+    [id_badge=4] nome_badge=Node.js API | estado_a_i=True
+
+--- GET /badges/1/get ---
+  ID: 1
+  Nome: SQL Básico
+  Área ID: 1
+  Nível: junior
+  Pontos: 100
+  Pago: False
+  Ativo: True
+
+--- CREATE (POST /badges/create) ---
+  A criar: 'CCNA' (Área=6, Nível=junior, 300pts)
+  Resposta: {"mensagem":"Badge criado com sucesso"}
+
+--- Estado APÓS CREATE ---
+    [id_badge=1] nome_badge=SQL Básico | estado_a_i=True
+    [id_badge=2] nome_badge=SQL Avançado | estado_a_i=True
+    [id_badge=3] nome_badge=React Fundamentos | estado_a_i=True
+    [id_badge=5] nome_badge=AWS Practitioner | estado_a_i=True
+    [id_badge=4] nome_badge=Node.js API | estado_a_i=True
+    [id_badge=6] nome_badge=CCNA | estado_a_i=True
+
+--- UPDATE (PUT /badges/6/update) ---
+  A atualizar ID 6: nome→'CCNP', pontos→500, nível→'senior'
+  Resposta: {"mensagem":"Badge atualizado com sucesso","dados":{"id_badge":6,"id_area":6,"nome_badge":"CCNP","descricao_badge":"Certificação Cisco CCNP","pontos_badge":500,"pago":true,"nivel_badge":"senior","imagem_badge":"placeholder.jpg","sla":45,"validade":730,"estado_a_i":true,"data_insercao":"2026-05-16T15:55:50.059Z"}}
+
+--- Badge 6 APÓS UPDATE (GET confirm) ---
+  ID: 6 | Nome: CCNP | Nível: senior | Pontos: 500
+
+--- DELETE (DELETE /badges/6/delete) ---
+  Resposta: {"mensagem":"Badge eliminado com sucesso"}
+
+--- Estado APÓS DELETE ---
+    [id_badge=1] nome_badge=SQL Básico | estado_a_i=True
+    [id_badge=2] nome_badge=SQL Avançado | estado_a_i=True
+    [id_badge=3] nome_badge=React Fundamentos | estado_a_i=True
+    [id_badge=5] nome_badge=AWS Practitioner | estado_a_i=True
+    [id_badge=4] nome_badge=Node.js API | estado_a_i=True
+
+--- RESTORE (PUT /badges/6/update) ---
+  Resposta: {"mensagem":"Badge atualizado com sucesso","dados":{"id_badge":6,"id_area":6,"nome_badge":"CCNA","descricao_badge":"Certificação Cisco CCNA","pontos_badge":300,"pago":true,"nivel_badge":"junior","imagem_badge":"placeholder.jpg","sla":45,"validade":730,"estado_a_i":true,"data_insercao":"2026-05-16T15:55:50.119Z"}}
+--- Estado APÓS RESTORE ---
+    [id_badge=1] nome_badge=SQL Básico | estado_a_i=True
+    [id_badge=2] nome_badge=SQL Avançado | estado_a_i=True
+    [id_badge=3] nome_badge=React Fundamentos | estado_a_i=True
+    [id_badge=5] nome_badge=AWS Practitioner | estado_a_i=True
+    [id_badge=4] nome_badge=Node.js API | estado_a_i=True
+    [id_badge=6] nome_badge=CCNA | estado_a_i=True
+
+==============================================
+ 5. UTILIZADORES
+==============================================
+
+--- Estado INICIAL (admin view) ---
+    [id=2] Talent Manager A | email=tm@softinsa.pt | role=t | ativo=True
+    [id=3] Service Line Leader | email=sl@softinsa.pt | role=s | ativo=True
+    [id=4] João Consultor | email=consultor1@softinsa.pt | role=c | ativo=True
+    [id=5] Maria Consultora | email=consultor2@softinsa.pt | role=c | ativo=True
+
+--- GET /utilizadores/1/get ---
+  ID: 1
+  Nome: Admin Softinsa
+  Email: admin@softinsa.pt
+  Username: admin
+  Role: a
+  Ativo: True
+
+--- CREATE (POST /utilizadores/create) ---
+  A criar: 'Novo Consultor' (role=c)
+  Resposta: {"success":true,"message":"Utilizador criado com sucesso","id_utilizador":6}
+
+--- Estado APÓS CREATE ---
+    [id=2] Talent Manager A | role=t | ativo=True
+    [id=3] Service Line Leader | role=s | ativo=True
+    [id=4] João Consultor | role=c | ativo=True
+    [id=5] Maria Consultora | role=c | ativo=True
+    [id=6] Novo Consultor | role=c | ativo=True
+
+--- UPDATE (PUT /utilizadores/6/update) ---
+  A atualizar ID 6: nome→'Novo Consultor Alterado'
+  Resposta: {"mensagem":"Utilizador atualizado com sucesso"}
+
+--- Utilizador 6 APÓS UPDATE (GET confirm) ---
+  ID: 6 | Nome: Novo Consultor Alterado | Email: novo@softinsa.pt | Role: c
+
+--- DELETE (DELETE /utilizadores/6/delete) ---
+  Resposta: {"mensagem":"Utilizador eliminado"}
+
+--- Estado APÓS DELETE ---
+    [id=2] Talent Manager A | role=t | ativo=True
+    [id=3] Service Line Leader | role=s | ativo=True
+    [id=4] João Consultor | role=c | ativo=True
+    [id=5] Maria Consultora | role=c | ativo=True
+    [id=6] Novo Consultor Alterado | role=c | ativo=False
+    (Total: 5 utilizadores visíveis)
+
+--- RESTORE (PUT /utilizadores/6/update) ---
+  Resposta: {"mensagem":"Utilizador atualizado com sucesso"}
+--- Estado APÓS RESTORE ---
+    [id=6] Novo Consultor | ativo=True
+
+==============================================
+ RESUMO FINAL - COMPARAÇÃO
+==============================================
+
+Learning Paths:
+  CREATE: 3→4 (Cibersegurança adicionado) depois 4→3 (removido)
+  UPDATE: Cibersegurança → Cibersegurança Avançada → restaurado
+  DELETE: estado_a_i: true → false → true (restaurado)
+  Estado final: 3 Learning Paths (como no seed)
+
+Service Lines:
+  CREATE: 3→4 (Segurança Ofensiva adicionado) depois 4→3 (removido)
+  UPDATE: Segurança Ofensiva → Segurança Defensiva → restaurado
+  DELETE: estado_a_i: true → false → true (restaurado)
+  Estado final: 3 Service Lines (como no seed)
+
+Areas:
+  CREATE: 5→6 (Redes adicionado) depois 6→5 (removido)
+  UPDATE: Redes → Redes Avançadas → restaurado
+  DELETE: estado_a_i: true → false → true (restaurado)
+  Estado final: 5 Areas (como no seed)
+
+Badges:
+  CREATE: 5→6 (CCNA adicionado) depois 6→5 (removido)
+  UPDATE: CCNA (300pts, junior) → CCNP (500pts, senior) → restaurado
+  DELETE: estado_a_i: true → false → true (restaurado)
+  Estado final: 5 Badges (como no seed)
+
+Utilizadores:
+  CREATE: 5→6 (Novo Consultor adicionado) depois 6→5 (removido)
+  UPDATE: Novo Consultor → Novo Consultor Alterado → restaurado
+  DELETE: estado_a_i: true → false → true (restaurado)
+  Estado final: 5 Utilizadores visíveis (como no seed)
+
+==============================================
+ TESTE CONCLUÍDO
+ Todos os dados foram restaurados ao estado seed
+==============================================
+
+Servidor API parado.

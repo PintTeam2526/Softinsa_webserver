@@ -45,7 +45,7 @@ var Objetivos = sequelize.define('Objetivos',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 Objetivos.belongsTo(Consultor, { foreignKey: 'id_consultor' });

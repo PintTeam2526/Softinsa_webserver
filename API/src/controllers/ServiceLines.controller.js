@@ -81,9 +81,20 @@ controllers.createServiceLine = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (!id_learning_path) {
+            return res.status(400).json({
+                mensagem: "O id_learning_path é obrigatório"
+            });
+        }
+
         if (estado_a_i !== false) {
             const lp = await LearningPaths.findByPk(id_learning_path);
-            if (!lp || lp.estado_a_i === false) {
+            if (!lp) {
+                return res.status(400).json({
+                    mensagem: "A Learning Path especificada não existe"
+                });
+            }
+            if (lp.estado_a_i === false) {
                 return res.status(400).json({
                     mensagem: "Não é possível criar uma Service Line ativa numa Learning Path inativa"
                 });
@@ -191,7 +202,12 @@ controllers.updateServiceLineById = async (req, res) => {
 
         if (id_learning_path !== undefined && id_learning_path !== serviceLine.id_learning_path) {
             const lp = await LearningPaths.findByPk(id_learning_path);
-            if (!lp || lp.estado_a_i === false) {
+            if (!lp) {
+                return res.status(400).json({
+                    mensagem: "A Learning Path especificada não existe"
+                });
+            }
+            if (lp.estado_a_i === false) {
                 return res.status(400).json({
                     mensagem: "Não é possível associar a uma Learning Path inativa"
                 });

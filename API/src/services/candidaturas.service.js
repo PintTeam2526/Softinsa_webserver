@@ -148,12 +148,17 @@ async function submeterCandidatura({
             );
 
         // Guardar documentos
-        for (const documento of documentos) {
+        for (const doc of documentos) {
+            if (!doc.id_requisito) {
+                throw new Error('Cada documento precisa de um id_requisito');
+            }
+
             await Documentacoes.create(
                 {
                     id_pedido_badge: pedido.id_pedido_badge,
                     id_consultor,
-                    documentacao: documento,
+                    id_requisito: doc.id_requisito,
+                    documentacao: doc.documento,
                     validado: null
                 },
                 {

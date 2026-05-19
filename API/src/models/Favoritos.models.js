@@ -27,7 +27,7 @@ var Favoritos = sequelize.define('Favoritos',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 Favoritos.belongsTo(Consultor, { foreignKey: 'id_consultor' });

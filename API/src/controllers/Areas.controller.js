@@ -123,9 +123,20 @@ controllers.createArea = async (req, res) => {
             estado_a_i
         } = req.body;
 
+        if (!id_service_line) {
+            return res.status(400).json({
+                mensagem: "O id_service_line é obrigatório"
+            });
+        }
+
         if (estado_a_i !== false) {
             const sl = await ServiceLine.findByPk(id_service_line);
-            if (!sl || sl.estado_a_i === false) {
+            if (!sl) {
+                return res.status(400).json({
+                    mensagem: "A Service Line especificada não existe"
+                });
+            }
+            if (sl.estado_a_i === false) {
                 return res.status(400).json({
                     mensagem: "Não é possível criar uma Área ativa numa Service Line inativa"
                 });
@@ -218,7 +229,12 @@ controllers.updateAreaByID = async (req, res) => {
 
         if (id_service_line !== undefined && id_service_line !== area.id_service_line) {
             const sl = await ServiceLine.findByPk(id_service_line);
-            if (!sl || sl.estado_a_i === false) {
+            if (!sl) {
+                return res.status(400).json({
+                    mensagem: "A Service Line especificada não existe"
+                });
+            }
+            if (sl.estado_a_i === false) {
                 return res.status(400).json({
                     mensagem: "Não é possível associar a uma Service Line inativa"
                 });
@@ -240,7 +256,8 @@ controllers.updateAreaByID = async (req, res) => {
         }
 
         return res.status(200).json({
-            mensagem: "Área atualizada com sucesso"
+            mensagem: "Área atualizada com sucesso",
+            dados: area
         });
 
     } catch (error) {

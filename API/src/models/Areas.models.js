@@ -40,7 +40,7 @@ var Areas = sequelize.define('Areas',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 

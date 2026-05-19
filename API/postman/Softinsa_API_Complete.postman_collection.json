@@ -717,7 +717,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{userId}}\n}",
+              "raw": "{\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{consultorId}},\n  \"sessao_id\": \"{{sessaoId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -807,6 +807,373 @@
             ],
             "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/resubmit"
           }
+        },
+        {
+          "name": "Get Historico",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/historico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Requisitos",
+      "item": [
+        {
+          "name": "Get All Requisitos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requisitos/get"
+          }
+        },
+        {
+          "name": "Get Requisito By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requisitos/{{requisitoId}}/get"
+          }
+        },
+        {
+          "name": "Get Requisitos by Badge",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/requisitos/get/badge/{{badgeId}}"
+          }
+        },
+        {
+          "name": "Create Requisito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_badge\": {{badgeId}},\n  \"nome_requisito\": \"Certificação AWS\",\n  \"descricao_requisito\": \"Fornecer certificado AWS válido\",\n  \"imagem_requisito\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/requisitos/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if ([200, 201].includes(pm.response.code)) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.dados && json.dados.id_requisito) {",
+                  "    pm.environment.set('requisitoId', json.dados.id_requisito);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Requisito",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome_requisito\": \"Certificação AWS Atualizada\",\n  \"descricao_requisito\": \"Descrição atualizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/requisitos/{{requisitoId}}/update"
+          }
+        },
+        {
+          "name": "Delete Requisito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requisitos/{{requisitoId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documentos",
+      "item": [
+        {
+          "name": "Get All Documentos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/documentos/get"
+          }
+        },
+        {
+          "name": "Get Documento By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/documentos/{{documentoId}}/get"
+          }
+        },
+        {
+          "name": "Get Documentos by Pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/documentos/pedido/{{pedidoId}}"
+          }
+        },
+        {
+          "name": "Get Documento by Requisito in Pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/documentos/pedido/{{pedidoId}}/requisito/{{requisitoId}}"
+          }
+        },
+        {
+          "name": "Create Documento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_pedido_badge\": {{pedidoId}},\n  \"id_requisito\": {{requisitoId}},\n  \"documentacao\": \"base64_do_documento_aqui...\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/documentos/create"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.dados && json.dados.id_documentacao) {",
+                  "    pm.environment.set('documentoId', json.dados.id_documentacao);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Documento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentacao\": \"novo_base64_do_documento...\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/documentos/{{documentoId}}/update"
+          }
+        },
+        {
+          "name": "Validate Documento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"validado\": true,\n  \"observacao\": \"Documento correto, certificado válido\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/documentos/{{documentoId}}/validate"
+          }
+        },
+        {
+          "name": "Delete Documento",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/documentos/{{documentoId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Candidaturas",
+      "item": [
+        {
+          "name": "Inserir Documentacao Temporaria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessaoId\": \"{{sessaoId}}\",\n  \"id_requisito\": {{requisitoId}},\n  \"documentacao\": \"base64_do_documento...\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/candidaturas/inserir-documentacao"
+          }
+        },
+        {
+          "name": "Candidatar Badge (Mobile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idConsultor\": {{consultorId}},\n  \"SessaoID\": \"{{sessaoId}}\",\n  \"idBadge\": {{badgeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/candidaturas/candidatar"
+          }
+        },
+        {
+          "name": "Submeter Candidatura (Service)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_consultor\": {{consultorId}},\n  \"id_badge\": {{badgeId}},\n  \"documentos\": [\n    {\n      \"documento\": \"base64_do_documento_1...\",\n      \"id_requisito\": 1\n    },\n    {\n      \"documento\": \"base64_do_documento_2...\",\n      \"id_requisito\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/candidaturas"
+          }
         }
       ]
     }
@@ -867,6 +1234,22 @@
     },
     {
       "key": "objetivoId",
+      "value": "1"
+    },
+    {
+      "key": "requisitoId",
+      "value": "1"
+    },
+    {
+      "key": "documentoId",
+      "value": "1"
+    },
+    {
+      "key": "sessaoId",
+      "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    },
+    {
+      "key": "consultorId",
       "value": "1"
     }
   ]

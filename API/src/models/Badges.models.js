@@ -63,7 +63,7 @@ var Badges = sequelize.define('Badges',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 

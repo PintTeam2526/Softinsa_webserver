@@ -25,7 +25,7 @@ var Enviadas = sequelize.define('Enviadas',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 Enviadas.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });

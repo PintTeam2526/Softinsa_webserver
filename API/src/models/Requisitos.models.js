@@ -39,12 +39,11 @@ var Requisitos = sequelize.define('Requisitos',
         allowNull: false
     }
 },
-
-
 {
-    timestamps: false
+    timestamps: true
 });
 
 Requisitos.belongsTo(Badge, { foreignKey: 'id_badge' });
+Badge.hasMany(Requisitos, { foreignKey: 'id_badge' });
 
 module.exports = Requisitos;

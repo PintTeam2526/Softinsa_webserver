@@ -1,5 +1,6 @@
 const PedidosBadges = require('../models/PedidosBadges.models');
 const Consultor = require('../models/Consultores.models');
+const Utilizador = require('../models/Utilizadores.models');
 const TalentManager = require('../models/TalentManagers.models');
 const ServiceLineLider = require('../models/ServiceLineLiders.models');
 const Badge = require('../models/Badges.models');
@@ -39,23 +40,26 @@ async function listarPedidosPorCargo(cargo, id_utilizador = null) {
         include: [
             {
                 model: Consultor,
-                attributes: ['id_consultor', 'nome']
+                attributes: ['id_consultor'],
+                include: [{ model: Utilizador, attributes: ['nome_utilizador'] }]
             },
             {
                 model: TalentManager,
-                attributes: ['id_talent_manager', 'nome']
+                attributes: ['id_talent_manager'],
+                include: [{ model: Utilizador, attributes: ['nome_utilizador'] }]
             },
             {
                 model: ServiceLineLider,
-                attributes: ['id_service_line_lider', 'nome']
+                attributes: ['id_service_line_lider'],
+                include: [{ model: Utilizador, attributes: ['nome_utilizador'] }]
             },
             {
                 model: Badge,
-                attributes: ['id_badge', 'nome']
+                attributes: ['id_badge', 'nome_badge']
             },
             {
                 model: Estado,
-                attributes: ['id_estado', 'descricao']
+                attributes: ['id_estado', 'descricao_estado']
             }
         ]
     });

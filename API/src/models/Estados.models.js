@@ -20,7 +20,7 @@ var Estados = sequelize.define('Estados',
 },
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 // Popular a tabela Estados
