@@ -26,6 +26,9 @@ router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById)
 // Mostrar badges recomendados
 router.get("/recomendados", controllerBadges.getBadgesRecomendados);
 
+//Mostrar badges favoritos 
+router.get("/favorito", controllerBadges.getBadgesFavorito);
+
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
 router.get('/mobile/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadgeMobile);

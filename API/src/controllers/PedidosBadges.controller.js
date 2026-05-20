@@ -12,6 +12,8 @@ const PedidosBadges = require("../models/PedidosBadges.models");
 const Documentacoes = require("../models/Documentacoes.models")
 const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.service");
 const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models")
+const Consultor = require("../models/Consultores.models");
+const Utilizador = require("../models/Utilizadores.models");
 const controllers = {};
 
 /* =====================================================
@@ -102,7 +104,10 @@ controllers.getAllPedidos = async (req, res) => {
 
     const pedidos = await Pedidos.findAll({
       where: whereClause,
-      include: [{ model: Badges }],
+      include: [
+        { model: Badges },
+        { model: Utilizador },
+      ],
     });
 
     return res.status(200).json(pedidos);
@@ -127,7 +132,10 @@ controllers.getPedidoById = async (req, res) => {
     }
 
     const pedido = await Pedidos.findByPk(req.params.id, {
-      include: [{ model: Badges }],
+      include: [
+        { model: Badges },
+        { model: Utilizador },
+      ],
     });
 
     if (!pedido) {
@@ -544,6 +552,10 @@ controllers.getHistoricoPedido = async (req, res) => {
 
     const historico = await HistoricoPedidos.findAll({
       where: { id_pedido_badge: req.params.id },
+      include: [
+        { model: Badges },
+        { model: Utilizador },
+      ],
       order: [["data", "ASC"]],
     });
 
