@@ -141,7 +141,7 @@ CREATE TABLE Badges (
     descricao_badge  TEXT         NOT NULL,
     pontos_badge     INTEGER      NOT NULL,
     pago             BOOLEAN      NOT NULL,
-    nivel_badge      VARCHAR(20)  NOT NULL,
+    nivel_badge      VARCHAR(25)  NOT NULL,
     imagem_badge     TEXT         NOT NULL,
     sla              INTEGER      NOT NULL,
     validade         INTEGER      NOT NULL,
