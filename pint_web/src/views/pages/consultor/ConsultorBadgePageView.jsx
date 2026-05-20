@@ -317,12 +317,12 @@ function ConsultorBadgePageView() {
 
           if (pedidoDoBadge) {
             const ESTADO_MAP = {
-              1: 'submetido',
-              2: 'correto',
-              3: 'incorreto',
-              4: 'aprovado',
-              5: 'rejeitado',
-              6: 'devolvido',
+              1: 'Submetido',
+              2: 'Correto',
+              3: 'Incorreto',
+              4: 'Aprovado',
+              5: 'Rejeitado',
+              6: 'Devolvido',
             }
             normalized.status = ESTADO_MAP[pedidoDoBadge.estado_atual] ?? 'submetido'
             normalized.pedidoId = pedidoDoBadge.id_pedido_badge
@@ -423,8 +423,8 @@ function ConsultorBadgePageView() {
     return <section className="consultor-badge-page"><div className="consultor-badge-page-feedback is-error">{error ?? 'Badge não encontrado.'}</div></section>
   }
 
-  const STATUS_ACEITE = ['aprovado']
-  const STATUS_DEVOLVIDO = ['incorreto', 'devolvido']
+  const STATUS_ACEITE = ['Aprovado']
+  const STATUS_DEVOLVIDO = ['Incorreto', 'Devolvido']
 
   const statusNorm = badge.status?.toLowerCase().trim() ?? ''
   const badgeAceite = STATUS_ACEITE.includes(statusNorm)
