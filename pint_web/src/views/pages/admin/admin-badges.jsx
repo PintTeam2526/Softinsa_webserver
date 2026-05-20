@@ -431,10 +431,23 @@ const SoftinsaBadges = memo(() => {
       if (isEditMode && editingBadgeId !== null) {
         await updateBadge(editingBadgeId, badgePayload);
       } else {
-        const created = await createBadge(badgePayload);
-        // ajustar conforme o campo devolvido pela API
-        savedBadgeId = created.id_badge ?? created.id;
+        await createBadge(badgePayload);
+
+        const badgesActualizados = await getBadges();
+        const badgeCriado = badgesActualizados
+          .filter((b) => b.nome_badge === sanitizedName)
+          .at(-1);
+
+        if (!badgeCriado) {
+          console.error("Badge criado mas não encontrado na lista");
+          await loadData();
+          handleCloseModal();
+          return;
+        }
+
+        savedBadgeId = badgeCriado.id_badge;
       }
+      console.log('savedBadgeId:', savedBadgeId); // ← confirmar que não é undefined
 
       // 1. apagar os removidos
       await Promise.all(
