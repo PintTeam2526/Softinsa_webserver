@@ -5,50 +5,42 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-pendentes.css'
 
-const pendingRequests = [
-  {
-    title: 'Data Analytics - Sénior',
-    consultant: 'Maria Santos',
-    area: 'Data',
-    deadline: 'Tempo limite de resposta termina em 5 dias',
-    avatar: 'DA',
-    avatarTone: 'primary',
-    requirements: [
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-    ],
-    documents: ['Evidência 1', 'Evidência 2', 'Evidência 3'],
-  },
-  {
-    title: 'Cloud Architecture - Intermédio',
-    consultant: 'João Silva',
-    area: 'Cloud',
-    deadline: 'Tempo limite de resposta termina em 10 dias',
-    avatar: 'CA',
-    avatarTone: 'secondary',
-    requirements: [
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-    ],
-    documents: ['Evidência 1', 'Evidência 2', 'Evidência 3'],
-  },
-  {
-    title: 'Agile Leadership - Júnior',
-    consultant: 'Pedro Costa',
-    area: 'Agile',
-    deadline: 'Tempo limite de resposta termina em 10 dias',
-    avatar: 'AL',
-    avatarTone: 'dark',
-    requirements: [
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-      'Criar um relatório avançado que contenha visualizações interativas',
-    ],
-    documents: ['Evidência 1', 'Evidência 2', 'Evidência 3'],
-  },
-]
+import { getAreas } from '../../../controllers/areasController'
+import { getPedidos, slReview } from '../../../controllers/pedidosController'
+
+const AVATAR_TONES = ['primary', 'secondary', 'dark']
+
+function calcDeadline(createdAt, sla) {
+  if (!createdAt || !sla) return 'Prazo não definido'
+  const deadline = new Date(new Date(createdAt).getTime() + sla * 24 * 60 * 60 * 1000)
+  const diffDays = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24))
+  if (diffDays < 0) return 'Tempo limite ultrapassado'
+  if (diffDays === 0) return 'Tempo limite termina hoje'
+  return `Tempo limite de resposta termina em ${diffDays} dia${diffDays !== 1 ? 's' : ''}`
+}
+
+function getAvatarInitials(name) {
+  return name.split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('')
+}
+
+function mapPedidoPendente(row, areaMap, index) {
+  const badge = row.Badge ?? {}
+  const consultant = row.Consultore?.Utilizadore?.nome_utilizador ?? String(row.id_consultor)
+  const areaNome = areaMap[badge.id_area]?.name ?? ''
+
+  return {
+    id: row.id_pedido_badge,
+    title: badge.nome_badge ?? `Pedido ${row.id_pedido_badge}`,
+    consultant,
+    area: areaNome,
+    deadline: calcDeadline(row.createdAt, badge.sla),
+    avatar: getAvatarInitials(badge.nome_badge ?? ''),
+    avatarTone: AVATAR_TONES[index % AVATAR_TONES.length],
+    requirements: badge.descricao_badge ? [badge.descricao_badge] : [],
+    documents: [],
+  }
+}
+
 
 function RequestBadge({ tone, children }) {
   return <div className={`sll-pending-request-avatar is-${tone}`}>{children}</div>
@@ -57,7 +49,7 @@ function RequestBadge({ tone, children }) {
 function ResponseDeadlineIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path d="M15.4853 8.72754C15.8576 8.96777 16.1894 9.24023 16.481 9.54492C16.7726 9.84961 17.0239 10.1836 17.2348 10.5469C17.4458 10.9102 17.6008 11.2939 17.7001 11.6982C17.7994 12.1025 17.8553 12.5156 17.8676 12.9375C17.8676 13.6348 17.7281 14.291 17.4489 14.9062C17.1697 15.5215 16.785 16.0576 16.2949 16.5146C15.8048 16.9717 15.2371 17.332 14.5919 17.5957C13.9467 17.8594 13.2518 17.9941 12.5074 18C11.9428 18 11.3969 17.9209 10.8695 17.7627C10.3422 17.6045 9.85818 17.376 9.41771 17.0771C8.97726 16.7783 8.5864 16.4209 8.24518 16.0049C7.90395 15.5889 7.64028 15.1289 7.45416 14.625H0V1.125H2.38235V0H3.57353V1.125H11.9118V0H13.1029V1.125H15.4853V8.72754ZM1.19118 2.25V4.5H14.2941V2.25H13.1029V3.375H11.9118V2.25H3.57353V3.375H2.38235V2.25H1.19118ZM7.17498 13.5C7.15637 13.3184 7.14706 13.1309 7.14706 12.9375C7.14706 12.4336 7.22151 11.9443 7.37041 11.4697C7.5193 10.9951 7.74575 10.5469 8.04975 10.125H7.14706V9H8.33824V9.75586C8.5926 9.45703 8.87489 9.19336 9.18508 8.96484C9.49532 8.73633 9.83033 8.54004 10.1901 8.37598C10.55 8.21191 10.9254 8.08887 11.3162 8.00684C11.707 7.9248 12.104 7.88086 12.5074 7.875C13.1277 7.875 13.7233 7.97168 14.2941 8.16504V5.625H1.19118V13.5H7.17498ZM12.5074 16.875C13.0843 16.875 13.6241 16.7725 14.1266 16.5674C14.6291 16.3623 15.0696 16.0811 15.448 15.7236C15.8266 15.3662 16.1243 14.9502 16.3415 14.4756C16.5586 14.001 16.6702 13.4883 16.6765 12.9375C16.6765 12.3926 16.5679 11.8828 16.3508 11.4082C16.1336 10.9336 15.8359 10.5176 15.4573 10.1602C15.0789 9.80273 14.6384 9.52148 14.1359 9.31641C13.6334 9.11133 13.0906 9.00586 12.5074 9C11.9304 9 11.3906 9.10254 10.8881 9.30762C10.3856 9.5127 9.94511 9.79395 9.56668 10.1514C9.18819 10.5088 8.89039 10.9248 8.67326 11.3994C8.45611 11.874 8.34444 12.3867 8.33824 12.9375C8.33824 13.4824 8.44681 13.9922 8.66395 14.4668C8.88109 14.9414 9.17889 15.3574 9.55736 15.7148C9.93579 16.0723 10.3763 16.3535 10.8788 16.5586C11.3813 16.7637 11.9242 16.8691 12.5074 16.875ZM13.1029 12.375H14.8897V13.5H11.9118V10.125H13.1029V12.375ZM2.38235 9H3.57353V10.125H2.38235V9ZM4.76471 9H5.95588V10.125H4.76471V9ZM4.76471 6.75H5.95588V7.875H4.76471V6.75ZM2.38235 11.25H3.57353V12.375H2.38235V11.25ZM4.76471 11.25H5.95588V12.375H4.76471V11.25ZM8.33824 7.875H7.14706V6.75H8.33824V7.875ZM10.7206 7.875H9.52941V6.75H10.7206V7.875ZM13.1029 7.875H11.9118V6.75H13.1029V7.875Z" fill="#8A92A6"/>
+      <path d="M15.4853 8.72754C15.8576 8.96777 16.1894 9.24023 16.481 9.54492C16.7726 9.84961 17.0239 10.1836 17.2348 10.5469C17.4458 10.9102 17.6008 11.2939 17.7001 11.6982C17.7994 12.1025 17.8553 12.5156 17.8676 12.9375C17.8676 13.6348 17.7281 14.291 17.4489 14.9062C17.1697 15.5215 16.785 16.0576 16.2949 16.5146C15.8048 16.9717 15.2371 17.332 14.5919 17.5957C13.9467 17.8594 13.2518 17.9941 12.5074 18C11.9428 18 11.3969 17.9209 10.8695 17.7627C10.3422 17.6045 9.85818 17.376 9.41771 17.0771C8.97726 16.7783 8.5864 16.4209 8.24518 16.0049C7.90395 15.5889 7.64028 15.1289 7.45416 14.625H0V1.125H2.38235V0H3.57353V1.125H11.9118V0H13.1029V1.125H15.4853V8.72754ZM1.19118 2.25V4.5H14.2941V2.25H13.1029V3.375H11.9118V2.25H3.57353V3.375H2.38235V2.25H1.19118ZM7.17498 13.5C7.15637 13.3184 7.14706 13.1309 7.14706 12.9375C7.14706 12.4336 7.22151 11.9443 7.37041 11.4697C7.5193 10.9951 7.74575 10.5469 8.04975 10.125H7.14706V9H8.33824V9.75586C8.5926 9.45703 8.87489 9.19336 9.18508 8.96484C9.49532 8.73633 9.83033 8.54004 10.1901 8.37598C10.55 8.21191 10.9254 8.08887 11.3162 8.00684C11.707 7.9248 12.104 7.88086 12.5074 7.875C13.1277 7.875 13.7233 7.97168 14.2941 8.16504V5.625H1.19118V13.5H7.17498ZM12.5074 16.875C13.0843 16.875 13.6241 16.7725 14.1266 16.5674C14.6291 16.3623 15.0696 16.0811 15.448 15.7236C15.8266 15.3662 16.1243 14.9502 16.3415 14.4756C16.5586 14.001 16.6702 13.4883 16.6765 12.9375C16.6765 12.3926 16.5679 11.8828 16.3508 11.4082C16.1336 10.9336 15.8359 10.5176 15.4573 10.1602C15.0789 9.80273 14.6384 9.52148 14.1359 9.31641C13.6334 9.11133 13.0906 9.00586 12.5074 9C11.9304 9 11.3906 9.10254 10.8881 9.30762C10.3856 9.5127 9.94511 9.79395 9.56668 10.1514C9.18819 10.5088 8.89039 10.9248 8.67326 11.3994C8.45611 11.874 8.34444 12.3867 8.33824 12.9375C8.33824 13.4824 8.44681 13.9922 8.66395 14.4668C8.88109 14.9414 9.17889 15.3574 9.55736 15.7148C9.93579 16.0723 10.3763 16.3535 10.8788 16.5586C11.3813 16.7637 11.9242 16.8691 12.5074 16.875ZM13.1029 12.375H14.8897V13.5H11.9118V10.125H13.1029V12.375ZM2.38235 9H3.57353V10.125H2.38235V9ZM4.76471 9H5.95588V10.125H4.76471V9ZM4.76471 6.75H5.95588V7.875H4.76471V6.75ZM2.38235 11.25H3.57353V12.375H2.38235V11.25ZM4.76471 11.25H5.95588V12.375H4.76471V11.25ZM8.33824 7.875H7.14706V6.75H8.33824V7.875ZM10.7206 7.875H9.52941V6.75H10.7206V7.875ZM13.1029 7.875H11.9118V6.75H13.1029V7.875Z" fill="#8A92A6" />
     </svg>
   )
 }
@@ -253,7 +245,8 @@ function SLLPendentesView() {
   const [searchTerm, setSearchTerm] = useState('')
   const [draftArea, setDraftArea] = useState('')
   const [appliedArea, setAppliedArea] = useState('')
-  const [requests, setRequests] = useState(pendingRequests)
+  const [requests, setRequests] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [pendingAction, setPendingAction] = useState(null)
   const filterPopoverRef = useRef(null)
@@ -294,6 +287,31 @@ function SLLPendentesView() {
   }, [currentPage, filteredRequests])
 
   useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const [pedidosData, areasData] = await Promise.all([getPedidos(), getAreas()])
+
+        const areaMap = Object.fromEntries(
+          areasData.map((a) => [a.id_area, { name: a.nome_area }])
+        )
+
+        // SL só vê pedidos no estado 2 (aprovados pelo TM, aguardam SL)
+        const pendentes = pedidosData
+          .filter((row) => row.estado_atual === 2)
+          .map((row, i) => mapPedidoPendente(row, areaMap, i))
+
+        setRequests(pendentes)
+      } catch (err) {
+        console.error('Erro ao carregar pedidos pendentes SL', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  useEffect(() => {
     setCurrentPage(1)
   }, [appliedArea, searchTerm])
 
@@ -324,18 +342,26 @@ function SLLPendentesView() {
     setIsFilterOpen(false)
   }
 
-  function requestAction(requestTitle, action) {
-    setPendingAction({ requestTitle, action })
+  function requestAction(requestId, action) {
+    setPendingAction({ requestId, action })
   }
 
-  function confirmPendingAction() {
-    if (!pendingAction) {
-      return
+
+  async function confirmPendingAction(reason) {
+    if (!pendingAction) return
+
+    const acaoMap = { accept: 'aprovar', return: 'devolver', reject: 'rejeitar' }
+
+    try {
+      await slReview(pendingAction.requestId, {
+        acao: acaoMap[pendingAction.action],
+        ...(reason ? { justificacao: reason } : {}),
+      })
+      setRequests((prev) => prev.filter((r) => r.id !== pendingAction.requestId))
+    } catch (err) {
+      console.error('Erro ao processar pedido', err)
     }
 
-    setRequests((currentRequests) =>
-      currentRequests.filter((request) => request.title !== pendingAction.requestTitle),
-    )
     setPendingAction(null)
   }
 
@@ -410,15 +436,21 @@ function SLLPendentesView() {
           </section>
 
           <section className="sll-pending-list" aria-label="Lista de pedidos pendentes">
-            {paginatedRequests.map((request) => (
-              <PendingRequestCard
-                key={request.title}
-                request={{
-                  ...request,
-                  onAction: (action) => requestAction(request.title, action),
-                }}
-              />
-            ))}
+            {isLoading ? (
+              <p className="sll-pending-loading">A carregar pedidos…</p>
+            ) : paginatedRequests.length === 0 ? (
+              <p className="sll-pending-empty">Sem pedidos pendentes.</p>
+            ) : (
+              paginatedRequests.map((request) => (
+                <PendingRequestCard
+                  key={request.id}
+                  request={{
+                    ...request,
+                    onAction: (action) => requestAction(request.id, action),
+                  }}
+                />
+              ))
+            )}
           </section>
 
           <SLLPagination
