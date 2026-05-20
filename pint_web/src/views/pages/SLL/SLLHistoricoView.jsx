@@ -8,6 +8,12 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-historico.css'
 
+
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
+
 const requestAvatar = 'https://www.figma.com/api/mcp/asset/cf64d835-06cf-435b-8bfd-8b387bf43fa7'
 
 function PaginationArrow({ direction = 'left', double = false }) {
@@ -38,104 +44,60 @@ function getStatusClass(status) {
   return status.toLowerCase().replaceAll(' ', '-')
 }
 
-const filterOptions = {
-  areas: ['Tecnologia', 'Consultoria', 'Operações'],
-  serviceLines: ['Advisory', 'Delivery', 'Managed Services'],
-  learningPaths: ['Agile Leadership', 'Cloud Fundamentals', 'Data Strategy'],
+const STATUS_MAP = {
+  1: 'Em progresso',
+  2: 'Em progresso',
+  3: 'Em progresso',
+  4: 'Aprovado',
+  5: 'Rejeitado',
+  6: 'Em progresso',
 }
 
-const historyRequests = [
-  {
-    title: 'Agile Leadership - Júnior',
-    consultant: 'Pedro Costa',
-    approvedAt: 'Aprovado em 22 Nov 2024',
-    status: 'Aprovado',
-    approvedDate: '2024-11-22',
-    area: 'Consultoria',
-    serviceLine: 'Advisory',
-    learningPath: 'Agile Leadership',
-  },
-  {
-    title: 'Leadership Essentials - Pleno',
-    consultant: 'Inês Rocha',
-    approvedAt: 'Aprovado em 10 Nov 2024',
-    status: 'Aprovado',
-    approvedDate: '2024-11-10',
-    area: 'Consultoria',
-    serviceLine: 'Advisory',
-    learningPath: 'Agile Leadership',
-  },
-  {
-    title: 'Operations Coaching - Sénior',
-    consultant: 'Tiago Mendes',
-    approvedAt: 'Aprovado em 01 Out 2024',
-    status: 'Aprovado',
-    approvedDate: '2024-10-01',
-    area: 'Operações',
-    serviceLine: 'Managed Services',
-    learningPath: 'Data Strategy',
-  },
-  {
-    title: 'Cloud Fundamentals - Intermédio',
-    consultant: 'Ana Martins',
-    approvedAt: 'Rejeitado em 14 Out 2024',
-    status: 'Rejeitado',
-    approvedDate: '2024-10-14',
-    area: 'Tecnologia',
-    serviceLine: 'Delivery',
-    learningPath: 'Cloud Fundamentals',
-  },
-  {
-    title: 'Cyber Security - Sénior',
-    consultant: 'Carla Gomes',
-    approvedAt: 'Rejeitado em 05 Nov 2024',
-    status: 'Rejeitado',
-    approvedDate: '2024-11-05',
-    area: 'Tecnologia',
-    serviceLine: 'Delivery',
-    learningPath: 'Cloud Fundamentals',
-  },
-  {
-    title: 'Architecture Review - Júnior',
-    consultant: 'Bruno Pinto',
-    approvedAt: 'Rejeitado em 19 Dez 2024',
-    status: 'Rejeitado',
-    approvedDate: '2024-12-19',
-    area: 'Consultoria',
-    serviceLine: 'Advisory',
-    learningPath: 'Agile Leadership',
-  },
-  {
-    title: 'Data Strategy - Sénior',
-    consultant: 'Rui Silva',
-    approvedAt: 'Em progresso desde 05 Dez 2024',
-    status: 'Em progresso',
-    approvedDate: '2024-12-05',
-    area: 'Operações',
-    serviceLine: 'Managed Services',
-    learningPath: 'Data Strategy',
-  },
-  {
-    title: 'Digital Transformation - Pleno',
-    consultant: 'Marta Lopes',
-    approvedAt: 'Em progresso desde 11 Nov 2024',
-    status: 'Em progresso',
-    approvedDate: '2024-11-11',
-    area: 'Consultoria',
-    serviceLine: 'Advisory',
-    learningPath: 'Agile Leadership',
-  },
-  {
-    title: 'Data Governance - Sénior',
-    consultant: 'Nuno Costa',
-    approvedAt: 'Em progresso desde 27 Dez 2024',
-    status: 'Em progresso',
-    approvedDate: '2024-12-27',
-    area: 'Operações',
-    serviceLine: 'Managed Services',
-    learningPath: 'Data Strategy',
-  },
-]
+const RESPONSIBLE_MAP = {
+  1: 'Consultor',
+  2: 'Talent Manager',
+  3: 'Talent Manager',
+  4: 'Service Line Líder',
+  5: 'Service Line Líder',
+  6: 'Service Line Líder',
+}
+
+const PT_MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+function formatApprovedAt(status, dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const formatted = `${d.getDate()} ${PT_MONTHS[d.getMonth()]} ${d.getFullYear()}`
+  if (status === 'Aprovado') return `Aprovado em ${formatted}`
+  if (status === 'Rejeitado') return `Rejeitado em ${formatted}`
+  return `Em progresso desde ${formatted}`
+}
+
+function mapPedido(row, areaMap, slMap, lpMap) {
+  const status = STATUS_MAP[row.estado_atual] ?? 'Em progresso'
+  const dateStr = row.createdAt ?? row.updatedAt ?? null
+  const badge = row.Badge ?? {}
+
+  const consultant = row.Consultore?.Utilizadore?.nome_utilizador ?? String(row.id_consultor)
+
+  const areaObj = areaMap[badge.id_area]
+  const areaNome = areaObj?.name ?? ''
+  const slObj = slMap[areaObj?.id_service_line]
+  const slNome = slObj?.name ?? ''
+  const lpNome = lpMap[slObj?.id_learning_path] ?? ''
+
+  return {
+    id: row.id_pedido_badge,
+    title: badge.nome_badge ?? `Pedido ${row.id_pedido_badge}`,
+    consultant,
+    status,
+    approvedDate: dateStr ? String(dateStr).slice(0, 10) : '',
+    approvedAt: formatApprovedAt(status, dateStr),
+    area: areaNome,
+    serviceLine: slNome,
+    learningPath: lpNome,
+  }
+}
 
 function HistoryBadge({ status }) {
   const label = status === 'Em progresso' ? 'Estado atualizado' : status
@@ -193,59 +155,23 @@ function HistoryTimestampIcon({ status }) {
   )
 }
 
-function buildHistorySteps(request) {
-  if (request.status === 'Em progresso') {
-    return [
-      {
-        responsible: 'António Portugal / Talent Manager',
-        state: 'Em Andamento',
-        stateClass: 'is-progress',
-        icon: <HistoryClockIcon />,
-        date: '2023/06/23',
-      },
-    ]
-  }
+function buildHistorySteps(historico) {
+  return historico.map((entry) => {
+    const estado = entry.id_estado
+    const isAprovado = estado === 2 || estado === 4
+    const isRejeitado = estado === 5
 
-  if (request.status === 'Rejeitado') {
-    return [
-      {
-        responsible: 'António Portugal / Talent Manager',
-        state: 'Em Andamento',
-        stateClass: 'is-progress',
-        icon: <HistoryClockIcon />,
-        date: '2023/06/23',
-      },
-      {
-        responsible: 'João Silva / Service Line Lider',
-        state: 'Rejeitado',
-        stateClass: 'is-rejected',
-        icon: <HistoryRejectIcon />,
-        date: '2023/06/23',
-      },
-    ]
-  }
-
-  return [
-    {
-      responsible: 'António Portugal / Talent Manager',
-      state: 'Em Andamento',
-      stateClass: 'is-progress',
-      icon: <HistoryClockIcon />,
-      date: '2023/06/23',
-    },
-    {
-      responsible: 'João Silva / Service Line Lider',
-      state: 'Concluído',
-      stateClass: 'is-approved',
-      icon: <HistoryCheckIcon />,
-      date: '2023/06/23',
-    },
-  ]
+    return {
+      responsible: RESPONSIBLE_MAP[estado] ?? 'Sistema',
+      state: entry.estado_objetivo ?? '',
+      stateClass: isRejeitado ? 'is-rejected' : isAprovado ? 'is-approved' : 'is-progress',
+      icon: isRejeitado ? <HistoryRejectIcon /> : isAprovado ? <HistoryCheckIcon /> : <HistoryClockIcon />,
+      date: entry.data ? formatHistoryDate(String(entry.data).slice(0, 10)) : '—',
+    }
+  })
 }
 
-function HistoryRequestCard({ request, isExpanded, onToggle }) {
-  const steps = buildHistorySteps(request)
-
+function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
   return (
     <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
       <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
@@ -260,7 +186,9 @@ function HistoryRequestCard({ request, isExpanded, onToggle }) {
           <div className={`sll-history-card-approved${request.status === 'Rejeitado' ? ' is-rejeitado' : ''}`}>
             <HistoryTimestampIcon status={request.status} />
             <span className={request.status === 'Em progresso' ? 'is-progress' : ''}>
-              {request.status === 'Em progresso' ? `Submetido em ${formatHistoryDate(request.approvedDate)}` : request.approvedAt}
+              {request.status === 'Em progresso'
+                ? `Submetido em ${formatHistoryDate(request.approvedDate)}`
+                : request.approvedAt}
             </span>
           </div>
         </div>
@@ -276,24 +204,6 @@ function HistoryRequestCard({ request, isExpanded, onToggle }) {
 
       {isExpanded ? (
         <div className="sll-history-detail">
-          <h4 className="sll-history-detail-title">Historico:</h4>
-          <div className="sll-history-detail-table" role="table">
-            <div className="sll-history-detail-row sll-history-detail-head" role="row">
-              <span role="columnheader">RESPONSÁVEL/CARGO</span>
-              <span role="columnheader">ESTADO</span>
-              <span role="columnheader">DATA</span>
-            </div>
-            {steps.map((step, index) => (
-              <div className="sll-history-detail-row" role="row" key={`${request.title}-${index}`}>
-                <span role="cell">{step.responsible}</span>
-                <span role="cell" className={`sll-history-detail-state ${step.stateClass}`}>
-                  <span>{step.state}</span>
-                  {step.icon}
-                </span>
-                <span role="cell">{step.date}</span>
-              </div>
-            ))}
-          </div>
         </div>
       ) : null}
     </article>
@@ -333,13 +243,17 @@ function SLLHistoricoView() {
     serviceLine: '',
     learningPath: '',
   })
+  const [pedidos, setPedidos] = useState([])
+  const [filterOptions, setFilterOptions] = useState({ areas: [], serviceLines: [], learningPaths: [] })
+  const [isLoading, setIsLoading] = useState(true)
+  const [historicoCache, setHistoricoCache] = useState({})
 
   const filterRef = useRef(null)
 
   const filteredRequests = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    return historyRequests.filter((request) => {
+    return pedidos.filter((request) => {
       const searchableText = [
         request.title,
         request.consultant,
@@ -372,6 +286,65 @@ function SLLHistoricoView() {
 
     return filteredRequests.slice(startIndex, startIndex + requestsPerPage)
   }, [currentPage, filteredRequests])
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const [pedidosData, areasData, slData, lpData] = await Promise.all([
+          getPedidos(),
+          getAreas(),
+          getServiceLines(),
+          getLearningPaths(),
+        ])
+
+        const areaMap = Object.fromEntries(
+          areasData.map((a) => [a.id_area, { name: a.nome_area, id_service_line: a.id_service_line }])
+        )
+        const slMap = Object.fromEntries(
+          slData.map((sl) => [sl.id_service_line, { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }])
+        )
+        const lpMap = Object.fromEntries(
+          lpData.map((lp) => [lp.id_learning_path, lp.nome_learning_path])
+        )
+
+        setPedidos(pedidosData.map((row) => mapPedido(row, areaMap, slMap, lpMap)))
+        setFilterOptions({
+          areas: areasData.map((a) => a.nome_area),
+          serviceLines: slData.map((sl) => sl.nome_service_line),
+          learningPaths: lpData.map((lp) => lp.nome_learning_path),
+        })
+      } catch (err) {
+        console.error('Erro ao carregar histórico SL', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  async function handleToggle(requestId) {
+    // fechar se já estava aberto
+    if (expandedKey === requestId) {
+      setExpandedKey(null)
+      return
+    }
+
+    setExpandedKey(requestId)
+
+    // só faz fetch se ainda não estiver em cache
+    if (historicoCache[requestId] !== undefined) return
+
+    try {
+      const data = await getPedidoHistorico(requestId)
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(data) }))
+    } catch (err) {
+      console.error('Erro ao carregar histórico do pedido', err)
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: [] }))
+    }
+  }
+
+
 
   useEffect(() => {
     setCurrentPage(1)
@@ -583,18 +556,21 @@ function SLLHistoricoView() {
           </section>
 
           <section className="sll-history-list" aria-label="Lista do histórico">
-            {paginatedRequests.map((request) => {
-              const key = `${request.title}-${request.consultant}`
-
-              return (
+            {isLoading ? (
+              <p className="sll-history-loading">A carregar pedidos…</p>
+            ) : paginatedRequests.length === 0 ? (
+              <p className="sll-history-empty">Sem resultados para o filtro aplicado.</p>
+            ) : (
+              paginatedRequests.map((request) => (
                 <HistoryRequestCard
-                  key={key}
+                  key={request.id}
                   request={request}
-                  isExpanded={expandedKey === key}
-                  onToggle={() => setExpandedKey((current) => (current === key ? null : key))}
+                  isExpanded={expandedKey === request.id}
+                  onToggle={() => handleToggle(request.id)}
+                  steps={expandedKey === request.id ? historicoCache[request.id] ?? null : null}
                 />
-              )
-            })}
+              ))
+            )}
           </section>
 
           {showExport ? (
