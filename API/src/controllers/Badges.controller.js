@@ -5,6 +5,8 @@ const ServiceLines = require('../models/ServiceLines.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
 const Consultor = require('../models/Consultores.models')
+const Sequelize = require('sequelize');
+const Favoritos = require('../models/Favoritos.models');
 
 const controllers = {};
 
@@ -26,6 +28,57 @@ controllers.getAllBadges = async (req, res) => {
 
         return res.status(500).json({
             mensagem: "Erro ao buscar badges",
+            erro: error.message
+        });
+    }
+};
+
+controllers.getBadgesFavorito = async (req, res) => {
+    try {
+
+        const idConsultor = req.user.id_consultor;
+
+        if (!idConsultor) {
+            return res.status(400).json({
+                mensagem: "ID do consultor não encontrado"
+            });
+        }
+
+        const favoritos = await Favoritos.findAll({
+            where: {
+                id_consultor: idConsultor
+            },
+            include: [
+                {
+                    model: Badges,
+                    include: [
+                        {
+                            model: Areas,
+                            attributes: ['nome_area']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const resultado = favoritos.map(f => ({
+            id_badge: f.Badge.id_badge,
+            nome_badge: f.Badge.nome_badge,
+            descricao_badge: f.Badge.descricao_badge,
+            pontos_badge: f.Badge.pontos_badge,
+            nivel_badge: f.Badge.nivel_badge,
+            imagem_badge: f.Badge.imagem_badge,
+            nome_area: f.Badge.Area?.nome_area
+        }));
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao buscar favoritos",
             erro: error.message
         });
     }
@@ -259,7 +312,7 @@ controllers.devolverEstadoBadge = async (req, res) => {
             req.params.id_badge,
             req.params.id_consultor
         );
-        res.json({estado});
+        res.json({ estado });
     } catch (err) {
         res.status(500).json({
             error: err.message
@@ -282,223 +335,225 @@ controllers.devolverEstadoBadgeMobile = async (req, res) => {
 };
 
 controllers.getAllBadgesMobile = async (req, res) => {
-  try {
-    const response = await Badges.findAll({
-      where: { estado_a_i: true },
-      include: [
-        {
-          model: Areas,
-          attributes: ['nome_area']
-        }
-      ]
-    });
+    try {
+        const response = await Badges.findAll({
+            where: { estado_a_i: true },
+            include: [
+                {
+                    model: Areas,
+                    attributes: ['nome_area']
+                }
+            ]
+        });
 
-    const dados = response.map(item => ({
-      ID_BADGE: item.id_badge,
-      ID_AREA: item.id_area,
-      NOME_BADGE: item.nome_badge,
-      DESCRICAO_BADGE: item.descricao_badge,
-      PONTOS_BADGE: item.pontos_badge,
-      PAGO: item.pago,
-      NIVEL_BADGE: item.nivel_badge,
-      IMAGEM_BADGE: item.imagem_badge,
-      nome_area_pai: item.Area?.nome_area || "Sem Área",
-      ESTADO_A_I_: item.estado_a_i,
-      DATA_INSERCAO: item.data_insercao
-    }));
+        const dados = response.map(item => ({
+            ID_BADGE: item.id_badge,
+            ID_AREA: item.id_area,
+            NOME_BADGE: item.nome_badge,
+            DESCRICAO_BADGE: item.descricao_badge,
+            PONTOS_BADGE: item.pontos_badge,
+            PAGO: item.pago,
+            NIVEL_BADGE: item.nivel_badge,
+            IMAGEM_BADGE: item.imagem_badge,
+            nome_area_pai: item.Area?.nome_area || "Sem Área",
+            ESTADO_A_I_: item.estado_a_i,
+            DATA_INSERCAO: item.data_insercao
+        }));
 
-    res.json(dados);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+        res.json(dados);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 controllers.getBadgesByAreaIDMobile = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
 
-  if (!id) {
-    return res.status(400).send("ERRO! Tens de enviar o Id da Area");
-  }
+    if (!id) {
+        return res.status(400).send("ERRO! Tens de enviar o Id da Area");
+    }
 
-  try {
+    try {
 
-    const response = await Badges.findAll({
-      where: { id_area: id },
-      include: [
-      {
-        model: Areas,
-        attributes: [
-          'nome_area'
-        ]
-      }
-      ]
-    });
+        const response = await Badges.findAll({
+            where: { id_area: id },
+            include: [
+                {
+                    model: Areas,
+                    attributes: [
+                        'nome_area'
+                    ]
+                }
+            ]
+        });
 
-    const dados = response.map(item => ({
-      ID_BADGE: item.id_badge,
-      ID_AREA: item.id_area,
-      NOME_BADGE: item.nome_badge,
-      DESCRICAO_BADGE: item.descricao_badge,
-      PONTOS_BADGE: item.pontos_badge,
-      PAGO: item.pago,
-      NIVEL_BADGE: item.nivel_badge,
-      IMAGEM_BADGE: item.imagem_badge,
-      nome_area_pai: item.Area.nome_area,
-      ESTADO_A_I_: item.estado_a_i,
-      DATA_INSERCAO: item.data_insercao
-    }));
+        const dados = response.map(item => ({
+            ID_BADGE: item.id_badge,
+            ID_AREA: item.id_area,
+            NOME_BADGE: item.nome_badge,
+            DESCRICAO_BADGE: item.descricao_badge,
+            PONTOS_BADGE: item.pontos_badge,
+            PAGO: item.pago,
+            NIVEL_BADGE: item.nivel_badge,
+            IMAGEM_BADGE: item.imagem_badge,
+            nome_area_pai: item.Area.nome_area,
+            ESTADO_A_I_: item.estado_a_i,
+            DATA_INSERCAO: item.data_insercao
+        }));
 
-    res.json(dados);
+        res.json(dados);
 
 
-  }catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 
 }
 
 controllers.getBadgeByIdMobile = async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).send("Tens de enviar o id do badge no url");
-  }
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).send("Tens de enviar o id do badge no url");
+    }
 
-  const response = await Badges.findOne({
-    where: { id_badge: id },
-    include: [
-      {
-        model: Areas,
-        attributes: [
-          'nome_area'
+    const response = await Badges.findOne({
+        where: { id_badge: id },
+        include: [
+            {
+                model: Areas,
+                attributes: [
+                    'nome_area'
+                ]
+            }
         ]
-      }
-    ]
-  });
+    });
 
-  
-  const dados = {
-    ID_BADGE: response.id_badge,
-    ID_AREA: response.id_area,
-    NOME_BADGE: response.nome_badge,
-    DESCRICAO_BADGE: response.descricao_badge,
-    PONTOS_BADGE: response.pontos_badge,
-    PAGO: response.pago,
-    NIVEL_BADGE: response.nivel_badge,
-    IMAGEM_BADGE: response.imagem_badge,
-    nome_area_pai: response.Area.nome_area,
-    ESTADO_A_I_: response.estado_a_i,
-    DATA_INSERCAO: response.data_insercao
-  };
 
-  res.json([dados]);
-  
+    const dados = {
+        ID_BADGE: response.id_badge,
+        ID_AREA: response.id_area,
+        NOME_BADGE: response.nome_badge,
+        DESCRICAO_BADGE: response.descricao_badge,
+        PONTOS_BADGE: response.pontos_badge,
+        PAGO: response.pago,
+        NIVEL_BADGE: response.nivel_badge,
+        IMAGEM_BADGE: response.imagem_badge,
+        nome_area_pai: response.Area.nome_area,
+        ESTADO_A_I_: response.estado_a_i,
+        DATA_INSERCAO: response.data_insercao
+    };
+
+    res.json([dados]);
+
 }
 
 //BADGES CONCLUIDOS MOBILE
 //BADGES CONCLUIDOS MOBILE
 controllers.getBadgesObtidosConsultorMobile = async (req, res) => {
     try {
-      const { id } = req.params;
-  
-      if (!id) {
-        return res.status(400).json({ error: "ID do consultor é obrigatório" });
-      }
-  
-      // Usamos BadgesConcluidos como base para garantir que trazemos tudo o que existe na tabela
-      const conquistas = await BadgesConcluidos.findAll({
-        where: { id_consultor: id },
-        include: [
-          {
-            model: Badges,
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: "ID do consultor é obrigatório" });
+        }
+
+        // Usamos BadgesConcluidos como base para garantir que trazemos tudo o que existe na tabela
+        const conquistas = await BadgesConcluidos.findAll({
+            where: { id_consultor: id },
             include: [
-              {
-                model: Areas,
-                include: [ServiceLines]
-              }
+                {
+                    model: Badges,
+                    include: [
+                        {
+                            model: Areas,
+                            include: [ServiceLines]
+                        }
+                    ]
+                }
             ]
-          }
-        ]
-      });
-      
-      if (!conquistas || conquistas.length === 0) {
-        return res.json([]);
-      }
+        });
 
-      // Formatação exata para o factory BadgesConcluidosModel.fromJson do Dart
-      const resultado = conquistas.map(c => {
-        const b = c.Badge;
-        const area = b?.Area;
-        const sl = area?.ServiceLine;
+        if (!conquistas || conquistas.length === 0) {
+            return res.json([]);
+        }
 
-        return {
-          ID_BADGE_CONCLUIDO: c.id_badge_concluido,
-          ID_BADGE: b?.id_badge,
-          NOME_BADGE: b?.nome_badge || "Sem Nome",
-          nome_area_pai: area?.nome_area || "Sem Área", // Lowercase como no Dart
-          NIVEL_BADGE: b?.nivel_badge || "",
-          PONTOS_BADGE: b?.pontos_badge || 0, // Adicionado (faltava)
-          IMAGEM_BADGE: b?.imagem_badge || "",
-          nome_sl_pai: sl?.nome_service_line || "N/A", // Lowercase como no Dart
-          DATA_CONCLUSAO: c.data_conclusao_badge,
-          VALIDADE: b?.validade // Adicionado para o cálculo da expiração no Dart
-        };
-      });
-  
-      res.json(resultado);
-  
+        // Formatação exata para o factory BadgesConcluidosModel.fromJson do Dart
+        const resultado = conquistas.map(c => {
+            const b = c.Badge;
+            const area = b?.Area;
+            const sl = area?.ServiceLine;
+
+            return {
+                ID_BADGE_CONCLUIDO: c.id_badge_concluido,
+                ID_BADGE: b?.id_badge,
+                NOME_BADGE: b?.nome_badge || "Sem Nome",
+                nome_area_pai: area?.nome_area || "Sem Área", // Lowercase como no Dart
+                NIVEL_BADGE: b?.nivel_badge || "",
+                PONTOS_BADGE: b?.pontos_badge || 0, // Adicionado (faltava)
+                IMAGEM_BADGE: b?.imagem_badge || "",
+                nome_sl_pai: sl?.nome_service_line || "N/A", // Lowercase como no Dart
+                DATA_CONCLUSAO: c.data_conclusao_badge,
+                VALIDADE: b?.validade // Adicionado para o cálculo da expiração no Dart
+            };
+        });
+
+        res.json(resultado);
+
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Erro ao procurar Badges concluidos do consultor", details: err.message });
+        console.error(err);
+        res.status(500).json({ error: "Erro ao procurar Badges concluidos do consultor", details: err.message });
     }
 };
 
 controllers.getBadgesRecomendados = async (req, res) => {
-  try {
-    const { idConsultor } = req.user.id_consultor;
+    try {
 
-    // Buscar consultor para obter a área
-    const consultor = await Consultor.findByPk(idConsultor);
-    if (!consultor) {
-      return res.status(404).json({ mensagem: "Consultor não encontrado" });
+        const idConsultor = req.user.id_consultor;
+        console.log("idConsultor:", idConsultor); // verifica se chega valor
+
+        // Buscar consultor para obter a área
+        const consultor = await Consultor.findByPk(idConsultor);
+        if (!consultor) {
+            return res.status(404).json({ mensagem: "Consultor não encontrado" });
+        }
+
+        // Buscar IDs dos badges já concluídos pelo consultor
+        const concluidos = await BadgesConcluidos.findAll({
+            where: { id_consultor: idConsultor },
+            attributes: ["id_badge"],
+        });
+        const idsConcluidos = concluidos.map((b) => b.id_badge);
+
+        // Badges recomendados: da área do consultor e não concluídos
+        const recomendados = await Badges.findAll({
+            where: {
+                id_area: consultor.id_area,
+                estado_a_i: true,
+                ...(idsConcluidos.length > 0 && {
+                    id_badge: { [Sequelize.Op.notIn]: idsConcluidos },
+                }),
+            },
+        });
+        const idsRecomendados = recomendados.map((b) => b.id_badge);
+
+        // Restantes: não concluídos e não recomendados
+        const excluir = [...idsConcluidos, ...idsRecomendados];
+        const restantes = await Badges.findAll({
+            where: {
+                estado_a_i: true,
+                ...(excluir.length > 0 && {
+                    id_badge: { [Sequelize.Op.notIn]: excluir },
+                }),
+            },
+        });
+
+        return res.status(200).json({ recomendados, restantes });
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro ao buscar badges recomendados",
+            erro: error.message,
+        });
     }
-
-    // Buscar IDs dos badges já concluídos pelo consultor
-    const concluidos = await BadgesConcluidos.findAll({
-      where: { id_consultor: idConsultor },
-      attributes: ["id_badge"],
-    });
-    const idsConcluidos = concluidos.map((b) => b.id_badge);
-
-    // Badges recomendados: da área do consultor e não concluídos
-    const recomendados = await Badges.findAll({
-      where: {
-        id_area: consultor.id_area,
-        estado_a_i: true,
-        ...(idsConcluidos.length > 0 && {
-          id_badge: { [Sequelize.Op.notIn]: idsConcluidos },
-        }),
-      },
-    });
-    const idsRecomendados = recomendados.map((b) => b.id_badge);
-
-    // Restantes: não concluídos e não recomendados
-    const excluir = [...idsConcluidos, ...idsRecomendados];
-    const restantes = await Badges.findAll({
-      where: {
-        estado_a_i: true,
-        ...(excluir.length > 0 && {
-          id_badge: { [Sequelize.Op.notIn]: excluir },
-        }),
-      },
-    });
-
-    return res.status(200).json({ recomendados, restantes });
-  } catch (error) {
-    return res.status(500).json({
-      mensagem: "Erro ao buscar badges recomendados",
-      erro: error.message,
-    });
-  }
 };
 
 
