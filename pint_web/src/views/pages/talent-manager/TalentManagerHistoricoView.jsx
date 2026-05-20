@@ -91,7 +91,7 @@ function mapPedido(row, areaMap, slMap, lpMap) {
   const dateStr = row.createdAt ?? row.updatedAt ?? null
   const badge = row.Badge ?? {}
 
-  const consultant = row.Utilizador?.nome ?? row.Utilizador?.nome_utilizador ?? String(row.id_consultor)
+  const consultant = row.Consultore?.Utilizadore?.nome_utilizador ?? String(row.id_consultor)
 
   const areaObj = areaMap[badge.id_area]
   const areaNome = areaObj?.name ?? ''
