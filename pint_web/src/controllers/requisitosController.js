@@ -29,3 +29,33 @@ export const getAllRequisitos = async () => {
         throw error
     }
 }
+
+export const createRequisito = async (payload) => {
+    try {
+        const response = await api.post('/requisitos/create', payload)
+        return response.data
+    } catch (error) {
+        console.error('Erro ao criar requisito', error.response?.data ?? error)
+        throw error
+    }
+}
+
+export const updateRequisito = async (id, payload) => {
+    try {
+        const response = await api.put(`/requisitos/${id}/update`, payload)
+        return response.data
+    } catch (error) {
+        console.error(`Erro ao atualizar requisito ${id}`, error)
+        throw error
+    }
+}
+
+export const deleteRequisito = async (id) => {
+    try {
+        const response = await api.delete(`/requisitos/${id}/delete`)
+        return response.data
+    } catch (error) {
+        console.error(`Erro ao apagar requisito ${id}`, error)
+        throw error
+    }
+}

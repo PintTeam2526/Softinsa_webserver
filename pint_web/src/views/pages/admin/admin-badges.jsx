@@ -14,6 +14,8 @@ import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges, createBadge, updateBadge } from '../../../controllers/badgesController'
+import { getRequisitosByBadge, createRequisito, updateRequisito, deleteRequisito } from '../../../controllers/requisitosController'
+
 
 const defaultBadgeImage = "https://www.figma.com/api/mcp/asset/8ac1b8c7-eccc-423b-8373-e25bf82c55b4";
 
@@ -81,6 +83,15 @@ const mapBadge = (row, areaMap, slMap, lpMap) => {
     requirements: [],
   };
 };
+
+const mapRequisito = (row) => ({
+  id: `db-${row.id_requisito}`,
+  realId: row.id_requisito,
+  title: row.nome_requisito ?? "",
+  description: row.descricao_requisito ?? "",
+  level: rankByLevelLabel[row.nivel_requisito] ?? "1",
+  fileName: row.imagem_requisito ?? "",
+});
 
 // ── icons (sem alterações) ────────────────────────────────────────────────────
 
@@ -165,6 +176,7 @@ const SoftinsaBadges = memo(() => {
   const [requirementFormData, setRequirementFormData] = useState(getDefaultRequirementForm(false));
   const [requirementFormError, setRequirementFormError] = useState("");
   const [editingRequirementIndex, setEditingRequirementIndex] = useState(null);
+  const [deletedRequirementIds, setDeletedRequirementIds] = useState([]);
   const [areasRaw, setAreasRaw] = useState([]);
   const [slRaw, setSlRaw] = useState([]);
   const filterWrapRef = useRef(null);
@@ -267,15 +279,50 @@ const SoftinsaBadges = memo(() => {
     setModalMode("add");
   };
 
-  const handleOpenEditBadge = (badge) => {
-    setFormData({ name: badge.name || "", description: badge.description || "", learningPath: badge.learningPath || learningPathOptions[0] || "", serviceLine: badge.serviceLine || serviceLineOptions[0] || "", area: badge.area || areaOptions[0] || "", validityDate: badge.validityDate || "", status: badge.status || "Ativo", badgeLevel: badge.badgeLevel || "1", points: String(badge.points ?? ""), isSpecial: Boolean(badge.isSpecial), logoFileName: badge.logoFileName || "", logoFile: null, image: badge.image || defaultBadgeImage, requirements: Array.isArray(badge.requirements) ? badge.requirements : [] });
-    setEditingBadgeId(badge.id); setEditingRequirementIndex(null); setIsFilterOpen(false); setModalMode("edit");
+  const handleOpenEditBadge = async (badge) => {
+    setFormData({
+      name: badge.name || "",
+      description: badge.description || "",
+      learningPath: badge.learningPath || learningPathOptions[0] || "",
+      serviceLine: badge.serviceLine || serviceLineOptions[0] || "",
+      area: badge.area || areaOptions[0] || "",
+      validityDate: badge.validityDate || "",
+      status: badge.status || "Ativo",
+      badgeLevel: badge.badgeLevel || "1",
+      points: String(badge.points ?? ""),
+      isSpecial: Boolean(badge.isSpecial),
+      logoFileName: badge.logoFileName || "",
+      logoFile: null,
+      image: badge.image || defaultBadgeImage,
+      requirements: [],
+    });
+
+    setEditingBadgeId(badge.id);
+    setEditingRequirementIndex(null);
+    setDeletedRequirementIds([]);
+    setIsFilterOpen(false);
+    setModalMode("edit");
+
+    try {
+      const reqs = await getRequisitosByBadge(badge.id);
+      setFormData((prev) => ({
+        ...prev,
+        requirements: reqs.map(mapRequisito),
+      }));
+    } catch (err) {
+      console.error("Erro ao carregar requisitos", err);
+    }
   };
 
   const handleCloseModal = () => {
-    setModalMode(null); setEditingBadgeId(null); setIsRequirementModalOpen(false);
-    setRequirementModalMode("add"); setRequirementFormData(getDefaultRequirementForm(false));
-    setRequirementFormError(""); setEditingRequirementIndex(null);
+    setModalMode(null);
+    setEditingBadgeId(null);
+    setIsRequirementModalOpen(false);
+    setRequirementModalMode("add");
+    setRequirementFormData(getDefaultRequirementForm(false));
+    setRequirementFormError("");
+    setEditingRequirementIndex(null);
+    setDeletedRequirementIds([]);
   };
 
   const handleCloseRequirementModal = () => {
@@ -325,9 +372,22 @@ const SoftinsaBadges = memo(() => {
 
   const handleEditRequirement = (req, idx) => { setRequirementFormError(""); setEditingRequirementIndex(idx); setRequirementFormData({ title: req.title || "", description: req.description || "", level: isEditRequirementMode ? req.level || "1" : "", fileName: req.fileName || "", file: null }); };
   const handleDeleteRequirement = (idxToDelete) => {
-    setFormData((prev) => ({ ...prev, requirements: prev.requirements.filter((_, i) => i !== idxToDelete) }));
-    setEditingRequirementIndex((prev) => { if (prev === null || prev === idxToDelete) return null; return prev > idxToDelete ? prev - 1 : prev; });
-    if (editingRequirementIndex === idxToDelete) setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode));
+    const req = formData.requirements[idxToDelete];
+    // Se o requisito já existe na BD, guardar o id para apagar no submit
+    if (req?.realId) {
+      setDeletedRequirementIds((prev) => [...prev, req.realId]);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i) => i !== idxToDelete),
+    }));
+    setEditingRequirementIndex((prev) => {
+      if (prev === null || prev === idxToDelete) return null;
+      return prev > idxToDelete ? prev - 1 : prev;
+    });
+    if (editingRequirementIndex === idxToDelete)
+      setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode));
     setRequirementFormError("");
   };
   const handleCancelRequirementEdit = () => { setEditingRequirementIndex(null); setRequirementFormError(""); setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); };
@@ -347,12 +407,12 @@ const SoftinsaBadges = memo(() => {
     const resolvedSL = slRaw.find((sl) => sl.nome_service_line === formData.serviceLine);
     if (!resolvedSL) { console.error("Service Line não encontrada"); return; }
 
-    // strip do prefixo Base64
-    const rawBase64 = formData.image && !formData.image.startsWith("http")
-      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
-      : null;
+    const rawBase64 =
+      formData.image && !formData.image.startsWith("http")
+        ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+        : null;
 
-    const payload = {
+    const badgePayload = {
       nome_badge: sanitizedName,
       descricao_badge: formData.description.trim(),
       id_area: resolvedArea.id_area,
@@ -366,11 +426,42 @@ const SoftinsaBadges = memo(() => {
     };
 
     try {
+      let savedBadgeId = editingBadgeId;
+
       if (isEditMode && editingBadgeId !== null) {
-        await updateBadge(editingBadgeId, payload);
+        await updateBadge(editingBadgeId, badgePayload);
       } else {
-        await createBadge(payload);
+        const created = await createBadge(badgePayload);
+        // ajustar conforme o campo devolvido pela API
+        savedBadgeId = created.id_badge ?? created.id;
       }
+
+      // 1. apagar os removidos
+      await Promise.all(
+        deletedRequirementIds.map((rid) => deleteRequisito(rid))
+      );
+
+      // 2. criar / actualizar
+      await Promise.all(
+        formData.requirements.map((req) => {
+          const reqPayload = {
+            id_badge: savedBadgeId,
+            nome_requisito: req.title,
+            descricao_requisito: req.description,
+            nivel_requisito: levelLabelByRank[req.level] ?? req.level ?? null,
+            imagem_requisito: req.fileName || null,
+          };
+
+          if (req.realId) {
+            // requisito já existe na BD → update
+            return updateRequisito(req.realId, reqPayload);
+          } else {
+            // requisito novo → create
+            return createRequisito(reqPayload);
+          }
+        })
+      );
+
       await loadData();
       handleCloseModal();
     } catch (err) {
