@@ -88,21 +88,21 @@ function formatApprovedAt(status, dateStr) {
 
 function mapPedido(row, areaMap, slMap, lpMap) {
   const status = STATUS_MAP[row.estado_atual] ?? 'Em progresso'
-
   const dateStr = row.createdAt ?? row.updatedAt ?? null
-
   const badge = row.Badge ?? {}
 
-  // Resolver área/SL/LP a partir do id_area do badge
-  const areaNome = areaMap[badge.id_area] ?? ''
-  const areaObj = Object.values(areaMap).find?.((_, k) => k == badge.id_area)
-  const slNome = slMap[badge.id_service_line] ?? ''
-  const lpNome = lpMap[badge.id_learning_path] ?? ''
+  const consultant = row.Utilizador?.nome ?? row.Utilizador?.nome_utilizador ?? String(row.id_consultor)
+
+  const areaObj = areaMap[badge.id_area]
+  const areaNome = areaObj?.name ?? ''
+  const slObj = slMap[areaObj?.id_service_line]
+  const slNome = slObj?.name ?? ''
+  const lpNome = lpMap[slObj?.id_learning_path] ?? ''
 
   return {
     id: row.id_pedido_badge,
     title: badge.nome_badge ?? `Pedido ${row.id_pedido_badge}`,
-    consultant: row.id_consultor ?? '',
+    consultant,
     status,
     approvedDate: dateStr ? String(dateStr).slice(0, 10) : '',
     approvedAt: formatApprovedAt(status, dateStr),
@@ -189,9 +189,15 @@ function TalentManagerHistoricoView() {
         ])
 
         // mapas auxiliares para resolução de IDs → nomes
-        const areaMap = Object.fromEntries(areasData.map((a) => [a.id_area, a.nome_area]))
-        const slMap = Object.fromEntries(slData.map((sl) => [sl.id_service_line, sl.nome_service_line]))
-        const lpMap = Object.fromEntries(lpData.map((lp) => [lp.id_learning_path, lp.nome_learning_path]))
+        const areaMap = Object.fromEntries(
+          areasData.map((a) => [a.id_area, { name: a.nome_area, id_service_line: a.id_service_line }])
+        )
+        const slMap = Object.fromEntries(
+          slData.map((sl) => [sl.id_service_line, { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }])
+        )
+        const lpMap = Object.fromEntries(
+          lpData.map((lp) => [lp.id_learning_path, lp.nome_learning_path])
+        )
 
         setPedidos(pedidosData.map((row) => mapPedido(row, areaMap, slMap, lpMap)))
 
