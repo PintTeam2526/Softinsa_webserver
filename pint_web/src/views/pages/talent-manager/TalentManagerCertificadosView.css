@@ -1,0 +1,467 @@
+.sll-certificates-page {
+  min-height: 100%;
+  display: flex;
+  background: #ffffff;
+  color: #232d42;
+}
+
+.sll-certificates-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sll-certificates-content {
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sll-certificates-hero {
+  position: relative;
+  min-height: 155px;
+  height: 155px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
+  box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
+}
+
+.sll-certificates-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sll-certificates-hero-circle {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+}
+
+.sll-certificates-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+  transform: rotate(90deg);
+}
+
+.sll-certificates-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+  transform: rotate(90deg);
+}
+
+.sll-certificates-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+  transform: rotate(90deg);
+}
+
+.sll-certificates-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+  transform: rotate(90deg);
+}
+
+.sll-certificates-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+  transform: rotate(90deg);
+}
+
+.sll-certificates-hero-copy {
+  position: absolute;
+  left: 50px;
+  top: 35px;
+  z-index: 1;
+  color: #ffffff;
+}
+
+.sll-certificates-hero-copy h1 {
+  margin: 0 0 4px;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sll-certificates-hero-copy p {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 500;
+  width: 660px;
+  color: #ffffff;
+}
+
+.sll-certificates-layout {
+  display: grid;
+  grid-template-columns: 287px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.sll-certificates-form-card,
+.sll-certificates-preview-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(17, 38, 146, 0.05);
+  border: 1px solid #f1f3f5;
+}
+
+.sll-certificates-form-card {
+  padding: 22px 20px 16px;
+}
+
+.sll-certificates-form-card h2,
+.sll-certificates-preview-card h2 {
+  margin: 0 0 18px;
+  color: #232d42;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 700;
+}
+
+.sll-certificates-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.sll-certificates-field label {
+  color: #495057;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.sll-certificates-select-wrap {
+  position: relative;
+}
+
+.sll-certificates-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid #8a92a6;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.sll-certificates-select-wrap select {
+  width: 100%;
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 2px rgba(108, 117, 125, 0.3);
+  padding: 4px 34px 4px 16px;
+  color: #8a92a6;
+  font-size: 13px;
+  line-height: 1.5;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.sll-certificates-select-wrap select:focus {
+  outline: 1px solid rgba(58, 87, 232, 0.35);
+  outline-offset: 1px;
+}
+
+.sll-certificates-visualize-btn,
+.sll-certificates-download-btn {
+  width: 100%;
+  height: 26px;
+  border: 0;
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 600;
+}
+
+.sll-certificates-download-btn {
+  margin-top: 8px;
+}
+
+.sll-certificates-preview-card {
+  padding: 22px 18px 18px;
+  min-height: 440px;
+}
+
+.sll-certificates-preview {
+  position: relative;
+  min-height: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.sll-certificates-preview-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  color: #8a92a6;
+  text-align: center;
+  pointer-events: none;
+}
+
+.sll-certificates-preview-empty p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.sll-certificates-preview-canvas {
+  position: relative;
+  z-index: 1;
+  border: 1px solid #f1f3f5;
+  border-radius: 14px;
+  padding: 0;
+  background: #f8fafc;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sll-certificates-certificate {
+  position: relative;
+  width: min(100%, 720px);
+  min-height: 440px;
+  margin: 22px;
+  border-radius: 10px;
+  border: 8px solid #e0b62b;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+}
+
+.sll-certificates-certificate-topbar {
+  height: 76px;
+  background: linear-gradient(180deg, #39639c 0%, #39639c 100%);
+  display: grid;
+  place-items: center;
+}
+
+.sll-certificates-certificate-logo {
+  color: #ffffff;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.sll-certificates-certificate-logo span {
+  color: #25c2d6;
+}
+
+.sll-certificates-certificate-body {
+  padding: 18px 48px 28px;
+  text-align: center;
+  color: #243f68;
+}
+
+.sll-certificates-certificate-body h3 {
+  margin: 0;
+  color: #25436d;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.sll-certificates-certificate-rule {
+  display: block;
+  width: 205px;
+  height: 2px;
+  margin: 22px auto 26px;
+  background: linear-gradient(90deg, transparent 0%, #92aed7 20%, #92aed7 80%, transparent 100%);
+}
+
+.sll-certificates-certificate-kicker,
+.sll-certificates-certificate-copy,
+.sll-certificates-certificate-meta,
+.sll-certificates-certificate-date,
+.sll-certificates-certificate-signature,
+.sll-certificates-certificate-company {
+  margin: 0;
+}
+
+.sll-certificates-certificate-kicker {
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.sll-certificates-certificate-name {
+  margin: 10px 0 14px;
+  color: #39639c;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.sll-certificates-certificate-copy {
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.sll-certificates-certificate-badge {
+  margin: 10px 0 18px;
+  color: #25436d;
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.sll-certificates-certificate-meta {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.sll-certificates-certificate-date {
+  margin-top: 28px;
+  color: #8a92a6;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.sll-certificates-certificate-signature-rule {
+  width: 275px;
+  height: 1px;
+  margin: 34px auto 10px;
+  background: #8a92a6;
+}
+
+.sll-certificates-certificate-signature {
+  color: #8a92a6;
+  font-size: 14px;
+  line-height: 1.3;
+  font-style: italic;
+}
+
+.sll-certificates-certificate-company {
+  margin-top: 6px;
+  color: #8a92a6;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.sll-certificates-preview-badges {
+  display: none;
+}
+
+.sll-certificates-badge-option {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  color: #8a92a6;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sll-certificates-badge-option.is-selected {
+  border-color: #3a57e8;
+  color: #232d42;
+}
+
+.sll-certificates-badge-option img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 1200px) {
+  .sll-certificates-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .sll-certificates-page {
+    flex-direction: column;
+  }
+
+  .sll-certificates-content {
+    padding: 16px 18px 20px;
+  }
+}
+
+@media (max-width: 760px) {
+  .sll-certificates-hero-copy h1 {
+    font-size: 30px;
+  }
+
+  .sll-certificates-hero-copy p {
+    font-size: 18px;
+  }
+
+  .sll-certificates-certificate {
+    margin: 14px;
+    min-height: 420px;
+  }
+
+  .sll-certificates-certificate-body {
+    padding: 16px 20px 24px;
+  }
+
+  .sll-certificates-certificate-logo {
+    font-size: 32px;
+  }
+
+  .sll-certificates-certificate-body h3 {
+    font-size: 24px;
+  }
+
+  .sll-certificates-certificate-name {
+    font-size: 22px;
+  }
+
+  .sll-certificates-certificate-badge {
+    font-size: 18px;
+  }
+}

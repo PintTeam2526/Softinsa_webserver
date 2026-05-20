@@ -1,15 +1,17 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
+import ConsultorLayout from './views/layouts/ConsultorLayout'
 import DashboardView from './views/pages/admin/DashboardView'
-import AdminUsers from './views/pages/admin/admin-users'
-import AdminPedidos from './views/pages/admin/admin-pedidos'
-import AdminSlas from './views/pages/admin/admin-slas'
-import AdminRgpd from './views/pages/admin/admin-rgpd'
-import AdminBadges from './views/pages/admin/admin-badges'
-import AdminAreas from './views/pages/admin/admin-areas'
-import AdminServiceLines from './views/pages/admin/admin-service-lines'
-import AdminLearningPaths from './views/pages/admin/admin-learning-paths'
-import AccessGatewayView from './views/pages/shared/accessGatewayView'
+import SoftinsaUsers from './views/pages/admin/admin-users'
+import SoftinsaPedidos from './views/pages/admin/admin-pedidos'
+import SoftinsaRgpd from './views/pages/admin/admin-rgpd'
+import SoftinsaBadges from './views/pages/admin/admin-badges'
+import SoftinsaAreas from './views/pages/admin/admin-areas'
+import SoftinsaServiceLines from './views/pages/admin/admin-service-lines'
+import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
+import LoginView from './views/pages/auth/LoginView'
+import RegisterView from './views/pages/auth/RegisterView'
+import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
 import SLLHomeView from './views/pages/SLL/SLLHomeView'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
 import SLLBadgesView from './views/pages/SLL/SLLBadgesView'
@@ -18,23 +20,23 @@ import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
 import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
 import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
-import ConsultorHomeView from './views/pages/consultor/consultorHomeView'
-import ConsultorBadgesView from './views/pages/consultor/consultorBadgesView'
-import ConsultorBadgesListsView from './views/pages/consultor/consultorBadgesListsView'
-import ConsultorPedidosView from './views/pages/consultor/consultorPedidosView'
-import ConsultorObjetivosView from './views/pages/consultor/consultorObjetivosView'
-import ConsultorMessagesView from './views/pages/consultor/consultorMessagesView'
-import ConsultorConquistasView from './views/pages/consultor/consultorConquistasView'
-import ConsultorOutrasAreasView from './views/pages/consultor/consultorOutrasAreasView'
-import ConsultorPerfilPublicoView from './views/pages/consultor/consultorPerfilPublicoView'
-import LoginView from './views/pages/auth/LoginView'
+import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
+import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
+import ConsultorObjetivosView from './views/pages/consultor/ConsultorObjetivosView'
+import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistasView'
+import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'
+import ConsultorListaBadgesView from './views/pages/consultor/ConsultorListaBadgesView'
+import ConsultorBadgePageView from './views/pages/consultor/ConsultorBadgePageView'
+import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginView />} />
       <Route path="/login" element={<LoginView />} />
-      <Route path="/acesso" element={<AccessGatewayView />} />
+      <Route path="/registar" element={<RegisterView />} />
+      
+      <Route path="/talent-manager/*" element={<TalentManagerHomeView />} />
       <Route path="/sll" element={<SLLHomeView />} />
       <Route path="/sll/certificados" element={<SLLCertificadosView />} />
       <Route path="/sll/badges" element={<SLLBadgesView />} />
@@ -44,29 +46,39 @@ function App() {
       <Route path="/sll/pendentes" element={<SLLPendentesView />} />
       <Route path="/sll/perfil-publico" element={<SLLPerfilPublicoView />} />
 
-      <Route path="/admin" element={<SoftinsaLayout />}>
+      <Route path="/softinsa" element={<SoftinsaLayout />}>
         <Route index element={<DashboardView />} />
-        <Route path="utilizadores" element={<AdminUsers />} />
-        <Route path="pedidos" element={<AdminPedidos />} />
-        <Route path="slas" element={<AdminSlas />} />
-        <Route path="rgpd" element={<AdminRgpd />} />
-        <Route path="badges" element={<AdminBadges />} />
-        <Route path="areas" element={<AdminAreas />} />
-        <Route path="service-lines" element={<AdminServiceLines />} />
-        <Route path="learning-paths" element={<AdminLearningPaths />} />
+        <Route path="utilizadores" element={<SoftinsaUsers />} />
+        <Route path="pedidos" element={<SoftinsaPedidos />} />
+        <Route path="rgpd" element={<SoftinsaRgpd />} />
+        <Route path="badges" element={<SoftinsaBadges />} />
+        <Route path="areas" element={<SoftinsaAreas />} />
+        <Route path="service-lines" element={<SoftinsaServiceLines />} />
+        <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
       </Route>
 
-      <Route path="/consultor" element={<SoftinsaLayout />}>
-        <Route index element={<ConsultorHomeView />} />
+      <Route path="/consultor" element={<ConsultorLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<ConsultorDashboardView />} />
+        <Route path="home" element={<ConsultorDashboardView />} />
+        <Route path="area/lowcode" element={<ConsultorDashboardView />} />
+        <Route path="service-line/hybrid-cloud" element={<ConsultorDashboardView />} />
+        <Route path="learning-path/jornada-tecnica" element={<ConsultorDashboardView />} />
         <Route path="pedidos" element={<ConsultorPedidosView />} />
-        <Route path="listas-badges" element={<ConsultorBadgesListsView />} />
+        <Route path="badges/pedidos" element={<ConsultorPedidosView />} />
+        <Route path="listas-badges" element={<ConsultorListaBadgesView />} />
+        <Route path="badges/listas-badges" element={<ConsultorListaBadgesView />} />
         <Route path="objetivos" element={<ConsultorObjetivosView />} />
+        <Route path="badges/objetivos" element={<ConsultorObjetivosView />} />
         <Route path="conquistas" element={<ConsultorConquistasView />} />
+        <Route path="badges/conquistas" element={<ConsultorConquistasView />} />
         <Route path="outras-areas" element={<ConsultorOutrasAreasView />} />
+        <Route path="badges/outras-areas" element={<ConsultorOutrasAreasView />} />
+        <Route path="badge/:badgeId" element={<ConsultorBadgePageView />} />
+        <Route path="area/lowcode/:badgeId" element={<ConsultorBadgePageView />} />
         <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
-        {/* paginas a mais -> ver se dá para reaproveitar*/}
-        <Route path="badges" element={<ConsultorBadgesView />} />
-        <Route path="mensagens" element={<ConsultorMessagesView />} />
+        <Route path="badges" element={<ConsultorDashboardView />} />
+        <Route path="mensagens" element={<ConsultorDashboardView />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

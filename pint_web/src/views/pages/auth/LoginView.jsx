@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './login.css'
+import api from '../../../services/api'
 
 const imgTick = 'http://localhost:3845/assets/0b2cf47547393ab971bf1e9c667b682519c74f46.svg'
-const imgEllipse5 = 'http://localhost:3845/assets/b9e5e6c7253e702e33ed1aaa921f6e302bc077df.svg'
-const imgEllipse4 = 'http://localhost:3845/assets/801da602e7bbe6d4f36e4ed581414c34d371198c.svg'
-const imgEllipse3 = 'http://localhost:3845/assets/110576950204e7fb8cb44c574fb459ffe2a4ce6b.svg'
-const imgEllipse2 = 'http://localhost:3845/assets/4a707fb61f076a0640400982c899902ef6daffc2.svg'
-const imgEllipse1 = 'http://localhost:3845/assets/1940231029714c275a9f9da7e8ca092c75f447f3.svg'
+const imgEllipse5 = '../../../assets/images/auth/05.png'
+const imgEllipse4 = '../../../assets/images/auth/04.png'
+const imgEllipse3 = '../../../assets/images/auth/03.png'
+const imgEllipse2 = '../../../assets/images/auth/02.png'
+const imgEllipse1 = '../../../assets/images/auth/01.png'
 
 function LoginView() {
   const navigate = useNavigate()
@@ -16,6 +17,8 @@ function LoginView() {
     password: '',
     rememberPassword: false,
   })
+  const [loginError, setLoginError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -23,18 +26,38 @@ function LoginView() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
+    // Limpa o erro quando o utilizador começa a escrever
+    if (loginError) setLoginError('')
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    // TODO: Integrar com API/base de dados
-    // Por enquanto, redireciona para AccessGatewayView
-    // Depois será necessário:
-    // 1. Autenticar o utilizador
-    // 2. Obter o perfil/role do utilizador
-    // 3. Redirecionar para o dashboard apropriado (/admin, /consultor, /sll)
-    console.log('Login attempt:', formData)
-    navigate('/acesso')
+    setIsLoading(true)
+    setLoginError('')
+
+    try {
+      const response = await api.post('/autenticacao/login', {
+        email: formData.email,
+        password: formData.password,
+      })
+
+      const { token, user } = response.data
+      localStorage.setItem('token', token)
+
+      const redirectMap = {
+        a: '/softinsa',
+        c: '/consultor',
+        s: '/sll',
+        t: '/talent-manager',
+      }
+
+      navigate(redirectMap[user.role] ?? '/login')
+    } catch (error) {
+      console.error('Erro no login:', error)
+      setLoginError('Email ou password incorretos.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -101,6 +124,11 @@ function LoginView() {
                 />
               </div>
 
+              {/* Mensagem de erro */}
+              {loginError && (
+                <p className="login-error">{loginError}</p>
+              )}
+
               {/* Checkbox and Forgot Password */}
               <div className="login-form-actions">
                 <div className="login-checkbox-group">
@@ -129,8 +157,8 @@ function LoginView() {
               </div>
 
               {/* Login Button */}
-              <button type="submit" className="login-button">
-                Login
+              <button type="submit" className="login-button" disabled={isLoading}>
+                {isLoading ? 'A entrar...' : 'Login'}
               </button>
             </form>
 

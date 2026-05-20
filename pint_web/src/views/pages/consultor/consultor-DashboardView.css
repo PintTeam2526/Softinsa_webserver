@@ -1,100 +1,512 @@
-.softinsa-dashboard-page {
+.consultor-dashboard-page {
   padding: 0 24px 24px;
-  font-family: 'Inter', sans-serif;
-}
-
-.softinsa-dashboard-hero {
-  min-height: 120px;
-  border-radius: 0 0 1rem 1rem;
-  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%);
-  display: flex;
-  align-items: center;
-  padding: 20px 40px;
-  margin: 0 -24px 24px;
-}
-
-.softinsa-dashboard-hero h1 {
-  margin: 0;
-  color: #ffffff;
-  font-size: clamp(28px, 2.5vw, 40px);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.softinsa-summary-card {
-  border: 0;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(17, 38, 146, 0.05);
-  min-height: 117px;
-}
-
-.softinsa-summary-card-body {
-  height: 100%;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.softinsa-summary-icon-shell {
-  width: 68px;
-  height: 68px;
-  border: 1px solid #e9ecef;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.softinsa-summary-icon {
-  width: 24px;
-  height: 24px;
-  color: #39639c;
-}
-
-.softinsa-summary-content p {
-  margin: 0;
-  color: #8a92a6;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.35;
-}
-
-.softinsa-summary-content h5 {
-  margin: 8px 0 0;
+  font-family: Inter, sans-serif;
   color: #232d42;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.2;
 }
 
-.softinsa-chart-card {
-  border: 0;
+/* ── HERO ──────────────────────────────────────────────── */
+.consultor-dashboard-hero {
+  position: relative;
+  height: 155px;
+  margin: 0 -24px 24px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
+}
+
+.consultor-dashboard-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Círculos brancos com posições exactas do Figma — opacity 0.75 + inner shadow azul-escuro */
+.consultor-dashboard-hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
+  transform: rotate(90deg);
+}
+
+.consultor-dashboard-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-dashboard-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-dashboard-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-dashboard-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-dashboard-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+}
+
+.consultor-dashboard-hero-copy {
+  position: absolute;
+  left: 50px;
+  top: 35px;
+  z-index: 1;
+}
+
+.consultor-dashboard-hero-copy h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.consultor-dashboard-hero-copy p {
+  margin: 0;
+  font-size: clamp(18px, 1.6vw, 23px);
+  font-weight: 500;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── METRIC SUMMARY CARDS ──────────────────────────────── */
+.consultor-dashboard-summary {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-bottom: 24px;
+}
+
+.consultor-dashboard-summary-card {
+  height: 117px;
+  background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
-}
-
-.softinsa-chart-card-header {
-  padding: 24px 24px 0;
-  border-bottom: 0;
+  display: flex;
   align-items: center;
-  background: transparent;
+  justify-content: space-between;
+  padding: 0 24px;
 }
 
-.softinsa-chart-card-header h5 {
-  color: #232d42;
+.consultor-dashboard-summary-card.is-area {
+  width: 195px;
+}
+
+.consultor-dashboard-summary-card.is-service-line {
+  width: 296px;
+}
+
+.consultor-dashboard-summary-card.is-learning-path {
+  width: 322px;
+}
+
+.consultor-dashboard-summary-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.consultor-dashboard-summary-copy h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.consultor-dashboard-summary-copy p {
+  margin: 0;
   font-size: 19px;
   font-weight: 500;
   line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-dashboard-summary-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+.consultor-dashboard-summary-donut {
+  width: 71px;
+  height: 72px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ── ALERT CARDS ───────────────────────────────────────── */
+.consultor-dashboard-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.consultor-dashboard-metric {
+  min-height: 118px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.consultor-dashboard-metric.is-clickable {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-metric.is-clickable:hover {
+  box-shadow: 0 14px 24px rgba(17, 38, 146, 0.12);
+  transform: translateY(-1px);
+}
+
+.consultor-dashboard-metric.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-dashboard-metric-icon-tile {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consultor-dashboard-metric-icon {
+  width: 32px;
+  height: 32px;
+  color: #ffffff;
+}
+
+/* cores exactas extraídas do Figma */
+.consultor-dashboard-metric.is-message .consultor-dashboard-metric-icon-tile {
+  background: #3699ff;
+}
+
+.consultor-dashboard-metric.is-objective .consultor-dashboard-metric-icon-tile {
+  background: rgba(192, 50, 33, 0.8);
+}
+
+.consultor-dashboard-metric.is-points .consultor-dashboard-metric-icon-tile {
+  background: #39639c;
+}
+
+.consultor-dashboard-metric-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.consultor-dashboard-metric-copy h3 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-dashboard-metric-copy p {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-dashboard-metric-highlight {
+  color: #232d42;
+  font-weight: 500;
+}
+
+.consultor-dashboard-metric-value {
+  flex-shrink: 0;
+  color: #39639c;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.consultor-dashboard-metric-chevron {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+/* ── BOTTOM GRID ───────────────────────────────────────── */
+.consultor-dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 455px;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 64px;
+}
+
+.consultor-dashboard-bottom-grid.is-single {
+  grid-template-columns: minmax(0, 720px);
+  justify-content: center;
+}
+
+.consultor-dashboard-card {
+  background: #ffffff;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.consultor-dashboard-card-header {
+  margin-bottom: 24px;
+}
+
+.consultor-dashboard-card-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #000000;
+}
+
+.consultor-dashboard-card-header--with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.consultor-dashboard-card-chevron {
+  width: 24px;
+  height: 24px;
+  color: #8a92a6;
+  flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-card-header-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 4px 8px;
+  margin: -4px -8px 20px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  transition: background 0.2s ease;
+}
+
+.consultor-dashboard-card-header-btn:hover {
+  background: #f6f7f9;
+}
+
+.consultor-dashboard-card-header-btn:hover .consultor-dashboard-card-chevron {
+  color: #39639c;
+  transform: translateX(2px);
+}
+
+.consultor-dashboard-card-header-btn:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-dashboard-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.consultor-dashboard-card-body--my-badges {
+  gap: 18px;
+}
+
+/* ── BADGE ROWS ────────────────────────────────────────── */
+.consultor-dashboard-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.consultor-dashboard-badge-row.is-my-badge {
+  gap: 18px;
+}
+
+.consultor-dashboard-badge-row.is-clickable {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: -8px -10px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-badge-row.is-clickable:hover {
+  background: #f6f7f9;
+  transform: translateX(2px);
+}
+
+.consultor-dashboard-badge-row.is-clickable:hover .consultor-dashboard-badge-action {
+  color: #39639c;
+}
+
+.consultor-dashboard-badge-row.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-dashboard-badge-image {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.consultor-dashboard-badge-image--large {
+  width: 96px;
+  height: 96px;
+}
+
+.consultor-dashboard-badge-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.consultor-dashboard-badge-copy h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.75;
+  color: #000000;
+}
+
+.consultor-dashboard-badge-copy p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: #8a92a6;
+}
+
+.consultor-dashboard-badge-copy--my-badge h4 {
+  font-size: 19px;
+  line-height: 1.75;
+}
+
+.consultor-dashboard-badge-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+}
+
+.consultor-dashboard-badge-status-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.consultor-dashboard-badge-status.is-expired {
+  color: #f59e0b;
+}
+
+.consultor-dashboard-badge-status.is-returned {
+  color: #8a92a6;
+}
+
+.consultor-dashboard-badge-status.is-analysis {
+  color: #3b82f6;
+}
+
+.consultor-dashboard-badge-status.is-accepted {
+  color: #10b981;
+}
+
+.consultor-dashboard-badge-status.is-refused {
+  color: #ef4444;
+}
+
+.consultor-dashboard-badge-action {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+/* ── RESPONSIVE ────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .consultor-dashboard-summary {
+    gap: 24px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .consultor-dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .consultor-dashboard-card--my-badges {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 992px) {
-  .softinsa-dashboard-page {
-    padding: 0 16px 20px;
+  .consultor-dashboard-page {
+    padding-inline: 16px;
   }
 
-  .softinsa-dashboard-hero {
-    margin: 0 -16px 16px;
+  .consultor-dashboard-hero {
+    margin-inline: -16px;
+  }
+
+  .consultor-dashboard-summary {
+    gap: 16px;
+  }
+
+  .consultor-dashboard-summary-card.is-area,
+  .consultor-dashboard-summary-card.is-service-line,
+  .consultor-dashboard-summary-card.is-learning-path {
+    width: min(100%, 100%);
+    flex: 1 1 240px;
+  }
+
+  .consultor-dashboard-card,
+  .consultor-dashboard-metric {
+    padding: 20px;
+  }
+
+  .consultor-dashboard-card-header h2,
+  .consultor-dashboard-metric-copy h3,
+  .consultor-dashboard-summary-copy h2 {
+    font-size: 24px;
   }
 }

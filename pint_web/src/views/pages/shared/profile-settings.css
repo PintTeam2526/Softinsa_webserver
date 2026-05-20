@@ -1,0 +1,289 @@
+/*
+ * Estilos partilhados pelas secções "Definições da conta" e modais de edição
+ * usadas nas páginas de perfil público (Consultor, SLL, Talent Manager).
+ *
+ * Importar em qualquer view de perfil que tenha SettingsRow + Modal.
+ */
+
+/* ── FEEDBACK BANNER ──────────────────────────────────── */
+.sll-profile-feedback {
+  background: #e6f6ed;
+  border: 1px solid #b6e0c4;
+  color: #08773a;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+/* ── DEFINIÇÕES DA CONTA ──────────────────────────────── */
+.sll-profile-settings-card {
+  margin-top: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sll-profile-settings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sll-profile-settings-header svg {
+  width: 28px;
+  height: 28px;
+  color: #232d42;
+  flex-shrink: 0;
+}
+
+.sll-profile-settings-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #232d42;
+}
+
+.sll-profile-settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sll-profile-settings-row {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+  font-family: inherit;
+  color: inherit;
+}
+
+.sll-profile-settings-row + .sll-profile-settings-row {
+  border-top: 1px solid #f1f3f7;
+}
+
+.sll-profile-settings-row:hover {
+  background: #f6f7f9;
+}
+
+.sll-profile-settings-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f5f6fa;
+  color: #39639c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sll-profile-settings-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sll-profile-settings-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sll-profile-settings-copy strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: #232d42;
+}
+
+.sll-profile-settings-copy span {
+  font-size: 14px;
+  color: #8a92a6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sll-profile-settings-chevron {
+  width: 20px;
+  height: 20px;
+  color: #8a92a6;
+  flex-shrink: 0;
+}
+
+/* ── MODAL ─────────────────────────────────────────────── */
+.sll-profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(17, 24, 39, 0.48);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.sll-profile-modal {
+  width: min(480px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(17, 38, 146, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.sll-profile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f3f7;
+}
+
+.sll-profile-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #232d42;
+}
+
+.sll-profile-modal-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #8a92a6;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sll-profile-modal-close:hover {
+  background: #f5f6fa;
+  color: #232d42;
+}
+
+.sll-profile-modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sll-profile-form {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sll-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sll-profile-field > span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.sll-profile-field input,
+.sll-profile-field select {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  color: #232d42;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.sll-profile-field input:focus,
+.sll-profile-field select:focus {
+  border-color: #39639c;
+}
+
+.sll-profile-field-error {
+  color: #c03221;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sll-profile-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sll-profile-btn-primary,
+.sll-profile-btn-secondary {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  border: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sll-profile-btn-primary {
+  background: #39639c;
+  color: #ffffff;
+}
+
+.sll-profile-btn-primary:hover {
+  background: #2c4f80;
+}
+
+.sll-profile-btn-secondary {
+  background: #f5f6fa;
+  color: #495057;
+}
+
+.sll-profile-btn-secondary:hover {
+  background: #e9ecef;
+  color: #232d42;
+}
+
+.sll-profile-avatar-preview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  align-self: center;
+  background: #f5f6fa;
+}
+
+.sll-profile-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sll-profile-file-hidden {
+  display: none;
+}

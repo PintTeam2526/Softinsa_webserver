@@ -28,6 +28,23 @@ export function useTopbarController() {
     setIsProfileMenuOpen(false)
   }, [])
 
+  const openNotifications = useCallback(() => {
+    setIsNotificationsOpen(true)
+    setIsProfileMenuOpen(false)
+    resetNotificationsState()
+  }, [resetNotificationsState])
+
+  useEffect(() => {
+    function handleOpenNotifications() {
+      openNotifications()
+    }
+
+    window.addEventListener('softinsa:open-notifications', handleOpenNotifications)
+    return () => {
+      window.removeEventListener('softinsa:open-notifications', handleOpenNotifications)
+    }
+  }, [openNotifications])
+
   useEffect(() => {
     function handleClickOutside(event) {
       const clickedInsideNotifications =
@@ -124,6 +141,7 @@ export function useTopbarController() {
     selectedLanguage,
     availableLanguages,
     toggleNotifications,
+    openNotifications,
     closeNotifications,
     toggleNotificationMessage,
     toggleComposer,

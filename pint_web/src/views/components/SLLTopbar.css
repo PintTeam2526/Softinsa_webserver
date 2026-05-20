@@ -1,7 +1,38 @@
 @import './AdminTopbar.css';
 
+.softinsa-shell-topbar {
+	position: static !important;
+	top: auto !important;
+	height: 76px !important;
+	min-height: 76px !important;
+	max-height: 76px !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	flex-shrink: 0 !important;
+	flex-wrap: nowrap !important;
+	box-sizing: border-box !important;
+}
+
 .softinsa-shell-profile-btn {
 	display: inline-flex;
 	text-decoration: none;
 	color: inherit;
+}
+
+@media (max-width: 992px) {
+	.softinsa-shell-topbar {
+		flex-wrap: nowrap;
+	}
+
+	.softinsa-shell-topbar-search {
+		min-width: 0;
+		max-width: none;
+		flex: 1 1 auto;
+		order: 0;
+	}
+
+	.softinsa-shell-topbar-actions {
+		width: auto;
+		order: 0;
+	}
 }

@@ -445,7 +445,7 @@
   margin: 0;
   padding: 18px 16px 10px;
   color: #232d42;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1.4;
   font-weight: 700;
 }
@@ -480,7 +480,23 @@
 }
 
 .sll-team-rank {
-  color: #8a92a6;
+  color: #232d42;
+}
+
+.sll-team-rank.is-gold {
+  color: #d4af37;
+}
+
+.sll-team-rank.is-silver {
+  color: #c0c0c0;
+}
+
+.sll-team-rank.is-bronze {
+  color: #cd7f32;
+}
+
+.sll-team-rank.is-default {
+  color: #232d42;
 }
 
 .sll-team-name {
@@ -539,6 +555,11 @@
   cursor: pointer;
 }
 
+.sll-team-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .sll-team-pagination button + button {
   border-left: 0;
 }
@@ -548,10 +569,6 @@
 }
 
 @media (max-width: 980px) {
-  .sll-team-page {
-    flex-direction: column;
-  }
-
   .sll-team-content {
     padding: 16px 18px 20px;
   }
@@ -586,6 +603,6 @@
   }
 
   .sll-team-table-card h2 {
-    font-size: 16px;
+    font-size: 19px;
   }
 }

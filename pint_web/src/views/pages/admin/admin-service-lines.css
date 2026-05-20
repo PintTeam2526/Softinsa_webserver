@@ -416,6 +416,7 @@
   align-items: flex-start;
   justify-content: center;
   padding: 76px 16px 24px;
+  overflow-y: auto;
 }
 
 .softinsa-service-lines-modal {
@@ -425,6 +426,8 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 24px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 
 .softinsa-service-lines-export-alert {

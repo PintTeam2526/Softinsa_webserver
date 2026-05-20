@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useSidebarController } from '../../controllers/sidebar.controller'
-import './AdminSidebar.css'
+import './softinsa-sidebar.css'
 
 function MenuTitle({ text }) {
   return (
@@ -18,7 +18,7 @@ function DashboardIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -42,7 +42,7 @@ function UsersIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -84,7 +84,7 @@ function PedidosIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -107,25 +107,6 @@ function PedidosIcon() {
   )
 }
 
-function SlasIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      className="softinsa-sidebar-icon"
-      aria-hidden="true"
-    >
-      <path
-        d="M21.0502 18.7069L13.0612 3.87094C12.495 2.81906 10.9866 2.81906 10.4198 3.87094L2.4314 18.7069C2.30845 18.9352 2.24681 19.1916 2.2525 19.4508C2.25818 19.7101 2.33099 19.9635 2.46383 20.1863C2.59666 20.409 2.78498 20.5935 3.01041 20.7217C3.23583 20.85 3.49065 20.9176 3.74999 20.918H19.7292C19.9888 20.918 20.2439 20.8507 20.4696 20.7226C20.6954 20.5945 20.884 20.4101 21.0171 20.1873C21.1502 19.9644 21.2233 19.7109 21.229 19.4514C21.2348 19.1919 21.1732 18.9354 21.0502 18.7069ZM11.7408 18.6211C11.5554 18.6211 11.3741 18.5661 11.2199 18.4631C11.0658 18.3601 10.9456 18.2137 10.8746 18.0424C10.8037 17.8711 10.7851 17.6826 10.8213 17.5007C10.8575 17.3188 10.9468 17.1518 11.0779 17.0207C11.209 16.8896 11.376 16.8003 11.5579 16.7641C11.7397 16.7279 11.9282 16.7465 12.0995 16.8175C12.2708 16.8884 12.4173 17.0086 12.5203 17.1627C12.6233 17.3169 12.6783 17.4982 12.6783 17.6836C12.6783 17.9322 12.5795 18.1707 12.4037 18.3465C12.2279 18.5223 11.9894 18.6211 11.7408 18.6211ZM12.7589 9.19219L12.4898 14.9109C12.4898 15.1098 12.4108 15.3006 12.2702 15.4413C12.1295 15.5819 11.9388 15.6609 11.7398 15.6609C11.5409 15.6609 11.3502 15.5819 11.2095 15.4413C11.0689 15.3006 10.9898 15.1098 10.9898 14.9109L10.7208 9.19453C10.7147 9.05793 10.7362 8.92151 10.784 8.79341C10.8318 8.6653 10.9049 8.54813 10.999 8.44888C11.093 8.34963 11.2061 8.27033 11.3315 8.2157C11.4568 8.16108 11.5919 8.13225 11.7286 8.13094H11.7384C11.8761 8.13087 12.0123 8.15869 12.1389 8.21272C12.2656 8.26675 12.3799 8.34587 12.4751 8.44531C12.5703 8.54475 12.6443 8.66245 12.6928 8.7913C12.7413 8.92015 12.7631 9.05748 12.757 9.195L12.7589 9.19219Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
-
 function RgpdIcon() {
   return (
     <svg
@@ -134,7 +115,7 @@ function RgpdIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -158,7 +139,7 @@ function BadgesIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <g clipPath="url(#clip0_4772_683)">
@@ -192,7 +173,7 @@ function AreasIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -211,7 +192,7 @@ function ServiceLinesIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -232,7 +213,7 @@ function LearningPathsIcon() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className="softinsa-sidebar-icon"
+      className="softinsa-sidebar-item-icon"
       aria-hidden="true"
     >
       <path
@@ -266,10 +247,6 @@ function SidebarIcon({ type }) {
     return <LearningPathsIcon />
   }
 
-  if (type === 'slas') {
-    return <SlasIcon />
-  }
-
   if (type === 'rgpd') {
     return <RgpdIcon />
   }
@@ -281,14 +258,14 @@ function SidebarIcon({ type }) {
   return <BadgesIcon />
 }
 
-function MenuItem({ text, icon, to = '/admin', end = false }) {
+function MenuItem({ text, icon, to = '/softinsa', end = false }) {
   return (
     <NavLink
       to={to}
       end={end}
       className={({ isActive }) => `softinsa-sidebar-item${isActive ? ' active' : ''}`}
     >
-      <span className="softinsa-sidebar-icon-wrap">
+      <span className="softinsa-sidebar-item-icon-wrap">
         <SidebarIcon type={icon} />
       </span>
       <span className="softinsa-sidebar-item-text">{text}</span>
@@ -304,7 +281,7 @@ function SoftinsaSidebar() {
   const { isCollapsed, sections, toggleSidebar } = useSidebarController()
 
   return (
-    <aside className={`softinsa-sidebar${isCollapsed ? ' is-collapsed' : ''}`}>
+    <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
       <div className="softinsa-sidebar-panel">
         <div className="softinsa-sidebar-header">
           <div className="softinsa-sidebar-logo-pill">
