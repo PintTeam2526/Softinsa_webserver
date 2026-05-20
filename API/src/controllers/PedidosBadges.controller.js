@@ -106,7 +106,10 @@ controllers.getAllPedidos = async (req, res) => {
       where: whereClause,
       include: [
         { model: Badges },
-        { model: Utilizador },
+        {
+          model: Consultor,
+          include: [{ model: Utilizador }],
+        },
       ],
     });
 
@@ -134,7 +137,10 @@ controllers.getPedidoById = async (req, res) => {
     const pedido = await Pedidos.findByPk(req.params.id, {
       include: [
         { model: Badges },
-        { model: Utilizador },
+        {
+          model: Consultor,
+          include: [{ model: Utilizador }],
+        },
       ],
     });
 
@@ -377,7 +383,7 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    const { acao } = req.body; // "aprovar", "devolver", "rejeitar"
+    const { acao } = req.body;
 
     const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -387,11 +393,18 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    if (pedido.estado_atual !== 2) {
-      return res.status(400).json({
-        mensagem:
-          "Pedido não está no estado 'correto' para ser avaliado pelo Service Line Líder",
-      });
+    if (isAdmin(req)) {
+      if ([4, 5].includes(pedido.estado_atual)) {
+        return res.status(400).json({
+          mensagem: "Pedido já está num estado final (aprovado ou rejeitado)",
+        });
+      }
+    } else {
+      if (pedido.estado_atual !== 2) {
+        return res.status(400).json({
+          mensagem: "Pedido não está no estado 'correto' para ser avaliado pelo Service Line Líder",
+        });
+      }
     }
 
     const acoes = {
@@ -415,6 +428,13 @@ controllers.slReview = async (req, res) => {
       },
     };
 
+    // Admin só pode aprovar ou rejeitar, não devolver
+    if (isAdmin(req) && acao === "devolver") {
+      return res.status(400).json({
+        mensagem: "Admin não pode devolver pedidos. Use 'aprovar' ou 'rejeitar'",
+      });
+    }
+
     const config = acoes[acao];
 
     if (!config) {
@@ -423,11 +443,9 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    // Atualizar estado
     pedido.estado_atual = config.estado;
     await pedido.save();
 
-    // 🔥 Lógica extra apenas para aprovação
     if (acao === "aprovar") {
       await BadgesConcluidos.create({
         id_badge: pedido.id_badge,
@@ -437,7 +455,6 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    // Histórico
     await criarHistorico(
       pedido.id_pedido_badge,
       config.estado,
@@ -445,7 +462,6 @@ controllers.slReview = async (req, res) => {
       config.historico,
     );
 
-    // Notificação
     await criarNotificacao(
       pedido.id_consultor,
       pedido.id_pedido_badge,
@@ -554,7 +570,6 @@ controllers.getHistoricoPedido = async (req, res) => {
       where: { id_pedido_badge: req.params.id },
       include: [
         { model: Badges },
-        { model: Utilizador },
       ],
       order: [["data", "ASC"]],
     });
