@@ -184,7 +184,10 @@ controllers.createPedido = async (req, res) => {
       });
     }
 
-    const { id_consultor, id_badge, sessao_id } = req.body;
+    const { id_badge, sessao_id } = req.body;
+    const id_consultor = req.user.id_consultor;
+
+    console.log("user do token:", req.user);
 
     const pedidoExistente = await Pedidos.findOne({
       where: {
@@ -569,12 +572,58 @@ controllers.getHistoricoPedido = async (req, res) => {
     const historico = await HistoricoPedidos.findAll({
       where: { id_pedido_badge: req.params.id },
       include: [
-        { model: Badges },
+        {
+          model: PedidosBadges,
+          include: [
+            {
+              model: Badges,
+              attributes: ["id_badge", "nome_badge", "nivel_badge", "imagem_badge"],
+            },
+            {
+              model: TalentManager,
+              include: [{
+                model: Utilizador,
+                attributes: ["nome_utilizador", "tipo_utilizador"],
+              }],
+            },
+            {
+              model: ServiceLineLider,
+              include: [{
+                model: Utilizador,
+                attributes: ["nome_utilizador", "tipo_utilizador"],
+              }],
+            },
+          ],
+        },
       ],
       order: [["data", "ASC"]],
     });
 
-    return res.status(200).json(historico);
+    const avaliadorMap = {
+      1: null,       // consultor, sem avaliador
+      2: "tm",
+      3: "tm",
+      4: "sl",
+      5: "sl",
+      6: "sl",
+    };
+
+    const resultado = historico.map((h) => {
+      const tipo = avaliadorMap[h.id_estado];
+      let nomeAvaliador = null;
+
+      if (tipo === "tm") {
+        nomeAvaliador = h.PedidosBadge?.TalentManager?.Utilizadore?.nome_utilizador ?? null;
+      } else if (tipo === "sl") {
+        nomeAvaliador = h.PedidosBadge?.ServiceLineLider?.Utilizadore?.nome_utilizador ?? null;
+      }
+
+      return {
+        ...h.toJSON(),
+        nome_avaliador: nomeAvaliador,
+      };
+    });
+    return res.status(200).json(resultado);
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao buscar histórico",
