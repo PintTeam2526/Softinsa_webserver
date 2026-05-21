@@ -24,10 +24,19 @@ router.put('/:id/update', authVerification, controllerBadges.updateBadgeById);
 router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById);
 
 // Mostrar badges recomendados
-router.get("/recomendados", controllerBadges.getBadgesRecomendados);
+router.get("/recomendados", authVerification,controllerBadges.getBadgesRecomendados);
+
+// Mostrar badges em analize
+router.get("/emAnalize", authVerification,controllerBadges.badgesEmAnalize);
+
+// Mostrar badges obtidos
+router.get("/obtidos", authVerification,controllerBadges.badgesObtidos);
 
 //Mostrar badges favoritos 
-router.get("/favorito", controllerBadges.getBadgesFavorito);
+router.get("/favorito", controllerBadges.getFavorito);
+
+// Colocar badge como favorito(colocar variavel set boleana no body)
+router.post("/favorito/set", controllerBadges.setFavorito);
 
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
