@@ -14,7 +14,7 @@ import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadgeById } from '../../../controllers/badgesController'
 import { getRequisitosByBadge } from '../../../controllers/requisitosController'
-import { getPedidos, uploadDocumentacao, createPedido } from '../../../controllers/pedidosController'
+import { getPedidos, uploadDocumentacao, createPedido, getPedidoHistorico } from '../../../controllers/pedidosController'
 
 // ─── imagem ───────────────────────────────────────────────────────────────────
 // As imagens vêm da BD como base64 puro ou com prefixo data URL.
@@ -35,6 +35,7 @@ function normalizeRequisito(r, i) {
     id: r.id_requisito ?? r.id ?? i + 1,
     title: r.nome_requisito ?? r.titulo ?? r.title ?? `Requisito ${i + 1}`,
     descricao: r.descricao_requisito ?? r.descricao ?? r.description ?? '',
+    image: resolveImage(r.imagem_requisito ?? r.imagem ?? r.image ?? null),
   }
 }
 
@@ -317,15 +318,34 @@ function ConsultorBadgePageView() {
 
           if (pedidoDoBadge) {
             const ESTADO_MAP = {
-              1: 'Submetido',
-              2: 'Correto',
-              3: 'Incorreto',
-              4: 'Aprovado',
-              5: 'Rejeitado',
-              6: 'Devolvido',
+              1: 'Submetido', 2: 'Correto', 3: 'Incorreto',
+              4: 'Aprovado', 5: 'Rejeitado', 6: 'Devolvido',
             }
-            normalized.status = ESTADO_MAP[pedidoDoBadge.estado_atual] ?? 'submetido'
+            normalized.status = ESTADO_MAP[pedidoDoBadge.estado_atual] ?? 'Submetido'
             normalized.pedidoId = pedidoDoBadge.id_pedido_badge
+
+            const estadosDevolvido = [3, 6]
+            if (estadosDevolvido.includes(pedidoDoBadge.estado_atual)) {
+              try {
+                const historico = await getPedidoHistorico(pedidoDoBadge.id_pedido_badge)
+
+                const entrada = [...historico].reverse().find((h) =>
+                  estadosDevolvido.includes(h.id_estado)
+                )
+
+                if (entrada) {
+                  normalized.devolucao = {
+                    data: entrada.data
+                      ? new Date(entrada.data).toLocaleDateString('pt-PT')
+                      : '—',
+                    avaliador: entrada.id_estado === 3 ? 'Talent Manager' : 'Service Line Líder',
+                    motivo: entrada.estado_objetivo ?? '—',
+                  }
+                }
+              } catch (err) {
+                console.error('Erro ao buscar devolução', err)
+              }
+            }
           }
 
           setBadge(normalized)
@@ -423,12 +443,8 @@ function ConsultorBadgePageView() {
     return <section className="consultor-badge-page"><div className="consultor-badge-page-feedback is-error">{error ?? 'Badge não encontrado.'}</div></section>
   }
 
-  const STATUS_ACEITE = ['Aprovado']
-  const STATUS_DEVOLVIDO = ['Incorreto', 'Devolvido']
-
-  const statusNorm = badge.status?.toLowerCase().trim() ?? ''
-  const badgeAceite = STATUS_ACEITE.includes(statusNorm)
-  const badgeDevolvido = STATUS_DEVOLVIDO.includes(statusNorm)
+  const badgeAceite = badge.status === 'Aprovado'
+  const badgeDevolvido = badge.status === 'Incorreto' || badge.status === 'Devolvido'
 
   // ── render ───────────────────────────────────────────────────────────────────
 
@@ -505,7 +521,14 @@ function ConsultorBadgePageView() {
         <div className="consultor-badge-req-list">
           {badge.requisitos.map((req, index) => (
             <div key={req.id} className="consultor-badge-req-item">
-              <span className="consultor-badge-req-number">{index + 1}</span>
+              <div className="consultor-badge-req-number">
+                {req.image && req.image !== outsystems1 ? (
+                  <img src={req.image} alt={req.title} />
+                ) : (
+                  index + 1
+                )}
+              </div>
+
               <div className="consultor-badge-req-body">
                 <h3 className="consultor-badge-req-title">{req.title}</h3>
                 <span className="consultor-badge-req-section-label">Descrição:</span>
