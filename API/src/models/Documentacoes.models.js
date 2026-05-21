@@ -34,19 +34,13 @@ var Documentacoes = sequelize.define(
   },
   {
     timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ["id_historico", "id_requisito"],
-      },
-    ],
+    
   },
 );
 
 Documentacoes.belongsTo(Consultor, { foreignKey: "id_consultor" });
 Documentacoes.belongsTo(HistoricoPedidos, { foreignKey: "id_historico" });
 
-HistoricoPedidos.hasMany(Documentacoes, { foreignKey: "id_historico" });
-Requisito.hasMany(Documentacoes, { foreignKey: "id_requisito" });
+HistoricoPedidos.hasMany(Documentacoes, { foreignKey: "id_historico" });;
 
 module.exports = Documentacoes;

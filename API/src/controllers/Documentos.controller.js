@@ -2,6 +2,7 @@ const Documentacoes = require('../models/Documentacoes.models');
 const Pedidos = require('../models/PedidosBadges.models');
 const Requisitos = require('../models/Requisitos.models');
 const HistoricoPedidos = require('../models/HistoricoPedidos.models');
+const AdmZip = require('adm-zip')
 
 const controllers = {};
 
@@ -82,18 +83,55 @@ controllers.getDocumentosByPedido = async (req, res) => {
 
         const { id_pedido } = req.params;
 
+        const pedido = await Pedidos.findByPk(id_pedido);
+
+        if (!pedido) {
+            return res.status(404).json({ error: "Pedido não encontrado" });
+        }
+
+        const accessMap = {
+            c: pedido.id_consultor === req.user.id_consultor,
+            t: pedido.id_talent_manager === req.user.id_talent_manager,
+            s: pedido.id_service_line_lider === req.user.id_service_line_lider,
+            a: true,
+        };
+
+        if (!accessMap[req.user.role]) {
+            return res.status(403).json({ error: "Utilizador não autorizado" });
+        }
+
         const documentos = await Documentacoes.findAll({
             include: [
-                { 
-                    model: HistoricoPedidos, 
+                {
+                    model: HistoricoPedidos,
                     where: { id_pedido_badge: id_pedido },
-                    attributes: [] 
+                    attributes: [],
                 },
-                { model: Requisitos, attributes: ['id_requisito', 'nome_requisito', 'descricao_requisito'] }
-            ]
+            ],
         });
 
-        return res.status(200).json(documentos);
+        if (documentos.length === 0) {
+            return res.status(404).json({ error: "Nenhum documento encontrado para este pedido." });
+        }
+
+        const zip = new AdmZip();
+
+        documentos.forEach((doc, index) => {
+            const nomeGerado = `badge_documento_${index + 1}.pdf`;
+            const buffer = Buffer.isBuffer(doc.documentacao)
+                ? doc.documentacao
+                : Buffer.from(doc.documentacao, "base64");
+
+            zip.addFile(nomeGerado, buffer);
+        });
+
+        const zipBuffer = zip.toBuffer();
+
+        res.setHeader("Content-Type", "application/zip");
+        res.setHeader("Content-Disposition", `attachment; filename=documentos_pedido_${id_pedido}.zip`);
+
+        return res.send(zipBuffer);
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: "Erro interno no servidor" });
