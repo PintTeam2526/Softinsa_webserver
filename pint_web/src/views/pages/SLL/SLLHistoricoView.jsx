@@ -177,7 +177,7 @@ function buildHistorySteps(historico) {
 
     return {
       responsible,
-      state: entry.estado_objetivo ?? '',
+      state: entry.motivo ?? entry.estado_objetivo ?? '',
       stateClass: isRejeitado ? 'is-rejected' : isAprovado ? 'is-approved' : 'is-progress',
       icon: isRejeitado ? <HistoryRejectIcon /> : isAprovado ? <HistoryCheckIcon /> : <HistoryClockIcon />,
       date: entry.data ? formatHistoryDate(String(entry.data).slice(0, 10)) : '—',

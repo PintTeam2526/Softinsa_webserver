@@ -361,7 +361,7 @@ function ConsultorBadgePageView() {
                     avaliador: entrada.nome_avaliador
                       ? `${entrada.nome_avaliador} / ${cargo}`
                       : cargo,
-                    motivo: entrada.estado_objetivo ?? '—',
+                    motivo: entrada.motivo ?? entrada.estado_objetivo ?? '—',
                   }
                 }
               } catch (err) {
