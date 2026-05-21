@@ -156,13 +156,27 @@ function HistoryTimestampIcon({ status }) {
 }
 
 function buildHistorySteps(historico) {
+  const CARGO_MAP = {
+    1: 'Consultor',
+    2: 'Talent Manager',
+    3: 'Talent Manager',
+    4: 'Service Line Líder',
+    5: 'Service Line Líder',
+    6: 'Service Line Líder',
+  }
+
   return historico.map((entry) => {
     const estado = entry.id_estado
     const isAprovado = estado === 2 || estado === 4
     const isRejeitado = estado === 5
 
+    const cargo = CARGO_MAP[estado] ?? 'Sistema'
+    const responsible = entry.nome_avaliador
+      ? `${entry.nome_avaliador} / ${cargo}`
+      : cargo
+
     return {
-      responsible: RESPONSIBLE_MAP[estado] ?? 'Sistema',
+      responsible,
       state: entry.estado_objetivo ?? '',
       stateClass: isRejeitado ? 'is-rejected' : isAprovado ? 'is-approved' : 'is-progress',
       icon: isRejeitado ? <HistoryRejectIcon /> : isAprovado ? <HistoryCheckIcon /> : <HistoryClockIcon />,

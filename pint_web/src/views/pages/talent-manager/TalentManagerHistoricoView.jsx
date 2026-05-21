@@ -6,10 +6,10 @@ import * as XLSX from 'xlsx'
 import SLLPagination from '../../components/SLLPagination'
 import './TalentManagerHistoricoView.css'
 
-import { getPedidos } from '../../../controllers/pedidosController'
 import { getAreas } from '../../../controllers/areasController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
 
 const requestAvatar = 'https://www.figma.com/api/mcp/asset/cf64d835-06cf-435b-8bfd-8b387bf43fa7'
 
@@ -56,6 +56,86 @@ function HistoryTimestampIcon({ status }) {
       </defs>
     </svg>
   )
+}
+
+function HistoryClockIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8 4.5V8L10.4 9.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function HistoryCheckIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M3.5 8.5L6.5 11.5L12.5 4.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function HistoryRejectIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M4 4L12 12M4 12L12 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function HistoryReturnIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M4.5 6H10C11.6569 6 13 7.34315 13 9C13 10.6569 11.6569 12 10 12H4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M6.5 3.5L4 6L6.5 8.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const RESPONSIBLE_MAP = {
+  1: 'Consultor',
+  2: 'Talent Manager',
+  3: 'Talent Manager',
+  4: 'Service Line Líder',
+  5: 'Service Line Líder',
+  6: 'Service Line Líder',
+}
+
+const STATE_LABEL = {
+  1: 'Submetido',
+  2: 'Em análise',
+  3: 'Devolvido',
+  4: 'Aceite',
+  5: 'Rejeitado',
+  6: 'Devolvido',
+}
+
+function buildHistorySteps(historico) {
+  return historico.map((entry) => {
+    const estado = entry.id_estado
+    const isAprovado = estado === 2 || estado === 4
+    const isRejeitado = estado === 5
+    const isDevolvido = estado === 3 || estado === 6
+    const cargo = RESPONSIBLE_MAP[estado] ?? 'Sistema'
+    const responsible = entry.nome_avaliador ? `${entry.nome_avaliador} / ${cargo}` : cargo
+
+    return {
+      responsible,
+      stateLabel: STATE_LABEL[estado] ?? '—',
+      stateClass: isRejeitado ? 'is-rejected' : isDevolvido ? 'is-returned' : isAprovado ? 'is-approved' : 'is-progress',
+      icon: isRejeitado
+        ? <HistoryRejectIcon />
+        : isDevolvido
+          ? <HistoryReturnIcon />
+          : isAprovado
+            ? <HistoryCheckIcon />
+            : <HistoryClockIcon />,
+      date: entry.data ? (() => {
+        const d = new Date(entry.data)
+        return `${d.getDate()} ${PT_MONTHS[d.getMonth()]} ${d.getFullYear()}`
+      })() : '—',
+    }
+  })
 }
 
 function getStatusClass(status) {
@@ -118,30 +198,59 @@ function HistoryBadge({ status }) {
   return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{status}</span>
 }
 
-function HistoryRequestCard({ request }) {
+function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
   return (
-    <article className="sll-history-card">
-      <div className="sll-history-card-avatar" aria-hidden="true">
-        <img src={requestAvatar} alt="" />
-        <span className="sll-history-card-avatar-ring" />
-      </div>
-
-      <div className="sll-history-card-copy">
-        <h3>{request.title}</h3>
-        <p>{request.consultant}</p>
-        <div className={`sll-history-card-approved is-${getStatusClass(request.status)}`}>
-          <HistoryTimestampIcon status={request.status} />
-          <span>{request.approvedAt}</span>
+    <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
+      <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
+        <div className="sll-history-card-avatar" aria-hidden="true">
+          <img src={requestAvatar} alt="" />
+          <span className="sll-history-card-avatar-ring" />
         </div>
-      </div>
-
-      <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
-        <HistoryBadge status={request.status} />
-        <div className="sll-history-progress">
-          <span className="is-track" />
-          <span className="is-fill" />
+        <div className="sll-history-card-copy">
+          <h3>{request.title}</h3>
+          <p>{request.consultant}</p>
+          <div className={`sll-history-card-approved is-${getStatusClass(request.status)}`}>
+            <HistoryTimestampIcon status={request.status} />
+            <span>{request.approvedAt}</span>
+          </div>
         </div>
-      </div>
+        <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
+          <HistoryBadge status={request.status} />
+          <div className="sll-history-progress">
+            <span className="is-track" />
+            <span className="is-fill" />
+          </div>
+        </div>
+      </button>
+
+      {isExpanded && (
+        <div className="sll-history-detail">
+          <h4 className="sll-history-detail-title">Histórico:</h4>
+          <div className="sll-history-detail-table" role="table">
+            <div className="sll-history-detail-row sll-history-detail-head" role="row">
+              <span role="columnheader">RESPONSÁVEL/CARGO</span>
+              <span role="columnheader">ESTADO</span>
+              <span role="columnheader">DATA</span>
+            </div>
+            {steps == null ? (
+              <p style={{ padding: '8px 12px', opacity: 0.6 }}>A carregar histórico…</p>
+            ) : steps.length === 0 ? (
+              <p style={{ padding: '8px 12px', opacity: 0.6 }}>Sem registos de histórico.</p>
+            ) : (
+              steps.map((step, index) => (
+                <div className="sll-history-detail-row" role="row" key={index}>
+                  <span role="cell">{step.responsible}</span>
+                  <span role="cell" className={`sll-history-detail-state ${step.stateClass}`}>
+                    {step.stateLabel}
+                    {step.icon}
+                  </span>
+                  <span role="cell">{step.date}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </article>
   )
 }
@@ -172,6 +281,9 @@ function TalentManagerHistoricoView() {
   const [selectedExportFormat, setSelectedExportFormat] = useState('excel')
   const [draftFilters, setDraftFilters] = useState({ dateFrom: '', dateTo: '', area: '', serviceLine: '', learningPath: '' })
   const [appliedFilters, setAppliedFilters] = useState({ dateFrom: '', dateTo: '', area: '', serviceLine: '', learningPath: '' })
+  const [expandedKey, setExpandedKey] = useState(null)
+  const [historicoCache, setHistoricoCache] = useState({})
+
 
   const filterRef = useRef(null)
 
@@ -248,7 +360,11 @@ function TalentManagerHistoricoView() {
 
   // ── efeitos auxiliares (sem alterações) ────────────────────────────────────
 
-  useEffect(() => { setCurrentPage(1) }, [activeTab, appliedFilters, searchTerm])
+  useEffect(() => {
+    setCurrentPage(1)
+    setExpandedKey(null)
+  }, [activeTab, appliedFilters, searchTerm])
+
   useEffect(() => { setCurrentPage((p) => Math.min(p, totalPages)) }, [totalPages])
 
   useEffect(() => {
@@ -265,7 +381,21 @@ function TalentManagerHistoricoView() {
     if (showFilter) setDraftFilters(appliedFilters)
   }, [showFilter, appliedFilters])
 
-  // ── handlers (sem alterações) ───────────────────────────────────────────────
+  // ── handlers ───────────────────────────────────────────────
+
+  async function handleToggle(requestId) {
+    if (expandedKey === requestId) { setExpandedKey(null); return }
+    setExpandedKey(requestId)
+    if (historicoCache[requestId] !== undefined) return
+    try {
+      const data = await getPedidoHistorico(requestId)
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(data) }))
+    } catch (err) {
+      console.error('Erro ao carregar histórico do pedido', err)
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: [] }))
+    }
+  }
+
 
   function updateDraftFilter(field, value) {
     setDraftFilters((prev) => ({ ...prev, [field]: value }))
@@ -398,7 +528,13 @@ function TalentManagerHistoricoView() {
           <p className="sll-history-loading">A carregar pedidos…</p>
         ) : paginatedRequests.length > 0 ? (
           paginatedRequests.map((request) => (
-            <HistoryRequestCard key={request.id} request={request} />
+            <HistoryRequestCard
+              key={request.id}
+              request={request}
+              isExpanded={expandedKey === request.id}
+              onToggle={() => handleToggle(request.id)}
+              steps={expandedKey === request.id ? historicoCache[request.id] ?? null : null}
+            />
           ))
         ) : (
           <p className="sll-history-empty">Sem resultados para o filtro aplicado.</p>

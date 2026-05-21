@@ -144,19 +144,19 @@
 }
 
 .sll-history-tab-button.is-active.is-rejected {
-  background: #dc3545;
-  border-color: #dc3545;
+  background: #39639c;
+  border-color: #39639c;
 }
 
 .sll-history-tab-button.is-active.is-progress {
-  background: #f0ad4e;
-  border-color: #f0ad4e;
+  background: #39639c;
+  border-color: #39639c;
   color: #ffffff;
 }
 
 .sll-history-tab-button.is-active.is-approved {
-  background: #1aa053;
-  border-color: #1aa053;
+  background: #39639c;
+  border-color: #39639c;
 }
 
 .sll-history-info-btn {
@@ -493,7 +493,7 @@
   align-items: center;
 }
 
-.sll-history-card + .sll-history-card {
+.sll-history-card+.sll-history-card {
   margin-top: 2px;
 }
 
@@ -544,7 +544,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 8px;
-  color: #1aa053;
+  color: #39639c;
   font-size: 14px;
   line-height: 21px;
 }
@@ -556,11 +556,11 @@
 }
 
 .sll-history-card-approved.is-rejeitado {
-  color: #dc3545;
+  color: #39639c;
 }
 
 .sll-history-card-approved.is-em-progresso {
-  color: #8a92a6;
+  color: #39639c;
 }
 
 .sll-history-card-status {
@@ -580,11 +580,11 @@
 }
 
 .sll-history-status-badge.is-aprovado {
-  color: #1aa053;
+  color: #39639c;
 }
 
 .sll-history-status-badge.is-rejeitado {
-  color: #dc3545;
+  color: #39639c;
 }
 
 .sll-history-status-badge.is-em-progresso {
@@ -611,11 +611,11 @@
 }
 
 .sll-history-progress .is-fill {
-  background: #1aa053;
+  background: #39639c;
 }
 
 .sll-history-card-status.is-rejeitado .sll-history-progress .is-fill {
-  background: #dc3545;
+  background: #39639c;
 }
 
 .sll-history-card-status.is-em-progresso .sll-history-progress .is-fill {
@@ -659,6 +659,131 @@
 
 .sll-history-pagination button.is-active {
   color: #3a57e8;
+}
+
+/* ── card expansível ── */
+.sll-history-card-wrap {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  overflow: hidden;
+}
+
+.sll-history-card-wrap+.sll-history-card-wrap {
+  margin-top: 2px;
+}
+
+/* card passa a ser botão — reescreve o estilo anterior */
+.sll-history-card {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  min-height: 113px;
+  padding: 17px 18px 17px 10px;
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) 188px;
+  gap: 16px;
+  align-items: center;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sll-history-card-wrap.is-expanded .sll-history-card {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sll-history-detail {
+  padding: 16px 18px 20px;
+  background: #f8f9fa;
+}
+
+.sll-history-detail-title {
+  margin: 0 0 12px;
+  color: #39639c;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sll-history-detail-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.sll-history-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #ffffff;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #232d42;
+}
+
+.sll-history-detail-row+.sll-history-detail-row {
+  border-top: 1px solid #f1f3f5;
+}
+
+.sll-history-detail-head {
+  background: #39639c;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sll-history-detail-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.sll-history-detail-state.is-approved,
+.sll-history-detail-state.is-progress,
+.sll-history-detail-state.is-rejected,
+.sll-history-detail-state.is-returned
+{
+  color: #39639c;
+}
+
+.sll-history-step-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .sll-history-card {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .sll-history-card-status {
+    grid-column: 1 / -1;
+    align-items: flex-end;
+  }
+
+  .sll-history-detail-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 90px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sll-history-detail-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .sll-history-detail-head {
+    display: none;
+  }
 }
 
 @media (max-width: 1200px) {

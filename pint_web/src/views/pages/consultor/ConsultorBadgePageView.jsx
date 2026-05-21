@@ -352,11 +352,15 @@ function ConsultorBadgePageView() {
                 )
 
                 if (entrada) {
+                  const cargo = entrada.id_estado === 3 ? 'Talent Manager' : 'Service Line Líder'
+
                   normalized.devolucao = {
                     data: entrada.data
                       ? new Date(entrada.data).toLocaleDateString('pt-PT')
                       : '—',
-                    avaliador: entrada.id_estado === 3 ? 'Talent Manager' : 'Service Line Líder',
+                    avaliador: entrada.nome_avaliador
+                      ? `${entrada.nome_avaliador} / ${cargo}`
+                      : cargo,
                     motivo: entrada.estado_objetivo ?? '—',
                   }
                 }
