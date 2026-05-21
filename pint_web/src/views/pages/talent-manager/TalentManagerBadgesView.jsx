@@ -1,5 +1,5 @@
 import { FaTimes, FaUpload } from 'react-icons/fa'
-import { HiOutlineStar } from 'react-icons/hi2'
+import { HiOutlineStar, HiOutlineCurrencyEuro } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -10,6 +10,7 @@ import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
+import { getRequisitosByBadge } from '../../../controllers/requisitosController'
 
 
 // Imagens decorativas
@@ -19,8 +20,6 @@ const imgEllipse4 = 'https://www.figma.com/api/mcp/asset/b09d6b9d-08a5-4acb-8d54
 const imgEllipse3 = 'https://www.figma.com/api/mcp/asset/8afce139-66a4-4e0f-8a2a-dbfea84cefad'
 const imgEllipse2 = 'https://www.figma.com/api/mcp/asset/8cbf430c-6968-487b-bd47-da4fe592bb73'
 const imgEllipse1 = 'https://www.figma.com/api/mcp/asset/a62526d5-25ef-4809-a07d-a1dc9c9d4492'
-const imgReqPoints = 'https://www.figma.com/api/mcp/asset/b7777185-c1de-4b26-b019-6b2d0147dd6c'
-const imgReqSpecial = 'https://www.figma.com/api/mcp/asset/e3c31530-d63f-438b-90ea-6b99c6fcc7ed'
 const imgModalBadge = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
 
 // ── utilitário base64 ─────────────────────────────────────────────────────────
@@ -35,16 +34,8 @@ function normalizeImage(raw, fallback = imgModalBadge) {
 
 function IconPoints({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M4.76567 1.60996C5.47447 1.31826 6.23337 1.16767 6.99984 1.16663C7.76401 1.16663 8.52234 1.31829 9.23401 1.60996C9.93984 1.90163 10.5815 2.33329 11.124 2.87579C11.6665 3.41829 12.0982 4.05996 12.3898 4.76579C12.6815 5.47746 12.8332 6.23579 12.8332 6.99996C12.8332 8.54579 12.2207 10.0333 11.124 11.1241C10.583 11.6666 9.9402 12.0969 9.23245 12.3902C8.5247 12.6835 7.76596 12.8341 6.99984 12.8333C6.23337 12.8322 5.47447 12.6817 4.76567 12.39C4.05871 12.0961 3.4165 11.666 2.87567 11.1241C2.33318 10.5832 1.90293 9.94032 1.60961 9.23257C1.3163 8.52482 1.16572 7.76608 1.16651 6.99996C1.16651 5.45413 1.77901 3.96663 2.87567 2.87579C3.41817 2.33329 4.05984 1.90163 4.76567 1.60996ZM6.99984 9.91663L7.90984 7.92163L9.91651 6.99996L7.90984 6.08996L6.99984 4.08329L6.08401 6.08996L4.08317 6.99996L6.08401 7.92163L6.99984 9.91663Z" fill="#8A92A6" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M8.17001 2.76C9.38508 2.25995 10.6861 2.00179 12 2C13.31 2 14.61 2.26 15.83 2.76C17.04 3.26 18.14 4 19.07 4.93C20 5.86 20.74 6.96 21.24 8.17C21.74 9.39 22 10.69 22 12C22 14.65 20.95 17.2 19.07 19.07C18.1426 20 17.0406 20.7376 15.8273 21.2404C14.614 21.7432 13.3134 22.0014 12 22C10.6861 21.9982 9.38508 21.7401 8.17001 21.24C6.95807 20.7363 5.85714 19.9989 4.93001 19.07C4.00002 18.1426 3.26244 17.0406 2.75962 15.8273C2.2568 14.614 1.99865 13.3134 2.00001 12C2.00001 9.35 3.05001 6.8 4.93001 4.93C5.86001 4 6.96001 3.26 8.17001 2.76ZM12 17L13.56 13.58L17 12L13.56 10.44L12 7L10.43 10.44L7.00001 12L10.43 13.58L12 17Z" fill="currentColor" />
     </svg>
   )
 }
@@ -106,6 +97,8 @@ function TalentManagerBadgesView({
   const [openSection, setOpenSection] = useState(null)
   const [showExport, setShowExport] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState(null)
+  const [selectedBadgeRequisitos, setSelectedBadgeRequisitos] = useState([])
+  const [loadingRequisitos, setLoadingRequisitos] = useState(false)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
 
   const cp = classPrefix
@@ -226,16 +219,36 @@ function TalentManagerBadgesView({
 
   // ── handlers ──────────────────────────────────────────────────────────────
 
-  function handleBadgeClick(badge) {
+  async function handleBadgeClick(badge) {
     if (onBadgeClick) { onBadgeClick(badge); return }
     setSelectedBadge(badge)
+    setSelectedBadgeRequisitos([])
+    setLoadingRequisitos(true)
+    try {
+      const data = await getRequisitosByBadge(badge.id)
+      const reqs = Array.isArray(data) ? data : (data?.requisitos ?? data?.data ?? [])
+      setSelectedBadgeRequisitos(reqs.map((r, i) => ({
+        id: r.id_requisito ?? i,
+        title: r.nome_requisito ?? `Requisito ${i + 1}`,
+        descricao: r.descricao_requisito ?? '',
+        image: r.imagem_requisito ? `data:image/png;base64,${r.imagem_requisito}` : null,
+      })))
+    } catch (err) {
+      console.error('Erro ao carregar requisitos', err)
+    } finally {
+      setLoadingRequisitos(false)
+    }
   }
+
 
   function toggleSection(slId) {
     setOpenSection((current) => (current === slId ? null : slId))
   }
 
-  function closeBadgeModal() { setSelectedBadge(null) }
+  function closeBadgeModal() {
+    setSelectedBadge(null)
+    setSelectedBadgeRequisitos([])
+  }
 
   // ── render ────────────────────────────────────────────────────────────────
 
@@ -406,16 +419,18 @@ function TalentManagerBadgesView({
 
                 <div className={`${cp}-detail-copy`}>
                   <div className={`${cp}-detail-title`}>{selectedBadge.title}</div>
-                  <div className={`${cp}-detail-points`}>
-                    <img alt="" src={imgReqPoints} />
-                    <span>{selectedBadge.points} Pontos</span>
-                  </div>
-                  {selectedBadge.isSpecial ? (
-                    <div className={`${cp}-detail-special`}>
-                      <img alt="" src={imgReqSpecial} />
-                      <span>Badge Especial</span>
+                  <div className={`${cp}-detail-attributes`}>
+                    <div className={`${cp}-detail-attribute`}>
+                      <IconPoints className={`${cp}-detail-attribute-icon`} />
+                      <span>{selectedBadge.points} Pontos</span>
                     </div>
-                  ) : null}
+                    {selectedBadge.isSpecial ? (
+                      <div className={`${cp}-detail-attribute`}>
+                        <HiOutlineCurrencyEuro className={`${cp}-detail-attribute-icon`} aria-hidden="true" />
+                        <span>Badge Especial</span>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className={`${cp}-detail-section`}>
@@ -426,6 +441,33 @@ function TalentManagerBadgesView({
                 <div className={`${cp}-detail-section`}>
                   <h3>Nível:</h3>
                   <p>{selectedBadge.level}</p>
+                </div>
+
+                <div className={`${cp}-detail-section`}>
+                  <h3>Requisitos:</h3>
+                  {loadingRequisitos ? (
+                    <p className={`${cp}-detail-req-loading`}>A carregar requisitos…</p>
+                  ) : selectedBadgeRequisitos.length === 0 ? (
+                    <p className={`${cp}-detail-req-loading`}>Sem requisitos definidos.</p>
+                  ) : (
+                    <div className={`${cp}-detail-req-list`}>
+                      {selectedBadgeRequisitos.map((req, index) => (
+                        <div key={req.id} className={`${cp}-detail-req-item`}>
+                          <div className={`${cp}-detail-req-number`}>
+                            {req.image ? (
+                              <img src={req.image} alt={req.title} />
+                            ) : (
+                              index + 1
+                            )}
+                          </div>
+                          <div className={`${cp}-detail-req-copy`}>
+                            <strong>{req.title}</strong>
+                            {req.descricao && <span>{req.descricao}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
