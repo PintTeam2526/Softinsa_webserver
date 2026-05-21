@@ -4,6 +4,7 @@ import { jsPDF } from 'jspdf'
 import {
   HiOutlineCurrencyEuro, HiOutlineStar, HiOutlinePaperClip,
   HiOutlineShare, HiOutlineXMark, HiStar,
+  HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineArrowUturnLeft,
 } from 'react-icons/hi2'
 import './ConsultorBadgePageView.css'
 
@@ -257,6 +258,23 @@ function IconBadgeClock({ className }) {
   )
 }
 
+// ─── configuração de estado / ícone ───────────────────────────────────────────
+
+const STATUS_CONFIG = {
+  'Submetido': { label: 'Em Análise', Icon: HiOutlineClock, cls: 'is-analysis' },
+  'Correto': { label: 'Em Análise', Icon: HiOutlineClock, cls: 'is-analysis' },
+  'Incorreto': { label: 'Devolvido', Icon: HiOutlineArrowUturnLeft, cls: 'is-returned' },
+  'Aprovado': { label: 'Badge Aceite', Icon: HiOutlineCheckCircle, cls: 'is-accepted' },
+  'Rejeitado': { label: 'Badge Recusado', Icon: HiOutlineXCircle, cls: 'is-rejected' },
+  'Devolvido': { label: 'Devolvido', Icon: HiOutlineArrowUturnLeft, cls: 'is-returned' },
+}
+
+function IconStatus({ status, className }) {
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG['Submetido']
+  const StatusIcon = config.Icon
+  return <StatusIcon className={className} aria-hidden="true" />
+}
+
 // ─── view principal ───────────────────────────────────────────────────────────
 
 function ConsultorBadgePageView() {
@@ -475,7 +493,7 @@ function ConsultorBadgePageView() {
             <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
           </div>
           <div className="consultor-badge-info-status">
-            <span className="consultor-badge-info-status-row"><IconBadgeClock /><span>{badge.status}</span></span>
+            <span className="consultor-badge-info-status-row"><IconStatus status={badge.status} /><span>{badge.status}</span></span>
             {badge.isSpecial && <span className="consultor-badge-info-status-row"><HiOutlineCurrencyEuro aria-hidden="true" /><span>Badge Especial</span></span>}
             <span className="consultor-badge-info-status-row"><IconBadgePoints /><span>{badge.points} Pontos</span></span>
           </div>
