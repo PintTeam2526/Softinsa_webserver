@@ -72,19 +72,11 @@ INSERT INTO "ServiceLineLiders" (id_utilizador, id_service_line, "createdAt", "u
 -- 9. Badges
 -- ============================================================
 INSERT INTO "Badges" (id_area, nome_badge, descricao_badge, pontos_badge, pago, nivel_badge, imagem_badge, sla, validade, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-(1, 'OutSystems Foundations',       'Conceitos fundamentais de SQL',          10, FALSE, 'Júnior',                  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(1, 'Reactive Development',         'Consultas complexas e optimização',      25, TRUE,  'Intermédio',              'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    45, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(3, 'Infrastructure as Code',       'Componentes e estado em React',          50, FALSE, 'Sénior',                  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(4, 'Infrastructure Automation',    'Criação de APIs com Node.js',            75, FALSE, 'Especialista',            'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(5, 'Talent Managem. 6',            'Fundamentos AWS Cloud Practitioner',     100, TRUE, 'Líder de Conhecimento',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    60, 730, TRUE, '2025-01-01', NOW(), NOW());
-
--- ============================================================
--- 10. Conquistas
--- ============================================================
-INSERT INTO "Conquistas" (descricao_conquista, pontos_conquista, imagem_conquista, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-('1 Badge',  50, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
-('5 Badges',  200, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
-('100 Pontos',     100, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
+(1, 'SQL Básico',       'Conceitos fundamentais de SQL',          100, FALSE, 'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(1, 'SQL Avançado',     'Consultas complexas e optimização',      200, TRUE,  'senior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   45, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(3, 'React Fundamentos','Componentes e estado em React',          150, FALSE, 'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',       30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(4, 'Node.js API',      'Criação de APIs com Node.js',            180, FALSE, 'pleno',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',        30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(5, 'AWS Practitioner', 'Fundamentos AWS Cloud Practitioner',     250, TRUE,  'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',         60, 730, TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 11. Requisitos
