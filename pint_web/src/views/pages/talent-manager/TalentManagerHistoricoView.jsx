@@ -220,8 +220,16 @@ function mapPedido(row, areaMap, slMap, lpMap) {
 
 // ── sub-componentes (sem alterações) ─────────────────────────────────────────
 
-function HistoryBadge({ status }) {
-  return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{status}</span>
+function HistoryBadge({ status, approvedAt, approvedDate }) {
+  const dateText = approvedAt || ''
+
+  return (
+    <div className={`sll-history-status-badge is-${getStatusClass(status)}`}>
+      <div className="sll-history-badge-content">
+        <strong>{dateText}</strong>
+      </div>
+    </div>
+  )
 }
 
 function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
@@ -235,17 +243,9 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
         <div className="sll-history-card-copy">
           <h3>{request.title}</h3>
           <p>{request.consultant}</p>
-          <div className={`sll-history-card-approved is-${getStatusClass(request.status)}`}>
-            <HistoryTimestampIcon status={request.status} />
-            <span>{request.approvedAt}</span>
-          </div>
         </div>
         <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
-          <HistoryBadge status={request.status} />
-          <div className="sll-history-progress">
-            <span className="is-track" />
-            <span className="is-fill" />
-          </div>
+          <HistoryBadge status={request.status} approvedAt={request.approvedAt} approvedDate={request.approvedDate} />
         </div>
       </button>
 

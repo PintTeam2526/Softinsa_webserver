@@ -99,10 +99,19 @@ function mapPedido(row, areaMap, slMap, lpMap) {
   }
 }
 
-function HistoryBadge({ status }) {
+function HistoryBadge({ status, approvedAt, approvedDate }) {
   const label = status === 'Em progresso' ? 'Estado atualizado' : status
+  const dateText = status === 'Em progresso'
+    ? `Submetido em ${formatHistoryDate(approvedDate)}`
+    : approvedAt
 
-  return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{label}</span>
+  return (
+    <div className={`sll-history-status-badge is-${getStatusClass(status)}`}>
+      <div className="sll-history-badge-content">
+        <strong>{dateText}</strong>
+      </div>
+    </div>
+  )
 }
 
 const HISTORY_MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
@@ -248,22 +257,10 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
         <div className="sll-history-card-copy">
           <h3>{request.title}</h3>
           <p>{request.consultant}</p>
-          <div className={`sll-history-card-approved${request.status === 'Rejeitado' ? ' is-rejeitado' : ''}`}>
-            <HistoryTimestampIcon status={request.status} />
-            <span className={request.status === 'Em progresso' ? 'is-progress' : ''}>
-              {request.status === 'Em progresso'
-                ? `Submetido em ${formatHistoryDate(request.approvedDate)}`
-                : request.approvedAt}
-            </span>
-          </div>
         </div>
 
         <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
-          <HistoryBadge status={request.status} />
-          <div className="sll-history-progress">
-            <span className="is-track" />
-            <span className={`is-fill${request.status === 'Em progresso' ? ' is-partial' : ''}`} />
-          </div>
+          <HistoryBadge status={request.status} approvedAt={request.approvedAt} approvedDate={request.approvedDate} />
         </div>
       </button>
 
