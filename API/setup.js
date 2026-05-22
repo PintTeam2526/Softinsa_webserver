@@ -24,8 +24,6 @@ const Estados = require('./src/models/Estados.models');
 const Favoritos = require('./src/models/Favoritos.models');
 const NotificacoesPedidos = require('./src/models/NotificacoesPedidos.models');
 const Politicas = require('./src/models/Politicas.models');
-//const PoliticasAceites = require('./src/models/PoliticasAceites.models');
-//const EstadoPedidos = require('./src/models/EstadoPedidos.models');
 const Requisitos = require('./src/models/Requisitos.models');
 const ConquistasConsultores = require('./src/models/ConquistasConsultores.models');
 

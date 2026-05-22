@@ -4,6 +4,7 @@ var path = require("path");
 var middlewareAuth = require("./middleware/auth.middleware");
 const cors = require("cors");
 const sequelize = require("../database");
+const triggers = require('../triggersDatabase');
 
 // Importar todos os modelos para o sync os reconhecer
 const Utilizadores = require("./models/Utilizadores.models");
@@ -63,6 +64,9 @@ async function start() {
     await sequelize.sync({ force: true });
     //await sequelize.sync({ alter: true });
     console.log("✅ Tabelas sincronizadas!");
+
+    // Criar triggers PostgreSQL
+    await triggers.criarTriggers();
 
     await seedDatabase();
 
