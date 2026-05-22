@@ -21,17 +21,16 @@ INSERT INTO "Utilizadores" (nome_utilizador, email_utilizador, password_utilizad
 -- 2. LearningPaths
 -- ============================================================
 INSERT INTO "LearningPaths" (nome_learning_path, descricao_learning_path, imagem_learning_path, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-('Jornada Técnica',      'Trilha de aprendizagem em Base de Dados',    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW()),
-('Power Skills',    'Trilha de aprendizagem em Programação Web',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
-('Cloud Computing',    'Trilha de aprendizagem em Cloud Computing',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
+('Jornada Técnica',      'Percurso de aprendizagem focado em competências técnicas, abrangendo Cloud, OutSystems, DevOps e gestão de serviços de IT.',    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW()),
+('Power Skills',    'Percurso de desenvolvimento de competências comportamentais e de liderança, focado em comunicação profissional e liderança de equipas.',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
 
 -- ============================================================
 -- 3. ServiceLines
 -- ============================================================
 INSERT INTO "ServiceLines" (id_learning_path, nome_service_line, descricao_service_line, imagem_service_line, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-(1, 'Hybrid Cloud',  'Suporte e administração de bases de dados',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
-(2, 'Application Operations',      'Desenvolvimento de aplicações web',           'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
-(3, 'Sourc. & Talent Manag.',        'Arquitetura e serviços cloud',                'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW());
+(1, 'Hybrid Cloud',  'Soluções híbridas de cloud que abrangem desenvolvimento LowCode em OutSystems, infraestrutura cloud e plataformas de containers e Kubernetes.',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
+(1, 'Application Operations',   'Operação contínua de aplicações com práticas DevOps, monitorização, observabilidade e gestão de serviços de IT (ITSM).',           'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
+(2, 'Leadership & Communication',  'Service line dedicada ao desenvolvimento de competências de liderança e de comunicação profissional dos consultores.',     'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 4. Areas
