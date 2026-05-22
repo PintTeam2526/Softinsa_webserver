@@ -7,8 +7,18 @@ import './SLL-pendentes.css'
 
 import { getAreas } from '../../../controllers/areasController'
 import { getPedidos, slReview } from '../../../controllers/pedidosController'
+import { getDocumentosByPedido } from '../../../controllers/documentosController'
 
 const AVATAR_TONES = ['primary', 'secondary', 'dark']
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 function calcDeadline(createdAt, sla) {
   if (!createdAt || !sla) return 'Prazo não definido'
@@ -35,6 +45,7 @@ function mapPedidoPendente(row, areaMap, index) {
     area: areaNome,
     deadline: calcDeadline(row.createdAt, badge.sla),
     avatar: getAvatarInitials(badge.nome_badge ?? ''),
+    avatarImage: badge.imagem_badge ?? null,
     avatarTone: AVATAR_TONES[index % AVATAR_TONES.length],
     requirements: badge.descricao_badge ? [badge.descricao_badge] : [],
     documents: [],
@@ -42,7 +53,15 @@ function mapPedidoPendente(row, areaMap, index) {
 }
 
 
-function RequestBadge({ tone, children }) {
+function RequestBadge({ tone, children, image }) {
+  if (image) {
+    return (
+      <div className={`sll-pending-request-avatar is-${tone}`}>
+        <img src={`data:image/png;base64,${image}`} alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+      </div>
+    )
+  }
   return <div className={`sll-pending-request-avatar is-${tone}`}>{children}</div>
 }
 
@@ -176,12 +195,11 @@ function ConfirmActionDialog({ action, onConfirm, onCancel }) {
   )
 }
 
-function PendingRequestCard({ request }) {
+function PendingRequestCard({ request, isDownloading, onDownload }) {
   return (
     <article className="sll-pending-card">
       <div className="sll-pending-card-head">
-        <RequestBadge tone={request.avatarTone}>{request.avatar}</RequestBadge>
-
+        <RequestBadge tone={request.avatarTone} image={request.avatarImage}>{request.avatar}</RequestBadge>
         <div className="sll-pending-card-head-copy">
           <h3>{request.title}</h3>
           <p>{request.consultant}</p>
@@ -208,37 +226,34 @@ function PendingRequestCard({ request }) {
         </div>
 
         <div className="sll-pending-documents">
-          <h4>Documentos Anexados</h4>
-
-          <div className="sll-pending-documents-list">
-            {request.documents.map((documentName) => (
-              <div className="sll-pending-document-item" key={`${request.title}-${documentName}`}>
-                <div className="sll-pending-document-main">
-                  <div className="sll-pending-document-icon" aria-hidden="true">
-                    <EvidenceDocumentIcon />
-                  </div>
-                  <div>
-                    <strong>{documentName}</strong>
-                    <span>2.5 MB</span>
-                  </div>
-                </div>
-                <button type="button" className="sll-pending-document-download" aria-label={`Descarregar ${documentName}`}>
-                  <EvidenceDownloadIcon />
-                </button>
-              </div>
-            ))}
-          </div>
+          <h4>Documentos Anexados:</h4>
+          <button
+            type="button"
+            className="sll-pending-document-download-all"
+            onClick={onDownload}
+            disabled={isDownloading}
+          >
+            <EvidenceDownloadIcon />
+            <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
+          </button>
         </div>
       </div>
 
       <div className="sll-pending-card-actions">
-        <button type="button" className="sll-pending-action is-return" onClick={() => request.onAction('return')}>Devolver</button>
-        <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>Rejeitar</button>
-        <button type="button" className="sll-pending-action is-accept" onClick={() => request.onAction('accept')}>Aceitar</button>
+        <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>
+          Rejeitar
+        </button>
+        <button type="button" className="sll-pending-action is-return" onClick={() => request.onAction('return')}>
+          Devolver
+        </button>
+        <button type="button" className="sll-pending-action is-accept" onClick={() => request.onAction('accept')}>
+          Aceitar
+        </button>
       </div>
     </article>
   )
 }
+
 
 function SLLPendentesView() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -249,6 +264,7 @@ function SLLPendentesView() {
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [pendingAction, setPendingAction] = useState(null)
+  const [downloadingId, setDownloadingId] = useState(null)
   const filterPopoverRef = useRef(null)
 
   const areaOptions = useMemo(() => [...new Set(requests.map((request) => request.area))], [requests])
@@ -337,6 +353,19 @@ function SLLPendentesView() {
     }
   }, [appliedArea, isFilterOpen])
 
+  async function handleDownloadDocs(requestId) {
+    setDownloadingId(requestId)
+    try {
+      const blob = await getDocumentosByPedido(requestId)
+      downloadBlob(blob, `documentos_pedido_${requestId}.zip`)
+    } catch (err) {
+      console.error('Erro ao descarregar documentos', err)
+    } finally {
+      setDownloadingId(null)
+    }
+  }
+
+
   function applyFilter() {
     setAppliedArea(draftArea)
     setIsFilterOpen(false)
@@ -355,7 +384,7 @@ function SLLPendentesView() {
     try {
       await slReview(pendingAction.requestId, {
         acao: acaoMap[pendingAction.action],
-        ...(reason ? { justificacao: reason } : {}),
+        ...(reason ? { motivo: reason } : {}),
       })
       setRequests((prev) => prev.filter((r) => r.id !== pendingAction.requestId))
     } catch (err) {
@@ -448,6 +477,8 @@ function SLLPendentesView() {
                     ...request,
                     onAction: (action) => requestAction(request.id, action),
                   }}
+                  isDownloading={downloadingId === request.id}
+                  onDownload={() => handleDownloadDocs(request.id)}
                 />
               ))
             )}

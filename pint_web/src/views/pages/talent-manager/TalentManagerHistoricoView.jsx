@@ -92,6 +92,16 @@ function HistoryReturnIcon() {
   )
 }
 
+function HistoryUploadIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M8 2V10M8 2L5.5 4.5M8 2L10.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2 12H14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="3" y="12" width="10" height="1.5" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  )
+}
+
 const RESPONSIBLE_MAP = {
   1: 'Consultor',
   2: 'Talent Manager',
@@ -113,23 +123,39 @@ const STATE_LABEL = {
 function buildHistorySteps(historico) {
   return historico.map((entry) => {
     const estado = entry.id_estado
-    const isAprovado = estado === 2 || estado === 4
-    const isRejeitado = estado === 5
-    const isDevolvido = estado === 3 || estado === 6
     const cargo = RESPONSIBLE_MAP[estado] ?? 'Sistema'
     const responsible = entry.nome_avaliador ? `${entry.nome_avaliador} / ${cargo}` : cargo
+
+    let stateClass = 'is-progress'
+    let icon = <HistoryClockIcon />
+
+    if (estado === 1) {
+      // Submetido
+      stateClass = 'is-submitted'
+      icon = <HistoryUploadIcon />
+    } else if (estado === 2) {
+      // Em análise
+      stateClass = 'is-in-analysis'
+      icon = <HistoryClockIcon />
+    } else if (estado === 3 || estado === 6) {
+      // Devolvido
+      stateClass = 'is-returned'
+      icon = <HistoryReturnIcon />
+    } else if (estado === 4) {
+      // Aceite
+      stateClass = 'is-accepted'
+      icon = <HistoryCheckIcon />
+    } else if (estado === 5) {
+      // Rejeitado
+      stateClass = 'is-rejected'
+      icon = <HistoryRejectIcon />
+    }
 
     return {
       responsible,
       stateLabel: STATE_LABEL[estado] ?? '—',
-      stateClass: isRejeitado ? 'is-rejected' : isDevolvido ? 'is-returned' : isAprovado ? 'is-approved' : 'is-progress',
-      icon: isRejeitado
-        ? <HistoryRejectIcon />
-        : isDevolvido
-          ? <HistoryReturnIcon />
-          : isAprovado
-            ? <HistoryCheckIcon />
-            : <HistoryClockIcon />,
+      stateClass,
+      icon,
       date: entry.data ? (() => {
         const d = new Date(entry.data)
         return `${d.getDate()} ${PT_MONTHS[d.getMonth()]} ${d.getFullYear()}`
@@ -194,8 +220,16 @@ function mapPedido(row, areaMap, slMap, lpMap) {
 
 // ── sub-componentes (sem alterações) ─────────────────────────────────────────
 
-function HistoryBadge({ status }) {
-  return <span className={`sll-history-status-badge is-${getStatusClass(status)}`}>{status}</span>
+function HistoryBadge({ status, approvedAt, approvedDate }) {
+  const dateText = approvedAt || ''
+
+  return (
+    <div className={`sll-history-status-badge is-${getStatusClass(status)}`}>
+      <div className="sll-history-badge-content">
+        <strong>{dateText}</strong>
+      </div>
+    </div>
+  )
 }
 
 function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
@@ -209,17 +243,9 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
         <div className="sll-history-card-copy">
           <h3>{request.title}</h3>
           <p>{request.consultant}</p>
-          <div className={`sll-history-card-approved is-${getStatusClass(request.status)}`}>
-            <HistoryTimestampIcon status={request.status} />
-            <span>{request.approvedAt}</span>
-          </div>
         </div>
         <div className={`sll-history-card-status is-${getStatusClass(request.status)}`}>
-          <HistoryBadge status={request.status} />
-          <div className="sll-history-progress">
-            <span className="is-track" />
-            <span className="is-fill" />
-          </div>
+          <HistoryBadge status={request.status} approvedAt={request.approvedAt} approvedDate={request.approvedDate} />
         </div>
       </button>
 
@@ -311,7 +337,24 @@ function TalentManagerHistoricoView() {
           lpData.map((lp) => [lp.id_learning_path, lp.nome_learning_path])
         )
 
-        setPedidos(pedidosData.map((row) => mapPedido(row, areaMap, slMap, lpMap)))
+        const badgeGroups = {}
+        pedidosData.forEach((row) => {
+          const key = row.id_badge
+          if (!badgeGroups[key]) badgeGroups[key] = []
+          badgeGroups[key].push(row)
+        })
+
+        const agrupados = Object.values(badgeGroups).map((rows) => {
+          const sorted = [...rows].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          const maisRecente = sorted[0]
+          const mapped = mapPedido(maisRecente, areaMap, slMap, lpMap)
+          return {
+            ...mapped,
+            allPedidoIds: sorted.map((r) => r.id_pedido_badge),
+          }
+        })
+
+        setPedidos(agrupados)
 
         setFilterOptions({
           areas: areasData.map((a) => a.nome_area),
@@ -387,14 +430,22 @@ function TalentManagerHistoricoView() {
     if (expandedKey === requestId) { setExpandedKey(null); return }
     setExpandedKey(requestId)
     if (historicoCache[requestId] !== undefined) return
+
+    const pedido = pedidos.find((p) => p.id === requestId)
+    const allIds = pedido?.allPedidoIds ?? [requestId]
+
     try {
-      const data = await getPedidoHistorico(requestId)
-      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(data) }))
+      const allHistorico = await Promise.all(allIds.map((id) => getPedidoHistorico(id)))
+      const combined = allHistorico
+        .flat()
+        .sort((a, b) => new Date(a.data) - new Date(b.data))
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(combined) }))
     } catch (err) {
       console.error('Erro ao carregar histórico do pedido', err)
       setHistoricoCache((prev) => ({ ...prev, [requestId]: [] }))
     }
   }
+
 
 
   function updateDraftFilter(field, value) {

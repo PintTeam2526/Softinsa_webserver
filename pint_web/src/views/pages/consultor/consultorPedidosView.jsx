@@ -265,11 +265,27 @@ function ConsultorPedidosView() {
       try {
         setLoading(true)
         setError(null)
-        const data = await getPedidos()                   // GET /pedidos/get
+        const data = await getPedidos()
         if (!cancelled) {
-          // A API pode devolver o array directamente ou dentro de uma chave
           const rows = Array.isArray(data) ? data : (data.pedidos ?? data.data ?? [])
-          setHistoryRows(rows.map(normalizePedido))
+
+          const badgeGroups = {}
+          rows.forEach((row) => {
+            const key = String(row.id_badge ?? row.Badge?.id_badge ?? 'unknown')
+            if (!badgeGroups[key]) badgeGroups[key] = []
+            badgeGroups[key].push(row)
+          })
+
+          const agrupados = Object.values(badgeGroups)
+            .filter((group) => group.length > 0)
+            .map((group) => {
+              const sorted = [...group].sort(
+                (a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
+              )
+              return normalizePedido(sorted[0])
+            })
+
+          setHistoryRows(agrupados)
         }
       } catch (err) {
         if (!cancelled) setError('Não foi possível carregar os pedidos. Tenta novamente.')
@@ -277,6 +293,7 @@ function ConsultorPedidosView() {
         if (!cancelled) setLoading(false)
       }
     }
+
 
     fetchPedidos()
     return () => { cancelled = true }

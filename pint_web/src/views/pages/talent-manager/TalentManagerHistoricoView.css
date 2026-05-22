@@ -539,89 +539,57 @@
   line-height: 21px;
 }
 
-.sll-history-card-approved {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  color: #39639c;
-  font-size: 14px;
-  line-height: 21px;
-}
-
-.sll-history-card-approved svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
-.sll-history-card-approved.is-rejeitado {
-  color: #39639c;
-}
-
-.sll-history-card-approved.is-em-progresso {
-  color: #39639c;
-}
-
 .sll-history-card-status {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
 .sll-history-status-badge {
   align-self: center;
-  font-size: 16px;
-  line-height: 21px;
+  font-size: 14px;
+  line-height: 1.5;
   font-weight: 600;
   text-align: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  white-space: normal;
+  max-width: 180px;
+}
+
+.sll-history-badge-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sll-history-badge-content strong {
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .sll-history-status-badge.is-aprovado {
-  color: #39639c;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .sll-history-status-badge.is-rejeitado {
-  color: #39639c;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .sll-history-status-badge.is-em-progresso {
-  color: #39639c;
-}
-
-.sll-history-progress {
-  position: relative;
-  height: 10px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.sll-history-progress .is-track,
-.sll-history-progress .is-fill {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-}
-
-.sll-history-progress .is-track {
-  background: #e9ecef;
-  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sll-history-progress .is-fill {
-  background: #39639c;
-}
-
-.sll-history-card-status.is-rejeitado .sll-history-progress .is-fill {
-  background: #39639c;
-}
-
-.sll-history-card-status.is-em-progresso .sll-history-progress .is-fill {
-  background: #39639c;
-  right: auto;
-  width: 28%;
+  background-color: #cfe2ff;
+  color: #084298;
 }
 
 .sll-history-pagination {
@@ -744,20 +712,69 @@
   align-items: center;
   gap: 6px;
   font-weight: 400;
+  color: #232d42;
 }
 
-.sll-history-detail-state.is-approved,
-.sll-history-detail-state.is-progress,
-.sll-history-detail-state.is-rejected,
-.sll-history-detail-state.is-returned
-{
-  color: #39639c;
+.sll-history-detail-state.is-progress {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-submitted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-in-analysis {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-approved {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-accepted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-rejected {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned {
+  color: #232d42;
 }
 
 .sll-history-step-icon {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
+}
+
+.sll-history-detail-state.is-progress .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-submitted .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-in-analysis .sll-history-step-icon {
+  color: #39639c;
+}
+
+.sll-history-detail-state.is-approved .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-accepted .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-rejected .sll-history-step-icon {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned .sll-history-step-icon {
+  color: #f16a1b;
 }
 
 @media (max-width: 1200px) {

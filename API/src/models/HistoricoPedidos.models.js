@@ -20,6 +20,10 @@ var HistoricoPedidos = sequelize.define(
         key: "id_estado",
       },
     },
+    motivo:{
+      type: Sequelize.TEXT,
+      allowNull: true
+    },
     id_pedido_badge: {
       type: Sequelize.INTEGER,
       allowNull: false,

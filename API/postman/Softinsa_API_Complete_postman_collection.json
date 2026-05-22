@@ -717,7 +717,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id_badge\": {{badgeId}},\n  \"id_consultor\": {{consultorId}},\n  \"sessao_id\": \"{{sessaoId}}\"\n}",
+              "raw": "{\n  \"id_badge\": \"{{badgeId}}\",\n  \"sessao_id\": \"{{sessaoId}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -819,6 +819,32 @@
               }
             ],
             "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/historico"
+          }
+        },
+        {
+          "name": "SL Review (Admin - aprovar qualquer estado)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"acao\": \"aprovar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/pedidos/{{pedidoId}}/sl-review"
           }
         }
       ]
@@ -1102,6 +1128,63 @@
               }
             ],
             "url": "{{baseUrl}}/api/documentos/{{documentoId}}/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favoritos",
+      "item": [
+        {
+          "name": "Set Favorito (adicionar)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_badge\": \"{{badgeId}}\",\n  \"set\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/favoritos/set"
+          }
+        },
+        {
+          "name": "Set Favorito (remover)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_badge\": \"{{badgeId}}\",\n  \"set\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/favoritos/set"
           }
         }
       ]

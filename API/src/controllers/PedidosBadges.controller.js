@@ -36,13 +36,18 @@ function isConsultor(req) {
   return req.user?.role === "c";
 }
 
-async function criarHistorico(idPedido, idEstado, idUser, texto) {
+async function criarHistorico(
+  idPedido,
+  idEstado,
+  idUser,
+  motivo = null
+) {
   await HistoricoPedidos.create({
     id_pedido_badge: idPedido,
     id_estado: idEstado,
-    id_utilizador_avaliador: idUser,
+    id_user: idUser,
+    motivo: motivo,
     data: new Date(),
-    estado_objetivo: texto,
   });
 }
 
@@ -187,8 +192,6 @@ controllers.createPedido = async (req, res) => {
     const { id_badge, sessao_id } = req.body;
     const id_consultor = req.user.id_consultor;
 
-    console.log("user do token:", req.user);
-
     const pedidoExistente = await Pedidos.findOne({
       where: {
         id_consultor,
@@ -309,7 +312,7 @@ controllers.tmReview = async (req, res) => {
       });
     }
 
-    const { acao } = req.body; // "aprovar" ou "devolver"
+    const { acao, motivo } = req.body;
 
     const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -321,8 +324,7 @@ controllers.tmReview = async (req, res) => {
 
     if (pedido.estado_atual !== 1) {
       return res.status(400).json({
-        mensagem:
-          "Pedido não está no estado 'submetido' para ser avaliado pelo Talent Manager",
+        mensagem: "Pedido não está no estado 'submetido' para ser avaliado pelo Talent Manager",
       });
     }
 
@@ -337,6 +339,11 @@ controllers.tmReview = async (req, res) => {
       mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
       mensagemResposta = "Pedido aprovado";
     } else if (acao === "devolver") {
+      if (!motivo || motivo.trim() === "") {
+        return res.status(400).json({
+          mensagem: "É obrigatório indicar o motivo ao devolver um pedido.",
+        });
+      }
       estado = 3;
       mensagemHistorico = "Devolvido pelo Talent Manager";
       mensagemNotificacao = "Pedido devolvido pelo Talent Manager.";
@@ -354,7 +361,7 @@ controllers.tmReview = async (req, res) => {
       pedido.id_pedido_badge,
       estado,
       req.user.id,
-      mensagemHistorico,
+      acao !== "aprovar" ? motivo : null,
     );
 
     await criarNotificacao(
@@ -373,7 +380,6 @@ controllers.tmReview = async (req, res) => {
     });
   }
 };
-
 /* =====================================================
    SERVICE LINE LIDER
 ===================================================== */
@@ -386,7 +392,7 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    const { acao } = req.body;
+    const { acao, motivo } = req.body;
 
     const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -410,6 +416,19 @@ controllers.slReview = async (req, res) => {
       }
     }
 
+    if (isAdmin(req) && acao === "devolver") {
+      return res.status(400).json({
+        mensagem: "Admin não pode devolver pedidos. Use 'aprovar' ou 'rejeitar'",
+      });
+    }
+
+    // Validar motivo para ações que não sejam aprovar
+    if (acao !== "aprovar" && (!motivo || motivo.trim() === "")) {
+      return res.status(400).json({
+        mensagem: "É obrigatório indicar o motivo ao devolver ou rejeitar um pedido.",
+      });
+    }
+
     const acoes = {
       aprovar: {
         estado: 4,
@@ -430,13 +449,6 @@ controllers.slReview = async (req, res) => {
         resposta: "Pedido rejeitado",
       },
     };
-
-    // Admin só pode aprovar ou rejeitar, não devolver
-    if (isAdmin(req) && acao === "devolver") {
-      return res.status(400).json({
-        mensagem: "Admin não pode devolver pedidos. Use 'aprovar' ou 'rejeitar'",
-      });
-    }
 
     const config = acoes[acao];
 
@@ -462,7 +474,7 @@ controllers.slReview = async (req, res) => {
       pedido.id_pedido_badge,
       config.estado,
       req.user.id,
-      config.historico,
+      acao !== "aprovar" ? motivo : null,
     );
 
     await criarNotificacao(
