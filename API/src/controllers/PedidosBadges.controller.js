@@ -12,6 +12,8 @@ const PedidosBadges = require("../models/PedidosBadges.models");
 const Documentacoes = require("../models/Documentacoes.models")
 const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.service");
 const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models")
+const Consultor = require("../models/Consultores.models");
+const Utilizador = require("../models/Utilizadores.models");
 const controllers = {};
 
 /* =====================================================
@@ -34,13 +36,18 @@ function isConsultor(req) {
   return req.user?.role === "c";
 }
 
-async function criarHistorico(idPedido, idEstado, idUser, texto) {
+async function criarHistorico(
+  idPedido,
+  idEstado,
+  idUser,
+  motivo = null
+) {
   await HistoricoPedidos.create({
     id_pedido_badge: idPedido,
     id_estado: idEstado,
-    id_utilizador_avaliador: idUser,
+    id_user: idUser,
+    motivo: motivo,
     data: new Date(),
-    estado_objetivo: texto,
   });
 }
 
@@ -102,7 +109,13 @@ controllers.getAllPedidos = async (req, res) => {
 
     const pedidos = await Pedidos.findAll({
       where: whereClause,
-      include: [{ model: Badges }],
+      include: [
+        { model: Badges },
+        {
+          model: Consultor,
+          include: [{ model: Utilizador }],
+        },
+      ],
     });
 
     return res.status(200).json(pedidos);
@@ -127,7 +140,13 @@ controllers.getPedidoById = async (req, res) => {
     }
 
     const pedido = await Pedidos.findByPk(req.params.id, {
-      include: [{ model: Badges }],
+      include: [
+        { model: Badges },
+        {
+          model: Consultor,
+          include: [{ model: Utilizador }],
+        },
+      ],
     });
 
     if (!pedido) {
@@ -170,7 +189,8 @@ controllers.createPedido = async (req, res) => {
       });
     }
 
-    const { id_consultor, id_badge, sessao_id } = req.body;
+    const { id_badge, sessao_id } = req.body;
+    const id_consultor = req.user.id_consultor;
 
     const pedidoExistente = await Pedidos.findOne({
       where: {
@@ -292,7 +312,7 @@ controllers.tmReview = async (req, res) => {
       });
     }
 
-    const { acao } = req.body; // "aprovar" ou "devolver"
+    const { acao, motivo } = req.body;
 
     const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -304,8 +324,7 @@ controllers.tmReview = async (req, res) => {
 
     if (pedido.estado_atual !== 1) {
       return res.status(400).json({
-        mensagem:
-          "Pedido não está no estado 'submetido' para ser avaliado pelo Talent Manager",
+        mensagem: "Pedido não está no estado 'submetido' para ser avaliado pelo Talent Manager",
       });
     }
 
@@ -320,6 +339,11 @@ controllers.tmReview = async (req, res) => {
       mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
       mensagemResposta = "Pedido aprovado";
     } else if (acao === "devolver") {
+      if (!motivo || motivo.trim() === "") {
+        return res.status(400).json({
+          mensagem: "É obrigatório indicar o motivo ao devolver um pedido.",
+        });
+      }
       estado = 3;
       mensagemHistorico = "Devolvido pelo Talent Manager";
       mensagemNotificacao = "Pedido devolvido pelo Talent Manager.";
@@ -337,7 +361,7 @@ controllers.tmReview = async (req, res) => {
       pedido.id_pedido_badge,
       estado,
       req.user.id,
-      mensagemHistorico,
+      acao !== "aprovar" ? motivo : null,
     );
 
     await criarNotificacao(
@@ -356,7 +380,6 @@ controllers.tmReview = async (req, res) => {
     });
   }
 };
-
 /* =====================================================
    SERVICE LINE LIDER
 ===================================================== */
@@ -369,7 +392,7 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    const { acao } = req.body; // "aprovar", "devolver", "rejeitar"
+    const { acao, motivo } = req.body;
 
     const pedido = await Pedidos.findByPk(req.params.id);
 
@@ -379,10 +402,30 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    if (pedido.estado_atual !== 2) {
+    if (isAdmin(req)) {
+      if ([4, 5].includes(pedido.estado_atual)) {
+        return res.status(400).json({
+          mensagem: "Pedido já está num estado final (aprovado ou rejeitado)",
+        });
+      }
+    } else {
+      if (pedido.estado_atual !== 2) {
+        return res.status(400).json({
+          mensagem: "Pedido não está no estado 'correto' para ser avaliado pelo Service Line Líder",
+        });
+      }
+    }
+
+    if (isAdmin(req) && acao === "devolver") {
       return res.status(400).json({
-        mensagem:
-          "Pedido não está no estado 'correto' para ser avaliado pelo Service Line Líder",
+        mensagem: "Admin não pode devolver pedidos. Use 'aprovar' ou 'rejeitar'",
+      });
+    }
+
+    // Validar motivo para ações que não sejam aprovar
+    if (acao !== "aprovar" && (!motivo || motivo.trim() === "")) {
+      return res.status(400).json({
+        mensagem: "É obrigatório indicar o motivo ao devolver ou rejeitar um pedido.",
       });
     }
 
@@ -415,11 +458,9 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    // Atualizar estado
     pedido.estado_atual = config.estado;
     await pedido.save();
 
-    // 🔥 Lógica extra apenas para aprovação
     if (acao === "aprovar") {
       await BadgesConcluidos.create({
         id_badge: pedido.id_badge,
@@ -429,15 +470,13 @@ controllers.slReview = async (req, res) => {
       });
     }
 
-    // Histórico
     await criarHistorico(
       pedido.id_pedido_badge,
       config.estado,
       req.user.id,
-      config.historico,
+      acao !== "aprovar" ? motivo : null,
     );
 
-    // Notificação
     await criarNotificacao(
       pedido.id_consultor,
       pedido.id_pedido_badge,
@@ -544,10 +583,59 @@ controllers.getHistoricoPedido = async (req, res) => {
 
     const historico = await HistoricoPedidos.findAll({
       where: { id_pedido_badge: req.params.id },
+      include: [
+        {
+          model: PedidosBadges,
+          include: [
+            {
+              model: Badges,
+              attributes: ["id_badge", "nome_badge", "nivel_badge", "imagem_badge"],
+            },
+            {
+              model: TalentManager,
+              include: [{
+                model: Utilizador,
+                attributes: ["nome_utilizador", "tipo_utilizador"],
+              }],
+            },
+            {
+              model: ServiceLineLider,
+              include: [{
+                model: Utilizador,
+                attributes: ["nome_utilizador", "tipo_utilizador"],
+              }],
+            },
+          ],
+        },
+      ],
       order: [["data", "ASC"]],
     });
 
-    return res.status(200).json(historico);
+    const avaliadorMap = {
+      1: null,       // consultor, sem avaliador
+      2: "tm",
+      3: "tm",
+      4: "sl",
+      5: "sl",
+      6: "sl",
+    };
+
+    const resultado = historico.map((h) => {
+      const tipo = avaliadorMap[h.id_estado];
+      let nomeAvaliador = null;
+
+      if (tipo === "tm") {
+        nomeAvaliador = h.PedidosBadge?.TalentManager?.Utilizadore?.nome_utilizador ?? null;
+      } else if (tipo === "sl") {
+        nomeAvaliador = h.PedidosBadge?.ServiceLineLider?.Utilizadore?.nome_utilizador ?? null;
+      }
+
+      return {
+        ...h.toJSON(),
+        nome_avaliador: nomeAvaliador,
+      };
+    });
+    return res.status(200).json(resultado);
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao buscar histórico",

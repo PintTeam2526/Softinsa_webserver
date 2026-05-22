@@ -15,7 +15,7 @@ router.get('/get/mobile', controllerBadges.getAllBadgesMobile);
 router.get('/:id/get', controllerBadges.getBadgeById);
 
 // Adicionar badges
-router.post('/create', authVerification,controllerBadges.createBadge);
+router.post('/create', authVerification, controllerBadges.createBadge);
 
 // Atualizar um badge
 router.put('/:id/update', authVerification, controllerBadges.updateBadgeById);
@@ -23,8 +23,34 @@ router.put('/:id/update', authVerification, controllerBadges.updateBadgeById);
 // Eliminar um  badge
 router.delete('/:id/delete', authVerification, controllerBadges.deleteBadgeById);
 
+//---------------------------------------------------
+// Filtros
+//---------------------------------------------------
+
+
 // Mostrar badges recomendados
-router.get("/recomendados", controllerBadges.getBadgesRecomendados);
+router.get("/recomendados", authVerification, controllerBadges.getBadgesRecomendados);
+
+// Mostrar badges em analize
+router.get("/emAnalize", authVerification, controllerBadges.badgesEmAnalize);
+
+// Mostrar badges obtidos
+router.get("/obtidos", authVerification, controllerBadges.badgesObtidos);
+
+//Mostrar badges favoritos 
+router.get("/favorito", authVerification, controllerBadges.getFavorito);
+
+// Colocar badge como favorito(colocar variavel set boleana no body)
+router.post("/favorito/set", authVerification, controllerBadges.setFavorito);
+
+// Mostrar badges por obter
+router.get("/porObter", authVerification, controllerBadges.porObter)
+
+// Mostrar badges de pedidos expirados
+router.get("/expirados", authVerification, controllerBadges.expirados)
+
+// Mostrar badges de pedidos devolvidos
+router.get("/devolvidos", authVerification, controllerBadges.devolvidos)
 
 // Devolver estado do badge
 router.get('/:id_badge/consultor/:id_consultor/estado', controllerBadges.devolverEstadoBadge);
@@ -49,7 +75,7 @@ router.get('/mobile/:id_badge/consultor/:id_consultor/estado', controllerBadges.
 
 
 //MOBILE
-router.get('/get/area/:id',controllerBadges.getBadgesByAreaIDMobile);
+router.get('/get/area/:id', controllerBadges.getBadgesByAreaIDMobile);
 router.get('/get/:id', controllerBadges.getBadgeByIdMobile);
 router.get('/get/obtidos/:id', controllerBadges.getBadgesObtidosConsultorMobile);
 

@@ -21,27 +21,27 @@ INSERT INTO "Utilizadores" (nome_utilizador, email_utilizador, password_utilizad
 -- 2. LearningPaths
 -- ============================================================
 INSERT INTO "LearningPaths" (nome_learning_path, descricao_learning_path, imagem_learning_path, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-('Base de Dados',      'Trilha de aprendizagem em Base de Dados',    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW()),
-('Programação Web',    'Trilha de aprendizagem em Programação Web',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
+('Jornada Técnica',      'Trilha de aprendizagem em Base de Dados',    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW()),
+('Power Skills',    'Trilha de aprendizagem em Programação Web',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
 ('Cloud Computing',    'Trilha de aprendizagem em Cloud Computing',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 3. ServiceLines
 -- ============================================================
 INSERT INTO "ServiceLines" (id_learning_path, nome_service_line, descricao_service_line, imagem_service_line, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-(1, 'Suporte a Base de Dados',  'Suporte e administração de bases de dados',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
-(2, 'Desenvolvimento Web',      'Desenvolvimento de aplicações web',           'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
-(3, 'Arquitetura Cloud',        'Arquitetura e serviços cloud',                'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW());
+(1, 'Hybrid Cloud',  'Suporte e administração de bases de dados',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
+(2, 'Application Operations',      'Desenvolvimento de aplicações web',           'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
+(3, 'Sourc. & Talent Manag.',        'Arquitetura e serviços cloud',                'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',  TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 4. Areas
 -- ============================================================
 INSERT INTO "Areas" (id_service_line, nome_area, descricao_area, imagem_area, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-(1, 'SQL',        'Base de Dados Relacionais',     'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
-(1, 'NoSQL',      'Base de Dados Não Relacionais', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
-(2, 'Frontend',   'Desenvolvimento Frontend',      'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
-(2, 'Backend',    'Desenvolvimento Backend',       'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
-(3, 'AWS',        'Serviços Amazon Web Services',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW());
+(1, 'LowCode (OutSystems)',        'Base de Dados Relacionais',     'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW()),
+(1, 'Cloud Infrastructure',      'Base de Dados Não Relacionais', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
+(2, 'DevOps',   'Desenvolvimento Frontend',      'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
+(2, 'Talent Managem.',    'Desenvolvimento Backend',       'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    TRUE, '2025-01-01', NOW(), NOW()),
+(3, 'Leadership',        'Serviços Amazon Web Services',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 5. Consultores
@@ -72,19 +72,19 @@ INSERT INTO "ServiceLineLiders" (id_utilizador, id_service_line, "createdAt", "u
 -- 9. Badges
 -- ============================================================
 INSERT INTO "Badges" (id_area, nome_badge, descricao_badge, pontos_badge, pago, nivel_badge, imagem_badge, sla, validade, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-(1, 'SQL Básico',       'Conceitos fundamentais de SQL',          100, FALSE, 'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',     30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(1, 'SQL Avançado',     'Consultas complexas e optimização',      200, TRUE,  'senior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   45, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(3, 'React Fundamentos','Componentes e estado em React',          150, FALSE, 'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',       30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(4, 'Node.js API',      'Criação de APIs com Node.js',            180, FALSE, 'pleno',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',        30, 365, TRUE, '2025-01-01', NOW(), NOW()),
-(5, 'AWS Practitioner', 'Fundamentos AWS Cloud Practitioner',     250, TRUE,  'junior',  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',         60, 730, TRUE, '2025-01-01', NOW(), NOW());
+(1, 'OutSystems Foundations',       'Conceitos fundamentais de SQL',          10, FALSE, 'Júnior',                  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(1, 'Reactive Development',         'Consultas complexas e optimização',      25, TRUE,  'Intermédio',              'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    45, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(3, 'Infrastructure as Code',       'Componentes e estado em React',          50, FALSE, 'Sénior',                  'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(4, 'Infrastructure Automation',    'Criação de APIs com Node.js',            75, FALSE, 'Especialista',            'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    30, 365, TRUE, '2025-01-01', NOW(), NOW()),
+(5, 'Talent Managem. 6',            'Fundamentos AWS Cloud Practitioner',     100, TRUE, 'Líder de Conhecimento',   'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',    60, 730, TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 10. Conquistas
 -- ============================================================
 INSERT INTO "Conquistas" (descricao_conquista, pontos_conquista, imagem_conquista, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-('Primeiro Badge Concluído',  50, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
-('Cinco Badges Concluídos',  200, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
-('Colecionador Nível 1',     100, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
+('1 Badge',  50, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
+('5 Badges',  200, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
+('100 Pontos',     100, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
 -- 11. Requisitos
@@ -164,12 +164,10 @@ INSERT INTO "HistoricoPedidos" (id_estado, id_pedido_badge, data, "createdAt", "
 -- Apenas entradas de tipo submissao/reenvio transportam documentos;
 -- entradas de avaliação não têm documentos associados.
 -- ============================================================
-INSERT INTO "Documentacoes" (id_historico, id_consultor, id_requisito, documentacao, "createdAt", "updatedAt") VALUES
--- Submissão inicial do Pedido 1 — João envia certificado para requisito "Subqueries" (id 3)
-(1, 1, 3, 'Certificado SQL Avançado - João',  NOW(), NOW()),
-
--- Submissão inicial do Pedido 2 — Maria envia repositório para requisito "Express" (id 7)
-(2, 2, 7, 'Repositório GitHub com API Node.js', NOW(), NOW());
+-- 17. Documentacoes (sem id_requisito — coluna não existe no modelo)
+INSERT INTO "Documentacoes" (id_historico, id_consultor, documentacao, "createdAt", "updatedAt") VALUES
+(1, 1, 'Certificado SQL Avançado - João',   NOW(), NOW()),
+(2, 2, 'Repositório GitHub com API Node.js', NOW(), NOW());
 
 -- ============================================================
 -- 18. NotificacoesAdmins

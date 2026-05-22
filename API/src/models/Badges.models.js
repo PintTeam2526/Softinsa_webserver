@@ -36,7 +36,7 @@ var Badges = sequelize.define('Badges',
         allowNull: false
     },
     nivel_badge: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(25),
         allowNull: false
     },
     imagem_badge: {

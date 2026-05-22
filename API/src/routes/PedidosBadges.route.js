@@ -34,6 +34,10 @@ router.post("/create", authVerification, controllerPedidos.createPedido);
 // Apagar pedido
 //router.delete('/:id/delete', controllerPedidos.deletePedidoById);
 
+/* =====================================================
+   AVALIACAO
+===================================================== */
+
 // Avaliação do Talent Manager
 router.post("/:id/tm-review", authVerification, controllerPedidos.tmReview);
 
