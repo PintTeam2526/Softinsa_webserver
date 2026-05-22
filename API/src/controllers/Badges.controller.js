@@ -678,7 +678,117 @@ controllers.badgesObtidos = async (req, res) => {
     }
 }
 
+controllers.porObter = async (req, res) => {
+    try {
+        if (req.user.role !== 'c') {
+            return res.status(403).json({ mensagem: 'Acesso negado. Apenas consultores podem aceder a este recurso.' });
+        }
 
+        const id_consultor = req.user.id_consultor;
+        if (!id_consultor) {
+            return res.status(404).json({ mensagem: 'Consultor não encontrado.' });
+        }
+
+        // IDs de badges já obtidos
+        const badgesObtidos = await BadgesConcluidos.findAll({
+            where: { id_consultor },
+            attributes: ['id_badge']
+        });
+
+        // IDs de badges com pedido ativo
+        const pedidosAtivos = await PedidosBadges.findAll({
+            where: { id_consultor },
+            attributes: ['id_badge']
+        });
+
+        const idsAExcluir = [
+            ...new Set([
+                ...badgesObtidos.map(b => b.id_badge),
+                ...pedidosAtivos.map(p => p.id_badge)
+            ])
+        ];
+
+        const badgesPorObter = await Badges.findAll({
+            where: {
+                estado_a_i: true,
+                ...(idsAExcluir.length > 0 && {
+                    id_badge: { [Sequelize.Op.notIn]: idsAExcluir }
+                })
+            }
+        });
+
+        return res.status(200).json(badgesPorObter);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: 'Erro ao procurar badges por obter.', erro: error.message });
+    }
+};
+
+controllers.expirados = async (req, res) => {
+    try {
+        if (req.user.role !== 'c') {
+            return res.status(403).json({ mensagem: 'Acesso negado. Apenas consultores podem aceder a este recurso.' });
+        }
+
+        const id_consultor = req.user.id_consultor;
+        if (!id_consultor) {
+            return res.status(404).json({ mensagem: 'Consultor não encontrado.' });
+        }
+
+        const pedidosAtivos = await PedidosBadges.findAll({
+            where: {
+                id_consultor,
+                estado_atual: { [Sequelize.Op.notIn]: [4, 5] }
+            },
+            include: [{ model: Badges }]
+        });
+
+        const agora = new Date();
+
+        const badgesExpirados = pedidosAtivos
+            .filter(pedido => {
+                const diasDesdeCriacao = Math.floor((agora - new Date(pedido.createdAt)) / (1000 * 60 * 60 * 24));
+                return diasDesdeCriacao >= pedido.Badge.sla;
+            })
+            .map(pedido => pedido.Badge);
+
+        return res.status(200).json(badgesExpirados);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: 'Erro ao procurar badges expirados.', erro: error.message });
+    }
+};
+
+controllers.devolvidos = async (req, res) => {
+    try {
+        if (req.user.role !== 'c') {
+            return res.status(403).json({ mensagem: 'Acesso negado. Apenas consultores podem aceder a este recurso.' });
+        }
+
+        const id_consultor = req.user.id_consultor;
+        if (!id_consultor) {
+            return res.status(404).json({ mensagem: 'Consultor não encontrado.' });
+        }
+
+        const pedidosDevolvidos = await PedidosBadges.findAll({
+            where: {
+                id_consultor,
+                estado_atual: { [Sequelize.Op.in]: [3, 6] }
+            },
+            include: [{ model: Badges }]
+        });
+
+        const badges = pedidosDevolvidos.map(pedido => pedido.Badge);
+
+        return res.status(200).json(badges);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: 'Erro ao procurar badges devolvidos.', erro: error.message });
+    }
+};
 
 
 module.exports = controllers;
