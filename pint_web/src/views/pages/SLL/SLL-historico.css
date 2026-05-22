@@ -466,7 +466,7 @@
   overflow: hidden;
 }
 
-.sll-history-card-wrap + .sll-history-card-wrap {
+.sll-history-card-wrap+.sll-history-card-wrap {
   margin-top: 2px;
 }
 
@@ -699,7 +699,7 @@
   color: #232d42;
 }
 
-.sll-history-detail-row + .sll-history-detail-row {
+.sll-history-detail-row+.sll-history-detail-row {
   border-top: 1px solid #f1f3f5;
 }
 
@@ -712,15 +712,15 @@
   text-transform: uppercase;
 }
 
-.sll-history-detail-row > span:first-child {
+.sll-history-detail-row>span:first-child {
   justify-self: start;
 }
 
-.sll-history-detail-row > span:nth-child(2) {
+.sll-history-detail-row>span:nth-child(2) {
   justify-self: center;
 }
 
-.sll-history-detail-row > span:last-child {
+.sll-history-detail-row>span:last-child {
   justify-self: end;
 }
 
@@ -735,12 +735,28 @@
   color: #232d42;
 }
 
+.sll-history-detail-state.is-submitted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-in-analysis {
+  color: #232d42;
+}
+
 .sll-history-detail-state.is-approved {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-accepted {
   color: #232d42;
 }
 
 .sll-history-detail-state.is-rejected {
   color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned {
+  color: #232d42;
 }
 
 .sll-history-step-icon {
@@ -753,12 +769,28 @@
   color: #8a92a6;
 }
 
+.sll-history-detail-state.is-submitted .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-in-analysis .sll-history-step-icon {
+  color: #39639c;
+}
+
 .sll-history-detail-state.is-approved .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-accepted .sll-history-step-icon {
   color: #1aa053;
 }
 
 .sll-history-detail-state.is-rejected .sll-history-step-icon {
   color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned .sll-history-step-icon {
+  color: #f16a1b;
 }
 
 @media (max-width: 1200px) {

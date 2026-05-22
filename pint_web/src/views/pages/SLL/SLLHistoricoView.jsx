@@ -112,6 +112,24 @@ function formatHistoryDate(dateString) {
   return `${day} ${HISTORY_MONTHS[Number(month) - 1]} ${year}`
 }
 
+const STATE_LABEL = {
+  1: 'Submetido',
+  2: 'Em análise',
+  3: 'Devolvido',
+  4: 'Aceite',
+  5: 'Rejeitado',
+  6: 'Devolvido',
+}
+
+function HistoryReturnIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M4.5 6H10C11.6569 6 13 7.34315 13 9C13 10.6569 11.6569 12 10 12H4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M6.5 3.5L4 6L6.5 8.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function HistoryClockIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
@@ -133,6 +151,16 @@ function HistoryRejectIcon() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
       <path d="M4 4L12 12M4 12L12 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function HistoryUploadIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="sll-history-step-icon">
+      <path d="M8 2V10M8 2L5.5 4.5M8 2L10.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2 12H14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="3" y="12" width="10" height="1.5" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   )
 }
@@ -167,23 +195,46 @@ function buildHistorySteps(historico) {
 
   return historico.map((entry) => {
     const estado = entry.id_estado
-    const isAprovado = estado === 2 || estado === 4
-    const isRejeitado = estado === 5
-
     const cargo = CARGO_MAP[estado] ?? 'Sistema'
     const responsible = entry.nome_avaliador
       ? `${entry.nome_avaliador} / ${cargo}`
       : cargo
 
+    let stateClass = 'is-progress'
+    let icon = <HistoryClockIcon />
+
+    if (estado === 1) {
+      // Submetido
+      stateClass = 'is-submitted'
+      icon = <HistoryUploadIcon />
+    } else if (estado === 2) {
+      // Em análise
+      stateClass = 'is-in-analysis'
+      icon = <HistoryClockIcon />
+    } else if (estado === 3 || estado === 6) {
+      // Devolvido
+      stateClass = 'is-returned'
+      icon = <HistoryReturnIcon />
+    } else if (estado === 4) {
+      // Aceite
+      stateClass = 'is-accepted'
+      icon = <HistoryCheckIcon />
+    } else if (estado === 5) {
+      // Rejeitado
+      stateClass = 'is-rejected'
+      icon = <HistoryRejectIcon />
+    }
+
     return {
       responsible,
-      state: entry.motivo ?? entry.estado_objetivo ?? '',
-      stateClass: isRejeitado ? 'is-rejected' : isAprovado ? 'is-approved' : 'is-progress',
-      icon: isRejeitado ? <HistoryRejectIcon /> : isAprovado ? <HistoryCheckIcon /> : <HistoryClockIcon />,
+      stateLabel: STATE_LABEL[estado] ?? '—',
+      stateClass,
+      icon,
       date: entry.data ? formatHistoryDate(String(entry.data).slice(0, 10)) : '—',
     }
   })
 }
+
 
 function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
   return (
@@ -218,6 +269,30 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
 
       {isExpanded ? (
         <div className="sll-history-detail">
+          <h4 className="sll-history-detail-title">Histórico:</h4>
+          <div className="sll-history-detail-table" role="table">
+            <div className="sll-history-detail-row sll-history-detail-head" role="row">
+              <span role="columnheader">RESPONSÁVEL/CARGO</span>
+              <span role="columnheader">ESTADO</span>
+              <span role="columnheader">DATA</span>
+            </div>
+            {steps == null ? (
+              <p style={{ padding: '8px 12px', opacity: 0.6 }}>A carregar histórico…</p>
+            ) : steps.length === 0 ? (
+              <p style={{ padding: '8px 12px', opacity: 0.6 }}>Sem registos de histórico.</p>
+            ) : (
+              steps.map((step, index) => (
+                <div className="sll-history-detail-row" role="row" key={index}>
+                  <span role="cell">{step.responsible}</span>
+                  <span role="cell" className={`sll-history-detail-state ${step.stateClass}`}>
+                    {step.stateLabel}
+                    {step.icon}
+                  </span>
+                  <span role="cell">{step.date}</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       ) : null}
     </article>
@@ -289,7 +364,7 @@ function SLLHistoricoView() {
 
       return matchesSearch && matchesTab && matchesDateFrom && matchesDateTo && matchesArea && matchesServiceLine && matchesLearningPath
     })
-  }, [activeTab, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm])
+  }, [activeTab, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm, pedidos])
 
   const requestsPerPage = 2
 
@@ -322,7 +397,25 @@ function SLLHistoricoView() {
           lpData.map((lp) => [lp.id_learning_path, lp.nome_learning_path])
         )
 
-        setPedidos(pedidosData.map((row) => mapPedido(row, areaMap, slMap, lpMap)))
+        const badgeGroups = {}
+        pedidosData.forEach((row) => {
+          const key = row.id_badge
+          if (!badgeGroups[key]) badgeGroups[key] = []
+          badgeGroups[key].push(row)
+        })
+
+        const agrupados = Object.values(badgeGroups).map((rows) => {
+          const sorted = [...rows].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          const maisRecente = sorted[0]
+          const mapped = mapPedido(maisRecente, areaMap, slMap, lpMap)
+          return {
+            ...mapped,
+            allPedidoIds: sorted.map((r) => r.id_pedido_badge),
+          }
+        })
+
+        setPedidos(agrupados)
+
         setFilterOptions({
           areas: areasData.map((a) => a.nome_area),
           serviceLines: slData.map((sl) => sl.nome_service_line),
@@ -338,25 +431,25 @@ function SLLHistoricoView() {
   }, [])
 
   async function handleToggle(requestId) {
-    // fechar se já estava aberto
-    if (expandedKey === requestId) {
-      setExpandedKey(null)
-      return
-    }
-
+    if (expandedKey === requestId) { setExpandedKey(null); return }
     setExpandedKey(requestId)
-
-    // só faz fetch se ainda não estiver em cache
     if (historicoCache[requestId] !== undefined) return
 
+    const pedido = pedidos.find((p) => p.id === requestId)
+    const allIds = pedido?.allPedidoIds ?? [requestId]
+
     try {
-      const data = await getPedidoHistorico(requestId)
-      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(data) }))
+      const allHistorico = await Promise.all(allIds.map((id) => getPedidoHistorico(id)))
+      const combined = allHistorico
+        .flat()
+        .sort((a, b) => new Date(a.data) - new Date(b.data))
+      setHistoricoCache((prev) => ({ ...prev, [requestId]: buildHistorySteps(combined) }))
     } catch (err) {
       console.error('Erro ao carregar histórico do pedido', err)
       setHistoricoCache((prev) => ({ ...prev, [requestId]: [] }))
     }
   }
+
 
 
 

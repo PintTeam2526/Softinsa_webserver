@@ -744,20 +744,69 @@
   align-items: center;
   gap: 6px;
   font-weight: 400;
+  color: #232d42;
 }
 
-.sll-history-detail-state.is-approved,
-.sll-history-detail-state.is-progress,
-.sll-history-detail-state.is-rejected,
-.sll-history-detail-state.is-returned
-{
-  color: #39639c;
+.sll-history-detail-state.is-progress {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-submitted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-in-analysis {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-approved {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-accepted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-rejected {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned {
+  color: #232d42;
 }
 
 .sll-history-step-icon {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
+}
+
+.sll-history-detail-state.is-progress .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-submitted .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-in-analysis .sll-history-step-icon {
+  color: #39639c;
+}
+
+.sll-history-detail-state.is-approved .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-accepted .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-rejected .sll-history-step-icon {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned .sll-history-step-icon {
+  color: #f16a1b;
 }
 
 @media (max-width: 1200px) {
