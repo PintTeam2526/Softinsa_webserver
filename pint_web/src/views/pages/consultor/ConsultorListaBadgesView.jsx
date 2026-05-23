@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   HiOutlineMagnifyingGlass,
@@ -8,86 +8,70 @@ import {
   HiOutlineQuestionMarkCircle,
   HiOutlineCalendarDays,
   HiOutlineArrowUturnLeft,
-  HiOutlineGlobeAlt,
   HiOutlineXMark,
   HiOutlineArrowTopRightOnSquare,
 } from 'react-icons/hi2'
 import './ConsultorListaBadgesView.css'
 
-function slugify(value) {
-  return value
-    .toString()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+import { getFavoritos, getBadgesEmAnalise, getBadgesObtidos, getBadgesPorObter, getBadgesExpirados, getBadgesDevolvidos } from '../../../controllers/badgesController'
+
+
+function resolveImage(raw) {
+  if (!raw) return null
+  if (raw.startsWith('data:') || raw.startsWith('http')) return raw
+  return `data:image/png;base64,${raw}`
 }
-import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
-import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
-import outsystems5 from '../../../assets/images/badges/outsystems_5.png'
-import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
-import tm1 from '../../../assets/images/badges/tm_1.png'
-import tm3 from '../../../assets/images/badges/tm_3.png'
-import tm4 from '../../../assets/images/badges/tm_4.png'
-import devops2 from '../../../assets/images/badges/devops_2.png'
-import devops4 from '../../../assets/images/badges/devops_4.png'
+
+// ── Normalise each filter's response to a common shape ───────────────────────
+
+function normaliseBadge(raw) {
+  const b = raw.Badge ?? raw
+
+  const imageRaw = b.imagem_badge ?? b.IMAGEM_BADGE ?? null
+
+  return {
+    id: b.id_badge ?? b.ID_BADGE ?? raw.id_badge ?? raw.id,
+    name: b.nome_badge ?? b.NOME_BADGE ?? '—',
+    level: b.nivel_badge ?? b.NIVEL_BADGE ?? '—',
+    points: b.pontos_badge ?? b.PONTOS_BADGE ?? 0,
+    image: resolveImage(imageRaw),
+  }
+}
+
+
+// ── Filter definitions ────────────────────────────────────────────────────────
 
 const FILTERS = [
-  { id: 'favoritos',  label: 'Favoritos',           Icon: HiOutlineStar,                  HeaderIcon: HiOutlineStar          },
-  { id: 'analise',    label: 'Em análise',          Icon: HiOutlineClock,                 HeaderIcon: HiOutlineClock         },
-  { id: 'obtidos',    label: 'Obtidos',             Icon: HiOutlineCheckCircle,           HeaderIcon: HiOutlineCheckCircle   },
-  { id: 'porObter',   label: 'Por Obter',           Icon: HiOutlineQuestionMarkCircle,    HeaderIcon: HiOutlineQuestionMarkCircle },
-  { id: 'expirados',  label: 'Expirados',           Icon: HiOutlineCalendarDays,          HeaderIcon: HiOutlineCalendarDays  },
-  { id: 'devolvidos', label: 'Devolvidos',          Icon: HiOutlineArrowUturnLeft,        HeaderIcon: HiOutlineArrowUturnLeft },
-  { id: 'todos',      label: 'Todos',               Icon: HiOutlineGlobeAlt,              HeaderIcon: HiOutlineGlobeAlt      },
+  { id: 'favoritos', label: 'Favoritos', Icon: HiOutlineStar, fetchFn: getFavoritos },
+  { id: 'analise', label: 'Em análise', Icon: HiOutlineClock, fetchFn: getBadgesEmAnalise },
+  { id: 'obtidos', label: 'Obtidos', Icon: HiOutlineCheckCircle, fetchFn: getBadgesObtidos },
+  { id: 'porObter', label: 'Por Obter', Icon: HiOutlineQuestionMarkCircle, fetchFn: getBadgesPorObter },
+  { id: 'expirados', label: 'Expirados', Icon: HiOutlineCalendarDays, fetchFn: getBadgesExpirados },
+  { id: 'devolvidos', label: 'Devolvidos', Icon: HiOutlineArrowUturnLeft, fetchFn: getBadgesDevolvidos },
 ]
 
-const FILTER_LABELS = Object.fromEntries(FILTERS.map((f) => [f.id, f.label]))
-const FILTER_ICONS  = Object.fromEntries(FILTERS.map((f) => [f.id, f.HeaderIcon]))
+const FILTER_MAP = Object.fromEntries(FILTERS.map((f) => [f.id, f]))
 
-const allBadges = [
-  { id: 1, name: 'Citizen Developer',    thumb: outsystems1,       level: 'Júnior',       points: 100, status: 'obtidos',    favorite: true  },
-  { id: 2, name: 'Team Lider Beginner',  thumb: tm1,               level: 'Júnior',       points: 100, status: 'analise',    favorite: true  },
-  { id: 3, name: 'DevOps Intermediate',  thumb: devops2,           level: 'Intermédio',   points: 250, status: 'obtidos',    favorite: false },
-  { id: 4, name: 'Application Creator',  thumb: outsystems3,       level: 'Sénior',       points: 400, status: 'porObter',   favorite: true  },
-  { id: 5, name: 'Full-Stack Low-Code',  thumb: outsystems5,       level: 'Especialista', points: 600, status: 'expirados',  favorite: false },
-  { id: 6, name: 'Elite OutSystems',     thumb: outsystemsSpecial, level: 'Líder',        points: 800, status: 'devolvidos', favorite: false },
-  { id: 7, name: 'Citizen Developer',    thumb: outsystems1,       level: 'Intermédio',   points: 250, status: 'analise',    favorite: true  },
-  { id: 8, name: 'Team Lider Pro',       thumb: tm4,               level: 'Sénior',       points: 400, status: 'obtidos',    favorite: false },
-  { id: 9, name: 'Cloud Architect',      thumb: devops4,           level: 'Especialista', points: 600, status: 'porObter',   favorite: true  },
-]
-
-function filterBadges(badges, filterId) {
-  if (!filterId) return []
-  if (filterId === 'todos')     return badges
-  if (filterId === 'favoritos') return badges.filter((b) => b.favorite)
-  return badges.filter((b) => b.status === filterId)
-}
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function FilterChip({ filter, isActive, onClick }) {
-  const Icon = filter.Icon
-
+  const { Icon, label, id } = filter
   return (
     <button
       type="button"
       className={`consultor-lista-chip${isActive ? ' is-active' : ''}`}
-      onClick={() => onClick(filter.id)}
+      onClick={() => onClick(id)}
       aria-pressed={isActive}
     >
       <Icon className="consultor-lista-chip-icon" aria-hidden="true" />
-      <span>{filter.label}</span>
+      <span>{label}</span>
     </button>
   )
 }
 
 function BadgeRow({ badge, onOpen }) {
-  function handleKeyDown(event) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      onOpen()
-    }
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() }
   }
 
   return (
@@ -101,14 +85,16 @@ function BadgeRow({ badge, onOpen }) {
     >
       <td>
         <div className="consultor-lista-name-cell">
-          <img src={badge.thumb} alt="" className="consultor-lista-thumb" />
+          {badge.image ? (
+            <img src={badge.image} alt="" className="consultor-lista-thumb" />
+          ) : (
+            <div className="consultor-lista-thumb consultor-lista-thumb--placeholder" aria-hidden="true" />
+          )}
           <span className="consultor-lista-name-text">{badge.name}</span>
         </div>
       </td>
       <td>
-        <span className="consultor-lista-level-cell">
-          <span>{badge.level}</span>
-        </span>
+        <span className="consultor-lista-level-cell">{badge.level}</span>
       </td>
       <td>
         <span className="consultor-lista-points-cell">
@@ -122,10 +108,7 @@ function BadgeRow({ badge, onOpen }) {
             type="button"
             className="consultor-lista-action-btn"
             aria-label={`Ver detalhes do badge ${badge.name}`}
-            onClick={(event) => {
-              event.stopPropagation()
-              onOpen()
-            }}
+            onClick={(e) => { e.stopPropagation(); onOpen() }}
           >
             <HiOutlineArrowTopRightOnSquare className="consultor-lista-action-btn-icon" aria-hidden="true" />
           </button>
@@ -135,11 +118,48 @@ function BadgeRow({ badge, onOpen }) {
   )
 }
 
+// ── Main view ────────────────────────────────────────────────────────────────
+
 function ConsultorListaBadgesView() {
   const navigate = useNavigate()
-  const [activeFilter, setActiveFilter] = useState('')
 
-  const filtered = useMemo(() => filterBadges(allBadges, activeFilter), [activeFilter])
+  const [activeFilter, setActiveFilter] = useState('')
+  const [badges, setBadges] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [search, setSearch] = useState('')
+
+  // Fetch whenever the active filter changes
+  const fetchBadges = useCallback(async (filterId) => {
+    if (!filterId) return
+
+    const filter = FILTER_MAP[filterId]
+    if (!filter) return
+
+    setLoading(true)
+    setError(null)
+    setBadges([])
+    setSearch('')
+
+    try {
+      const data = await filter.fetchFn()
+      setBadges(Array.isArray(data) ? data.map(normaliseBadge) : [])
+    } catch {
+      setError('Erro ao carregar os badges. Tenta novamente.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchBadges(activeFilter)
+  }, [activeFilter, fetchBadges])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return badges
+    return badges.filter((b) => b.name.toLowerCase().includes(q))
+  }, [badges, search])
 
   function handleFilterClick(id) {
     setActiveFilter((prev) => (prev === id ? '' : id))
@@ -147,14 +167,18 @@ function ConsultorListaBadgesView() {
 
   function handleClose() {
     setActiveFilter('')
+    setBadges([])
+    setSearch('')
+    setError(null)
   }
 
   function openBadge(badge) {
-    navigate(`/consultor/badge/${slugify(badge.name)}`)
+    navigate(`/consultor/badge/${badge.id}`)
   }
 
-  const HeaderIcon = activeFilter ? FILTER_ICONS[activeFilter] : null
-  const headerLabel = activeFilter ? FILTER_LABELS[activeFilter] : ''
+  const activeFilterDef = activeFilter ? FILTER_MAP[activeFilter] : null
+  const HeaderIcon = activeFilterDef?.Icon ?? null
+  const headerLabel = activeFilterDef?.label ?? ''
 
   return (
     <section className="consultor-lista-page">
@@ -165,12 +189,8 @@ function ConsultorListaBadgesView() {
         </div>
       </header>
 
+      {/* ── Filter panel: chips (centred) → search bar ── */}
       <article className="consultor-lista-filter" aria-label="Filtros">
-        <div className="consultor-lista-filter-search">
-          <HiOutlineMagnifyingGlass className="consultor-lista-filter-search-icon" aria-hidden="true" />
-          <span className="consultor-lista-filter-search-text">Selecione um Filtro...</span>
-        </div>
-
         <div className="consultor-lista-chips" role="group" aria-label="Categorias">
           {FILTERS.map((filter) => (
             <FilterChip
@@ -181,13 +201,30 @@ function ConsultorListaBadgesView() {
             />
           ))}
         </div>
+
+        <div className="consultor-lista-filter-search">
+          <HiOutlineMagnifyingGlass className="consultor-lista-filter-search-icon" aria-hidden="true" />
+          <input
+            className="consultor-lista-filter-search-input"
+            type="search"
+            placeholder="Pesquisar badge pelo nome…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Pesquisar badge pelo nome"
+            disabled={!activeFilter}
+          />
+        </div>
       </article>
 
+      {/* ── Results ── */}
       {activeFilter ? (
         <article className="consultor-lista-card" aria-label={`Badges ${headerLabel}`}>
           <header className="consultor-lista-card-header">
-            {HeaderIcon ? <HeaderIcon className="consultor-lista-card-header-icon" aria-hidden="true" /> : null}
-            <h2>Badges {headerLabel} - {filtered.length}</h2>
+            {HeaderIcon && <HeaderIcon className="consultor-lista-card-header-icon" aria-hidden="true" />}
+            <h2>
+              Badges {headerLabel}
+              {!loading && <span> — {filtered.length}</span>}
+            </h2>
             <button
               type="button"
               className="consultor-lista-card-close"
@@ -198,7 +235,15 @@ function ConsultorListaBadgesView() {
             </button>
           </header>
 
-          {filtered.length > 0 ? (
+          {loading && (
+            <div className="consultor-lista-empty">A carregar…</div>
+          )}
+
+          {!loading && error && (
+            <div className="consultor-lista-empty consultor-lista-empty--error">{error}</div>
+          )}
+
+          {!loading && !error && filtered.length > 0 && (
             <table className="consultor-lista-table">
               <thead>
                 <tr>
@@ -214,8 +259,12 @@ function ConsultorListaBadgesView() {
                 ))}
               </tbody>
             </table>
-          ) : (
-            <div className="consultor-lista-empty">Sem badges nesta categoria.</div>
+          )}
+
+          {!loading && !error && filtered.length === 0 && (
+            <div className="consultor-lista-empty">
+              {search ? 'Nenhum badge encontrado para essa pesquisa.' : 'Sem badges nesta categoria.'}
+            </div>
           )}
         </article>
       ) : (

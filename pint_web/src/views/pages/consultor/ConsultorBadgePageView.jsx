@@ -13,7 +13,7 @@ import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
 import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
-import { getBadgeById } from '../../../controllers/badgesController'
+import { getBadgeById, getFavoritos, setFavorito } from '../../../controllers/badgesController'
 import { getRequisitosByBadge } from '../../../controllers/requisitosController'
 import { getPedidos, uploadDocumentacao, createPedido, getPedidoHistorico } from '../../../controllers/pedidosController'
 
@@ -300,13 +300,14 @@ function ConsultorBadgePageView() {
         setLoading(true)
         setError(null)
 
-        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData] = await Promise.all([
+        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData, favoritos] = await Promise.all([
           getBadgeById(badgeId),
           getRequisitosByBadge(badgeId),
           getAreas(),
           getServiceLines(),
           getLearningPaths(),
           getPedidos(),
+          getFavoritos(),
         ])
 
         if (!cancelled) {
@@ -371,7 +372,9 @@ function ConsultorBadgePageView() {
           }
 
           setBadge(normalized)
-          setIsFavorite(normalized.isFavorite)
+          const jaFavorito = Array.isArray(favoritos) && favoritos.some((f) => f.id_badge === normalized.id)
+          setIsFavorite(jaFavorito)
+
         }
       } catch (err) {
         console.error('Erro ao carregar badge:', err)
@@ -390,6 +393,18 @@ function ConsultorBadgePageView() {
 
     return () => { cancelled = true }
   }, [badgeId])
+
+  async function handleToggleFavorito() {
+    if (!badge) return
+    const novoEstado = !isFavorite
+    setIsFavorite(novoEstado) // optimistic update
+    try {
+      await setFavorito(badge.id, novoEstado)
+    } catch {
+      setIsFavorite(!novoEstado) // reverte se falhar
+    }
+  }
+
 
   // ── uploads ─────────────────────────────────────────────────────────────────
 
@@ -502,7 +517,12 @@ function ConsultorBadgePageView() {
             <span className="consultor-badge-info-status-row"><IconBadgePoints /><span>{badge.points} Pontos</span></span>
           </div>
           <div className="consultor-badge-info-actions">
-            <button type="button" className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`} onClick={() => setIsFavorite((p) => !p)} aria-pressed={isFavorite}>
+            <button
+              type="button"
+              className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
+              onClick={handleToggleFavorito}
+              aria-pressed={isFavorite}
+            >
               {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
               <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
             </button>

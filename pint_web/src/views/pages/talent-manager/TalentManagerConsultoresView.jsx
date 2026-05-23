@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { FaTimes, FaUpload } from 'react-icons/fa'
+import { FaTimes } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
@@ -27,6 +27,18 @@ const consultantRows = [
   { name: 'Sara Fernandes', badges: 7, points: 170, ranking: '14º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-06-18' },
   { name: 'André Moreira', badges: 5, points: 155, ranking: '15º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-05-30' },
 ]
+
+// ── ícone de exportação ─────────────────────────────────────────────────────────
+
+function ExportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 function AvatarBadge() {
   return (
@@ -213,7 +225,7 @@ function TalentManagerConsultoresView() {
 
         <div className="tm-consultores-actions">
           <button type="button" className="tm-consultores-export-btn" onClick={() => setShowExport(true)}>
-            <FaUpload aria-hidden="true" />
+            <ExportIcon />
             <span>Exportar</span>
           </button>
 
@@ -338,15 +350,20 @@ function TalentManagerConsultoresView() {
           <table className="tm-consultores-table">
             <thead>
               <tr>
+                <th>Ranking</th>
                 <th>Consultor</th>
                 <th>Badges</th>
                 <th>Pontos</th>
-                <th>Ranking</th>
               </tr>
             </thead>
             <tbody>
               {paginatedConsultants.map((consultant) => (
                 <tr key={`${consultant.name}-${consultant.badges}-${consultant.points}-${consultant.ranking}`}>
+                  <td>
+                    <span className={`tm-consultores-ranking ${getRankingTone(consultant.ranking)}`}>
+                      {consultant.ranking}
+                    </span>
+                  </td>
                   <td>
                     <div className="tm-consultores-name-cell">
                       <AvatarBadge />
@@ -360,11 +377,6 @@ function TalentManagerConsultoresView() {
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="tm-consultores-point-icon">
                         <path d="M3.702 0.456C4.43105 0.155969 5.21163 0.00107491 6 0C6.786 0 7.566 0.156 8.298 0.456C9.024 0.756 9.684 1.2 10.242 1.758C10.8 2.316 11.244 2.976 11.544 3.702C11.844 4.434 12 5.214 12 6C12 7.59 11.37 9.12 10.242 10.242C9.68557 10.8 9.02438 11.2425 8.2964 11.5442C7.56843 11.8459 6.78802 12.0008 6 12C5.21163 11.9989 4.43105 11.844 3.702 11.544C2.97484 11.2418 2.31428 10.7994 1.758 10.242C1.20001 9.68557 0.757463 9.02437 0.45577 8.2964C0.154077 7.56842 -0.000810844 6.78801 3.1921e-06 6C3.1921e-06 4.41 0.630003 2.88 1.758 1.758C2.316 1.2 2.976 0.756 3.702 0.456ZM6 9L6.936 6.948L9 6L6.936 5.064L6 3L5.058 5.064L3 6L5.058 6.948L6 9Z" fill="#232D42" />
                       </svg>
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`tm-consultores-ranking ${getRankingTone(consultant.ranking)}`}>
-                      {consultant.ranking}
                     </span>
                   </td>
                 </tr>

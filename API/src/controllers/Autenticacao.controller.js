@@ -7,6 +7,8 @@ const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const Area = require('../models/Areas.models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const Conquistas = require('../models/Conquistas.models');
+const conquistasService = require("../services/conquistas.service");
 
 
 const controllers = {};
@@ -180,6 +182,13 @@ controllers.register = async (req, res) => {
       total_pontos: 0, //começa sempre com 0 total_pontos
       id_area: idAreaPref
     })
+    
+    //criar as conquistas do consultor
+    const conquistas = await Conquistas.findAll();
+
+    conquistas.forEach(conquista => {
+      conquistasService.criarConquista(consultor.id_consultor, conquista.id_conquista);
+    });
 
     return res.status(201).json({
       message: 'Conta criada com sucesso',

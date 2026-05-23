@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { FaFilter, FaSearch, FaTimes, FaUpload } from 'react-icons/fa'
+import { FaFilter, FaSearch, FaTimes } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
@@ -7,6 +7,16 @@ import SLLSidebar from '../../components/SLLSidebar'
 import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-historico.css'
+
+function ExportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
@@ -551,7 +561,7 @@ function SLLHistoricoView() {
             </div>
 
             <button type="button" className="sll-history-export-btn" onClick={() => setShowExport(true)}>
-              <FaUpload aria-hidden="true" />
+              <ExportIcon />
               <span>Exportar</span>
             </button>
           </section>

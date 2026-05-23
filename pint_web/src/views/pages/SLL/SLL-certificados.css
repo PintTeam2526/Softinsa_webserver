@@ -192,26 +192,56 @@
   outline-offset: 1px;
 }
 
-.sll-certificates-visualize-btn,
+.sll-certificates-visualize-btn {
+  width: 100%;
+  height: 32px;
+  border: 1px solid #e0e8f5;
+  border-radius: 6px;
+  background: #f5f8fc;
+  color: #8a92a6;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
 .sll-certificates-download-btn {
   width: 100%;
-  height: 48px;
+  height: 44px;
   border: 0;
   border-radius: 8px;
-  background: #39639c;
+  background: #3a57e8;
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 14px;
+  line-height: 1.75;
   font-weight: 600;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(58, 87, 232, 0.25);
 }
 
-.sll-certificates-download-btn {
-  margin-top: 12px;
+.sll-certificates-download-btn:hover {
+  background: #4563f2;
+  box-shadow: 0 4px 12px rgba(58, 87, 232, 0.35);
+}
+
+.sll-certificates-download-btn:active {
+  box-shadow: 0 1px 4px rgba(58, 87, 232, 0.2);
+}
+
+.sll-certificates-download-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  stroke: currentColor;
 }
 
 .sll-certificates-preview-card {
