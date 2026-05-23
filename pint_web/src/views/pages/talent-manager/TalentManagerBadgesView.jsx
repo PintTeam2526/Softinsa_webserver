@@ -1,4 +1,4 @@
-import { FaTimes, FaUpload } from 'react-icons/fa'
+import { FaTimes } from 'react-icons/fa'
 import { HiOutlineStar, HiOutlineCurrencyEuro } from 'react-icons/hi2'
 import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
@@ -21,6 +21,18 @@ const imgEllipse3 = 'https://www.figma.com/api/mcp/asset/8afce139-66a4-4e0f-8a2a
 const imgEllipse2 = 'https://www.figma.com/api/mcp/asset/8cbf430c-6968-487b-bd47-da4fe592bb73'
 const imgEllipse1 = 'https://www.figma.com/api/mcp/asset/a62526d5-25ef-4809-a07d-a1dc9c9d4492'
 const imgModalBadge = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
+
+// ── ícone de exportação ───────────────────────────────────────────────────────
+
+function ExportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 // ── utilitário base64 ─────────────────────────────────────────────────────────
 
@@ -292,7 +304,7 @@ function TalentManagerBadgesView({
 
           {showExportButton ? (
             <button type="button" className={`${cp}-export-btn`} onClick={() => setShowExport(true)}>
-              <FaUpload aria-hidden="true" className={`${cp}-export-icon`} />
+              <ExportIcon />
               <span>Exportar</span>
             </button>
           ) : null}

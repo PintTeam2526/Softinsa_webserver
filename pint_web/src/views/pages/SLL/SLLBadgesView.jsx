@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import { FaSearch, FaUpload } from 'react-icons/fa'
+import { FaSearch } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
@@ -8,6 +8,16 @@ import SLLTopbar from '../../components/SLLTopbar'
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
 import './SLL-badges.css'
+
+function ExportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 const imgBadgeFallback = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
 
@@ -228,7 +238,7 @@ function SLLBadgesView() {
             </label>
 
             <button type="button" className="sll-badges-export-btn" onClick={() => setShowExportDialog(true)}>
-              <FaUpload aria-hidden="true" />
+              <ExportIcon />
               <span>Exportar</span>
             </button>
           </section>

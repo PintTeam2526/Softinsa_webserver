@@ -1,7 +1,16 @@
 import { useMemo, useState } from 'react'
-import { FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import './TalentManagerCertificadosView.css'
+
+function ExportIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
 const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
@@ -193,7 +202,7 @@ function TalentManagerCertificadosView() {
           </button>
 
           <button type="button" className="sll-certificates-download-btn" onClick={downloadPdf}>
-            <FaUpload aria-hidden="true" />
+            <ExportIcon />
             <span>Descarregar PDF</span>
           </button>
         </article>
