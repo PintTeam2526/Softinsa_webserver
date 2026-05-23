@@ -1,10 +1,31 @@
+import { useEffect, useState } from 'react'
 import { HiOutlineStar } from 'react-icons/hi2'
+
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
 import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
 import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
 import tm1 from '../../../assets/images/badges/tm_1.png'
 import devops2 from '../../../assets/images/badges/devops_2.png'
+
+import { getConquistasConsultor } from '../../../controllers/conquistasController'
 import './ConsultorConquistasView.css'
+
+// ─── Mapeamento imagem por identificador devolvido pelo back ───────────────────
+
+const BADGE_MAP = {
+  outsystems_1: outsystems1,
+  outsystems_3: outsystems3,
+  outsystems_special: outsystemsSpecial,
+  tm_1: tm1,
+  devops_2: devops2,
+  default: outsystems1,
+}
+
+function resolveBadge(imageKey) {
+  return BADGE_MAP[imageKey] ?? BADGE_MAP.default
+}
+
+// ─── Icon ─────────────────────────────────────────────────────────────────────
 
 function IconConquistas({ className }) {
   return (
@@ -20,21 +41,28 @@ function IconConquistas({ className }) {
   )
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function progressTier(progress) {
   if (progress >= 100) return 'is-tier-4'
-  if (progress >= 75)  return 'is-tier-3'
-  if (progress >= 50)  return 'is-tier-2'
-  if (progress >= 25)  return 'is-tier-1'
+  if (progress >= 75) return 'is-tier-3'
+  if (progress >= 50) return 'is-tier-2'
+  if (progress >= 25) return 'is-tier-1'
   return 'is-tier-0'
 }
 
-const conquistasData = [
-  { id: 1, description: 'Obter todos os Badges de uma Área', thumb: outsystemsSpecial, points: 520, progress: 0   },
-  { id: 2, description: 'Obter 50 badges',                   thumb: outsystems3,       points: 520, progress: 25  },
-  { id: 3, description: 'Obter 10 badges',                   thumb: devops2,           points: 520, progress: 50  },
-  { id: 4, description: 'Obter 3 badges',                    thumb: tm1,               points: 520, progress: 75  },
-  { id: 5, description: 'Obter 1 badge',                     thumb: outsystems1,       points: 520, progress: 100 },
-]
+function normalizeConquista(item) {
+  const conquista = item.Conquista ?? {}
+  return {
+    id: item.id_conquista_consultor,
+    description: conquista.descricao ?? conquista.descricao_conquista ?? '—',
+    points: conquista.pontos ?? conquista.pontos_conquista ?? 0,
+    progress: item.progresso ?? 0,
+    thumb: resolveBadge(conquista.imagem ?? ''),
+  }
+}
+
+// ─── Row ─────────────────────────────────────────────────────────────────────
 
 function ConquistaRow({ row }) {
   const tier = progressTier(row.progress)
@@ -75,7 +103,76 @@ function ConquistaRow({ row }) {
   )
 }
 
+// ─── Estados de UI ────────────────────────────────────────────────────────────
+
+function LoadingRows() {
+  return Array.from({ length: 4 }).map((_, i) => (
+    <tr key={i} className="consultor-conquistas-skeleton-row">
+      <td><div className="consultor-conquistas-skeleton consultor-conquistas-skeleton--desc" /></td>
+      <td><div className="consultor-conquistas-skeleton consultor-conquistas-skeleton--pts" /></td>
+      <td><div className="consultor-conquistas-skeleton consultor-conquistas-skeleton--bar" /></td>
+    </tr>
+  ))
+}
+
+function ErrorMessage({ message, onRetry }) {
+  return (
+    <tr>
+      <td colSpan={3} className="consultor-conquistas-feedback-cell">
+        <p className="consultor-conquistas-error">{message}</p>
+        <button
+          className="consultor-conquistas-retry-btn"
+          onClick={onRetry}
+          type="button"
+        >
+          Tentar novamente
+        </button>
+      </td>
+    </tr>
+  )
+}
+
+function EmptyMessage() {
+  return (
+    <tr>
+      <td colSpan={3} className="consultor-conquistas-feedback-cell">
+        <p className="consultor-conquistas-empty">Ainda não tens conquistas registadas.</p>
+      </td>
+    </tr>
+  )
+}
+
+// ─── View principal ──────────────────────────────────────────────────────────
+
 function ConsultorConquistasView() {
+  const [conquistas, setConquistas] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  async function fetchConquistas() {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getConquistasConsultor()
+      setConquistas(data.map(normalizeConquista))
+    } catch (err) {
+      setError(err.message ?? 'Erro ao carregar conquistas.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchConquistas()
+  }, [])
+
+  function renderBody() {
+    if (loading) return <LoadingRows />
+    if (error) return <ErrorMessage message={error} onRetry={fetchConquistas} />
+    if (conquistas.length === 0) return <EmptyMessage />
+    return conquistas.map((row) => <ConquistaRow key={row.id} row={row} />)
+  }
+
   return (
     <section className="consultor-conquistas-page">
       <header className="consultor-conquistas-hero">
@@ -100,9 +197,7 @@ function ConsultorConquistasView() {
             </tr>
           </thead>
           <tbody>
-            {conquistasData.map((row) => (
-              <ConquistaRow key={row.id} row={row} />
-            ))}
+            {renderBody()}
           </tbody>
         </table>
       </article>
