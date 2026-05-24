@@ -10,7 +10,7 @@ const controllers = {};
 controllers.getObjetivosConsultorMobile = async (req, res) => {
   const { id } = req.params;
   if (!id) {
-     return res.status(400).json({ error: 'Tens de enviar o id do Consultor!' });
+    return res.status(400).json({ error: 'Tens de enviar o id do Consultor!' });
   }
   try {
     const resultado = await Objetivos.findAll({
@@ -33,7 +33,7 @@ controllers.getObjetivosConsultorMobile = async (req, res) => {
     res.json(resposta);
 
   } catch (err) {
-     res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 }
 
@@ -41,7 +41,7 @@ controllers.badgesParaObjetivosMobile = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-       return res.status(400).json({ error: 'Tens de enviar o id do Consultor!' });
+      return res.status(400).json({ error: 'Tens de enviar o id do Consultor!' });
     }
 
     // Executa a query filtrando badges disponíveis para novos objetivos
@@ -136,6 +136,138 @@ controllers.criarObjetivoConsultorMobile = async (req, res) => {
     });
   }
 }
+
+/* =====================================================
+   VERSÃO COM AUTENTICAÇÃO: getObjetivosConsultor
+===================================================== */
+
+controllers.getObjetivosConsultor = async (req, res) => {
+  try {
+    if (req.user?.role !== 'c') {
+      return res.status(401).json({ mensagem: 'Utilizador não autorizado' });
+    }
+
+    const resultado = await Objetivos.findAll({
+      where: { id_consultor: req.user.id_consultor },
+      include: [{ model: Badges, attributes: ['nome_badge', 'nivel_badge', 'imagem_badge'] }],
+      order: [['data_limite_conclusao', 'ASC']],
+    });
+
+    const resposta = resultado.map(obj => ({
+      id_objetivo: obj.id_objetivo,
+      id_badge: obj.id_badge,
+      id_consultor: obj.id_consultor,
+      nome_objetivo: obj.nome_objetivo,
+      data_limite_conclusao: obj.data_limite_conclusao,
+      data_conclusao_objetivo: obj.data_conclusao_objetivo,
+      estado_objetivo: obj.estado_objetivo,
+      badge: obj.Badge ? {
+        nome_badge: obj.Badge.nome_badge,
+        nivel_badge: obj.Badge.nivel_badge,
+        imagem_badge: obj.Badge.imagem_badge,
+      } : null,
+    }));
+
+    return res.status(200).json(resposta);
+
+  } catch (err) {
+    return res.status(500).json({ mensagem: 'Erro ao buscar objetivos', erro: err.message });
+  }
+};
+
+/* =====================================================
+   VERSÃO COM AUTENTICAÇÃO: badgesParaObjetivos
+===================================================== */
+controllers.badgesParaObjetivos = async (req, res) => {
+  try {
+    if (req.user?.role !== 'c') {
+      return res.status(401).json({ mensagem: 'Utilizador não autorizado' });
+    }
+
+    const idConsultor = req.user.id_consultor;
+
+    const badges = await Badges.findAll({
+      include: [{ model: Areas, attributes: ['nome_area'] }],
+      where: {
+        [Op.and]: [
+          sequelize.literal(`NOT EXISTS (
+            SELECT 1 FROM "BadgesConcluidos"
+            WHERE "BadgesConcluidos".id_badge = "Badges".id_badge
+            AND "BadgesConcluidos".id_consultor = ${idConsultor}
+          )`),
+          {
+            [Op.or]: [
+              sequelize.literal(`NOT EXISTS (
+                SELECT 1 FROM "Objetivos"
+                WHERE "Objetivos".id_badge = "Badges".id_badge
+                AND "Objetivos".id_consultor = ${idConsultor}
+              )`),
+              sequelize.literal(`EXISTS (
+                SELECT 1 FROM "Objetivos"
+                WHERE "Objetivos".id_badge = "Badges".id_badge
+                AND "Objetivos".id_consultor = ${idConsultor}
+                AND "Objetivos".data_limite_conclusao < CURRENT_DATE
+              )`)
+            ]
+          }
+        ]
+      }
+    });
+
+    const resposta = badges.map(b => ({
+      id_badge: b.id_badge,
+      id_area: b.id_area,
+      nome_badge: b.nome_badge,
+      descricao_badge: b.descricao_badge,
+      pontos_badge: b.pontos_badge,
+      pago: b.pago,
+      nivel_badge: b.nivel_badge,
+      imagem_badge: b.imagem_badge,
+      nome_area: b.Area?.nome_area || "N/A",
+      data_insercao: b.data_insercao,
+      estado_a_i: b.estado_a_i
+    }));
+
+    return res.status(200).json(resposta);
+
+  } catch (err) {
+    return res.status(500).json({ mensagem: 'Erro ao buscar badges para objetivos', erro: err.message });
+  }
+};
+
+/* =====================================================
+   VERSÃO COM AUTENTICAÇÃO: criarObjetivoConsultor
+===================================================== */
+
+controllers.criarObjetivoConsultor = async (req, res) => {
+  try {
+    if (req.user?.role !== 'c') {
+      return res.status(401).json({ mensagem: 'Utilizador não autorizado' });
+    }
+
+    const { idBadge, dataLimiteConclusao, nomeBadge } = req.body;
+
+    if (!idBadge || !dataLimiteConclusao || !nomeBadge) {
+      return res.status(400).json({
+        mensagem: 'Campos obrigatórios: idBadge, dataLimiteConclusao, nomeBadge.'
+      });
+    }
+
+    await Objetivos.create({
+      id_badge: idBadge,
+      id_consultor: req.user.id_consultor,
+      data_limite_conclusao: dataLimiteConclusao,
+      nome_objetivo: nomeBadge,
+      data_conclusao_objetivo: null,
+      estado_objetivo: 'Por Concluir'
+    });
+
+    return res.status(201).json({ mensagem: 'Objetivo criado com sucesso.' });
+
+  } catch (err) {
+    return res.status(500).json({ mensagem: 'Erro ao criar objetivo', erro: err.message });
+  }
+};
 
 
 module.exports = controllers;
