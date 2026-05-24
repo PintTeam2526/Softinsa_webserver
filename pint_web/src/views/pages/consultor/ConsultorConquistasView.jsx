@@ -1,33 +1,8 @@
 import { useEffect, useState } from 'react'
 import { HiOutlineStar } from 'react-icons/hi2'
 
-import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
-import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
-import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
-import tm1 from '../../../assets/images/badges/tm_1.png'
-import devops2 from '../../../assets/images/badges/devops_2.png'
-
 import { getConquistasConsultor } from '../../../controllers/conquistasController'
 import './ConsultorConquistasView.css'
-
-// ─── Badge por id_conquista ───────────────────────────────────────────────────
-
-const BADGE_MAP = {
-  1: outsystems1,
-  2: outsystems3,
-  3: devops2,
-  4: tm1,
-  5: outsystemsSpecial,
-  6: outsystems1,
-  7: outsystems3,
-  8: devops2,
-  9: tm1,
-  10: outsystemsSpecial,
-}
-
-function resolveBadge(id) {
-  return BADGE_MAP[id] ?? outsystems1
-}
 
 // ─── Cálculo de progresso no front ───────────────────────────────────────────
 
@@ -71,8 +46,7 @@ function ConquistaRow({ conquista, total_badges, total_pontos }) {
     <tr>
       <td>
         <div className="consultor-conquistas-description-cell">
-          <img src={resolveBadge(conquista.id_conquista)} alt="" className="consultor-conquistas-thumb" />
-          <span className="consultor-conquistas-description-text">{conquista.descricao_conquista}</span>
+          <span className="consultor-conquistas-description-text">Obter {conquista.descricao_conquista}</span>
         </div>
       </td>
 
@@ -165,15 +139,22 @@ function ConsultorConquistasView() {
     if (error) return <ErrorMessage message={error} onRetry={fetchConquistas} />
     if (!dados?.conquistas?.length) return <EmptyMessage />
 
-    return dados.conquistas.map((c) => (
-      <ConquistaRow
-        key={c.id_conquista}
-        conquista={c}
-        total_badges={dados.total_badges}
-        total_pontos={dados.total_pontos}
-      />
-    ))
+    return [...dados.conquistas]
+      .sort((a, b) => {
+        const progressoA = calcularProgresso(a, dados.total_badges, dados.total_pontos)
+        const progressoB = calcularProgresso(b, dados.total_badges, dados.total_pontos)
+        return progressoB - progressoA
+      })
+      .map((c) => (
+        <ConquistaRow
+          key={c.id_conquista}
+          conquista={c}
+          total_badges={dados.total_badges}
+          total_pontos={dados.total_pontos}
+        />
+      ))
   }
+
 
   return (
     <section className="consultor-conquistas-page">
