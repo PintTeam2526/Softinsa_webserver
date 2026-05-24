@@ -124,14 +124,6 @@ INSERT INTO "Badges" (id_area, nome_badge, descricao_badge, pontos_badge, pago, 
 (8, 'Organizational Leadership',     'Liderança organizacional — transformação, cultura e mentoria de outros líderes.',                                     100, TRUE,  'Líder de Conhecimento', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', 60, 730, TRUE, '2025-01-01', NOW(), NOW());
 
 -- ============================================================
--- 10. Conquistas
--- ============================================================
-INSERT INTO "Conquistas" (descricao_conquista, pontos_conquista, imagem_conquista, estado_a_i, data_insercao, "createdAt", "updatedAt") VALUES
-('1 Badge',  50, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW()),
-('5 Badges',  200, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=',   TRUE, '2025-01-01', NOW(), NOW()),
-('100 Pontos',     100, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGNsaGhgwA2Y8MiNYGkA22EBlPG3fjQAAAAASUVORK5CYII=', TRUE, '2025-01-01', NOW(), NOW());
-
--- ============================================================
 -- 11. Requisitos
 -- ============================================================
 INSERT INTO "Requisitos" (id_badge, nome_requisito, descricao_requisito, imagem_requisito, data_insercao, estado_a_i, "createdAt", "updatedAt") VALUES
@@ -309,13 +301,6 @@ INSERT INTO "Objetivos" (id_badge, id_consultor, data_limite_conclusao, nome_obj
 INSERT INTO "BadgesConcluidos" (id_badge, id_consultor, data_conclusao_badge, url_validacao, "createdAt", "updatedAt") VALUES
 (11, 1, '2025-02-15', 'https://certificacoes.softinsa.pt/containers-basics-joao',  NOW(), NOW()),
 (6,  2, '2025-03-20', 'https://certificacoes.softinsa.pt/cloud-fundamentals-maria', NOW(), NOW());
-
--- ============================================================
--- 14. ConquistasConsultores
--- ============================================================
-INSERT INTO "ConquistasConsultores" (id_consultor, id_conquista, progresso, "createdAt", "updatedAt") VALUES
-(1, 1, 100, NOW(), NOW()),
-(2, 1, 100, NOW(), NOW());
 
 -- ============================================================
 -- 15. PedidosBadges

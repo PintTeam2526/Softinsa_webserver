@@ -26,10 +26,6 @@ var ConquistasConsultores = sequelize.define('ConquistasConsultores',
             model: Conquista,
             key: 'id_conquista'
         },
-    },
-    progresso: {
-        type: Sequelize.INTEGER,
-        allowNull: false
     }
 },
 
