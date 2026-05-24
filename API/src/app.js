@@ -32,6 +32,7 @@ const Requisitos = require("./models/Requisitos.models");
 const ConquistasConsultores = require("./models/ConquistasConsultores.models");
 const DocumentacaoTemporaria = require("./models/DocumentacaoTemporaria.models");
 const { seedDatabase } = require("./services/seed.service");
+const badgesExpirados = require("./services/rotinas.services")
 
 var app = express();
 
@@ -50,6 +51,9 @@ app.use(middlewareAuth);
 
 //Timeout global — evita pedidos órfãos
 app.use(require("./middleware/timeout.middleware"));
+
+//Rotina para remover badges expirados
+badgesExpirados();
 
 const routes = require("./routes/Rotas");
 app.use("/api", routes);

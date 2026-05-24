@@ -7,4 +7,8 @@ router.get('/get/:id', controllerObjetivos.getObjetivosConsultorMobile);
 router.get('/badgesDisponiveis/:id', controllerObjetivos.badgesParaObjetivosMobile);
 router.post('/adicionar', controllerObjetivos.criarObjetivoConsultorMobile);
 
+router.get('/meus', authVerification, controllerObjetivos.getObjetivosConsultor);
+router.get('/badges-disponiveis', authVerification, controllerObjetivos.badgesParaObjetivos);
+router.post('/criar', authVerification, controllerObjetivos.criarObjetivoConsultor);
+
 module.exports = router;

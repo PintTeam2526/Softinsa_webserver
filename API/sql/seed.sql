@@ -97,8 +97,8 @@ INSERT INTO "Requisitos" (id_badge, nome_requisito, descricao_requisito, imagem_
 -- 12. Objetivos
 -- ============================================================
 INSERT INTO "Objetivos" (id_badge, id_consultor, data_limite_conclusao, nome_objetivo, data_conclusao_objetivo, estado_objetivo, "createdAt", "updatedAt") VALUES
-(1, 1, '2025-06-30', 'Completar SQL Básico', NULL, 'em_andamento', NOW(), NOW()),
-(3, 2, '2025-07-15', 'Aprender React',       NULL, 'em_andamento', NOW(), NOW());
+(1, 1, '2025-06-30', 'Completar SQL Básico', NULL, 'Por Concluir', NOW(), NOW()),
+(3, 2, '2025-07-15', 'Aprender React',       NULL, 'Por Concluir', NOW(), NOW());
 
 -- ============================================================
 -- 13. BadgesConcluidos

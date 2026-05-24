@@ -640,7 +640,18 @@ controllers.badgesEmAnalize = async (req, res) => {
             where: {
                 id_consultor,
                 estado_atual: { [Sequelize.Op.notIn]: [3, 4, 5, 6] }
-            }
+            },
+            include: [
+                {
+                    model: Badges,
+                    include: [
+                        {
+                            model: Areas,
+                            attributes: ['nome_area']
+                        }
+                    ]
+                }
+            ]
         });
 
         return res.status(200).json(badgesEmAndamento);
@@ -666,7 +677,7 @@ controllers.badgesObtidos = async (req, res) => {
         const badgesObtidos = await BadgesConcluidos.findAll({
             where: { id_consultor },
             include: [
-                { model: Badge }
+                { model: Badges }
             ]
         });
 
