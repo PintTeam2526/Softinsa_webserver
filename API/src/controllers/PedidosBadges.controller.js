@@ -346,7 +346,7 @@ controllers.tmReview = async (req, res) => {
       }
       estado = 3;
       mensagemHistorico = "Devolvido pelo Talent Manager";
-      mensagemNotificacao = "Pedido devolvido pelo Talent Manager.";
+      mensagemNotificacao = motivo;
       mensagemResposta = "Pedido devolvido";
     } else {
       return res.status(400).json({
@@ -439,13 +439,13 @@ controllers.slReview = async (req, res) => {
       devolver: {
         estado: 6,
         historico: "Devolvido pelo Service Line Líder",
-        notificacao: "Pedido devolvido pelo Service Line Líder.",
+        notificacao: motivo,
         resposta: "Pedido devolvido",
       },
       rejeitar: {
         estado: 5,
         historico: "Pedido rejeitado",
-        notificacao: "Pedido rejeitado.",
+        notificacao: motivo,
         resposta: "Pedido rejeitado",
       },
     };
