@@ -49,7 +49,7 @@ INSERT INTO "Areas" (id_service_line, nome_area, descricao_area, imagem_area, es
 -- 5. Consultores
 -- ============================================================
 INSERT INTO "Consultores" (id_utilizador, total_pontos, id_area, "createdAt", "updatedAt") VALUES
-(4, 150, 3, NOW(), NOW()),
+(4, 100, 3, NOW(), NOW()),
 (5, 200, 4, NOW(), NOW());
 
 -- ============================================================
