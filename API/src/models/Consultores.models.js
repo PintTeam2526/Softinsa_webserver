@@ -3,6 +3,7 @@ var sequelize = require('../../database');
 var Utilizador = require('./Utilizadores.models');
 var Area = require('./Areas.models');
 
+
 var Consultores = sequelize.define('Consultores',
 {
     id_utilizador: {
