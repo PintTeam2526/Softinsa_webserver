@@ -1,5 +1,6 @@
+import { useMemo, useState } from 'react'
 import Chart from 'react-apexcharts'
-import { Card, Col, Row } from 'react-bootstrap'
+import { Card, Col, Dropdown, Row } from 'react-bootstrap'
 import {
   HiOutlineAcademicCap,
   HiOutlineBadgeCheck,
@@ -41,8 +42,6 @@ const learningPathChartOptions = {
   },
   labels: ['Jornada Tecnica', 'Power Skills'],
 }
-
-const learningPathChartSeries = [82, 66]
 
 const badgesBarChartOptions = {
   chart: {
@@ -125,7 +124,25 @@ function MetricIcon({ icon }) {
 }
 
 function DashboardView() {
-  const { user, metrics, chartOptions, chartSeries } = useDashboardController()
+  const {
+    user,
+    metrics,
+    chartOptions,
+    chartSeries,
+    badgesChartByYear,
+    badgesChartYearOptions,
+    learningPathBadgeLevels,
+  } = useDashboardController()
+  const [selectedLevel, setSelectedLevel] = useState('Intermédio')
+  const [selectedBadgeYear, setSelectedBadgeYear] = useState(2025)
+
+  const selectedLearningPathLevel = useMemo(
+    () =>
+      learningPathBadgeLevels.find((level) => level.value === selectedLevel) ?? learningPathBadgeLevels[0],
+    [learningPathBadgeLevels, selectedLevel]
+  )
+
+  const selectedBadgeYearData = badgesChartByYear[selectedBadgeYear] ?? badgesChartByYear[2025]
 
   return (
     <section className="softinsa-dashboard-page">
@@ -164,30 +181,95 @@ function DashboardView() {
 
       <Row className="g-4">
         <Col xl={4} lg={5}>
-          <Card className="softinsa-chart-card h-100">
-            <Card.Header className="softinsa-chart-card-header">
-              <h5 className="mb-0">Badges por Learning Path</h5>
+          <Card className="softinsa-chart-card softinsa-learning-path-card h-100">
+            <Card.Header className="softinsa-chart-card-header softinsa-learning-path-card-header">
+              <div className="softinsa-learning-path-card-title-wrap">
+                <h5 className="mb-0">Badges Por Learning Path</h5>
+
+                <Dropdown className="softinsa-learning-path-dropdown">
+                  <Dropdown.Toggle
+                    variant="link"
+                    id="softinsa-learning-path-dropdown"
+                    className="softinsa-learning-path-dropdown-toggle"
+                  >
+                    {selectedLearningPathLevel.label}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu align="start" className="softinsa-learning-path-dropdown-menu">
+                    {learningPathBadgeLevels.map((level) => (
+                      <Dropdown.Item
+                        key={level.value}
+                        active={level.value === selectedLearningPathLevel.value}
+                        onClick={() => setSelectedLevel(level.value)}
+                      >
+                        {level.label}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </Card.Header>
 
-            <Card.Body>
-              <Chart
-                options={learningPathChartOptions}
-                series={learningPathChartSeries}
-                type="radialBar"
-                height={250}
-              />
+            <Card.Body className="softinsa-learning-path-card-body">
+              <div className="softinsa-learning-path-chart-wrap">
+                <Chart
+                  options={learningPathChartOptions}
+                  series={selectedLearningPathLevel.chartSeries}
+                  type="radialBar"
+                  height={250}
+                />
+              </div>
+
+              <div className="softinsa-learning-path-legend" aria-label="Quantidade por learning path">
+                {selectedLearningPathLevel.paths.map((path) => (
+                  <div key={path.label} className="softinsa-learning-path-legend-item">
+                    <span
+                      className="softinsa-learning-path-legend-dot"
+                      style={{ backgroundColor: path.color }}
+                      aria-hidden="true"
+                    />
+
+                    <div className="softinsa-learning-path-legend-content">
+                      <p>{path.label}</p>
+                      <strong>{path.value}</strong>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </Card.Body>
           </Card>
         </Col>
 
         <Col xl={8} lg={7}>
           <Card className="softinsa-chart-card h-100">
-            <Card.Header className="softinsa-chart-card-header">
+            <Card.Header className="softinsa-chart-card-header softinsa-badges-card-header">
               <h5 className="mb-0">Badges</h5>
+
+              <Dropdown className="softinsa-badges-dropdown">
+                <Dropdown.Toggle
+                  variant="link"
+                  id="softinsa-badges-year-dropdown"
+                  className="softinsa-badges-dropdown-toggle"
+                >
+                  {selectedBadgeYear}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu align="end" className="softinsa-badges-dropdown-menu">
+                  {badgesChartYearOptions.map((year) => (
+                    <Dropdown.Item
+                      key={year}
+                      active={year === selectedBadgeYear}
+                      onClick={() => setSelectedBadgeYear(year)}
+                    >
+                      {year}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Card.Header>
 
             <Card.Body>
-              <Chart options={badgesBarChartOptions} series={badgesBarChartSeries} type="bar" height={250} />
+              <Chart options={badgesBarChartOptions} series={selectedBadgeYearData.series} type="bar" height={250} />
             </Card.Body>
           </Card>
         </Col>

@@ -3,7 +3,8 @@ import api from '../services/api'
 // ###############################################################################################################
 // ######################## RETIRAR QUANDO AS DASHBOARDS ESTIVEREM TODAS MIGRADAS ################################
 // ###############################################################################################################
-import { badgesChartOptions, badgesChartSeries, dashboardMetrics, dashboardUser } from '../models/dashboard.model'
+import { badgesChartOptions, badgesChartByYear, badgesChartSeries, badgesChartYearOptions, dashboardMetrics, dashboardUser, learningPathBadgeLevels } from '../models/dashboard.model'
+
 
 export function useDashboardController() {
   return {
