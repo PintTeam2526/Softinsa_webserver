@@ -6,6 +6,8 @@ const badges = require('../models/Badges.models');
 const utilizador = require('../models/Utilizadores.models');
 const consultor = require('../models/Consultores.models');
 const area = require('../models/Areas.models')
+
+const dashboardConsultorService = require("../services/dashboardConsultor.service");
 const { listarPedidosPorCargo } = require('../services/listarPedidos.service')
 
 const controller = {};
@@ -100,16 +102,34 @@ controller.consultor = async (req, res) => {
             return res.status(401).json({ mensagem: "Utilizador não autorizado" });
         }
 
-        const badgesObtidosConsultor = await badgesObtidos.findAll({
-            where: { id_consultor: req.user.id_consultor }
-        })
+        const id_consultor = req.user.id_consultor;
+        const dadosConsultor = await dashboardConsultorService.getDadosConsultor(id_consultor);
+        const diasProximoObjetivo = await dashboardConsultorService.getObjetivoMaisProximo(id_consultor);
+        const progressoArea = await dashboardConsultorService.getProgressoArea(id_consultor);
+        const progressoServiceLine = await dashboardConsultorService.getProgressoServiceLine(id_consultor);
+        const progressoLearningPath = await dashboardConsultorService.getProgressoLearningPath(id_consultor);
+        //const badgesConsultor = await dashboardConsultorService.getBadgesConsultor(id_consultor);
+        const pedidosBadge = await dashboardConsultorService.getPedidosConsultor(id_consultor);
 
-        const pedidos = await listarPedidosPorCargo('consultor', req.user.id_consultor)
+        const resultado = {
+            nome_consultor: dadosConsultor.nome_consultor,
+            pontos_consultor: dadosConsultor.pontos_consultor,
+            dias_proximo_objetivo: diasProximoObjetivo,
+            progresso_area: progressoArea,
+            progresso_service_line: progressoServiceLine,
+            progresso_learning_path: progressoLearningPath,
+            pedidos_badge: pedidosBadge.map(pedido => ({
+                nome_badge: pedido.nome_badge,
+                estado_pedido: pedido.estado_atual,
+                imagem_badge: pedido.imagem_badge
+            }))
+        }
 
-        res.json({ badgesObtidosConsultor, pedidos })
+        res.json(resultado);
     }
     catch(error)
     {
+        console.error(error)
         res.status(500).json({mensagem: "Erro de servidor"})
     }
 }
