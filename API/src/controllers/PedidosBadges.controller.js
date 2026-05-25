@@ -468,7 +468,22 @@ controllers.slReview = async (req, res) => {
         data_conclusao_badge: new Date(),
         url_validacao: "Interno",
       });
+
+      await Objetivos.update(
+        {
+          estado_objetivo: "Concluido",
+          data_conclusao_objetivo: new Date(),
+        },
+        {
+          where: {
+            id_badge: pedido.id_badge,
+            id_consultor: pedido.id_consultor,
+            estado_objetivo: "em_andamento"
+          }
+        });
     }
+
+
 
     await criarHistorico(
       pedido.id_pedido_badge,

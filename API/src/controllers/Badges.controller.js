@@ -577,7 +577,6 @@ controllers.getBadgesRecomendados = async (req, res) => {
     try {
 
         const idConsultor = req.user.id_consultor;
-        console.log("idConsultor:", idConsultor); // verifica se chega valor
 
         // Buscar consultor para obter a área
         const consultor = await Consultor.findByPk(idConsultor);
