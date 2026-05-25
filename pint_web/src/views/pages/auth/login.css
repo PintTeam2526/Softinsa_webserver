@@ -290,6 +290,12 @@
   text-decoration: underline;
 }
 
+.login-error {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin: -8px 0 4px 0;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .login-graphic-side {

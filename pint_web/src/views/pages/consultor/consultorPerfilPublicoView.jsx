@@ -1,127 +1,413 @@
-import React, { useState } from 'react'
-import { Container } from 'react-bootstrap'
-import './consultor-perfil-publico.css'
+import { useMemo, useRef, useState } from 'react'
+import {
+  HiOutlineCog6Tooth,
+  HiOutlineLockClosed,
+  HiOutlineEnvelope,
+  HiOutlineMapPin,
+  HiOutlineCamera,
+  HiOutlineChevronRight,
+  HiOutlineXMark,
+} from 'react-icons/hi2'
+import './ConsultorPerfilPublicoView.css'
+import '../shared/profile-settings.css'
 
-// Image constants
-const imgBearedGuy02Min1 = 'http://localhost:3845/assets/7ffed3a9c0dc8d07848a7a822fc8ff982d8e671f.png'
-const imgSearch = 'http://localhost:3845/assets/735ec776c0c41c37329638609b923cf1e0925bef.svg'
-const imgVectorPoints = 'http://localhost:3845/assets/31d386521a9921b9a382c98e6eb906f33b7940d7.svg'
-const imgAccept = 'http://localhost:3845/assets/faeada7168a0eb04471bed13f552a9f1c1293299.svg'
-const imgEmail = 'http://localhost:3845/assets/79171258a1c348778e3c9c1867b59d301c68f3e1.svg'
-const imgBadgesIcon = 'http://localhost:3845/assets/c379d967a0dea9cfcfd0228c02ae3cf24f808423.svg'
+const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
+const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
+const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
+const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
+const pointsIcon = 'https://www.figma.com/api/mcp/asset/04bde155-b1b0-4e83-a0ac-bbe66455a2ac'
+const badgesIcon = 'https://www.figma.com/api/mcp/asset/82b97222-c9bc-455b-8ec3-a10e2b83a611'
+const emailIcon = 'https://www.figma.com/api/mcp/asset/f04e06a5-1254-43d1-8f09-ba10e5880272'
+const badgesHeaderIcon = 'https://www.figma.com/api/mcp/asset/deafc32c-7998-4d73-9605-1647183ccd65'
 
-// Sample badge images
-const imgBadge1 = 'http://localhost:3845/assets/34092422fec34f7138cd22f625b67823940cf58f.png'
-const imgBadge2 = 'http://localhost:3845/assets/b383293a5bd03592c863205896c17eff5a3db066.png'
-const imgBadge3 = 'http://localhost:3845/assets/24c4166e10b0ee7c2ea132bb91b450e18b799b6b.png'
-
-const BadgeItem = ({ image, name, date }) => (
-  <div className="perfil-badge-item">
-    <div className="perfil-badge-image">
-      <img src={image} alt={name} />
-    </div>
-    <p className="perfil-badge-name">{name}</p>
-    <p className="perfil-badge-date">{date}</p>
-  </div>
-)
-
-const badgesData = [
-  { id: 1, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 2, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 3, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 },
-  { id: 4, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 5, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 6, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 },
-  { id: 7, name: 'Citzen Developer', date: '31/12/2025', image: imgBadge1 },
-  { id: 8, name: 'Team Lider Beginner', date: '31/12/2025', image: imgBadge2 },
-  { id: 9, name: 'DevOps Intermidiate', date: '31/12/2025', image: imgBadge3 }
+const badges = [
+  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
+  { image: badgeTeamLeader, name: 'Team Lider Beginner', date: '31/12/2025' },
+  { image: badgeDevOps, name: 'DevOps Intermidiate', date: '31/12/2025' },
+  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
 ]
 
-function ConsultorPerfilPublicoView() {
-  const [searchValue, setSearchValue] = useState('')
+const PREFERRED_AREAS = [
+  'LowCode (Outsystems)',
+  'Talent Management',
+  'DevOps',
+  'Hybrid Cloud',
+  'Data & Analytics',
+  'Cybersecurity',
+]
 
-  const handleSearch = (e) => {
-    setSearchValue(e.target.value)
+function BadgeItem({ image, name, date }) {
+  return (
+    <div className="sll-profile-badge-item">
+      <div className="sll-profile-badge-image">
+        <img src={image} alt={name} />
+      </div>
+      <p>{name}</p>
+      <span>{date}</span>
+    </div>
+  )
+}
+
+function SettingsRow({ Icon, label, description, onClick }) {
+  return (
+    <button type="button" className="sll-profile-settings-row" onClick={onClick}>
+      <span className="sll-profile-settings-icon">
+        <Icon aria-hidden="true" />
+      </span>
+      <span className="sll-profile-settings-copy">
+        <strong>{label}</strong>
+        <span>{description}</span>
+      </span>
+      <HiOutlineChevronRight className="sll-profile-settings-chevron" aria-hidden="true" />
+    </button>
+  )
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="sll-profile-modal-backdrop" role="presentation" onClick={onClose}>
+      <div
+        className="sll-profile-modal"
+        role="dialog"
+        aria-label={title}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="sll-profile-modal-header">
+          <h3>{title}</h3>
+          <button
+            type="button"
+            className="sll-profile-modal-close"
+            onClick={onClose}
+            aria-label="Fechar"
+          >
+            <HiOutlineXMark aria-hidden="true" />
+          </button>
+        </header>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function ConsultorPerfilPublicoView() {
+  const [activeModal, setActiveModal] = useState(null)
+  const [feedback, setFeedback] = useState('')
+
+  const [email, setEmail] = useState('antoniopt@gmail.com')
+  const [preferredArea, setPreferredArea] = useState('LowCode (Outsystems)')
+  const [avatarUrl, setAvatarUrl] = useState(profileAvatar)
+
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' })
+  const [emailForm, setEmailForm] = useState({ next: email, password: '' })
+  const [areaDraft, setAreaDraft] = useState(preferredArea)
+  const [avatarDraft, setAvatarDraft] = useState(avatarUrl)
+  const fileInputRef = useRef(null)
+
+  const profileStats = useMemo(
+    () => [
+      { icon: pointsIcon, label: '550 Pontos' },
+      { icon: badgesIcon, label: '9 Badges Obtidos' },
+      { icon: emailIcon, label: email },
+    ],
+    [email],
+  )
+
+  function openModal(name) {
+    setFeedback('')
+    if (name === 'email') setEmailForm({ next: email, password: '' })
+    if (name === 'area') setAreaDraft(preferredArea)
+    if (name === 'image') setAvatarDraft(avatarUrl)
+    if (name === 'password') setPasswordForm({ current: '', next: '', confirm: '' })
+    setActiveModal(name)
+  }
+
+  function closeModal() {
+    setActiveModal(null)
+  }
+
+  function flashFeedback(message) {
+    setFeedback(message)
+    window.setTimeout(() => setFeedback(''), 2400)
+  }
+
+  function handlePasswordSubmit(event) {
+    event.preventDefault()
+    const { current, next, confirm } = passwordForm
+    if (!current || !next || next !== confirm) return
+    closeModal()
+    flashFeedback('Password atualizada com sucesso.')
+  }
+
+  function handleEmailSubmit(event) {
+    event.preventDefault()
+    if (!emailForm.next.trim()) return
+    setEmail(emailForm.next.trim())
+    closeModal()
+    flashFeedback('Email atualizado.')
+  }
+
+  function handleAreaSubmit(event) {
+    event.preventDefault()
+    setPreferredArea(areaDraft)
+    closeModal()
+    flashFeedback('Área de preferência atualizada.')
+  }
+
+  function handleAvatarFile(event) {
+    const [file] = event.target.files || []
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setAvatarDraft(String(reader.result))
+    reader.readAsDataURL(file)
+  }
+
+  function handleAvatarSubmit(event) {
+    event.preventDefault()
+    setAvatarUrl(avatarDraft)
+    closeModal()
+    flashFeedback('Imagem de perfil atualizada.')
   }
 
   return (
-    <div className="perfil-publico-page">
-      {/* Banner */}
-      <div className="perfil-banner">
-        <div className="perfil-banner-content">
-          <h1 className="perfil-banner-title">Perfil Público</h1>
-          <p className="perfil-banner-subtitle">Estamos aqui para te ajudar a melhorar o currículo</p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="perfil-container">
-        {/* Search Bar */}
-        <div className="perfil-search-wrapper">
-          <div className="perfil-search">
-            <img src={imgSearch} alt="search" className="perfil-search-icon" />
-            <input
-              type="text"
-              placeholder="Pesquisar nome do consultor…"
-              value={searchValue}
-              onChange={handleSearch}
-              className="perfil-search-input"
-            />
-          </div>
-        </div>
-
-        {/* Profile Card */}
-        <div className="perfil-profile-card">
-          <div className="perfil-profile-left">
-            <div className="perfil-profile-image">
-              <img src={imgBearedGuy02Min1} alt="profile" />
+    <div className="sll-profile-page">
+      <main className="sll-profile-main">
+        <div className="sll-profile-scroll">
+          <section className="sll-profile-hero" aria-label="Perfil público consultor">
+            <div className="sll-profile-hero-copy">
+              <h1>Perfis Públicos</h1>
+              <p>Estamos aqui para te ajudar a melhorar o currículo</p>
             </div>
-            <div className="perfil-profile-info">
-              <div className="perfil-profile-header">
-                <h2 className="perfil-profile-name">António Portugal</h2>
-                <div className="perfil-profile-role">
-                  <span className="perfil-role-divider">—</span>
-                  <span>Consultor</span>
-                </div>
+          </section>
+
+          {feedback ? (
+            <div className="sll-profile-feedback" role="status">
+              {feedback}
+            </div>
+          ) : null}
+
+          <section className="sll-profile-card">
+            <div className="sll-profile-card-main">
+              <div className="sll-profile-avatar">
+                <img src={avatarUrl} alt="António Portugal" />
               </div>
-              <p className="perfil-profile-detail">Área: LowCode (Outsystems)</p>
-              <p className="perfil-profile-detail">Service Line: Hybrid Cloud</p>
-              <p className="perfil-profile-detail">Learning Path: Jornada Técnica</p>
-            </div>
-          </div>
 
-          <div className="perfil-profile-divider"></div>
+              <div className="sll-profile-copy">
+                <div className="sll-profile-name-row">
+                  <h2>António Portugal</h2>
+                  <span className="sll-profile-role-pill">Consultor</span>
+                </div>
+                <p>Área: {preferredArea}</p>
+                <p>Service Line: Hybrid Cloud</p>
+                <p>Learning Path: Jornada Técnica</p>
+              </div>
+            </div>
 
-          <div className="perfil-profile-right">
-            <div className="perfil-profile-stat">
-              <img src={imgVectorPoints} alt="points" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">550 Pontos</p>
+            <div className="sll-profile-divider" />
+
+            <div className="sll-profile-stats">
+              {profileStats.map((stat) => (
+                <div key={stat.label} className="sll-profile-stat-item">
+                  <img src={stat.icon} alt={stat.label} />
+                  <span>{stat.label}</span>
+                </div>
+              ))}
             </div>
-            <div className="perfil-profile-stat">
-              <img src={imgAccept} alt="badges" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">9 Badges Obtidos</p>
+          </section>
+
+          <section className="sll-profile-settings-card" aria-label="Definições da conta">
+            <header className="sll-profile-settings-header">
+              <HiOutlineCog6Tooth aria-hidden="true" />
+              <h3>Definições da conta</h3>
+            </header>
+
+            <div className="sll-profile-settings-list">
+              <SettingsRow
+                Icon={HiOutlineLockClosed}
+                label="Alterar password"
+                description="Atualiza a tua password de acesso"
+                onClick={() => openModal('password')}
+              />
+              <SettingsRow
+                Icon={HiOutlineEnvelope}
+                label="Alterar email"
+                description={email}
+                onClick={() => openModal('email')}
+              />
+              <SettingsRow
+                Icon={HiOutlineMapPin}
+                label="Área de preferência"
+                description={preferredArea}
+                onClick={() => openModal('area')}
+              />
+              <SettingsRow
+                Icon={HiOutlineCamera}
+                label="Trocar imagem de perfil"
+                description="Carrega uma nova fotografia"
+                onClick={() => openModal('image')}
+              />
             </div>
-            <div className="perfil-profile-stat">
-              <img src={imgEmail} alt="email" className="perfil-stat-icon" />
-              <p className="perfil-stat-value">antoniopt@gmail.com</p>
+          </section>
+
+          <section className="sll-profile-badges-card">
+            <div className="sll-profile-badges-header">
+              <img src={badgesHeaderIcon} alt="Badges" />
+              <h3>Badges Obtidos</h3>
             </div>
-          </div>
+
+            <div className="sll-profile-badges-grid">
+              {badges.map((badge, index) => (
+                <BadgeItem key={`${badge.name}-${index}`} image={badge.image} name={badge.name} date={badge.date} />
+              ))}
+            </div>
+          </section>
         </div>
+      </main>
 
-        {/* Badges Section */}
-        <div className="perfil-badges-card">
-          <div className="perfil-badges-header">
-            <img src={imgBadgesIcon} alt="badges" className="perfil-badges-header-icon" />
-            <h3 className="perfil-badges-title">Badges Obtidos</h3>
-          </div>
+      {activeModal === 'password' ? (
+        <Modal title="Alterar password" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handlePasswordSubmit}>
+            <label className="sll-profile-field">
+              <span>Password atual</span>
+              <input
+                type="password"
+                value={passwordForm.current}
+                onChange={(event) => setPasswordForm({ ...passwordForm, current: event.target.value })}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Nova password</span>
+              <input
+                type="password"
+                value={passwordForm.next}
+                onChange={(event) => setPasswordForm({ ...passwordForm, next: event.target.value })}
+                minLength={6}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Confirmar nova password</span>
+              <input
+                type="password"
+                value={passwordForm.confirm}
+                onChange={(event) => setPasswordForm({ ...passwordForm, confirm: event.target.value })}
+                required
+              />
+              {passwordForm.confirm && passwordForm.confirm !== passwordForm.next ? (
+                <small className="sll-profile-field-error">As passwords não coincidem.</small>
+              ) : null}
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
 
-          <div className="perfil-badges-grid">
-            {badgesData.map((badge) => (
-              <BadgeItem key={badge.id} image={badge.image} name={badge.name} date={badge.date} />
-            ))}
-          </div>
-        </div>
-      </div>
+      {activeModal === 'email' ? (
+        <Modal title="Alterar email" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleEmailSubmit}>
+            <label className="sll-profile-field">
+              <span>Novo email</span>
+              <input
+                type="email"
+                value={emailForm.next}
+                onChange={(event) => setEmailForm({ ...emailForm, next: event.target.value })}
+                required
+              />
+            </label>
+            <label className="sll-profile-field">
+              <span>Password (confirmação)</span>
+              <input
+                type="password"
+                value={emailForm.password}
+                onChange={(event) => setEmailForm({ ...emailForm, password: event.target.value })}
+                required
+              />
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'area' ? (
+        <Modal title="Área de preferência" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleAreaSubmit}>
+            <label className="sll-profile-field">
+              <span>Seleciona a área que te interessa mais</span>
+              <select
+                value={areaDraft}
+                onChange={(event) => setAreaDraft(event.target.value)}
+              >
+                {PREFERRED_AREAS.map((area) => (
+                  <option key={area} value={area}>{area}</option>
+                ))}
+              </select>
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'image' ? (
+        <Modal title="Trocar imagem de perfil" onClose={closeModal}>
+          <form className="sll-profile-form" onSubmit={handleAvatarSubmit}>
+            <div className="sll-profile-avatar-preview">
+              <img src={avatarDraft || profileAvatar} alt="Pré-visualização" />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarFile}
+              className="sll-profile-file-hidden"
+            />
+            <button
+              type="button"
+              className="sll-profile-btn-secondary"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Escolher ficheiro…
+            </button>
+            <label className="sll-profile-field">
+              <span>ou cola um link para a imagem</span>
+              <input
+                type="url"
+                value={avatarDraft.startsWith('data:') ? '' : avatarDraft}
+                onChange={(event) => setAvatarDraft(event.target.value)}
+                placeholder="https://…"
+              />
+            </label>
+            <div className="sll-profile-modal-actions">
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+              <button type="submit" className="sll-profile-btn-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </Modal>
+      ) : null}
     </div>
   )
 }

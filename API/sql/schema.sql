@@ -226,7 +226,6 @@ CREATE TABLE ConquistasConsultores (
     id_conquista_consultor SERIAL  PRIMARY KEY,
     id_consultor           INTEGER NOT NULL REFERENCES Consultores(id_consultor),
     id_conquista           INTEGER NOT NULL REFERENCES Conquistas(id_conquista),
-    progresso              INTEGER NOT NULL,
     "createdAt"            TIMESTAMP WITH TIME ZONE NOT NULL,
     "updatedAt"            TIMESTAMP WITH TIME ZONE NOT NULL
 );

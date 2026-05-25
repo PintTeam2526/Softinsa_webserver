@@ -1,56 +1,44 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import "./admin-pedidos.css";
 
-const avatarSandra = "https://www.figma.com/api/mcp/asset/eef19c31-db00-4d74-85dc-d085428605e0";
-const avatarRoberto = "https://www.figma.com/api/mcp/asset/00c16de0-285c-4465-9b98-b4ca975f24ef";
-const avatarMarco = "https://www.figma.com/api/mcp/asset/41c01127-a083-4369-963c-807d918aaa51";
+import { getPedidos, slReview } from '../../../controllers/pedidosController'
 
-const badgeBlue = "https://www.figma.com/api/mcp/asset/5904283b-c214-48c9-8034-90e4a0f40d66";
-const badgeRed = "https://www.figma.com/api/mcp/asset/a7a7aafa-380d-4401-888c-1ea03a8b56a6";
-const badgeGreen = "https://www.figma.com/api/mcp/asset/191cb264-3009-4c1a-a1dc-11f6b438a224";
 
-// TODO: Replace all mock data and filter options with API data (pedidos, badges, and statuses).
-const pedidosRows = [
-  {
-    id: 1,
-    consultor: "Sandra Mendes",
-    badgeName: "Blue Skill Badge",
-    badgeImage: badgeBlue,
-    dataAquisicao: "03/11/2026",
-    estado: "Aprovado",
-    avatar: avatarSandra,
-  },
-  {
-    id: 2,
-    consultor: "Roberto Junior",
-    badgeName: "Blue Skill Badge",
-    badgeImage: badgeBlue,
-    dataAquisicao: "-- / -- / --",
-    estado: "Rejeitado",
-    avatar: avatarRoberto,
-  },
-  {
-    id: 3,
-    consultor: "Roberto Junior",
-    badgeName: "Red Expert Badge",
-    badgeImage: badgeRed,
-    dataAquisicao: "04/11/2026",
-    estado: "Aprovado",
-    avatar: avatarRoberto,
-  },
-  {
-    id: 4,
-    consultor: "Marco Alves",
-    badgeName: "Green Impact Badge",
-    badgeImage: badgeGreen,
-    dataAquisicao: "-- / -- / --",
-    estado: "Pendente",
-    avatar: avatarMarco,
-  },
-];
+const ESTADO_LABEL = {
+  1: 'Pendente', 2: 'Pendente',
+  3: 'Devolvido', 4: 'Aprovado',
+  5: 'Rejeitado', 6: 'Devolvido',
+}
 
-const statusOptions = ["Pendente", "Aprovado", "Rejeitado"];
-const badgeOptions = ["Blue Skill Badge", "Red Expert Badge", "Green Impact Badge"];
+function resolveImage(raw) {
+  if (!raw) return null
+  if (raw.startsWith('data:') || raw.startsWith('http')) return raw
+  return `data:image/png;base64,${raw}`
+}
+
+function formatDisplayDate(dateStr) {
+  if (!dateStr) return '-- / -- / --'
+  const d = new Date(dateStr)
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+}
+
+function normalizePedidoAdmin(row) {
+  const estado = row.estado_atual ?? 1
+  const badge = row.Badge ?? {}
+  const utilizador = row.Consultore?.Utilizadore ?? {}
+  return {
+    id: row.id_pedido_badge,
+    consultor: utilizador.nome_utilizador ?? `Consultor ${row.id_consultor}`,
+    badgeName: badge.nome_badge ?? `Badge ${row.id_badge}`,
+    badgeImage: resolveImage(badge.imagem_badge),
+    dataAquisicao: estado === 4 ? formatDisplayDate(row.updatedAt) : '-- / -- / --',
+    estado: ESTADO_LABEL[estado] ?? 'Pendente',
+    avatar: resolveImage(utilizador.imagem_utilizador),
+    estado_atual: estado,
+  }
+}
+
+
 
 const getDefaultFilterDraft = () => ({
   estado: "",
@@ -186,7 +174,10 @@ function RejectIcon() {
 }
 
 const SoftinsaPedidos = memo(() => {
-  const [pedidos, setPedidos] = useState(pedidosRows);
+  const [pedidos, setPedidos] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [pendingReject, setPendingReject] = useState(null)
+  const [rejectMotivo, setRejectMotivo] = useState('')
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -199,9 +190,9 @@ const SoftinsaPedidos = memo(() => {
 
   const hasActiveFilters = Boolean(
     activeFilters.estado ||
-      activeFilters.badge ||
-      activeFilters.dataAquisicaoInicio ||
-      activeFilters.dataAquisicaoFim
+    activeFilters.badge ||
+    activeFilters.dataAquisicaoInicio ||
+    activeFilters.dataAquisicaoFim
   );
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
@@ -222,6 +213,26 @@ const SoftinsaPedidos = memo(() => {
   const totalPages = Math.max(1, Math.ceil(filteredPedidos.length / entriesPerPage));
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
   const paginatedPedidos = filteredPedidos.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
+
+  const statusOptions = useMemo(() => [...new Set(pedidos.map(p => p.estado))], [pedidos])
+  const badgeOptions = useMemo(() => [...new Set(pedidos.map(p => p.badgeName))], [pedidos])
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const data = await getPedidos()
+        const rows = Array.isArray(data) ? data : []
+        setPedidos(rows.map(normalizePedidoAdmin))
+      } catch (err) {
+        console.error('Erro ao carregar pedidos admin', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -361,23 +372,22 @@ const SoftinsaPedidos = memo(() => {
     setCurrentPage(page);
   };
 
-  const handleDecision = (id, nextStatus) => {
-    setPedidos((previousPedidos) =>
-      previousPedidos.map((pedido) => {
-        if (pedido.id !== id) {
-          return pedido;
-        }
-
-        const shouldSetTodayDate = pedido.dataAquisicao === "-- / -- / --" && nextStatus === "Aprovado";
-
+  async function handleDecision(id, nextStatus, motivo) {
+    const acao = nextStatus === 'Aprovado' ? 'aprovar' : 'rejeitar'
+    try {
+      await slReview(id, { acao, ...(motivo ? { motivo } : {}) })
+      setPedidos(prev => prev.map(p => {
+        if (p.id !== id) return p
         return {
-          ...pedido,
+          ...p,
           estado: nextStatus,
-          dataAquisicao: shouldSetTodayDate ? getTodayDate() : pedido.dataAquisicao,
-        };
-      })
-    );
-  };
+          dataAquisicao: nextStatus === 'Aprovado' ? getTodayDate() : p.dataAquisicao,
+        }
+      }))
+    } catch (err) {
+      console.error('Erro ao processar pedido', err)
+    }
+  }
 
   return (
     <section className="softinsa-pedidos-page" data-node-id="3969:6401">
@@ -526,12 +536,19 @@ const SoftinsaPedidos = memo(() => {
                   <tr key={pedido.id}>
                     <td>
                       <div className="softinsa-pedidos-name-cell">
-                        <img src={pedido.avatar} alt={pedido.consultor} className="softinsa-pedidos-avatar" />
+                        <img
+                          src={pedido.avatar ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(pedido.consultor)}&size=32`}
+                          alt={pedido.consultor}
+                          className="softinsa-pedidos-avatar"
+                        />
                         <span className="softinsa-pedidos-name">{pedido.consultor}</span>
                       </div>
                     </td>
                     <td>
-                      <img src={pedido.badgeImage} alt={pedido.badgeName} className="softinsa-pedidos-badge" />
+                      {pedido.badgeImage
+                        ? <img src={pedido.badgeImage} alt={pedido.badgeName} className="softinsa-pedidos-badge" />
+                        : <span>{pedido.badgeName}</span>
+                      }
                     </td>
                     <td className="softinsa-pedidos-date">{pedido.dataAquisicao}</td>
                     <td>
@@ -540,22 +557,16 @@ const SoftinsaPedidos = memo(() => {
                       </span>
                     </td>
                     <td>
-                      {pedido.estado === "Pendente" ? (
+                      {pedido.estado !== 'Aprovado' && pedido.estado !== 'Rejeitado' ? (
                         <div className="softinsa-pedidos-actions">
-                          <button
-                            type="button"
-                            className="softinsa-pedidos-action-btn is-approve"
+                          <button type="button" className="softinsa-pedidos-action-btn is-approve"
                             aria-label={`Aprovar pedido de ${pedido.consultor}`}
-                            onClick={() => handleDecision(pedido.id, "Aprovado")}
-                          >
+                            onClick={() => handleDecision(pedido.id, 'Aprovado', null)}>
                             <ApproveIcon />
                           </button>
-                          <button
-                            type="button"
-                            className="softinsa-pedidos-action-btn is-reject"
+                          <button type="button" className="softinsa-pedidos-action-btn is-reject"
                             aria-label={`Rejeitar pedido de ${pedido.consultor}`}
-                            onClick={() => handleDecision(pedido.id, "Rejeitado")}
-                          >
+                            onClick={() => setPendingReject({ id: pedido.id })}>
                             <RejectIcon />
                           </button>
                         </div>
@@ -573,6 +584,53 @@ const SoftinsaPedidos = memo(() => {
             </tbody>
           </table>
         </div>
+
+        {pendingReject ? (
+          <div className="softinsa-pedidos-modal-backdrop" role="presentation"
+            onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+            <div className="softinsa-pedidos-export-alert" role="dialog"
+              aria-label="Rejeitar pedido"
+              onClick={e => e.stopPropagation()}>
+              <div className="softinsa-pedidos-export-alert-header">
+                <h3>Rejeitar Pedido</h3>
+                <button type="button" className="softinsa-pedidos-modal-close"
+                  aria-label="Fechar"
+                  onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+                  <CloseIcon />
+                </button>
+              </div>
+              <div className="softinsa-pedidos-export-alert-body">
+                <h4>Indicar motivo</h4>
+                <p>O motivo é obrigatório para rejeitar um pedido.</p>
+                <textarea
+                  style={{
+                    width: '100%', minHeight: 80, marginTop: 12, padding: '8px 12px',
+                    borderRadius: 6, border: '1px solid #dee2e6', fontSize: 14, resize: 'vertical'
+                  }}
+                  placeholder="Insira o motivo da rejeição..."
+                  value={rejectMotivo}
+                  onChange={e => setRejectMotivo(e.target.value)}
+                />
+              </div>
+              <div className="softinsa-pedidos-export-alert-actions">
+                <button type="button" className="softinsa-pedidos-export-cancel"
+                  onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+                  Cancelar
+                </button>
+                <button type="button"
+                  className={`softinsa-pedidos-export-confirm${!rejectMotivo.trim() ? ' is-disabled' : ''}`}
+                  disabled={!rejectMotivo.trim()}
+                  onClick={async () => {
+                    await handleDecision(pendingReject.id, 'Rejeitado', rejectMotivo.trim())
+                    setPendingReject(null)
+                    setRejectMotivo('')
+                  }}>
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="softinsa-pedidos-table-footer">
           <button

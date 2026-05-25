@@ -1,0 +1,819 @@
+.tm-badges-page {
+  position: relative;
+  padding: 1px 24px 24px;
+  color: #232d42;
+}
+
+.tm-badges-banner {
+  position: relative;
+  min-height: 155px;
+  height: 155px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
+}
+
+.tm-badges-banner-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.tm-badges-banner-circle {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+}
+
+.tm-badges-banner-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+  transform: rotate(90deg);
+}
+
+.tm-badges-banner-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+  transform: rotate(90deg);
+}
+
+.tm-badges-banner-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+  transform: rotate(90deg);
+}
+
+.tm-badges-banner-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+  transform: rotate(90deg);
+}
+
+.tm-badges-banner-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+  transform: rotate(90deg);
+}
+
+.tm-badges-banner-copy {
+  position: absolute;
+  left: 50px;
+  top: 35px;
+  z-index: 1;
+}
+
+.tm-badges-banner-copy h1 {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 40px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.tm-badges-banner-copy p {
+  margin: 8px 0 0;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.tm-badges-content {
+  position: relative;
+  padding-top: 24px;
+}
+
+.tm-badges-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.tm-badges-tabs {
+  display: flex;
+  align-items: flex-end;
+}
+
+.tm-badges-tab {
+  min-width: 128px;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: #ffffff;
+  border-bottom: 1.6px solid #e9ecef;
+  color: #8a92a6;
+  padding: 8px 10px 7px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.tm-badges-tab-label {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+}
+
+.tm-badges-tab-progress {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+
+.tm-badges-tab.is-active {
+  background: #39639c;
+  border-bottom-color: #39639c;
+  color: #ffffff;
+}
+
+.tm-badges-export-btn {
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 20px;
+  background: #39639c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  box-shadow: 0 2px 2px rgba(58, 87, 232, 0.3);
+  cursor: pointer;
+}
+
+.tm-badges-export-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+  color: #ffffff;
+}
+
+.tm-badges-export-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(35, 45, 66, 0.16);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.tm-badges-export-modal {
+  width: min(100%, 400px);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tm-badges-export-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tm-badges-export-header h2 {
+  margin: 0;
+  color: #39639c;
+  font-size: 28px;
+  line-height: 36.4px;
+  font-weight: 700;
+}
+
+.tm-badges-export-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #8a92a6;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+
+.tm-badges-export-body {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.tm-badges-export-body h3 {
+  margin: 0;
+  color: #232d42;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.tm-badges-export-body p {
+  margin: 0;
+  color: #495057;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.tm-badges-export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+.tm-badges-export-option {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tm-badges-export-option-toggle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50px;
+  border: 1px solid #3a57e8;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.tm-badges-export-option-toggle.is-selected {
+  box-shadow: inset 0 0 0 4px #ffffff;
+}
+
+.tm-badges-export-option-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3a57e8;
+  display: block;
+}
+
+.tm-badges-export-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.tm-badges-export-cancel,
+.tm-badges-export-confirm {
+  border: 0;
+  border-radius: 4px;
+  padding: 8px 24px;
+  min-height: 40px;
+  font-size: 16px;
+  line-height: 1.75;
+  cursor: pointer;
+}
+
+.tm-badges-export-cancel {
+  background: rgba(58, 87, 232, 0.2);
+  color: #2d42b2;
+}
+
+.tm-badges-export-option span:last-child {
+  transform: translateY(0.5px);
+}
+
+.tm-badges-export-confirm {
+  background: #3a57e8;
+  color: #ffffff;
+}
+
+.tm-badges-areas-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
+  overflow: hidden;
+}
+
+.tm-badges-area-section {
+  border-top: 1px solid #e9ecef;
+}
+
+.tm-badges-area-section:first-child {
+  border-top: 0;
+}
+
+.tm-badges-area-section.is-open {
+  border-top: 0;
+}
+
+.tm-badges-area-trigger,
+.tm-badges-menu-item {
+  width: 100%;
+  border: 0;
+  background: #ffffff;
+  padding: 5px 8px 5px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tm-badges-area-trigger-main,
+.tm-badges-menu-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.tm-badges-area-icon,
+.tm-badges-menu-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #39639c;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.tm-badges-area-icon-svg,
+.tm-badges-menu-icon-svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: #ffffff;
+}
+
+.tm-badges-area-icon img,
+.tm-badges-menu-icon img {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.tm-badges-area-trigger-copy,
+.tm-badges-menu-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.tm-badges-area-trigger-copy strong,
+.tm-badges-menu-title {
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tm-badges-area-trigger-copy span,
+.tm-badges-menu-detail {
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.tm-badges-area-chevron,
+.tm-badges-menu-chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  transition: transform 0.18s ease;
+}
+
+.tm-badges-area-chevron {
+  transform: rotate(0deg);
+}
+
+.tm-badges-area-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.tm-badges-menu-chevron {
+  transform: rotate(0deg);
+}
+
+.tm-badges-menu-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.tm-badges-area-chevron img,
+.tm-badges-menu-chevron img {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+.tm-badges-area-body {
+  padding: 0 0 10px;
+}
+
+.tm-badges-badge-group {
+  border-top: 1px solid #c4ccf8;
+  padding: 10px 0 0;
+}
+
+.tm-badges-badge-group-title {
+  padding: 0 15px;
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tm-badges-badge-group-progress {
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: #39639c;
+}
+
+.tm-badges-badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+
+.tm-badges-card {
+  width: 170px;
+  border: 1.6px solid transparent;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 0 4px rgba(17, 38, 146, 0.05);
+  padding: 6.6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.tm-badges-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tm-badges-card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tm-badges-card-copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tm-badges-card-title {
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tm-badges-card-level {
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.tm-badges-card-points {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.tm-badges-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(35, 45, 66, 0.16);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.tm-badges-detail-modal {
+  width: min(100%, 918px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tm-badges-detail-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tm-badges-detail-badge-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tm-badges-detail-badge {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tm-badges-detail-close {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #232d42;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.tm-badges-detail-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tm-badges-detail-title {
+  color: #39639c;
+  font-family: 'Inter', sans-serif;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.tm-badges-detail-points,
+.tm-badges-detail-special {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.tm-badges-detail-points img,
+.tm-badges-detail-special img {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+.tm-badges-detail-attributes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tm-badges-detail-attribute {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.tm-badges-detail-attribute-icon {
+  width: 18px;
+  height: 18px;
+  color: #39639c;
+  flex-shrink: 0;
+}
+
+.tm-badges-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tm-badges-detail-section h3 {
+  margin: 0;
+  color: #39639c;
+  font-family: 'Inter', sans-serif;
+  font-size: 19px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.tm-badges-detail-section p {
+  margin: 0;
+  color: #001129;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.tm-badges-detail-req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tm-badges-detail-req-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.tm-badges-detail-req-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.tm-badges-detail-req-text strong {
+  font-weight: 700;
+}
+
+.tm-badges-detail-req-text p {
+  width: min(544px, 100%);
+}
+
+.tm-badges-detail-req-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #39639c;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.tm-badges-detail-req-number img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tm-badges-detail-req-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.tm-badges-detail-req-copy strong {
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.tm-badges-detail-req-copy span {
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.tm-badges-detail-req-loading {
+  color: #8a92a6;
+  font-size: 13px;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.tm-badges-card-points-icon {
+  width: 14px;
+  height: 14px;
+  color: #f59e0b;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.tm-badges-divider {
+  height: 1px;
+  width: 100%;
+  background: #e9ecef;
+}
+
+@media (max-width: 900px) {
+  .tm-badges-banner-copy h1 {
+    font-size: 32px;
+  }
+
+  .tm-badges-banner-copy p {
+    font-size: 18px;
+  }
+
+  .tm-badges-toolbar {
+    margin-top: 0;
+  }
+
+  .tm-badges-badge-grid {
+    justify-content: center;
+  }
+
+  .tm-badges-card {
+    width: calc(50% - 10px);
+    min-width: 160px;
+  }
+}

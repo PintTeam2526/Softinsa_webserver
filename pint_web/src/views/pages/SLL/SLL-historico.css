@@ -25,7 +25,9 @@
   height: 155px;
   overflow: hidden;
   border-radius: 0 0 16px 16px;
-  background: linear-gradient(180deg, #1e65d9 0%, #0f58c6 100%);
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1173 155" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="0" y="0" height="100%" width="100%" fill="url(%23grad)" opacity="1"/><defs><radialGradient id="grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="10" gradientTransform="matrix(0.000015063 23.394 -42.562 0.0000060493 586.5 77.5)"><stop stop-color="rgba(59,138,255,1)" offset="0"/><stop stop-color="rgba(30,105,217,1)" offset="0.5"/><stop stop-color="rgba(15,88,198,1)" offset="0.75"/><stop stop-color="rgba(0,72,178,1)" offset="1"/></radialGradient></defs></svg>');
+  background-size: cover;
+  background-repeat: no-repeat;
   box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
 }
 
@@ -122,7 +124,7 @@
   gap: 8px;
 }
 
-.sll-history-tabs button {
+.sll-history-tab-button {
   height: 32px;
   border-radius: 7px;
   border: 0.8px solid #e9ecef;
@@ -136,23 +138,17 @@
   box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
 }
 
-.sll-history-tabs button.is-active {
+.sll-history-tab-button.is-active,
+.sll-history-tab-button.is-active.is-rejected,
+.sll-history-tab-button.is-active.is-progress,
+.sll-history-tab-button.is-active.is-approved {
   background: #39639c;
+  border-color: #39639c;
   color: #ffffff;
 }
 
-.sll-history-info-btn {
-  width: 24px;
-  padding: 0;
-  border: 0;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #8a92a6;
-  font-size: 16px;
-}
-
 .sll-history-export-btn {
-  height: 28px;
+  height: 30px;
   border: 0;
   border-radius: 4px;
   padding: 0 20px;
@@ -161,8 +157,20 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 2px 2px rgba(58, 87, 232, 0.3);
+  box-shadow: 0 2px 6px rgba(57, 99, 156, 0.2);
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sll-history-export-btn:active {
+  box-shadow: 0 1px 4px rgba(57, 99, 156, 0.15);
+}
+
+.sll-history-export-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+  stroke: currentColor;
 }
 
 .sll-history-export-backdrop {
@@ -463,20 +471,41 @@
   padding-top: 2px;
 }
 
-.sll-history-card {
+.sll-history-card-wrap {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  overflow: hidden;
+}
+
+.sll-history-card-wrap+.sll-history-card-wrap {
+  margin-top: 2px;
+}
+
+.sll-history-card {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
   min-height: 113px;
   padding: 17px 18px 17px 10px;
   display: grid;
   grid-template-columns: 80px minmax(0, 1fr) 188px;
   gap: 16px;
   align-items: center;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
 }
 
-.sll-history-card + .sll-history-card {
-  margin-top: 2px;
+.sll-history-card:focus-visible {
+  outline: 2px solid rgba(57, 99, 156, 0.45);
+  outline-offset: -2px;
+}
+
+.sll-history-card-wrap.is-expanded .sll-history-card {
+  border-radius: 8px 8px 0 0;
 }
 
 .sll-history-card-avatar {
@@ -521,63 +550,58 @@
   line-height: 21px;
 }
 
-.sll-history-card-approved {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  color: #1aa053;
-  font-size: 14px;
-  line-height: 21px;
-}
-
-.sll-history-card-approved img {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
 .sll-history-card-status {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
 .sll-history-status-badge {
   align-self: center;
-  font-size: 16px;
-  line-height: 21px;
+  font-size: 14px;
+  line-height: 1.5;
   font-weight: 600;
   text-align: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  white-space: normal;
+  max-width: 180px;
 }
+
+.sll-history-badge-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sll-history-badge-content strong {
+  font-size: 11px;
+  font-weight: 800;
+}
+
 
 .sll-history-status-badge.is-aprovado {
-  color: #1aa053;
+  background-color: #d4edda;
+  color: #155724;
 }
 
-.sll-history-progress {
-  position: relative;
-  height: 10px;
-  border-radius: 8px;
-  overflow: hidden;
+.sll-history-status-badge.is-rejeitado {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
-.sll-history-progress .is-track,
-.sll-history-progress .is-fill {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-}
-
-.sll-history-progress .is-track {
-  background: #e9ecef;
-  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sll-history-progress .is-fill {
-  background: #1aa053;
+.sll-history-status-badge.is-em-progresso {
+  background-color: #cfe2ff;
+  color: #084298;
 }
 
 .sll-history-pagination {
@@ -600,6 +624,11 @@
   padding: 0;
 }
 
+.sll-history-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .sll-history-pagination button:first-child {
   border-radius: 8px 0 0 8px;
 }
@@ -608,14 +637,138 @@
   border-radius: 0 8px 8px 0;
 }
 
-.sll-history-pagination button img {
-  width: 10px;
-  height: 10px;
-  display: block;
-}
-
 .sll-history-pagination button.is-active {
   color: #3a57e8;
+}
+
+.sll-history-detail {
+  border-top: 1px solid #e9ecef;
+  padding: 12px 18px 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-history-detail-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+  color: #232d42;
+}
+
+.sll-history-detail-table {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #f1f3f5;
+}
+
+.sll-history-detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
+  line-height: 21px;
+  color: #232d42;
+}
+
+.sll-history-detail-row+.sll-history-detail-row {
+  border-top: 1px solid #f1f3f5;
+}
+
+.sll-history-detail-row.sll-history-detail-head {
+  background: #f8f9fa;
+  color: #8a92a6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.sll-history-detail-row>span:first-child {
+  justify-self: start;
+}
+
+.sll-history-detail-row>span:nth-child(2) {
+  justify-self: center;
+}
+
+.sll-history-detail-row>span:last-child {
+  justify-self: end;
+}
+
+.sll-history-detail-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-progress {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-submitted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-in-analysis {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-approved {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-accepted {
+  color: #232d42;
+}
+
+.sll-history-detail-state.is-rejected {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned {
+  color: #232d42;
+}
+
+.sll-history-step-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sll-history-detail-state.is-progress .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-submitted .sll-history-step-icon {
+  color: #8a92a6;
+}
+
+.sll-history-detail-state.is-in-analysis .sll-history-step-icon {
+  color: #39639c;
+}
+
+.sll-history-detail-state.is-approved .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-accepted .sll-history-step-icon {
+  color: #1aa053;
+}
+
+.sll-history-detail-state.is-rejected .sll-history-step-icon {
+  color: #dc3545;
+}
+
+.sll-history-detail-state.is-returned .sll-history-step-icon {
+  color: #f16a1b;
 }
 
 @media (max-width: 1200px) {

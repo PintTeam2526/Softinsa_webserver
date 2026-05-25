@@ -12,22 +12,17 @@ controllers.getConquistaByIdConsultor = async (req, res) => {
         const isConsultor = req.user?.role === "c";
 
         if (isConsultor) {
-            const resultado = await Consultores.findByPk(req.user.id_consultor);
+            const resultado = await Consultores.findByPk(req.user.id_consultor)
 
             if (!resultado) {
-                return res.status(404).json({
-                    mensagem: "Consultor não existe"
-                });
+                return res.status(404).json({ mensagem: "Consultor não existe" })
             }
 
-            const conquistasConsultor = await conquistasService.findByIdConsultor(resultado.id_consultor);
-            res.json(conquistasConsultor);
-
+            const conquistasConsultor = await conquistasService.findByIdConsultor(resultado.id_consultor)
+            return res.json(conquistasConsultor)
         }
 
-        return res.status(403).json({
-                mensagem: "Utilizador sem permissões"
-            });
+        return res.status(403).json({ mensagem: "Utilizador sem permissões" })
 
     } catch (error) {
         console.error(error);
@@ -38,10 +33,6 @@ controllers.getConquistaByIdConsultor = async (req, res) => {
         });
     }
 };
-
-
-
-
 
 //MOBILE
 controllers.getListaConquistasMobile = async (req, res) => {

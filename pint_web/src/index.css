@@ -18,3 +18,32 @@ body {
 a {
   color: inherit;
 }
+
+[class*="-hero"]:not([class*="-hero-"]),
+[class*="-banner"]:not([class*="-banner-"]) {
+  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%) !important;
+  box-shadow: none !important;
+}
+
+[class*="-hero"]:not([class*="-hero-"]):not(.tm-hero):not(.sll-hero),
+[class*="-banner"]:not([class*="-banner-"]) {
+  margin-left: -24px !important;
+  margin-right: -24px !important;
+}
+
+.sll-hero {
+  margin-left: -28px !important;
+  margin-right: -28px !important;
+}
+
+[class*="-hero-art"],
+[class*="-hero-circle"],
+[class*="-banner-art"],
+[class*="-banner-circle"] {
+  display: none !important;
+}
+
+*:has(> [class*="-hero"]:not([class*="-hero-"])),
+*:has(> [class*="-banner"]:not([class*="-banner-"])) {
+  padding-top: 1px !important;
+}

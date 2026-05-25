@@ -4,7 +4,7 @@ var controllerConquistas = require("../controllers/Conquistas.controller");
 var authVerification = require("../middleware/requireAuth.middleware");
 
 // Mostrar todas as conquistas de um consultor
-router.get("/get/consultor", controllerConquistas.getConquistaByIdConsultor);
+router.get('/get/consultor', authVerification, controllerConquistas.getConquistaByIdConsultor);
 
 // CONQUISTAS MOBILE
 router.get('/mobile/get/conquistas', controllerConquistas.getListaConquistasMobile);
