@@ -2,6 +2,7 @@ import api from '../services/api'
 
 export const getMeusObjetivos = async () => {
     const response = await api.get('/objetivos/meus')
+    console.log(response);
     return response.data
 }
 

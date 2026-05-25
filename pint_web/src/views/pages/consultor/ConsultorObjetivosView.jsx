@@ -26,10 +26,9 @@ function minDate() {
   return formatDateForInput(d)
 }
 
-// Deriva o estado visual a partir dos campos do back
-// estado_objetivo: 'Por Concluir' | 'Concluído'
+// estado_objetivo: 'Por Concluir' | 'Concluido'
 function deriveStatus(obj) {
-  if (obj.estado_objetivo === 'Concluído') return 'done'
+  if (obj.estado_objetivo === 'Concluido') return 'done'
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const deadline = new Date(obj.data_limite_conclusao)
@@ -45,8 +44,8 @@ function formatDate(raw) {
 // ─── constantes de estado ─────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-  progress: { label: 'Em Andamento', Icon: HiOutlineCalendarDays, cls: 'is-progress' },
-  done: { label: 'Concluído', Icon: HiOutlineCheck, cls: 'is-done' },
+  progress: { label: 'Por Concluir', Icon: HiOutlineCalendarDays, cls: 'is-progress' },
+  done: { label: 'Concluido', Icon: HiOutlineCheck, cls: 'is-done' },
   expired: { label: 'Expirado', Icon: HiOutlineExclamationTriangle, cls: 'is-expired' },
 }
 
