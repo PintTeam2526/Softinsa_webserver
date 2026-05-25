@@ -34,11 +34,40 @@
   transform: rotate(90deg);
 }
 
-.consultor-pedidos-hero-circle-5 { width: 2156px;     height: 2112.615px; left: -194px;   top: -233px; }
-.consultor-pedidos-hero-circle-4 { width: 1670.328px; height: 1635.378px; left: -194px;   top: 5.62px; }
-.consultor-pedidos-hero-circle-3 { width: 1418.453px; height: 1389.529px; left: -100px;   top: 206.88px; }
-.consultor-pedidos-hero-circle-2 { width: 1041.243px; height: 1041.243px; left: -33.72px; top: 334.62px; }
-.consultor-pedidos-hero-circle-1 { width: 827.933px;  height: 827.933px;  left: 48.23px;  top: 380.42px; }
+.consultor-pedidos-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-pedidos-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-pedidos-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-pedidos-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-pedidos-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+}
 
 .consultor-pedidos-hero-copy {
   position: absolute;
@@ -125,8 +154,17 @@
   letter-spacing: 0.02em;
 }
 
-.consultor-pedidos-table thead th:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; padding-left: 18px; }
-.consultor-pedidos-table thead th:last-child  { border-top-right-radius: 4px; border-bottom-right-radius: 4px; padding-right: 18px; }
+.consultor-pedidos-table thead th:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding-left: 18px;
+}
+
+.consultor-pedidos-table thead th:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  padding-right: 18px;
+}
 
 .consultor-pedidos-table tbody td {
   padding: 16px 12px;
@@ -134,9 +172,17 @@
   border-bottom: 1px solid #f1f3f7;
 }
 
-.consultor-pedidos-table tbody tr:last-child td { border-bottom: 0; }
-.consultor-pedidos-table tbody td:first-child { padding-left: 18px; }
-.consultor-pedidos-table tbody td:last-child  { padding-right: 18px; }
+.consultor-pedidos-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.consultor-pedidos-table tbody td:first-child {
+  padding-left: 18px;
+}
+
+.consultor-pedidos-table tbody td:last-child {
+  padding-right: 18px;
+}
 
 .consultor-pedidos-row.is-clickable {
   cursor: pointer;
@@ -152,9 +198,17 @@
   outline-offset: -2px;
 }
 
-.consultor-pedidos-col-badge      { width: 45%; }
-.consultor-pedidos-col-evaluators { width: 23%; }
-.consultor-pedidos-col-status     { width: 32%; }
+.consultor-pedidos-col-badge {
+  width: 45%;
+}
+
+.consultor-pedidos-col-evaluators {
+  width: 23%;
+}
+
+.consultor-pedidos-col-status {
+  width: 32%;
+}
 
 .consultor-pedidos-badge-cell {
   display: flex;
@@ -206,7 +260,7 @@
   box-sizing: border-box;
 }
 
-.consultor-pedidos-evaluator-tag + .consultor-pedidos-evaluator-tag {
+.consultor-pedidos-evaluator-tag+.consultor-pedidos-evaluator-tag {
   margin-left: -10px;
 }
 
@@ -235,10 +289,21 @@
   flex-shrink: 0;
 }
 
-.consultor-pedidos-status-icon.is-analysis  { color: #3a57e8; }
-.consultor-pedidos-status-icon.is-accepted  { color: #1aa053; }
-.consultor-pedidos-status-icon.is-rejected  { color: rgba(192, 50, 33, 0.8); }
-.consultor-pedidos-status-icon.is-returned  { color: #c69100; }
+.consultor-pedidos-status-icon.is-analysis {
+  color: #3a57e8;
+}
+
+.consultor-pedidos-status-icon.is-accepted {
+  color: #1aa053;
+}
+
+.consultor-pedidos-status-icon.is-rejected {
+  color: rgba(192, 50, 33, 0.8);
+}
+
+.consultor-pedidos-status-icon.is-returned {
+  color: #c69100;
+}
 
 .consultor-pedidos-progress {
   width: 100%;
@@ -254,10 +319,21 @@
   transition: width 0.25s ease;
 }
 
-.consultor-pedidos-progress-bar.is-analysis  { background: #3a57e8; }
-.consultor-pedidos-progress-bar.is-accepted  { background: #1aa053; }
-.consultor-pedidos-progress-bar.is-rejected  { background: rgba(192, 50, 33, 0.8); }
-.consultor-pedidos-progress-bar.is-returned  { background: #ffd329; }
+.consultor-pedidos-progress-bar.is-analysis {
+  background: #3a57e8;
+}
+
+.consultor-pedidos-progress-bar.is-accepted {
+  background: #1aa053;
+}
+
+.consultor-pedidos-progress-bar.is-rejected {
+  background: rgba(192, 50, 33, 0.8);
+}
+
+.consultor-pedidos-progress-bar.is-returned {
+  background: #ffd329;
+}
 
 /* ── CANDIDATAR CARD ───────────────────────────────────── */
 .consultor-pedidos-search {
@@ -295,6 +371,20 @@
 
 .consultor-pedidos-search input::placeholder {
   color: #717171;
+}
+
+.consultor-pedidos-recomendado-tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  background: var(--color-primary-subtle, #eff6ff);
+  color: var(--color-primary, #3963a0);
+  vertical-align: middle;
 }
 
 .consultor-pedidos-suggestions {
@@ -430,9 +520,17 @@
     padding: 10px 8px;
   }
 
-  .consultor-pedidos-col-badge      { width: 50%; }
-  .consultor-pedidos-col-evaluators { width: 20%; }
-  .consultor-pedidos-col-status     { width: 30%; }
+  .consultor-pedidos-col-badge {
+    width: 50%;
+  }
+
+  .consultor-pedidos-col-evaluators {
+    width: 20%;
+  }
+
+  .consultor-pedidos-col-status {
+    width: 30%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -441,9 +539,14 @@
     top: 28px;
   }
 
-  .consultor-pedidos-table thead th { font-size: 12px; }
+  .consultor-pedidos-table thead th {
+    font-size: 12px;
+  }
+
   .consultor-pedidos-badge-name,
-  .consultor-pedidos-status-row     { font-size: 14px; }
+  .consultor-pedidos-status-row {
+    font-size: 14px;
+  }
 
   .consultor-pedidos-evaluator-tag {
     width: 36px;

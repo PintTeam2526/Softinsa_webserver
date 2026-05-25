@@ -14,6 +14,7 @@ import devops2 from '../../../assets/images/badges/devops_2.png'
 import './ConsultorPedidosView.css'
 
 import { getPedidos } from '../../../controllers/pedidosController'
+import { getBadgesRecomendados } from '../../../controllers/badgesController'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -101,6 +102,16 @@ function normalizeStatus(raw = '') {
   return STATUS_MAP[raw.toLowerCase()] ?? 'analysis'
 }
 
+function normalizeBadgeSugestao(raw) {
+  return {
+    id: raw.id_badge ?? raw.id,
+    name: raw.nome_badge ?? raw.nome ?? raw.name ?? '—',
+    area: raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
+    image: resolveImage(raw.imagem_badge ?? raw.imagem ?? raw.image ?? null),
+    isRecomendado: raw._recomendado ?? false,
+  }
+}
+
 // ─── fallback de imagem local (enquanto o back não servir imagens) ───────────
 
 const BADGE_IMAGE_BY_NAME = {
@@ -108,14 +119,6 @@ const BADGE_IMAGE_BY_NAME = {
   'Team Lider Beginner': tm1,
   'DevOps Intermediate': devops2,
 }
-
-// ─── candidaturas sugeridas (estáticas por agora) ────────────────────────────
-
-const candidateBadges = [
-  { id: 1, name: 'Citizen Developer', area: 'LowCode (Outsystems)', image: outsystems1 },
-  { id: 2, name: 'Team Lider Beginner', area: 'Talent Management', image: tm1 },
-  { id: 3, name: 'DevOps Intermediate', area: 'DevOps', image: devops2 },
-]
 
 // ─── ícone svg ───────────────────────────────────────────────────────────────
 
@@ -232,7 +235,12 @@ function CandidateRow({ badge, onApply }) {
     <div className="consultor-pedidos-suggestion">
       <BadgeThumbnail badge={badge} />
       <div className="consultor-pedidos-suggestion-copy">
-        <h4>{badge.name}</h4>
+        <h4>
+          {badge.name}
+          {badge.isRecomendado && (
+            <span className="consultor-pedidos-recomendado-tag">Recomendado</span>
+          )}
+        </h4>
         <p>{badge.area}</p>
       </div>
       <button
@@ -247,66 +255,84 @@ function CandidateRow({ badge, onApply }) {
   )
 }
 
+
 // ─── view principal ───────────────────────────────────────────────────────────
 
 function ConsultorPedidosView() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
-
-  // ── estado da listagem ──
   const [historyRows, setHistoryRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [sugestoes, setSugestoes] = useState([])
+  const [loadingSug, setLoadingSug] = useState(true)
 
   useEffect(() => {
     let cancelled = false
-
     async function fetchPedidos() {
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true); setError(null)
         const data = await getPedidos()
         if (!cancelled) {
           const rows = Array.isArray(data) ? data : (data.pedidos ?? data.data ?? [])
-
           const badgeGroups = {}
           rows.forEach((row) => {
             const key = String(row.id_badge ?? row.Badge?.id_badge ?? 'unknown')
             if (!badgeGroups[key]) badgeGroups[key] = []
             badgeGroups[key].push(row)
           })
-
           const agrupados = Object.values(badgeGroups)
-            .filter((group) => group.length > 0)
-            .map((group) => {
-              const sorted = [...group].sort(
-                (a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0)
-              )
+            .filter((g) => g.length > 0)
+            .map((g) => {
+              const sorted = [...g].sort((a, b) => new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0))
               return normalizePedido(sorted[0])
             })
-
           setHistoryRows(agrupados)
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) setError('Não foi possível carregar os pedidos. Tenta novamente.')
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
-
-
     fetchPedidos()
     return () => { cancelled = true }
   }, [])
 
-  // ── filtragem dos badges candidatáveis ──
+  // ── novo: fetch badges recomendados ──
+  useEffect(() => {
+    let cancelled = false
+    async function fetchRecomendados() {
+      try {
+        setLoadingSug(true)
+        const data = await getBadgesRecomendados()
+        if (!cancelled) {
+          const recomendados = (data.recomendados ?? []).map((b) =>
+            normalizeBadgeSugestao({ ...b, _recomendado: true })
+          )
+          const restantes = (data.restantes ?? []).map((b) =>
+            normalizeBadgeSugestao(b)
+          )
+          setSugestoes([...recomendados, ...restantes])
+        }
+      } catch {
+        if (!cancelled) setSugestoes([])
+      } finally {
+        if (!cancelled) setLoadingSug(false)
+      }
+    }
+    fetchRecomendados()
+    return () => { cancelled = true }
+  }, [])
+
+
   const filteredCandidates = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
-    if (!term) return candidateBadges
-    return candidateBadges.filter((b) =>
-      `${b.name} ${b.area}`.toLowerCase().includes(term)
-    )
-  }, [searchTerm])
+    const filtered = term
+      ? sugestoes.filter((b) => `${b.name} ${b.area}`.toLowerCase().includes(term))
+      : sugestoes
+    return filtered.slice(0, 3)
+  }, [searchTerm, sugestoes])
 
   function goToBadge(id, name) {
     navigate(`/consultor/badge/${id}`)
@@ -394,9 +420,15 @@ function ConsultorPedidosView() {
         </label>
 
         <div className="consultor-pedidos-suggestions">
-          {filteredCandidates.length > 0 ? (
+          {loadingSug ? (
+            <div className="consultor-pedidos-feedback">A carregar badges…</div>
+          ) : filteredCandidates.length > 0 ? (
             filteredCandidates.map((badge) => (
-              <CandidateRow key={badge.id} badge={badge} onApply={(b) => goToBadge(b.id, b.name)} />
+              <CandidateRow
+                key={badge.id}
+                badge={badge}
+                onApply={(b) => goToBadge(b.id, b.name)}
+              />
             ))
           ) : (
             <div className="consultor-pedidos-empty">Nenhum badge encontrado.</div>

@@ -58,3 +58,13 @@ export const getBadgesDevolvidos = async () => {
   const response = await api.get('/badges/devolvidos')
   return response.data
 }
+
+export const getBadgesRecomendados = async () => {
+  try {
+    const response = await api.get('/badges/recomendados')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges recomendados', error)
+    throw error
+  }
+}
