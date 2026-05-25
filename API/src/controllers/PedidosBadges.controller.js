@@ -479,7 +479,7 @@ controllers.slReview = async (req, res) => {
           where: {
             id_badge: pedido.id_badge,
             id_consultor: pedido.id_consultor,
-            estado_objetivo: "em_andamento"
+            estado_objetivo: "Por Concluir"
           }
         });
     }
