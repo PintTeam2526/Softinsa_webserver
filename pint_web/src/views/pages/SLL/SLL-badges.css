@@ -416,6 +416,202 @@
   }
 }
 
+/* ── Modal de detalhe do badge ─────────────────────────────────────────── */
+
+.sll-badges-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(35, 45, 66, 0.16);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.sll-badges-detail-modal {
+  width: min(100%, 918px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 6.5px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sll-badges-detail-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sll-badges-detail-badge-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sll-badges-detail-badge {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sll-badges-detail-close {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #232d42;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.sll-badges-detail-close svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sll-badges-detail-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sll-badges-detail-title {
+  color: #39639c;
+  font-family: 'Inter', sans-serif;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.sll-badges-detail-attributes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sll-badges-detail-attribute {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+}
+
+.sll-badges-detail-attribute-icon {
+  width: 18px;
+  height: 18px;
+  color: #39639c;
+  flex-shrink: 0;
+}
+
+.sll-badges-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sll-badges-detail-section h3 {
+  margin: 0;
+  color: #39639c;
+  font-family: 'Inter', sans-serif;
+  font-size: 19px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.sll-badges-detail-section p {
+  margin: 0;
+  color: #001129;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.sll-badges-detail-req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sll-badges-detail-req-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.sll-badges-detail-req-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #39639c;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sll-badges-detail-req-number img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sll-badges-detail-req-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.sll-badges-detail-req-copy strong {
+  color: #232d42;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.sll-badges-detail-req-copy span {
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.sll-badges-detail-req-loading {
+  color: #8a92a6;
+  font-size: 13px;
+  font-style: italic;
+  padding: 4px 0;
+}
+
 @media (max-width: 720px) {
   .sll-badges-hero-copy h1 {
     font-size: 30px;

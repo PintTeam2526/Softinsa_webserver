@@ -418,9 +418,9 @@
 
 .sll-pending-requirement-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 50px;
+  grid-template-columns: 1fr;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .sll-pending-requirement-copy strong {
@@ -437,17 +437,7 @@
   line-height: 1.5;
 }
 
-.sll-pending-requirement-star {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  background: #e9ecef;
-  color: #8a92a6;
-  display: grid;
-  place-items: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
+
 
 .sll-pending-documents h4 {
   margin: 0 0 12px;
