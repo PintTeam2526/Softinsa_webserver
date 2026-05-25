@@ -14,6 +14,7 @@ const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.serv
 const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models")
 const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
+const Objetivos = require('../models/Objetivos.models')
 const controllers = {};
 
 /* =====================================================
