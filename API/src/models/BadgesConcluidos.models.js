@@ -46,5 +46,6 @@ var BadgesConcluidos = sequelize.define(
 BadgesConcluidos.belongsTo(Consultor, { foreignKey: "id_consultor" });
 BadgesConcluidos.belongsTo(Badge, { foreignKey: "id_badge" });
 Badge.hasMany(BadgesConcluidos, { foreignKey: "id_badge" });
+Consultor.hasMany(BadgesConcluidos, { foreignKey: "id_consultor" }); // <-- adicionar
 
 module.exports = BadgesConcluidos;
