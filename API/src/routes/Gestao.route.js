@@ -12,4 +12,9 @@ var authVerification = require('../middleware/requireAuth.middleware')
 // Buscar consultores e badges obtidos para certificado
 router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
 
+// Rank de consultores por progresso
+router.get('/rank', authVerification, controllerGestao.rankConsultores)
+
+
+
 module.exports = router;
