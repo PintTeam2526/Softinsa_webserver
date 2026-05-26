@@ -470,6 +470,14 @@ controllers.slReview = async (req, res) => {
         url_validacao: "Interno",
       });
 
+      const badge = await Badges.findByPk(pedido.id_badge);
+      if (badge) {
+        await Consultor.increment('total_pontos', {
+          by: badge.pontos_badge,
+          where: { id_consultor: pedido.id_consultor }
+        });
+      }
+
       await Objetivos.update(
         {
           estado_objetivo: "Concluido",
