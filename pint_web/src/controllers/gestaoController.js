@@ -11,3 +11,14 @@ export async function getCertificado() {
     throw error
   }
 }
+
+// Obter dados para Rankings
+export async function getRanking() {
+  try {
+    const response = await api.get('/gestao/rank')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados do ranking', error)
+    throw error
+  }
+}
