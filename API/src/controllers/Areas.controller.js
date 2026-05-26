@@ -2,6 +2,7 @@ const Areas = require('../models/Areas.models');
 const ServiceLine = require('../models/ServiceLines.models')
 const Badges = require('../models/Badges.models')
 const Sequelize = require('sequelize');
+const firebase = require('../services/firebase.service');
 const Op = Sequelize.Op;
 
 const controllers = {};
@@ -151,7 +152,7 @@ controllers.createArea = async (req, res) => {
             estado_a_i,
             data_insercao: new Date()   // DATA ATUAL
         });
-
+        await firebase.notificarSync('areas'); //tabela que esta na bd local
         return res.status(201).json({
             mensagem: "Área criada"
         });
@@ -184,7 +185,7 @@ controllers.deleteAreaByID = async (req, res) => {
         await resultado.save();
 
         await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
-
+        await firebase.notificarSync('areas'); //tabela que esta na bd local
         return res.status(200).json({
             message: 'Área eliminada'
         });
@@ -254,7 +255,7 @@ controllers.updateAreaByID = async (req, res) => {
         if (estado_a_i === false) {
             await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
         }
-
+        await firebase.notificarSync('areas'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Área atualizada com sucesso",
             dados: area
