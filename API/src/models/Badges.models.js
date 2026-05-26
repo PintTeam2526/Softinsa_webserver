@@ -49,7 +49,7 @@ var Badges = sequelize.define('Badges',
     },
     validade: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     estado_a_i: {
         type: Sequelize.BOOLEAN,
