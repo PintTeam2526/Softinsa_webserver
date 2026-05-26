@@ -16,18 +16,6 @@ import './ConsultorPedidosView.css'
 import { getPedidos } from '../../../controllers/pedidosController'
 import { getBadgesRecomendados } from '../../../controllers/badgesController'
 
-// ─── helpers ────────────────────────────────────────────────────────────────
-
-function slugify(value) {
-  return value
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
 
 // ─── normalização dos dados da API ──────────────────────────────────────────
 
@@ -88,25 +76,11 @@ function normalizePedido(raw) {
   }
 }
 
-const STATUS_MAP = {
-  // português → chave interna
-  'em analise': 'analysis',
-  'badge aceite': 'accepted',
-  'badge recusado': 'rejected',
-  'devolvido': 'returned',
-}
-
-function normalizeStatus(raw = '') {
-  const known = ['analysis', 'accepted', 'rejected', 'returned']
-  if (known.includes(raw)) return raw
-  return STATUS_MAP[raw.toLowerCase()] ?? 'analysis'
-}
-
 function normalizeBadgeSugestao(raw) {
   return {
     id: raw.id_badge ?? raw.id,
     name: raw.nome_badge ?? raw.nome ?? raw.name ?? '—',
-    area: raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
+    level: raw.nivel_badge ?? raw.nivel ?? raw.level ?? null,
     image: resolveImage(raw.imagem_badge ?? raw.imagem ?? raw.image ?? null),
     isRecomendado: raw._recomendado ?? false,
   }
@@ -241,7 +215,7 @@ function CandidateRow({ badge, onApply }) {
             <span className="consultor-pedidos-recomendado-tag">Recomendado</span>
           )}
         </h4>
-        <p>{badge.area}</p>
+        {badge.level && <p>{badge.level}</p>}
       </div>
       <button
         type="button"
@@ -254,7 +228,6 @@ function CandidateRow({ badge, onApply }) {
     </div>
   )
 }
-
 
 // ─── view principal ───────────────────────────────────────────────────────────
 
@@ -299,7 +272,7 @@ function ConsultorPedidosView() {
     return () => { cancelled = true }
   }, [])
 
-  // ── novo: fetch badges recomendados ──
+  // ── fetch badges recomendados ──
   useEffect(() => {
     let cancelled = false
     async function fetchRecomendados() {
@@ -307,12 +280,11 @@ function ConsultorPedidosView() {
         setLoadingSug(true)
         const data = await getBadgesRecomendados()
         if (!cancelled) {
-          const recomendados = (data.recomendados ?? []).map((b) =>
-            normalizeBadgeSugestao({ ...b, _recomendado: true })
-          )
-          const restantes = (data.restantes ?? []).map((b) =>
-            normalizeBadgeSugestao(b)
-          )
+          const normalizar = (b, recomendado = false) =>
+            normalizeBadgeSugestao({ ...b, _recomendado: recomendado })
+
+          const recomendados = (data.recomendados ?? []).map((b) => normalizar(b, true))
+          const restantes = (data.restantes ?? []).map((b) => normalizar(b))
           setSugestoes([...recomendados, ...restantes])
         }
       } catch {
@@ -326,10 +298,11 @@ function ConsultorPedidosView() {
   }, [])
 
 
+
   const filteredCandidates = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
     const filtered = term
-      ? sugestoes.filter((b) => `${b.name} ${b.area}`.toLowerCase().includes(term))
+      ? sugestoes.filter((b) => b.name.toLowerCase().includes(term))
       : sugestoes
     return filtered.slice(0, 3)
   }, [searchTerm, sugestoes])
