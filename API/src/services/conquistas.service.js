@@ -3,7 +3,6 @@ const ConquistasConsultores = require('../models/ConquistasConsultores.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const { Op } = require('sequelize');
 
-// Trigger chamado após badge ser concluído
 async function verificarConquistasBadges(idConsultor) {
     const totalBadges = await BadgesConcluidos.count({
         where: { id_consultor: idConsultor }
@@ -26,11 +25,17 @@ async function verificarConquistasBadges(idConsultor) {
                 id_consultor: idConsultor,
                 id_conquista: conquista.id_conquista
             });
+
+            // Atribuir pontos da conquista ao consultor
+            const Consultores = require('../models/Consultores.models');
+            await Consultores.increment('total_pontos', {
+                by: conquista.pontos_conquista,
+                where: { id_consultor: idConsultor }
+            });
         }
     }
 }
 
-// Trigger chamado após pontos serem atualizados
 async function verificarConquistasPontos(idConsultor, totalPontos) {
     const conquistasPossiveis = await Conquistas.findAll({
         where: {
@@ -49,11 +54,17 @@ async function verificarConquistasPontos(idConsultor, totalPontos) {
                 id_consultor: idConsultor,
                 id_conquista: conquista.id_conquista
             });
+
+            // Atribuir pontos da conquista ao consultor
+            const Consultores = require('../models/Consultores.models');
+            await Consultores.increment('total_pontos', {
+                by: conquista.pontos_conquista,
+                where: { id_consultor: idConsultor }
+            });
         }
     }
 }
 
-// Usado pelo controller para listar conquistas do consultor
 async function findByIdConsultor(idConsultor) {
     const todasConquistas = await Conquistas.findAll();
 
@@ -64,10 +75,11 @@ async function findByIdConsultor(idConsultor) {
     const idsObtidos = new Set(conquistasObtidas.map(c => c.id_conquista));
 
     return todasConquistas.map(c => ({
+        id_conquista: c.id_conquista,
         descricao_conquista: c.descricao_conquista,
         pontos_conquista: c.pontos_conquista,
         tipo_conquista: c.tipo_conquista,
-        meta_conquista: c.valor_conquista,
+        valor_conquista: c.valor_conquista,
         estado: idsObtidos.has(c.id_conquista) ? 'Obtido' : 'Por Obter'
     }));
 }
