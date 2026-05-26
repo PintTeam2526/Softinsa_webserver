@@ -8,6 +8,7 @@ const Consultor = require('../models/Consultores.models')
 const Sequelize = require('sequelize');
 const Favoritos = require('../models/Favoritos.models');
 const controller = require('./Dashboard.controller');
+const firebase = require('../services/firebase.service');
 
 const controllers = {};
 
@@ -125,7 +126,7 @@ controllers.setFavorito = async (req, res) => {
             }
 
             await Favoritos.create({ id_consultor, id_badge });
-
+            await firebase.notificarSync('badgesFavoritos'); //tabela que esta na bd local
             return res.status(201).json({
                 mensagem: "Badge adicionado aos favoritos",
             });
@@ -241,7 +242,7 @@ controllers.createBadge = async (req, res) => {
             estado_a_i,
             data_insercao: new Date() // DATA ATUAL
         });
-
+        await firebase.notificarSync('badges'); //tabela que esta na bd local
         return res.status(201).json({
             mensagem: "Badge criado com sucesso"
         });
@@ -280,7 +281,7 @@ controllers.deleteBadgeById = async (req, res) => {
         resultado.estado_a_i = false;
 
         await resultado.save();
-
+        await firebase.notificarSync('badges'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Badge eliminado com sucesso"
         });
@@ -357,7 +358,7 @@ controllers.updateBadgeById = async (req, res) => {
         badge.data_insercao = new Date(); // DATA ATUALIZADA
 
         await badge.save();
-
+        await firebase.notificarSync('badges'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Badge atualizado com sucesso",
             dados: badge
