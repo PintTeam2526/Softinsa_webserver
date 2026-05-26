@@ -1,5 +1,7 @@
 import api from '../services/api'
 
+
+// Listar todas as Areas
 export const getAreas = async () => {
   try {
     const response = await api.get('/areas/get')
@@ -10,6 +12,7 @@ export const getAreas = async () => {
   }
 }
 
+// Criar uma Area
 export const createArea = async (payload) => {
   try {
     const response = await api.post('/areas/create', payload)
@@ -20,6 +23,7 @@ export const createArea = async (payload) => {
   }
 }
 
+// Editar uma Area
 export const updateArea = async (id, payload) => {
   try {
     const response = await api.put(`/areas/${id}/update`, payload)

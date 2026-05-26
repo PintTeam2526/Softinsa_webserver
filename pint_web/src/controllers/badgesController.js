@@ -1,64 +1,128 @@
 import api from '../services/api'
 
-// ── Gerais ────────────────────────────────────────────────────────────────────
 
+// Listar todos os Badges
 export const getBadges = async () => {
-  const response = await api.get('/badges/get')
-  return response.data
+  try {
+    const response = await api.get('/badges/get')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges', error)
+    throw error
+  }
 }
 
+// Listar dados de um Badge
 export const getBadgeById = async (id) => {
-  const response = await api.get(`/badges/${id}/get`)
-  return response.data
+  try {
+    const response = await api.get(`/badges/${id}/get`)
+    return response.data
+  } catch (error) {
+    console.error(`Erro ao obter badge ${id}`, error)
+    throw error
+  }
 }
 
+// Criar um Badge
 export const createBadge = async (payload) => {
-  const response = await api.post('/badges/create', payload)
-  return response.data.dados ?? response.data
+  try {
+    const response = await api.post('/badges/create', payload)
+    return response.data.dados ?? response.data
+  } catch (error) {
+    console.error('Erro ao criar badge', error)
+    throw error
+  }
 }
 
+// Editar um Badge
 export const updateBadge = async (id, payload) => {
-  const response = await api.put(`/badges/${id}/update`, payload)
-  return response.data.dados
+  try {
+    const response = await api.put(`/badges/${id}/update`, payload)
+    return response.data.dados
+  } catch (error) {
+    console.error('Erro ao atualizar badge', error)
+    throw error
+  }
 }
 
-// ── Filtros do consultor ──────────────────────────────────────────────────────
-
+// Listar Badges Favoritos
 export const getFavoritos = async () => {
-  const response = await api.get('/badges/favorito')
-  return response.data
+  try {
+    const response = await api.get('/badges/favorito')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges favoritos', error)
+    throw error
+  }
 }
 
+// Marcar um Badge como Favorito
 export const setFavorito = async (id_badge, set) => {
-  const response = await api.post('/badges/favorito/set', { id_badge, set })
-  return response.data
+  try {
+    const response = await api.post('/badges/favorito/set', { id_badge, set })
+    return response.data
+  } catch (error) {
+    console.error(`Erro ao marcar o badge ${id_badge} como favorito`, error)
+    throw error
+  }
 }
 
+// Listar Badges Em Analise
 export const getBadgesEmAnalise = async () => {
-  const response = await api.get('/badges/emAnalize')
-  return response.data
+  try {
+    const response = await api.get('/badges/emAnalize')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges em analise', error)
+    throw error
+  }
 }
 
+// Listar Badges Obtidos
 export const getBadgesObtidos = async () => {
-  const response = await api.get('/badges/obtidos')
-  return response.data
+  try {
+    const response = await api.get('/badges/obtidos')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges obtidos', error)
+    throw error
+  }
 }
 
+// Listar Badges Por Obter
 export const getBadgesPorObter = async () => {
-  const response = await api.get('/badges/porObter')
-  return response.data
+  try {
+    const response = await api.get('/badges/porObter')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges por obter', error)
+    throw error
+  }
 }
 
+// Listar Badges Expirados
 export const getBadgesExpirados = async () => {
-  const response = await api.get('/badges/expirados')
-  return response.data
+  try {
+    const response = await api.get('/badges/expirados')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges expirados', error)
+    throw error
+  }
 }
 
+// Listar Badges Devolvidos
 export const getBadgesDevolvidos = async () => {
-  const response = await api.get('/badges/devolvidos')
-  return response.data
+  try {
+    const response = await api.get('/badges/devolvidos')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter badges devolvidos', error)
+    throw error
+  }
 }
 
+// Listar Badges Recomendados
 export const getBadgesRecomendados = async () => {
   try {
     const response = await api.get('/badges/recomendados')

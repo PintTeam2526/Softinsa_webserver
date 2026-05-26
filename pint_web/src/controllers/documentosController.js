@@ -1,9 +1,11 @@
 import api from '../services/api'
 
+
+// Obter Documentos de um Pedido (dentro de um .zip)
 export const getDocumentosByPedido = async (id_pedido) => {
     try {
         const response = await api.get(`/documentos/pedido/${id_pedido}`, {
-            responseType: 'blob', // ZIP é binário
+            responseType: 'blob',
         })
         return response.data
     } catch (error) {
@@ -12,6 +14,7 @@ export const getDocumentosByPedido = async (id_pedido) => {
     }
 }
 
+// Obter Documento de um Requisito
 export const getDocumentoByRequisito = async (id_pedido, id_requisito) => {
     try {
         const response = await api.get(`/documentos/pedido/${id_pedido}/requisito/${id_requisito}`)
