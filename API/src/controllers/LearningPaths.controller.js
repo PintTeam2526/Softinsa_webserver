@@ -3,6 +3,7 @@ const ServiceLines = require('../models/ServiceLines.models');
 const Areas = require('../models/Areas.models');
 const Badges = require('../models/Badges.models');
 const Sequelize = require('sequelize');
+const firebase = require('../services/firebase.service');
 const Op = Sequelize.Op;
 
 const controllers = {};
@@ -87,13 +88,15 @@ controllers.createLearningPath = async (req, res) => {
             data_insercao: new Date().toISOString().split('T')[0] // YYYY-MM-DD
         });
 
+        firebase.notificarSync('learningPaths'); 
+
         return res.status(201).json({
             mensagem: "Learning Path criada com sucesso"
         });
 
     } catch (error) {
         console.error(error);
-
+      
         return res.status(500).json({
             mensagem: "Erro ao criar Learning Path",
             erro: error.message
@@ -139,7 +142,7 @@ controllers.deleteLearningPathById = async (req, res) => {
                 await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
             }
         }
-
+        firebase.notificarSync('learningPaths'); //tabela que esta na BD local do mobile
         return res.status(200).json({
             mensagem: "Learning Path eliminada com sucesso"
         });
@@ -206,7 +209,7 @@ controllers.updateLearningPathById = async (req, res) => {
                 }
             }
         }
-
+         firebase.notificarSync('learningPaths'); //tabela que esta na BD local do mobile
         return res.status(200).json({
             mensagem: "Learning Path atualizada com sucesso",
             dados: learningPath
@@ -246,12 +249,12 @@ controllers.getAllLearningPathsMobile = async (req, res) => {
 
 controllers.getLearningPathByIdMobile = async (req, res) => {
   const { id } = req.params;
-  
+
   if (!id) {
     res.status(500).send("Tens de enviar o id do LP pelo url!");
   }
-  
-  try { 
+
+  try {
     const resultado = await LearningPaths.findOne({
       where: {id_learning_path: id}
     });
@@ -268,10 +271,10 @@ controllers.getLearningPathByIdMobile = async (req, res) => {
       ESTADO_A_I_: resultado.estado_a_i,
       DATA_INSERCAO: resultado.data_insercao
     }
-  
+
     res.json([resposta]);
 
-    
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro interno no servidor" });

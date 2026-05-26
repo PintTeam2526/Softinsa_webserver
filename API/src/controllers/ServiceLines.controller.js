@@ -4,6 +4,7 @@ const Areas = require('../models/Areas.models');
 const Badges = require('../models/Badges.models');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const firebase = require('../services/firebase.service');
 
 const controllers = {};
 
@@ -110,6 +111,9 @@ controllers.createServiceLine = async (req, res) => {
             data_insercao: new Date().toISOString().split('T')[0] // DATA ATUAL
         });
 
+        // Depois de gravar com sucesso
+      await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
+
         return res.status(201).json({
             mensagem: "Service Line criada com sucesso"
         });
@@ -156,7 +160,8 @@ controllers.deleteServiceLineById = async (req, res) => {
         if (areaIds.length > 0) {
             await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
         }
-
+      
+        await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Service Line eliminada com sucesso"
         });
@@ -233,7 +238,7 @@ controllers.updateServiceLineById = async (req, res) => {
                 await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
             }
         }
-
+        await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Service Line atualizada com sucesso",
             dados: serviceLine
@@ -251,7 +256,7 @@ controllers.updateServiceLineById = async (req, res) => {
 
 
 controllers.getAllServiceLinesMobile = async (req, res) => {
-  try { 
+  try {
     const resultado = await ServiceLines.findAll({
       include: [
         {
@@ -264,7 +269,7 @@ controllers.getAllServiceLinesMobile = async (req, res) => {
       ]
     });
     console.log(JSON.stringify(resultado, null, 2));
-    
+
     const resposta = resultado.map(item => ({
       ID_SERVICELINE: item.id_service_line,
       ID_LEARNINGPATH: item.LearningPath.id_learning_path,
@@ -293,7 +298,7 @@ controllers.getServiceLineByIdMobile = async (req, res) => {
     return res.status(500).send("Tens de enviar o id da Service Line pelo url");
   }
 
-  try { 
+  try {
     const response = await ServiceLines.findOne({
       where: { id_service_line: id },
       include: [
@@ -317,9 +322,9 @@ controllers.getServiceLineByIdMobile = async (req, res) => {
       NOME_LP_PAI: response.LearningPath.nome_learning_path,
       DATA_INSERCAO: response.data_insercao
     }
-    
+
     return res.json([result]);
-    
+
   } catch {
     return res.status(500).json({
         mensagem: "Erro ao ir buscar a SL",
