@@ -48,4 +48,13 @@ BadgesConcluidos.belongsTo(Badge, { foreignKey: "id_badge" });
 Badge.hasMany(BadgesConcluidos, { foreignKey: "id_badge" });
 Consultor.hasMany(BadgesConcluidos, { foreignKey: "id_consultor" }); // <-- adicionar
 
+BadgesConcluidos.afterCreate(async (badgeConcluido) => {
+    try {
+        const conquistasService = require('../services/conquistas.service'); // lazy require
+        await conquistasService.verificarConquistasBadges(badgeConcluido.id_consultor);
+    } catch (err) {
+        console.error('Erro no trigger de conquistas (badges):', err.message);
+    }
+});
+
 module.exports = BadgesConcluidos;

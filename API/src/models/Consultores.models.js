@@ -43,4 +43,18 @@ var Consultores = sequelize.define('Consultores',
 Consultores.belongsTo(Utilizador, { foreignKey: 'id_utilizador' });
 Consultores.belongsTo(Area, { foreignKey: 'id_area' });
 
+Consultores.afterUpdate(async (consultor) => {
+    try {
+        if (consultor.changed('total_pontos')) {
+            const conquistasService = require('../services/conquistas.service'); // lazy require
+            await conquistasService.verificarConquistasPontos(
+                consultor.id_consultor,
+                consultor.total_pontos
+            );
+        }
+    } catch (err) {
+        console.error('Erro no trigger de conquistas (pontos):', err.message);
+    }
+});
+
 module.exports = Consultores;
