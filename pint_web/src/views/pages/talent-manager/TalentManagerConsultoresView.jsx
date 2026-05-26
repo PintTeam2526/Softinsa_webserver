@@ -18,14 +18,6 @@ function ExportIcon() {
   )
 }
 
-function AvatarBadge() {
-  return (
-    <span className="tm-consultores-avatar" aria-hidden="true">
-      <img alt="" src="https://www.figma.com/api/mcp/asset/e6f36e3b-7e8e-42a1-83bb-3de240749085" />
-    </span>
-  )
-}
-
 function getRankingTone(ranking) {
   if (ranking === '1º') return 'is-gold'
   if (ranking === '2º') return 'is-silver'
@@ -298,7 +290,6 @@ function TalentManagerConsultoresView() {
                   </td>
                   <td>
                     <div className="tm-consultores-name-cell">
-                      <AvatarBadge />
                       <span>{consultant.name}</span>
                     </div>
                   </td>

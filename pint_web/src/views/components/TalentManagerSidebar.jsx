@@ -166,15 +166,9 @@ const sidebarSections = [
     items: [
       { text: 'Badges', icon: BadgesIcon, to: '/talent-manager/badges' },
       { text: 'Certificados', icon: CertificadosIcon, to: '/talent-manager/certificados' },
+      { text: 'Consultores', icon: ConsultoresIcon, to: '/talent-manager/consultores' },
+      { text: 'Relatórios', icon: RelatoriosIcon, to: '/talent-manager/relatorios' },
     ],
-  },
-  {
-    title: 'Equipa',
-    items: [{ text: 'Consultores', icon: ConsultoresIcon, to: '/talent-manager/consultores' }],
-  },
-  {
-    title: 'Análise',
-    items: [{ text: 'Relatórios', icon: RelatoriosIcon, to: '/talent-manager/relatorios' }],
   },
 ]
 

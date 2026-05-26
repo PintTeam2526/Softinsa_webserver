@@ -526,15 +526,15 @@
 }
 
 .sll-team-progress-fill.is-green {
-  background: #1aa053;
+  background: #2c5282;
 }
 
 .sll-team-progress-fill.is-yellow {
-  background: #ffd329;
+  background: #4a90d9;
 }
 
 .sll-team-progress-fill.is-red {
-  background: #c03221;
+  background: #a8d5f0;
 }
 
 .sll-team-pagination {
