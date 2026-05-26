@@ -99,7 +99,7 @@ function BadgeRow({ badge, onOpen }) {
       <td>
         <span className="consultor-lista-points-cell">
           <HiOutlineStar className="consultor-lista-points-icon" aria-hidden="true" />
-          <span>{badge.points} Pontos</span>
+          <span>{badge.points}</span>
         </span>
       </td>
       <td>
