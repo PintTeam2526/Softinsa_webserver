@@ -35,25 +35,38 @@ controllers.getConquistaByIdConsultor = async (req, res) => {
 };
 
 //MOBILE
-controllers.getListaConquistasMobile = async (req, res) => {
+controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
     try {
-        const conquistas = await Conquistas.findAll();
+        const { id } = req.params;
 
-        const data = conquistas.map(item => ({
-            ID_CONQUISTA: item.id_conquista,
-            DESCRICAO_CONQUISTA: item.descricao_conquista,
-            PONTOS_CONQUISTA: item.pontos_conquista
+        if (!id) {
+            return res.status(400).json({ mensagem: "ID do consultor é obrigatório no header" });
+        }
+
+        const resultadoService = await conquistasService.findByIdConsultor(id);
+
+        // Mapear para o formato exato que o ConquistasModel do Flutter espera
+        const listaFormatada = resultadoService.conquistas.map(c => ({
+            id_conquista: c.id_conquista,
+            descricao_conquista: c.descricao_conquista,
+            pontos_conquista: c.pontos_conquista,
+            tipo_conquista: c.tipo_conquista,
+            valor_conquista: c.valor_conquista,
+            estado_conquista: c.estado // No service chama-se 'estado', no Flutter 'estado_conquista'
         }));
 
-        return res.status(200).json(data);
+        return res.json(listaFormatada);
 
     } catch (error) {
-        console.error("Erro ao listar conquistas mobile:", error);
+        console.error(error);
         return res.status(500).json({
-            error: "Erro interno ao listar conquistas",
-            details: error.message
+            mensagem: "Erro ao buscar conquistas para mobile",
+            erro: error.message
         });
     }
 };
+
+
+//IMPLEMENTAR COUNT(*) numeroConquistasUtilizadorMobile
 
 module.exports = controllers;
