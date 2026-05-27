@@ -34,11 +34,40 @@
   transform: rotate(90deg);
 }
 
-.consultor-conquistas-hero-circle-5 { width: 2156px;     height: 2112.615px; left: -194px;   top: -233px; }
-.consultor-conquistas-hero-circle-4 { width: 1670.328px; height: 1635.378px; left: -194px;   top: 5.62px; }
-.consultor-conquistas-hero-circle-3 { width: 1418.453px; height: 1389.529px; left: -100px;   top: 206.88px; }
-.consultor-conquistas-hero-circle-2 { width: 1041.243px; height: 1041.243px; left: -33.72px; top: 334.62px; }
-.consultor-conquistas-hero-circle-1 { width: 827.933px;  height: 827.933px;  left: 48.23px;  top: 380.42px; }
+.consultor-conquistas-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-conquistas-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-conquistas-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-conquistas-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-conquistas-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+}
 
 .consultor-conquistas-hero-copy {
   position: absolute;
@@ -114,8 +143,15 @@
   letter-spacing: 0.02em;
 }
 
-.consultor-conquistas-table thead th:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
-.consultor-conquistas-table thead th:last-child  { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.consultor-conquistas-table thead th:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.consultor-conquistas-table thead th:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
 
 .consultor-conquistas-table tbody tr {
   border-bottom: 1px solid #eeeeee;
@@ -134,9 +170,17 @@
   vertical-align: middle;
 }
 
-.consultor-conquistas-col-description { width: 41%; }
-.consultor-conquistas-col-points      { width: 16%; }
-.consultor-conquistas-col-progress    { width: 43%; }
+.consultor-conquistas-col-description {
+  width: 41%;
+}
+
+.consultor-conquistas-col-points {
+  width: 16%;
+}
+
+.consultor-conquistas-col-progress {
+  width: 43%;
+}
 
 .consultor-conquistas-description-cell {
   display: flex;
@@ -204,11 +248,43 @@
   min-width: 28px;
 }
 
-.consultor-conquistas-progress-bar.is-tier-0 { background: #b8d4f1; }
-.consultor-conquistas-progress-bar.is-tier-1 { background: #7fb3e8; }
-.consultor-conquistas-progress-bar.is-tier-2 { background: #4690d9; }
-.consultor-conquistas-progress-bar.is-tier-3 { background: #369bff; }
-.consultor-conquistas-progress-bar.is-tier-4 { background: #0048b3; }
+.consultor-conquistas-progress-bar.is-tier-0 {
+  background: #b8d4f1;
+}
+
+.consultor-conquistas-progress-bar.is-tier-1 {
+  background: #7fb3e8;
+}
+
+.consultor-conquistas-progress-bar.is-tier-2 {
+  background: #4690d9;
+}
+
+.consultor-conquistas-progress-bar.is-tier-3 {
+  background: #369bff;
+}
+
+.consultor-conquistas-progress-bar.is-tier-4 {
+  background: #0048b3;
+}
+
+.consultor-conquistas-row--obtida {
+  opacity: 0.7;
+}
+
+.consultor-conquistas-badge-obtida {
+  font-size: 0.75rem;
+  color: var(--color-success, #22c55e);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.consultor-conquistas-check-icon {
+  width: 20px;
+  height: 20px;
+  color: #22c55e;
+  flex-shrink: 0;
+}
 
 /* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width: 992px) {
@@ -233,9 +309,17 @@
     padding: 10px 12px;
   }
 
-  .consultor-conquistas-col-description { width: 50%; }
-  .consultor-conquistas-col-points      { width: 18%; }
-  .consultor-conquistas-col-progress    { width: 32%; }
+  .consultor-conquistas-col-description {
+    width: 50%;
+  }
+
+  .consultor-conquistas-col-points {
+    width: 18%;
+  }
+
+  .consultor-conquistas-col-progress {
+    width: 32%;
+  }
 }
 
 @media (max-width: 768px) {

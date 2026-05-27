@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react'
-import { HiOutlineStar } from 'react-icons/hi2'
+import { HiOutlineStar, HiOutlineCheckCircle } from 'react-icons/hi2'
 
 import { getConquistasConsultor } from '../../../controllers/conquistasController'
 import './ConsultorConquistasView.css'
 
-// ─── Cálculo de progresso no front ───────────────────────────────────────────
+// ─── Cálculo de progresso ─────────────────────────────────────────────────────
 
 function calcularProgresso(conquista, total_badges, total_pontos) {
-  const desc = conquista.descricao_conquista?.toLowerCase() ?? ''
-  const meta = parseInt(desc)   // extrai o número (1, 5, 10, 50, 100…)
-
-  if (isNaN(meta) || meta === 0) return 0
-
-  const valor = desc.includes('ponto') ? total_pontos : total_badges
-  return Math.min(Math.round((valor / meta) * 100), 100)
+  const { tipo_conquista, valor_conquista } = conquista
+  if (!valor_conquista || valor_conquista === 0) return 0
+  const valor = tipo_conquista === 'pontos' ? total_pontos : total_badges
+  return Math.min(Math.round((valor / valor_conquista) * 100), 100)
 }
 
 // ─── Icon ─────────────────────────────────────────────────────────────────────
@@ -41,12 +38,18 @@ function progressTier(progress) {
 function ConquistaRow({ conquista, total_badges, total_pontos }) {
   const progress = calcularProgresso(conquista, total_badges, total_pontos)
   const tier = progressTier(progress)
+  const obtida = conquista.estado === 'Obtido'
 
   return (
-    <tr>
+    <tr className={obtida ? 'consultor-conquistas-row--obtida' : ''}>
       <td>
         <div className="consultor-conquistas-description-cell">
-          <span className="consultor-conquistas-description-text">Obter {conquista.descricao_conquista}</span>
+          {obtida && (
+            <HiOutlineCheckCircle className="consultor-conquistas-check-icon" aria-hidden="true" />
+          )}
+          <span className="consultor-conquistas-description-text">
+            Obter {conquista.descricao_conquista}
+          </span>
         </div>
       </td>
 
@@ -141,6 +144,15 @@ function ConsultorConquistasView() {
 
     return [...dados.conquistas]
       .sort((a, b) => {
+        // Primeiro, conquistas não obtidas aparecem antes
+        const obtidaA = a.estado === 'Obtido'
+        const obtidaB = b.estado === 'Obtido'
+        
+        if (obtidaA !== obtidaB) {
+          return obtidaA ? 1 : -1
+        }
+        
+        // Se têm o mesmo estado, ordena por progresso
         const progressoA = calcularProgresso(a, dados.total_badges, dados.total_pontos)
         const progressoB = calcularProgresso(b, dados.total_badges, dados.total_pontos)
         return progressoB - progressoA
@@ -154,7 +166,6 @@ function ConsultorConquistasView() {
         />
       ))
   }
-
 
   return (
     <section className="consultor-conquistas-page">
