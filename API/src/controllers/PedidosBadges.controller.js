@@ -2,8 +2,8 @@ const Sequelize = require("sequelize");
 const sequelize = require("../../database");
 const Pedidos = require("../models/PedidosBadges.models");
 const HistoricoPedidos = require("../models/HistoricoPedidos.models");
-const NotificacoesPedidos = require("../models/NotificacoesPedidos.models");
 const BadgesConcluidos = require("../models/BadgesConcluidos.models");
+const Notificacoes = require("../models/Notificacoes.models");
 const TalentManager = require("../models/TalentManagers.models");
 const Badges = require("../models/Badges.models");
 const Area = require("../models/Areas.models");
@@ -16,6 +16,7 @@ const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
 const Objetivos = require('../models/Objetivos.models');
 const firebase = require('../services/firebase.service');
+
 const controllers = {};
 
 /* =====================================================
@@ -53,13 +54,14 @@ async function criarHistorico(
   });
 }
 
-async function criarNotificacao(idConsultor, idPedido, texto) {
-  await NotificacoesPedidos.create({
-    id_consultor: idConsultor,
-    id_pedido_badge: idPedido,
-    justificacao: texto,
-    data_envio_notificacao: new Date(),
-  });
+async function criarNotificacao(idConsultor, texto, descricao, remetente) {
+    await Notificacoes.create({
+        id_consultor: idConsultor,
+        notificacao: texto,
+        descricao: descricao || null,
+        remetente: remetente,
+        data_de_envio: new Date()
+    });
 }
 
 async function escolherTalentManager() {
@@ -275,16 +277,6 @@ controllers.createPedido = async (req, res) => {
         });
       }
 
-      await NotificacoesPedidos.create(
-        {
-          id_consultor,
-          id_pedido_badge: pedido.id_pedido_badge,
-          justificacao: "Novo pedido criado. Aguarda validação.",
-          data_envio_notificacao: new Date(),
-        },
-        { transaction },
-      );
-
       await transaction.commit();
 
       return res.status(201).json({
@@ -365,12 +357,13 @@ controllers.tmReview = async (req, res) => {
       req.user.id,
       acao !== "aprovar" ? motivo : null,
     );
-
     await criarNotificacao(
-      pedido.id_consultor,
-      pedido.id_pedido_badge,
-      mensagemNotificacao,
-    );
+    pedido.id_consultor,
+    mensagemNotificacao,
+    acao === "devolver" ? motivo : "O teu pedido foi aprovado pelo Talent Manager e segue para avaliação final.",
+    "Talent Manager"
+);
+
     //basta dar sync a tabela dos pedidos no mobile
     firebase.notificarSync('pedidosBadge');
     return res.status(200).json({
@@ -464,36 +457,36 @@ controllers.slReview = async (req, res) => {
     pedido.estado_atual = config.estado;
     await pedido.save();
 
-   if (acao === "aprovar") {
-    await BadgesConcluidos.create({
+    if (acao === "aprovar") {
+      await BadgesConcluidos.create({
         id_badge: pedido.id_badge,
         id_consultor: pedido.id_consultor,
         data_conclusao_badge: new Date(),
         url_validacao: "Interno",
-    });
+      });
 
-    const badge = await Badges.findByPk(pedido.id_badge);
-    if (badge) {
+      const badge = await Badges.findByPk(pedido.id_badge);
+      if (badge) {
         // Usar .save() em vez de .increment() para disparar o afterUpdate
         const consultor = await Consultor.findByPk(pedido.id_consultor);
         consultor.total_pontos = (consultor.total_pontos || 0) + badge.pontos_badge;
         await consultor.save(); // dispara afterUpdate → verificarConquistasPontos
-    }
+      }
 
-    await Objetivos.update(
+      await Objetivos.update(
         {
-            estado_objetivo: "Concluido",
-            data_conclusao_objetivo: new Date(),
+          estado_objetivo: "Concluido",
+          data_conclusao_objetivo: new Date(),
         },
         {
-            where: {
-                id_badge: pedido.id_badge,
-                id_consultor: pedido.id_consultor,
-                estado_objetivo: "Por Concluir"
-            }
+          where: {
+            id_badge: pedido.id_badge,
+            id_consultor: pedido.id_consultor,
+            estado_objetivo: "Por Concluir"
+          }
         }
-    );
-}
+      );
+    }
 
     await criarHistorico(
       pedido.id_pedido_badge,
@@ -504,16 +497,17 @@ controllers.slReview = async (req, res) => {
 
     await criarNotificacao(
       pedido.id_consultor,
-      pedido.id_pedido_badge,
       config.notificacao,
+      acao !== "aprovar" ? motivo : "O teu pedido foi aprovado e o badge foi atribuído com sucesso.",
+      "Service Line Líder"
     );
-    
+
     firebase.notificarSync('historicoPedidos', pedido.id_consultor);
     firebase.notificarSync('badgesConcluidos', pedido.id_consultor);
     firebase.notificarSync('pedidosBadge', pedido.id_consultor);
     firebase.notificarSync('objetivos', pedido.id_consultor);
     //firebase sync notificacoes
-    
+
     return res.status(200).json({
       mensagem: config.resposta,
     });
