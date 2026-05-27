@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
-import './SLL-home.css'
+import './SLL-dashboard.css'
 
 import { getDashboardSLL } from '../../../controllers/dashboard.controller'
 
@@ -387,7 +387,7 @@ function SLLDashboard() {
                   <IconTeamBadges className="sll-team-stat-icon-svg" />
                   <div className="sll-team-stat-copy">
                     <strong>{dados.total_badges}</strong>
-                    <p>Badges conquistados</p>
+                    <p>Badges Conquistados</p>
                   </div>
                 </article>
               </div>
