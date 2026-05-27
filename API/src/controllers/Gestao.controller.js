@@ -1,13 +1,18 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../../database");
-const Areas = require('../models/Areas.models')
-const ServiceLineLiders = require('../models/ServiceLineLiders.models')
-const Consultores = require('../models/Consultores.models')
-const Utilizadores = require('../models/Utilizadores.models')
-const BadgesConcluidos = require('../models/BadgesConcluidos.models')
-const Badges = require('../models/Badges.models')
+const Areas = require('../models/Areas.models');
+const ServiceLineLiders = require('../models/ServiceLineLiders.models');
+const Consultores = require('../models/Consultores.models');
+const Utilizadores = require('../models/Utilizadores.models');
+const BadgesConcluidos = require('../models/BadgesConcluidos.models');
+const Badges = require('../models/Badges.models');
+const PedidosBadges = require('../models/PedidosBadges.models'); // <-- em falta
 
 const controllers = {};
+
+function isAdmin(req) {
+    return req.user?.role === "a";
+}
 
 function isTM(req) {
     return req.user?.role === "t";
@@ -166,6 +171,155 @@ controllers.rankConsultores = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ mensagem: "Erro ao obter ranking de consultores.", erro: error.message });
+    }
+};
+
+controllers.relatorio = async (req, res) => {
+    try {
+        if (!isAdmin(req) && !isTM(req) && !isSL(req)) {
+            return res.status(403).json({ mensagem: "Acesso negado." });
+        }
+
+        const { id_area, data_inicio, data_fim } = req.body;
+
+        // Validação extra para SLL — só pode ver áreas da sua service line
+        if (isSL(req) && id_area) {
+            const sll = await ServiceLineLiders.findOne({  // <-- plural
+                where: { id_service_line_lider: req.user.id_service_line_lider }
+            });
+
+            if (!sll) {
+                return res.status(404).json({ mensagem: "Service Line Líder não encontrado." });
+            }
+
+            const areaValida = await Areas.findOne({
+                where: {
+                    id_area,
+                    id_service_line: sll.id_service_line
+                }
+            });
+
+            if (!areaValida) {
+                return res.status(403).json({ mensagem: "Não tens acesso a esta área." });
+            }
+        }
+
+        // Se for SLL e não filtrou por área, limitar automaticamente às suas áreas
+        let whereBadge = {};
+        if (isSL(req)) {
+            const sll = await ServiceLineLiders.findOne({  // <-- plural
+                where: { id_service_line_lider: req.user.id_service_line_lider }
+            });
+
+            const areasDaSL = await Areas.findAll({
+                where: { id_service_line: sll.id_service_line },
+                attributes: ['id_area']
+            });
+
+            const idsAreas = areasDaSL.map(a => a.id_area);
+
+            whereBadge.id_area = id_area
+                ? id_area  // já validado acima que pertence à SL
+                : { [Sequelize.Op.in]: idsAreas };
+        } else {
+            if (id_area) whereBadge.id_area = id_area;
+        }
+
+        // Filtro de datas
+        const whereDataConclusao = {};
+        if (data_inicio || data_fim) {
+            whereDataConclusao.data_conclusao_badge = {};
+            if (data_inicio) whereDataConclusao.data_conclusao_badge[Sequelize.Op.gte] = new Date(data_inicio);
+            if (data_fim) whereDataConclusao.data_conclusao_badge[Sequelize.Op.lte] = new Date(data_fim);
+        }
+
+        const badgesObtidos = await BadgesConcluidos.findAll({
+            where: whereDataConclusao,
+            include: [
+                {
+                    model: Badges,
+                    where: whereBadge,
+                    attributes: ['id_badge', 'nome_badge', 'nivel_badge', 'id_area'],
+                    include: [
+                        {
+                            model: Areas,
+                            attributes: ['id_area', 'nome_area']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const totalAprovados = badgesObtidos.length;
+
+        const whereRejeitados = { estado_atual: 5 };
+        if (data_inicio || data_fim) {
+            whereRejeitados.updatedAt = {};
+            if (data_inicio) whereRejeitados.updatedAt[Sequelize.Op.gte] = new Date(data_inicio);
+            if (data_fim) whereRejeitados.updatedAt[Sequelize.Op.lte] = new Date(data_fim);
+        }
+
+        const totalRejeitados = await PedidosBadges.count({
+            where: whereRejeitados,
+            include: [{ model: Badges, where: whereBadge }]
+        });
+
+        const totalBadges = totalAprovados + totalRejeitados;
+        const taxaAprovacao = totalBadges > 0 ? Math.round((totalAprovados / totalBadges) * 100) : 0;
+
+        const porArea = {};
+        const porNivel = {};
+        const detalhes = {};
+
+        for (const bc of badgesObtidos) {
+            const badge = bc.Badge;
+            const nomeArea = badge.Area?.nome_area ?? 'Desconhecida';
+            const nivel = badge.nivel_badge ?? 'Desconhecido';
+
+            porArea[nomeArea] = (porArea[nomeArea] || 0) + 1;
+            porNivel[nivel] = (porNivel[nivel] || 0) + 1;
+
+            if (!detalhes[nomeArea]) detalhes[nomeArea] = {};
+            detalhes[nomeArea][nivel] = (detalhes[nomeArea][nivel] || 0) + 1;
+        }
+
+       
+        const tabelaDetalhes = Object.entries(detalhes).map(([area, nivelMap]) => {
+            const linha = { area };
+            let total = 0;
+            for (const nivel of Object.keys(nivelMap)) { 
+                linha[nivel] = nivelMap[nivel] || 0;
+                total += linha[nivel];
+            }
+            linha.total = total;
+            return linha;
+        });
+
+        const totalParaPercentagem = totalAprovados > 0 ? totalAprovados : 1;
+
+        return res.status(200).json({
+            resumo: {
+                total_badges: totalBadges,
+                badges_aprovados: totalAprovados,
+                badges_rejeitados: totalRejeitados,
+                taxa_aprovacao: taxaAprovacao
+            },
+            distribuicao_por_area: Object.entries(porArea).map(([nome, total]) => ({
+                nome,
+                total,
+                percentagem: Math.round((total / totalParaPercentagem) * 100)
+            })),
+            distribuicao_por_nivel: Object.entries(porNivel).map(([nome, total]) => ({
+                nome,
+                total,
+                percentagem: Math.round((total / totalParaPercentagem) * 100)
+            })),
+            detalhes: tabelaDetalhes,
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: "Erro ao gerar relatório.", erro: error.message });
     }
 };
 
