@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const { Op } = require('sequelize');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
+const Notificacoes = require('../models/Notificacoes.models');
 
 function iniciarExpiracaoBadges() {
   // Executa todos os dias à meia-noite
@@ -26,6 +27,14 @@ function iniciarExpiracaoBadges() {
 
         if (agora >= dataExpiracao) {
           idsExpirados.push(concluido.id_badge_concluido);
+          
+          await Notificacoes.create({
+            id_consultor: concluido.id_consultor,
+            notificacao: "Badge expirado",
+            descricao: `O teu badge expirou e foi removido. Podes submeter um novo pedido para o reobter.`,
+            remetente: "Sistema",
+            data_de_envio: new Date()
+        });
         }
       }
 
