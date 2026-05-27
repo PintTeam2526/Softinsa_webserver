@@ -462,37 +462,36 @@ controllers.slReview = async (req, res) => {
     pedido.estado_atual = config.estado;
     await pedido.save();
 
-    if (acao === "aprovar") {
-      await BadgesConcluidos.create({
+   if (acao === "aprovar") {
+    await BadgesConcluidos.create({
         id_badge: pedido.id_badge,
         id_consultor: pedido.id_consultor,
         data_conclusao_badge: new Date(),
         url_validacao: "Interno",
-      });
+    });
 
-      const badge = await Badges.findByPk(pedido.id_badge);
-      if (badge) {
-        await Consultor.increment('total_pontos', {
-          by: badge.pontos_badge,
-          where: { id_consultor: pedido.id_consultor }
-        });
-      }
-
-      await Objetivos.update(
-        {
-          estado_objetivo: "Concluido",
-          data_conclusao_objetivo: new Date(),
-        },
-        {
-          where: {
-            id_badge: pedido.id_badge,
-            id_consultor: pedido.id_consultor,
-            estado_objetivo: "Por Concluir"
-          }
-        });
+    const badge = await Badges.findByPk(pedido.id_badge);
+    if (badge) {
+        // Usar .save() em vez de .increment() para disparar o afterUpdate
+        const consultor = await Consultor.findByPk(pedido.id_consultor);
+        consultor.total_pontos = (consultor.total_pontos || 0) + badge.pontos_badge;
+        await consultor.save(); // dispara afterUpdate → verificarConquistasPontos
     }
 
-
+    await Objetivos.update(
+        {
+            estado_objetivo: "Concluido",
+            data_conclusao_objetivo: new Date(),
+        },
+        {
+            where: {
+                id_badge: pedido.id_badge,
+                id_consultor: pedido.id_consultor,
+                estado_objetivo: "Por Concluir"
+            }
+        }
+    );
+}
 
     await criarHistorico(
       pedido.id_pedido_badge,
