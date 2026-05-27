@@ -12,6 +12,9 @@ export function useDashboardController() {
     metrics: dashboardMetrics,
     chartOptions: badgesChartOptions,
     chartSeries: badgesChartSeries,
+    badgesChartByYear: badgesChartByYear,
+    badgesChartYearOptions: badgesChartYearOptions,
+    learningPathBadgeLevels: learningPathBadgeLevels,
   }
 }
 // ###############################################################################################################

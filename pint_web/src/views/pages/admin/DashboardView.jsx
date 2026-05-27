@@ -171,7 +171,7 @@ function DashboardView() {
 
       <Card className="softinsa-chart-card mb-4">
         <Card.Header className="softinsa-chart-card-header">
-          <h5 className="mb-0">Badges obtidos</h5>
+          <h5 className="mb-0">Badges Obtidos</h5>
         </Card.Header>
 
         <Card.Body className="pt-2">
@@ -184,7 +184,7 @@ function DashboardView() {
           <Card className="softinsa-chart-card softinsa-learning-path-card h-100">
             <Card.Header className="softinsa-chart-card-header softinsa-learning-path-card-header">
               <div className="softinsa-learning-path-card-title-wrap">
-                <h5 className="mb-0">Badges Por Learning Path</h5>
+                <h5 className="mb-0">Badges Obtidos por Learning Path</h5>
 
                 <Dropdown className="softinsa-learning-path-dropdown">
                   <Dropdown.Toggle
@@ -243,7 +243,7 @@ function DashboardView() {
         <Col xl={8} lg={7}>
           <Card className="softinsa-chart-card h-100">
             <Card.Header className="softinsa-chart-card-header softinsa-badges-card-header">
-              <h5 className="mb-0">Badges</h5>
+              <h5 className="mb-0">Badges Obtidos (%)</h5>
 
               <Dropdown className="softinsa-badges-dropdown">
                 <Dropdown.Toggle
