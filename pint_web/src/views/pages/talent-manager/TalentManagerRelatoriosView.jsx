@@ -72,12 +72,11 @@ function arcPath(cx, cy, r, startAngle, endAngle) {
 }
 
 function PieChartCard({ title, data }) {
-  // viewBox maior para as labels não serem cortadas
-  const VW = 420
-  const VH = 300
+  const VW = 200
+  const VH = 200
   const cx = VW / 2
   const cy = VH / 2
-  const r = 100
+  const r = 95
 
   let currentAngle = 0
   const segments = (data ?? []).map((item, i) => {
@@ -98,11 +97,7 @@ function PieChartCard({ title, data }) {
       <h3>{title}</h3>
 
       <div className="sll-relatorios-chart-visual">
-        <svg
-          viewBox={`0 0 ${VW} ${VH}`}
-          className="sll-relatorios-pie-svg"
-          aria-hidden="true"
-        >
+        <svg viewBox={`0 0 ${VW} ${VH}`} className="sll-relatorios-pie-svg" aria-hidden="true">
           {segments.length === 0 ? (
             <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
           ) : (
@@ -116,38 +111,23 @@ function PieChartCard({ title, data }) {
               />
             ))
           )}
-
-          {/* labels dentro do SVG — sem problemas de posicionamento */}
-          {segments.map((seg, i) => {
-            const labelR = r * 1.45
-            const pos = polarToCartesian(cx, cy, labelR, seg.mid)
-            const anchor = pos.x > cx ? 'start' : 'end'
-
-            // nome e percentagem em duas linhas
-            const lines = [`${seg.nome}`, `${seg.percentagem}%`]
-
-            return (
-              <text
-                key={i}
-                fill={seg.color}
-                fontSize="13"
-                fontWeight="500"
-                textAnchor={anchor}
-                dominantBaseline="middle"
-              >
-                {lines.map((line, li) => (
-                  <tspan
-                    key={li}
-                    x={pos.x}
-                    dy={li === 0 ? -8 : 16}
-                  >
-                    {line}
-                  </tspan>
-                ))}
-              </text>
-            )
-          })}
         </svg>
+
+        {segments.length > 0 && (
+          <ul className="sll-relatorios-chart-legend" aria-label="Legenda">
+            {segments.map((seg, i) => (
+              <li key={i} className="sll-relatorios-chart-legend-item">
+                <span
+                  className="sll-relatorios-chart-legend-dot"
+                  style={{ background: seg.color }}
+                  aria-hidden="true"
+                />
+                <span className="sll-relatorios-chart-legend-label">{seg.nome}</span>
+                <span className="sll-relatorios-chart-legend-pct">{seg.percentagem}%</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </article>
   )
@@ -249,20 +229,19 @@ function TalentManagerRelatoriosView() {
 
             <div className="sll-relatorios-filters-row">
               <div className="sll-relatorios-field">
-                <label>Área</label>
+                <label>Área:</label>
                 <div className="sll-relatorios-select-wrap">
                   <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
-                    <option value="">Selecione a área</option>
+                    <option value="">Selecione a Área</option>
                     {reportAreaOptions.map((area) => (
                       <option key={area.id} value={area.id}>{area.nome}</option>
                     ))}
                   </select>
-                  <span className="sll-relatorios-select-arrow"><SelectArrow /></span>
                 </div>
               </div>
 
               <div className="sll-relatorios-field">
-                <label>Data início</label>
+                <label>Data Início:</label>
                 <div className="sll-relatorios-date-input">
                   <span aria-hidden="true"><CalendarIcon /></span>
                   <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} aria-label="Data início" />
@@ -270,7 +249,7 @@ function TalentManagerRelatoriosView() {
               </div>
 
               <div className="sll-relatorios-field">
-                <label>Data fim</label>
+                <label>Data Fim:</label>
                 <div className="sll-relatorios-date-input">
                   <span aria-hidden="true"><CalendarIcon /></span>
                   <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} aria-label="Data fim" />
