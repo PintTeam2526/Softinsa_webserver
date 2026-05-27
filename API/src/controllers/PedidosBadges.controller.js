@@ -14,7 +14,8 @@ const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.serv
 const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models")
 const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
-const Objetivos = require('../models/Objetivos.models')
+const Objetivos = require('../models/Objetivos.models');
+const firebase = require('../services/firebase.service');
 const controllers = {};
 
 /* =====================================================
@@ -370,7 +371,8 @@ controllers.tmReview = async (req, res) => {
       pedido.id_pedido_badge,
       mensagemNotificacao,
     );
-
+    //basta dar sync a tabela dos pedidos no mobile
+    firebase.notificarSync('pedidosBadge');
     return res.status(200).json({
       mensagem: mensagemResposta,
     });
@@ -506,7 +508,13 @@ controllers.slReview = async (req, res) => {
       pedido.id_pedido_badge,
       config.notificacao,
     );
-
+    
+    firebase.notificarSync('historicoPedidos', pedido.id_consultor);
+    firebase.notificarSync('badgesConcluidos', pedido.id_consultor);
+    firebase.notificarSync('pedidosBadge', pedido.id_consultor);
+    firebase.notificarSync('objetivos', pedido.id_consultor);
+    //firebase sync notificacoes
+    
     return res.status(200).json({
       mensagem: config.resposta,
     });

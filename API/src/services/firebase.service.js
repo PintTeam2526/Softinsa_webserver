@@ -8,11 +8,12 @@ admin.initializeApp({
 const firebaseService = {};
 
 // Função para avisar o mobile que deve sincronizar uma tabela específica
-firebaseService.notificarSync = async (tabelaAlterada) => {
+firebaseService.notificarSync = async (tabelaAlterada, idConsultor = null) => {
   const message = {
     data: {
       type: 'SYNC_TABLE',
-      table: tabelaAlterada //a variavel de entrada tem de ter o mesmo nome que a tabela bdLocal do mobile
+      table: tabelaAlterada,//a variavel de entrada tem de ter o mesmo nome que a tabela bdLocal do mobile
+      id_consultor:  idConsultor ? idConsultor.toString() : "" 
     },
     topic: 'atualizacao_mobile' // O tópico que o Flutter subscreveu
   };

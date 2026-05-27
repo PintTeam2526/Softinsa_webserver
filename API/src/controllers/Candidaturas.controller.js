@@ -9,6 +9,7 @@ const HistoricoPedidos = require('../models/HistoricoPedidos.models');
 const Documentacoes = require('../models/Documentacoes.models');
 const NotificacoesPedidos = require('../models/NotificacoesPedidos.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
+const firebase = require('../services/firebase.service');
 
 const controllers = {};
 
@@ -152,8 +153,8 @@ controllers.candidatarBadge = async (req, res) => {
             justificacao: 'Candidatura submetida via mobile. Aguarda validação.',
             data_envio_notificacao: new Date()
         }, { transaction });
-
         await transaction.commit();
+        firebase.notificarSync('pedidosBadge');
         res.status(200).json({ success: true, message: "Candidatura submetida com sucesso" });
 
     } catch (err) {

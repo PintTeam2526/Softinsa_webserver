@@ -184,11 +184,11 @@ controllers.register = async (req, res) => {
     })
     
     //criar as conquistas do consultor
-    const conquistas = await Conquistas.findAll();
+    //const conquistas = await Conquistas.findAll();
 
-    conquistas.forEach(conquista => {
-      conquistasService.criarConquista(consultor.id_consultor, conquista.id_conquista);
-    });
+    //conquistas.forEach(conquista => {
+     // conquistasService.criarConquista(consultor.id_consultor, conquista.id_conquista);
+     // });
 
     return res.status(201).json({
       message: 'Conta criada com sucesso',
