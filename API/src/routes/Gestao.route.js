@@ -15,6 +15,9 @@ router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
 // Rank de consultores por progresso
 router.get('/rank', authVerification, controllerGestao.rankConsultores)
 
+// Rota para dados de relatorio
+router.get("/relatorio", authVerification, controllerGestao.relatorio);
+
 
 
 module.exports = router;
