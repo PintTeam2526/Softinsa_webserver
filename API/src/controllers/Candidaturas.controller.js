@@ -7,7 +7,7 @@ const TalentManagers = require('../models/TalentManagers.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const HistoricoPedidos = require('../models/HistoricoPedidos.models');
 const Documentacoes = require('../models/Documentacoes.models');
-const NotificacoesPedidos = require('../models/NotificacoesPedidos.models');
+const NotificacoesPedidos = require('../models/Notificacoes.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const firebase = require('../services/firebase.service');
 

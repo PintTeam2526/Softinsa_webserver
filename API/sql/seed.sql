@@ -349,23 +349,10 @@ INSERT INTO "Documentacoes" (id_historico, id_consultor, documentacao, "createdA
 (1, 1, 'Evidência kubectl e YAMLs de gestão de pods - João',          NOW(), NOW()),
 (2, 2, 'Diagrama de rede virtual e configuração de VMs - Maria',      NOW(), NOW());
 
--- ============================================================
--- 18. NotificacoesAdmins
--- ============================================================
-INSERT INTO "NotificacoesAdmins" (id_administrador, notificacao, "createdAt", "updatedAt") VALUES
-(1, 'Novo badge solicitado para aprovação', NOW(), NOW());
-
--- ============================================================
--- 19. NotificacoesPedidos
--- ============================================================
-INSERT INTO "NotificacoesPedidos" (id_consultor, id_pedido_badge, justificacao, data_envio_notificacao, "createdAt", "updatedAt") VALUES
-(1, 1, 'Pedido atribuído ao Talent Manager.', '2025-02-01', NOW(), NOW());
-
--- ============================================================
--- 20. Enviadas
--- ============================================================
-INSERT INTO "Enviadas" (id_notificacao_admin, id_utilizador, "createdAt", "updatedAt") VALUES
-(1, 1, NOW(), NOW());
+-- 19. Notificacoes
+INSERT INTO "Notificacoes" (id_consultor, notificacao, descricao, data_de_envio, remetente, "createdAt", "updatedAt") VALUES
+(1, 'Pedido atribuído ao Talent Manager.', 'O teu pedido para o badge foi atribuído a um Talent Manager e está a aguardar avaliação.', '2025-02-01', 'Talent Manager', NOW(), NOW()),
+(NULL, 'Bem-vindo à plataforma Softinsa Badges!', 'Explora os badges disponíveis e começa a tua jornada de aprendizagem.', '2025-01-01', 'Sistema', NOW(), NOW());
 
 -- ============================================================
 -- 21. Favoritos

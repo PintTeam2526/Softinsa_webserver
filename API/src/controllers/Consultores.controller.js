@@ -9,7 +9,7 @@ const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const Objetivos = require('../models/Objetivos.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
-const Notificacoes = require('../models/NotificacoesPedidos.models');
+const Notificacoes = require('../models/Notificacoes.models');
 
 const controllers = {};
 
