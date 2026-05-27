@@ -180,7 +180,7 @@ controllers.relatorio = async (req, res) => {
             return res.status(403).json({ mensagem: "Acesso negado." });
         }
 
-        const { id_area, data_inicio, data_fim } = req.body;
+        const { id_area, data_inicio, data_fim } = req.query;
 
         // Validação extra para SLL — só pode ver áreas da sua service line
         if (isSL(req) && id_area) {

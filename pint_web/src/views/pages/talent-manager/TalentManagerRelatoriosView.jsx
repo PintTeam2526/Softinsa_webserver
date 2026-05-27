@@ -1,13 +1,42 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import './TalentManagerRelatoriosView.css'
 
 import { getAreas } from '../../../controllers/areasController'
 import { getRelatorio } from '../../../controllers/gestaoController'
 
-// ── constantes de UI (não são dados, não vêm da API) ───────────────────────────
-const infoIcon = 'https://www.figma.com/api/mcp/asset/e9cb1122-307c-4ebc-938d-34bf0718335c'
+
 const calendarIcon = 'https://www.figma.com/api/mcp/asset/3d4c9dd9-6d87-4575-baf8-e93232ba25fd'
 const selectArrow = 'https://www.figma.com/api/mcp/asset/3ccd3cf8-7fc5-47f6-9509-a387af5d81f7'
+
+
+function InfoIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+      <circle cx="7.5" cy="7.5" r="7" stroke="#8a92a6" strokeWidth="1" />
+      <circle cx="7.5" cy="3.75" r="0.75" fill="#8a92a6" />
+      <path d="M7.5 5.5V11" stroke="#8a92a6" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function CalendarIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <rect x="2" y="3" width="14" height="13" rx="2" stroke="#8a92a6" strokeWidth="1" />
+      <path d="M2 6h14" stroke="#8a92a6" strokeWidth="1" />
+      <path d="M6 1v4" stroke="#8a92a6" strokeWidth="1" strokeLinecap="round" />
+      <path d="M12 1v4" stroke="#8a92a6" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function SelectArrow() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
+      <path d="M1 1L9 9L17 1" stroke="#8a92a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 const summaryCards = [
   { label: 'Total de Badges', key: 'total' },
@@ -28,28 +57,97 @@ const levelChartLabels = [
   { tone: 'is-light', className: 'is-bottom-right' },
 ]
 
-// ── componentes ────────────────────────────────────────────────────────────────
-function PieGraphic() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="161" height="161" viewBox="0 0 161 161" fill="none" aria-hidden="true" className="sll-relatorios-pie-svg">
-      <path d="M160.5 80.5C160.5 66.0559 156.589 51.8813 149.183 39.4805C141.777 27.0797 131.152 16.9153 118.435 10.0661C105.718 3.2169 91.384 -0.0615638 76.9542 0.578633C62.5243 1.21883 48.537 5.7538 36.4766 13.7023L80.5 80.5H160.5Z" fill="#1E3A5F" stroke="white" />
-      <path d="M36.4766 13.7021C26.2783 20.4234 17.7543 29.3906 11.5582 39.9162C5.36215 50.4419 1.65842 62.2465 0.730979 74.4252C-0.196466 86.604 1.677 98.8333 6.20777 110.176C10.7385 121.518 17.8063 131.673 26.8692 139.861L80.5 80.4999L36.4766 13.7021Z" fill="#39639C" stroke="white" />
-      <path d="M26.8691 139.861C38.3536 150.237 52.6013 157.059 67.8851 159.499C83.1689 161.94 98.8325 159.894 112.977 153.611C127.122 147.328 139.14 137.076 147.575 124.099C156.01 111.123 160.5 95.9774 160.5 80.5H80.4999L26.8691 139.861Z" fill="#7A9CCD" stroke="white" />
-    </svg>
-  )
+const PIE_COLORS = ['#1E3A5F', '#39639C', '#7A9CCD', '#5B8DB8', '#A8C4E0']
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
 }
 
-function PieChartCard({ title, labels }) {
+function arcPath(cx, cy, r, startAngle, endAngle) {
+  const start = polarToCartesian(cx, cy, r, startAngle)
+  const end = polarToCartesian(cx, cy, r, endAngle)
+  const large = endAngle - startAngle > 180 ? 1 : 0
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${end.x} ${end.y} Z`
+}
+
+function PieChartCard({ title, data }) {
+  // viewBox maior para as labels não serem cortadas
+  const VW = 420
+  const VH = 300
+  const cx = VW / 2
+  const cy = VH / 2
+  const r = 100
+
+  let currentAngle = 0
+  const segments = (data ?? []).map((item, i) => {
+    const sweep = (item.percentagem / 100) * 360
+    const start = currentAngle
+    currentAngle += sweep
+    return {
+      ...item,
+      start,
+      end: currentAngle,
+      mid: start + sweep / 2,
+      color: PIE_COLORS[i % PIE_COLORS.length],
+    }
+  })
+
   return (
     <article className="sll-relatorios-chart-card">
       <h3>{title}</h3>
-      <div className="sll-relatorios-chart-visual" aria-hidden="true">
-        <PieGraphic />
-        {labels.map((label) => (
-          <span key={label.text} className={`sll-relatorios-chart-label ${label.className} ${label.tone}`}>
-            {label.text}
-          </span>
-        ))}
+
+      <div className="sll-relatorios-chart-visual">
+        <svg
+          viewBox={`0 0 ${VW} ${VH}`}
+          className="sll-relatorios-pie-svg"
+          aria-hidden="true"
+        >
+          {segments.length === 0 ? (
+            <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
+          ) : (
+            segments.map((seg, i) => (
+              <path
+                key={i}
+                d={arcPath(cx, cy, r, seg.start, seg.end)}
+                fill={seg.color}
+                stroke="white"
+                strokeWidth="2"
+              />
+            ))
+          )}
+
+          {/* labels dentro do SVG — sem problemas de posicionamento */}
+          {segments.map((seg, i) => {
+            const labelR = r * 1.45
+            const pos = polarToCartesian(cx, cy, labelR, seg.mid)
+            const anchor = pos.x > cx ? 'start' : 'end'
+
+            // nome e percentagem em duas linhas
+            const lines = [`${seg.nome}`, `${seg.percentagem}%`]
+
+            return (
+              <text
+                key={i}
+                fill={seg.color}
+                fontSize="13"
+                fontWeight="500"
+                textAnchor={anchor}
+                dominantBaseline="middle"
+              >
+                {lines.map((line, li) => (
+                  <tspan
+                    key={li}
+                    x={pos.x}
+                    dy={li === 0 ? -8 : 16}
+                  >
+                    {line}
+                  </tspan>
+                ))}
+              </text>
+            )
+          })}
+        </svg>
       </div>
     </article>
   )
@@ -64,94 +162,69 @@ function StatCard({ label, value }) {
   )
 }
 
-// ── view ───────────────────────────────────────────────────────────────────────
 function TalentManagerRelatoriosView() {
   const [reportData, setReportData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loadingAreas, setLoadingAreas] = useState(true)
+  const [loadingRelatorio, setLoadingRelatorio] = useState(false)
   const [error, setError] = useState(null)
   const [areas, setAreas] = useState([])
   const [selectedArea, setSelectedArea] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
+
   useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const [relatorioData, areasData] = await Promise.all([
-          getRelatorio(),
-          getAreas(),
-        ])
-
-        setReportData(relatorioData)
-        setAreas(areasData)
-
-      } catch (err) {
-        console.log(err)
-        setError('Erro ao carregar relatório.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
+    getAreas()
+      .then(setAreas)
+      .catch(() => setError('Erro ao carregar áreas.'))
+      .finally(() => setLoadingAreas(false))
   }, [])
 
-  const filteredReportData = useMemo(() => {
-    if (!reportData) return null
 
-    let detalhes = [...(reportData.detalhes || [])]
+  async function handleGerarRelatorio() {
+    setLoadingRelatorio(true)
+    setError(null)
+    try {
+      const params = {}
+      if (selectedArea) params.id_area = selectedArea
+      if (startDate) params.data_inicio = startDate
+      if (endDate) params.data_fim = endDate
 
-    if (selectedArea) {
-      const areaSelecionada = areas.find(
-        (a) => String(a.id_area) === String(selectedArea)
-      )
-
-      if (areaSelecionada) {
-        detalhes = detalhes.filter(
-          (row) => row.area === areaSelecionada.nome_area
-        )
-      }
+      const data = await getRelatorio(params)
+      setReportData(data)
+    } catch {
+      setError('Erro ao carregar relatório.')
+    } finally {
+      setLoadingRelatorio(false)
     }
-
-    return {
-      ...reportData,
-      detalhes,
-    }
-  }, [reportData, selectedArea, areas])
-
-  const summaryValues = {
-    total: filteredReportData?.resumo?.total_badges || 0,
-    approved: filteredReportData?.resumo?.badges_aprovados || 0,
-    rejected: filteredReportData?.resumo?.badges_rejeitados || 0,
-    approvalRate: `${filteredReportData?.resumo?.taxa_aprovacao || 0}%`,
   }
 
-  const filteredAreaLabels =
-    filteredReportData?.distribuicao_por_area?.map((item, index) => ({
+  const summaryValues = {
+    total: reportData?.resumo?.total_badges ?? 0,
+    approved: reportData?.resumo?.badges_aprovados ?? 0,
+    rejected: reportData?.resumo?.badges_rejeitados ?? 0,
+    approvalRate: `${reportData?.resumo?.taxa_aprovacao ?? 0}%`,
+  }
+
+  const areaLabels =
+    reportData?.distribuicao_por_area?.map((item, i) => ({
       text: `${item.nome} ${item.percentagem}%`,
-      tone: areaChartLabels[index % areaChartLabels.length].tone,
-      className: areaChartLabels[index % areaChartLabels.length].className,
-    })) || []
+      tone: areaChartLabels[i % areaChartLabels.length].tone,
+      className: areaChartLabels[i % areaChartLabels.length].className,
+    })) ?? []
 
-  const filteredLevelLabels =
-    filteredReportData?.distribuicao_por_nivel?.map((item, index) => ({
+  const levelLabels =
+    reportData?.distribuicao_por_nivel?.map((item, i) => ({
       text: `${item.nome} ${item.percentagem}%`,
-      tone: levelChartLabels[index % levelChartLabels.length].tone,
-      className: levelChartLabels[index % levelChartLabels.length].className,
-    })) || []
+      tone: levelChartLabels[i % levelChartLabels.length].tone,
+      className: levelChartLabels[i % levelChartLabels.length].className,
+    })) ?? []
 
-  const filteredReportRows = filteredReportData?.detalhes || []
+  const reportRows = reportData?.detalhes ?? []
 
-  const reportAreaOptions =
-    areas.map((area) => ({
-      id: area.id_area,
-      nome: area.nome_area,
-    }))
+  const reportAreaOptions = areas.map((a) => ({ id: a.id_area, nome: a.nome_area }))
 
-  if (loading) return <div className="sll-relatorios-page"><p>A carregar...</p></div>
+  if (loadingAreas) return <div className="sll-relatorios-page"><p>A carregar...</p></div>
   if (error) return <div className="sll-relatorios-page"><p>{error}</p></div>
 
   return (
@@ -169,7 +242,7 @@ function TalentManagerRelatoriosView() {
             <div className="sll-relatorios-filters-heading">
               <h2>Filtros para Relatórios</h2>
               <div className="sll-relatorios-filters-help">
-                <img src={infoIcon} alt="" aria-hidden="true" />
+                <InfoIcon />
                 <p>Selecione os filtros e clique em "Gerar Relatório"</p>
               </div>
             </div>
@@ -181,19 +254,17 @@ function TalentManagerRelatoriosView() {
                   <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
                     <option value="">Selecione a área</option>
                     {reportAreaOptions.map((area) => (
-                      <option key={area.id} value={area.id}>
-                        {area.nome}
-                      </option>
+                      <option key={area.id} value={area.id}>{area.nome}</option>
                     ))}
                   </select>
-                  <img src={selectArrow} alt="" aria-hidden="true" className="sll-relatorios-select-arrow" />
+                  <span className="sll-relatorios-select-arrow"><SelectArrow /></span>
                 </div>
               </div>
 
               <div className="sll-relatorios-field">
                 <label>Data início</label>
                 <div className="sll-relatorios-date-input">
-                  <span aria-hidden="true"><img src={calendarIcon} alt="" /></span>
+                  <span aria-hidden="true"><CalendarIcon /></span>
                   <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} aria-label="Data início" />
                 </div>
               </div>
@@ -201,13 +272,18 @@ function TalentManagerRelatoriosView() {
               <div className="sll-relatorios-field">
                 <label>Data fim</label>
                 <div className="sll-relatorios-date-input">
-                  <span aria-hidden="true"><img src={calendarIcon} alt="" /></span>
+                  <span aria-hidden="true"><CalendarIcon /></span>
                   <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} aria-label="Data fim" />
                 </div>
               </div>
 
-              <button type="button" className="sll-relatorios-generate-btn">
-                Gerar Relatório
+              <button
+                type="button"
+                className="sll-relatorios-generate-btn"
+                onClick={handleGerarRelatorio}
+                disabled={loadingRelatorio}
+              >
+                {loadingRelatorio ? 'A gerar...' : 'Gerar Relatório'}
               </button>
             </div>
           </section>
@@ -219,33 +295,53 @@ function TalentManagerRelatoriosView() {
           </section>
 
           <section className="sll-relatorios-charts-grid" aria-label="Distribuição de badges">
-            <PieChartCard title="Distribuição de Badges Aprovados por Área" labels={filteredAreaLabels} />
-            <PieChartCard title="Distribuição de Badges Aprovados por Nível" labels={filteredLevelLabels} />
+            <PieChartCard
+              title="Distribuição de Badges Aprovados por Área"
+              data={reportData?.distribuicao_por_area ?? []}
+            />
+            <PieChartCard
+              title="Distribuição de Badges Aprovados por Nível"
+              data={reportData?.distribuicao_por_nivel ?? []}
+            />
           </section>
 
           <section className="sll-relatorios-table-card" aria-label="Detalhes por Área e Nível">
-            <h2>Detalhes por Área e Nível</h2>
+            <h2>Badges Aprovados por Área e Nível</h2>
             <div className="sll-relatorios-table-wrap">
               <table className="sll-relatorios-table">
                 <thead>
                   <tr>
                     <th>Área</th>
-                    <th>Junior</th>
+                    <th>Júnior</th>
                     <th>Intermédio</th>
-                    <th>Senior</th>
+                    <th>Sénior</th>
+                    <th>Especialista</th>
+                    <th>Líder de Conhecimento</th>
                     <th>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredReportRows.map((row) => (
-                    <tr key={row.area}>
-                      <td>{row.area}</td>
-                      <td>{row.Junior || 0}</td>
-                      <td>{row['Intermédio'] || 0}</td>
-                      <td>{row.Senior || 0}</td>
-                      <td className="is-total">{row.total}</td>
+                  {reportRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', color: '#8a92a6' }}>
+                        {reportData === null
+                          ? 'Selecione os filtros para obter mais resultados'
+                          : 'Sem resultados para os filtros selecionados'}
+                      </td>
                     </tr>
-                  ))}
+                  ) : (
+                    reportRows.map((row) => (
+                      <tr key={row.area}>
+                        <td>{row.area}</td>
+                        <td>{row['Júnior'] ?? 0}</td>
+                        <td>{row['Intermédio'] ?? 0}</td>
+                        <td>{row['Sénior'] ?? 0}</td>
+                        <td>{row['Especialista'] ?? 0}</td>
+                        <td>{row['Líder de Conhecimento'] ?? 0}</td>
+                        <td className="is-total">{row.total}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

@@ -118,6 +118,12 @@
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
 }
 
+.sll-relatorios-table-card,
+.sll-relatorios-chart-card,
+.sll-relatorios-stat-card {
+  align-items: center;
+}
+
 .sll-relatorios-filters-card {
   padding: 15px 24px;
   display: flex;
@@ -143,7 +149,8 @@
   color: #8a92a6;
 }
 
-.sll-relatorios-filters-help img {
+.sll-relatorios-filters-help img,
+.sll-relatorios-filters-help svg {
   width: 15px;
   height: 15px;
   display: block;
@@ -187,7 +194,9 @@
 }
 
 .sll-relatorios-select-wrap {
-  width: 168px;
+  width: auto;
+  min-width: 160px;
+  max-width: 320px;
 }
 
 .sll-relatorios-select-wrap select {
@@ -215,26 +224,28 @@
 }
 
 .sll-relatorios-date-input {
-  width: 168px;
+  width: 180px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 16px;
+  padding: 4px 12px;
   height: 28px;
 }
 
 .sll-relatorios-date-input span {
   flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: inline-grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .sll-relatorios-date-input img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: block;
+  object-fit: contain;
 }
 
 .sll-relatorios-date-input input {
@@ -312,15 +323,15 @@
 
 .sll-relatorios-chart-visual {
   position: relative;
-  height: 300px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .sll-relatorios-pie-svg {
-  width: 161px;
-  height: 161px;
+  width: 100%;
+  height: auto;
   display: block;
 }
 
@@ -360,6 +371,12 @@
   bottom: 44px;
 }
 
+.sll-relatorios-chart-label.is-top-right,
+.sll-relatorios-chart-label.is-left,
+.sll-relatorios-chart-label.is-bottom-right {
+  display: none;
+}
+
 .sll-relatorios-table-card {
   padding: 15px 10px;
   display: flex;
@@ -368,37 +385,41 @@
 }
 
 .sll-relatorios-table-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .sll-relatorios-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  font-size: 13px;
 }
 
 .sll-relatorios-table th,
 .sll-relatorios-table td {
-  padding: 0 0 0 0;
+  padding: 6px 8px;
   border-bottom: 0.8px solid #e9ecef;
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sll-relatorios-table th {
-  height: 21px;
+  height: auto;
   color: #232d42;
-  font-size: 12px;
-  line-height: 21px;
+  font-size: 11px;
+  line-height: 1.4;
   font-weight: 600;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
 .sll-relatorios-table td {
-  height: 25px;
+  height: auto;
   color: #232d42;
-  font-size: 14px;
-  line-height: 24.5px;
+  font-size: 13px;
+  line-height: 1.4;
   font-weight: 400;
 }
 
@@ -409,22 +430,22 @@
 
 .sll-relatorios-table th:nth-child(1),
 .sll-relatorios-table td:nth-child(1) {
-  width: 34%;
+  width: 28%;
 }
 
 .sll-relatorios-table th:nth-child(2),
 .sll-relatorios-table th:nth-child(3),
 .sll-relatorios-table th:nth-child(4),
+.sll-relatorios-table th:nth-child(5),
+.sll-relatorios-table th:nth-child(6),
+.sll-relatorios-table th:nth-child(7),
 .sll-relatorios-table td:nth-child(2),
 .sll-relatorios-table td:nth-child(3),
-.sll-relatorios-table td:nth-child(4) {
-  width: 15%;
-  text-align: center;
-}
-
-.sll-relatorios-table th:nth-child(5),
-.sll-relatorios-table td:nth-child(5) {
-  width: 16%;
+.sll-relatorios-table td:nth-child(4),
+.sll-relatorios-table td:nth-child(5),
+.sll-relatorios-table td:nth-child(6),
+.sll-relatorios-table td:nth-child(7) {
+  width: 12%;
   text-align: center;
 }
 
@@ -483,6 +504,19 @@
   .sll-relatorios-select-wrap,
   .sll-relatorios-date-input {
     width: 100%;
+  }
+
+  .sll-relatorios-table-wrap {
+    overflow-x: auto;
+  }
+
+  .sll-relatorios-table {
+    font-size: 12px;
+  }
+
+  .sll-relatorios-table th,
+  .sll-relatorios-table td {
+    padding: 4px 6px;
   }
 }
 
