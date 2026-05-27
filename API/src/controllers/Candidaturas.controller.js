@@ -149,9 +149,10 @@ controllers.candidatarBadge = async (req, res) => {
         // 6. Criar notificação
         await NotificacoesPedidos.create({
             id_consultor: idConsultor,
-            id_pedido_badge: pedido.id_pedido_badge,
-            justificacao: 'Candidatura submetida via mobile. Aguarda validação.',
-            data_envio_notificacao: new Date()
+            notificacao: 'Candidatura Submetida',
+            descricao: 'A tua candidatura ao badge foi submetida e aguarda validação.',
+            remetente: 'Sistema de Badges',
+            data_de_envio: new Date()
         }, { transaction });
         await transaction.commit();
         firebase.notificarSync('pedidosBadge');

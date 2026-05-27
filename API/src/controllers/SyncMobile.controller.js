@@ -10,7 +10,7 @@ const Objetivos = require("../models/Objetivos.models");
 const Requisitos = require("../models/Requisitos.models");
 const Documentacoes = require("../models/Documentacoes.models");
 const Conquistas = require("../models/Conquistas.models");
-
+const ConquistasConsultores = require('../models/ConquistasConsultores.models')
 const Sequelize = require("sequelize");
 
 const controllers = {};
@@ -377,5 +377,35 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
     });
   }
 };
+
+
+controllers.syncConquistasConsultores = async (req, res) => {
+  try {
+    const { idConsultor } = req.params;
+    if (!idConsultor) {
+      return res.status(400).json({ erro: 'ID do consultor é obrigatório' });
+    }
+
+    const resultado = await ConquistasConsultores.findAll({
+      where: { id_consultor: idConsultor }
+    });
+
+    const data = resultado.map(item => ({
+      id_conquista_consultor: item.id_conquista_consultor,
+      id_consultor: item.id_consultor,
+      id_conquista: item.id_conquista
+    }));
+
+    return res.status(200).json(data);
+    
+  } catch (error) {
+    console.error("Erro no sync de ConquistasConsultores:", error);
+    return res.status(500).json({
+      error: "Erro interno ao sincronizar ConquistasConsultores",
+      details: error.message,
+    });
+  }
+}
+
 
 module.exports = controllers;

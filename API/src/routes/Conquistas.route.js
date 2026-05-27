@@ -7,7 +7,6 @@ var authVerification = require("../middleware/requireAuth.middleware");
 router.get('/get/consultor', authVerification, controllerConquistas.getConquistaByIdConsultor);
 
 // CONQUISTAS MOBILE
-router.get('/mobile/get/:id', controllerConquistas.getListaConquistasByIdConsultorMobile);
-// -> fazer rota de count(*) das conquistas obtidos por x consultor para (ecra_principal)
-
+router.get('/mobile/get/:idConsultor', controllerConquistas.getListaConquistasByIdConsultorMobile);
+router.get('/mobile/count/:idConsultor', controllerConquistas.getCountConquistasObtidasMobile);
 module.exports = router;

@@ -1,6 +1,7 @@
 const Conquistas = require('../models/Conquistas.models');
 const Utilizadores = require('../models/Utilizadores.models');
 const Consultores = require('../models/Consultores.models');
+const ConquistasConsultores = require('../models/ConquistasConsultores.models');
 
 const conquistasService = require("../services/conquistas.service");
 
@@ -34,16 +35,16 @@ controllers.getConquistaByIdConsultor = async (req, res) => {
     }
 };
 
-//MOBILE
+
 controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { idConsultor } = req.params;
 
-        if (!id) {
-            return res.status(400).json({ mensagem: "ID do consultor é obrigatório no header" });
+        if (!idConsultor) {
+            return res.status(400).json({ mensagem: "ID do consultor é obrigatório no body" });
         }
 
-        const resultadoService = await conquistasService.findByIdConsultor(id);
+        const resultadoService = await conquistasService.findByIdConsultor(idConsultor);
 
         // Mapear para o formato exato que o ConquistasModel do Flutter espera
         const listaFormatada = resultadoService.conquistas.map(c => ({
@@ -52,7 +53,7 @@ controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
             pontos_conquista: c.pontos_conquista,
             tipo_conquista: c.tipo_conquista,
             valor_conquista: c.valor_conquista,
-            estado_conquista: c.estado // No service chama-se 'estado', no Flutter 'estado_conquista'
+            estado_conquista: c.estado
         }));
 
         return res.json(listaFormatada);
@@ -66,7 +67,28 @@ controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
     }
 };
 
+// MOBILE - Retorna apenas o número total de conquistas obtidas
+controllers.getCountConquistasObtidasMobile = async (req, res) => {
+    try {
+        const { idConsultor } = req.params;
 
-//IMPLEMENTAR COUNT(*) numeroConquistasUtilizadorMobile
+        if (!idConsultor) {
+            return res.status(400).json({ mensagem: "ID do consultor é obrigatório no body" });
+        }
+
+        const count = await ConquistasConsultores.count({
+            where: { id_consultor: idConsultor }
+        });
+
+        return res.json({ total_conquistas_obtidas: count });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            mensagem: "Erro ao contar conquistas",
+            erro: error.message
+        });
+    }
+};
 
 module.exports = controllers;

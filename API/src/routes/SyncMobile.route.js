@@ -15,5 +15,6 @@ router.get("/historicoPedidos/:id",controllerSyncMobile.syncHistoricoPedidosMobi
 router.get("/objetivos/:id", controllerSyncMobile.syncObjetivosMobile);
 router.get("/requisitos", controllerSyncMobile.syncRequisitosMobile);
 router.get("/documentacoes/:id", controllerSyncMobile.syncDocumentacoesMobile);
+router.get("/conquistasConsultores/:idConsultor", controllerSyncMobile.syncConquistasConsultores);
 
 module.exports = router;
