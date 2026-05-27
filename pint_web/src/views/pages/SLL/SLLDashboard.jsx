@@ -1,3 +1,5 @@
+
+import { useState, useEffect } from 'react'
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -9,6 +11,12 @@ import {
   FaUserCircle,
   FaUsers,
 } from 'react-icons/fa'
+import SLLSidebar from '../../components/SLLSidebar'
+import SLLTopbar from '../../components/SLLTopbar'
+import './SLL-home.css'
+
+import { getDashboardSLL } from '../../../controllers/dashboard.controller'
+
 
 function IconTeamConsultores({ className }) {
   return (
@@ -188,52 +196,7 @@ function IconAlertBell({ className }) {
     </svg>
   )
 }
-import SLLSidebar from '../../components/SLLSidebar'
-import SLLTopbar from '../../components/SLLTopbar'
-import './SLL-home.css'
 
-const pendingRequests = [
-  {
-    title: 'Cloud Architecture - Intermedio',
-    consultant: 'Joao Silva',
-    deadline: 'Tempo limite de resposta termina em 3 dias',
-    deadlineTone: 'danger',
-    badgeLabel: 'CI',
-  },
-  {
-    title: 'Data Analytics - Senior',
-    consultant: 'Maria Santos',
-    deadline: 'Tempo limite de resposta termina em 5 dias',
-    deadlineTone: 'danger',
-    badgeLabel: 'DA',
-  },
-  {
-    title: 'Agile Leadership - Junior',
-    consultant: 'Pedro Costa',
-    deadline: 'Tempo limite de resposta termina em 10 dias',
-    deadlineTone: 'info',
-    badgeLabel: 'AL',
-  },
-]
-
-const teamStatusCards = [
-  { label: 'Aprovados', value: '85%', Icon: IconStatusApproved, tone: 'approved' },
-  { label: 'Pendentes', value: '12%', Icon: IconStatusPending,  tone: 'pending'  },
-  { label: 'Rejeitados', value: '3%', Icon: IconStatusRejected, tone: 'rejected' },
-]
-
-const topConsultants = [
-  { name: 'Joao Silva', badges: '15 badges', rank: '1o', rankTone: 'gold', profilePath: '/sll/perfil-publico' },
-  { name: 'Ana Costa', badges: '12 badges', rank: '2o', rankTone: 'silver', profilePath: '/sll/perfil-publico' },
-  { name: 'Maria Santos', badges: '10 badges', rank: '3o', rankTone: 'bronze', profilePath: '/sll/perfil-publico' },
-]
-
-const serviceLine = {
-  name: 'Hybrid Cloud',
-  consultants: 50,
-  badges: 150,
-  targetProgress: 72,
-}
 
 function PendingRequestCard({ request }) {
   return (
@@ -241,54 +204,111 @@ function PendingRequestCard({ request }) {
       <div className="sll-request-main">
         <h4>{request.title}</h4>
         <p className="sll-request-consultant">{request.consultant}</p>
-
         <div className={`sll-request-deadline is-${request.deadlineTone}`}>
           <IconDeadlineCalendar />
           <span>{request.deadline}</span>
         </div>
       </div>
 
-      <div className="sll-request-badge" aria-label={`Badge ${request.badgeLabel}`}>
-        {request.badgeLabel}
+      <div className="sll-request-badge" aria-hidden="true">
+        {request.image
+          ? <img src={request.image} alt="" />
+          : request.badgeLabel
+        }
       </div>
     </article>
   )
 }
 
-function SLLHomeView() {
+function resolveImagem(imagem_badge) {
+  if (!imagem_badge) return null
+  if (imagem_badge.startsWith('data:')) return imagem_badge
+  return `data:image/png;base64,${imagem_badge}`
+}
+
+function textoDeadline(diasRestantes) {
+  if (diasRestantes < 0) return `Tempo limite expirado há ${Math.abs(diasRestantes)} dias`
+  if (diasRestantes === 0) return 'Tempo limite termina hoje'
+  return `Tempo limite de resposta termina em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}`
+}
+
+function calcularDeadlineTone(diasRestantes) {
+  return diasRestantes <= 5 ? 'danger' : 'info'
+}
+
+const RANK_MAP = ['gold', 'silver', 'bronze']
+const RANK_LABEL = ['1o', '2o', '3o']
+
+
+function SLLDashboard() {
   const topbarRef = useRef(null)
+  const [dados, setDados] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState(null)
+
+  useEffect(() => {
+    getDashboardSLL()
+      .then(setDados)
+      .catch(() => setErro('Não foi possível carregar o dashboard.'))
+      .finally(() => setLoading(false))
+  }, [])
 
   function handleOpenNotifications() {
     topbarRef.current?.openNotifications()
   }
 
+  if (loading) return <p className="sll-loading">A carregar...</p>
+  if (erro) return <p className="sll-error">{erro}</p>
+
+  // Pedidos pendentes
+  const pendingRequests = (dados.proximos_pedidos_expirar ?? []).map(pedido => ({
+    title: `${pedido.nome_badge} - ${pedido.nivel_badge}`,
+    consultant: pedido.nome_consultor,
+    deadline: textoDeadline(pedido.tempo_resposta_dias),
+    deadlineTone: calcularDeadlineTone(pedido.tempo_resposta_dias),
+    image: resolveImagem(pedido.imagem_badge),
+  }))
+
+  // Cards de estado
+  const teamStatusCards = [
+    { label: 'Aprovados', value: `${Math.round(dados.percentagem_estados.aprovados)}%`, Icon: IconStatusApproved, tone: 'approved' },
+    { label: 'Pendentes', value: `${Math.round(dados.percentagem_estados.pendentes)}%`, Icon: IconStatusPending, tone: 'pending' },
+    { label: 'Rejeitados', value: `${Math.round(dados.percentagem_estados.rejeitados)}%`, Icon: IconStatusRejected, tone: 'rejected' },
+  ]
+
+  // Top consultores
+  const topConsultants = (dados.top_consultores ?? []).map((consultor, i) => ({
+    name: consultor.nome_consultor,
+    badges: `${consultor.total_badges} badges`,
+    rank: RANK_LABEL[i],
+    rankTone: RANK_MAP[i],
+    profilePath: `/sll/perfil-publico?name=${encodeURIComponent(consultor.nome_consultor)}`,
+  }))
+
   return (
     <div className="sll-homepage">
       <SLLSidebar />
-
       <main className="sll-main-content">
         <SLLTopbar ref={topbarRef} />
-
         <div className="sll-main-scroll">
+
           <section className="sll-hero" aria-label="Resumo de boas-vindas">
             <div className="sll-hero-copy">
-              <h1>Olá, João Silva!</h1>
-              <p>Hybrid Cloud</p>
+              <h1>Olá, {dados.nome_service_line_lider}!</h1>
+              <p>{dados.nome_service_line}</p>
             </div>
           </section>
 
+          {/* Notificações — count ainda não vem da API, manter neutro */}
           <button
             type="button"
             className="sll-alert-card"
-            aria-label="Abrir notificações: tem 5 alertas por ler"
+            aria-label="Abrir notificações"
             onClick={handleOpenNotifications}
           >
-            <div className="sll-alert-icon">
-              <IconAlertBell />
-            </div>
-
+            <div className="sll-alert-icon"><IconAlertBell /></div>
             <div className="sll-alert-copy">
-              <h3>Tem 5 alertas por ler</h3>
+              <h3>Tem alertas por ler</h3>
               <p>Aceda agora aos alertas</p>
             </div>
           </button>
@@ -300,15 +320,11 @@ function SLLHomeView() {
                   <IconPedidosPendentes className="sll-title-icon-svg" />
                   <h3>Pedidos Pendentes</h3>
                 </div>
-
-                <Link className="sll-link-btn" to="/sll/pendentes">
-                  Ver todos
-                </Link>
+                <Link className="sll-link-btn" to="/sll/pendentes">Ver todos</Link>
               </header>
-
               <div className="sll-request-list">
-                {pendingRequests.map((request) => (
-                  <PendingRequestCard key={request.title} request={request} />
+                {pendingRequests.map((request, i) => (
+                  <PendingRequestCard key={i} request={request} />
                 ))}
               </div>
             </article>
@@ -316,11 +332,9 @@ function SLLHomeView() {
             <div className="sll-status-column">
               {teamStatusCards.map((statusCard) => {
                 const Icon = statusCard.Icon
-
                 return (
                   <article className="sll-card sll-status-card" key={statusCard.label}>
                     <Icon className={`sll-status-icon-svg is-${statusCard.tone}`} />
-
                     <div>
                       <p>{statusCard.label}</p>
                       <strong>{statusCard.value}</strong>
@@ -334,7 +348,6 @@ function SLLHomeView() {
           <section className="sll-bottom-grid">
             <article className="sll-card sll-top-consultants-card">
               <h3>Top 3 Consultores</h3>
-
               <div className="sll-top-list">
                 {topConsultants.map((consultant) => (
                   <Link
@@ -347,13 +360,11 @@ function SLLHomeView() {
                       <span className="sll-top-avatar" aria-hidden="true">
                         <FaUserCircle />
                       </span>
-
                       <div>
                         <h4>{consultant.name}</h4>
                         <p>{consultant.badges}</p>
                       </div>
                     </div>
-
                     <span className={`sll-rank-badge is-${consultant.rankTone}`}>{consultant.rank}</span>
                   </Link>
                 ))}
@@ -364,30 +375,29 @@ function SLLHomeView() {
               <header className="sll-team-header">
                 <h3>Service Line Pessoal</h3>
               </header>
-
               <div className="sll-team-stats">
                 <article className="sll-team-stat">
                   <IconTeamConsultores className="sll-team-stat-icon-svg" />
                   <div className="sll-team-stat-copy">
-                    <strong>{serviceLine.consultants}</strong>
+                    <strong>{dados.total_consultores}</strong>
                     <p>Consultores</p>
                   </div>
                 </article>
-
                 <article className="sll-team-stat">
                   <IconTeamBadges className="sll-team-stat-icon-svg" />
                   <div className="sll-team-stat-copy">
-                    <strong>{serviceLine.badges}</strong>
+                    <strong>{dados.total_badges}</strong>
                     <p>Badges conquistados</p>
                   </div>
                 </article>
               </div>
             </article>
           </section>
+
         </div>
       </main>
     </div>
   )
 }
 
-export default SLLHomeView
+export default SLLDashboard

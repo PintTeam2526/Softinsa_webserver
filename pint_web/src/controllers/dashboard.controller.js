@@ -30,7 +30,29 @@ export async function getDashboardConsultor() {
 export async function getDashboardTM() {
   try {
     const response = await api.get('/dashboard/tm')
-    console.log('Dashboard TM data:', response.data) // RETIRAR DEPOIS
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados da dashboard', error)
+    throw error
+  }
+}
+
+// Para chamar a rota do back com os dados do SLL
+export async function getDashboardSLL() {
+  try {
+    const response = await api.get('/dashboard/sll')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados da dashboard', error)
+    throw error
+  }
+}
+
+// Para chamar a rota do back com os dados do Admin
+export async function getDashboardAdmin() {
+  try {
+    const response = await api.get('/dashboard/admin')
+    console.log('Dados da Dashboard Admin:', response.data) // RETIRAR DEPOIS
     return response.data
   } catch (error) {
     console.error('Erro ao obter dados da dashboard', error)

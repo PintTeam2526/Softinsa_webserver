@@ -12,7 +12,7 @@ import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
 import LoginView from './views/pages/auth/LoginView'
 import RegisterView from './views/pages/auth/RegisterView'
 import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
-import SLLHomeView from './views/pages/SLL/SLLHomeView'
+import SLLDashboard from './views/pages/SLL/SLLDashboard'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
 import SLLBadgesView from './views/pages/SLL/SLLBadgesView'
 import SLLMinhaEquipaView from './views/pages/SLL/SLLMinhaEquipaView'
@@ -41,7 +41,7 @@ function App() {
         <Route path="/registar" element={<RegisterView />} />
 
         <Route path="/talent-manager/*" element={<TalentManagerHomeView />} />
-        <Route path="/sll" element={<SLLHomeView />} />
+        <Route path="/sll" element={<SLLDashboard />} />
         <Route path="/sll/certificados" element={<SLLCertificadosView />} />
         <Route path="/sll/badges" element={<SLLBadgesView />} />
         <Route path="/sll/equipa" element={<SLLMinhaEquipaView />} />
