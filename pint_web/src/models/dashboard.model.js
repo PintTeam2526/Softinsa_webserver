@@ -23,7 +23,7 @@ export const badgesChartOptions = {
     type: 'gradient',
     gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 },
   },
-  xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug'] },
+  xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
   yaxis: { min: 54, max: 99 },
   legend: { position: 'top', horizontalAlign: 'right' },
   dataLabels: { enabled: false },
@@ -48,7 +48,10 @@ export const badgesChartByYear = {
     ],
   },
   2025: {
-    series: badgesChartSeries,
+    series: [
+      { name: 'Jornada Tecnica', data: [88, 82, 88, 78, 86, 88, 80, 92, 89, 90, 91, 87] },
+      { name: 'Power Skills', data: [78, 75, 78, 70, 76, 78, 72, 82, 79, 80, 81, 77] },
+    ],
   },
   2026: {
     series: [
@@ -59,6 +62,75 @@ export const badgesChartByYear = {
 }
 
 export const badgesChartYearOptions = [2023, 2024, 2025, 2026]
+
+export const badgesChartMonthOptions = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+export const badgesChartLearningPathByYear = {
+  2023: [
+    { name: 'Jornada Tecnica', data: [18, 28, 24, 31, 25, 36, 28, 20, 26, 24, 27, 22] },
+    { name: 'Power Skills', data: [15, 24, 20, 27, 22, 31, 24, 17, 21, 20, 23, 18] },
+  ],
+  2024: [
+    { name: 'Jornada Tecnica', data: [20, 31, 26, 35, 28, 39, 31, 22, 29, 27, 30, 25] },
+    { name: 'Power Skills', data: [17, 27, 22, 30, 24, 34, 27, 19, 24, 23, 26, 20] },
+  ],
+  2025: [
+    { name: 'Jornada Tecnica', data: [22, 38, 29, 41, 29, 46, 29, 22, 32, 29, 32, 22] },
+    { name: 'Power Skills', data: [19, 33, 26, 35, 26, 40, 26, 19, 28, 26, 28, 19] },
+  ],
+  2026: [
+    { name: 'Jornada Tecnica', data: [24, 41, 31, 44, 33, 49, 33, 24, 35, 32, 36, 24] },
+    { name: 'Power Skills', data: [21, 36, 29, 38, 29, 43, 29, 21, 31, 29, 31, 21] },
+  ],
+}
+
+export const badgesGroupedChartOptions = {
+  chart: {
+    type: 'bar',
+    toolbar: { show: false },
+    stacked: false,
+  },
+  colors: ['#3A57E8', '#85F4FA'],
+  plotOptions: {
+    bar: {
+      borderRadius: 8,
+      borderRadiusApplication: 'end',
+      borderRadiusWhenStacked: 'last',
+      columnWidth: '40%',
+    },
+  },
+  dataLabels: { enabled: false },
+  legend: { show: false },
+  xaxis: {
+    categories: badgesChartMonthOptions,
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: {
+      style: { colors: '#232D42', fontSize: '13px', fontWeight: 400 },
+    },
+  },
+  yaxis: {
+    min: 0,
+    max: 100,
+    tickAmount: 4,
+    labels: {
+      formatter: (value) => `${Math.round(value)}%`,
+      style: { colors: '#232D42', fontSize: '13px', fontWeight: 400 },
+    },
+  },
+  grid: {
+    borderColor: '#E9ECEF',
+    strokeDashArray: 0,
+    xaxis: { lines: { show: false } },
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: (value) => `${Math.round(value)}%`,
+    },
+  },
+}
 
 export const learningPathBadgeLevels = [
   {

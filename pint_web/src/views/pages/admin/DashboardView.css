@@ -87,6 +87,12 @@
   background: transparent;
 }
 
+.softinsa-primary-chart-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .softinsa-badges-card-header {
   display: flex;
   justify-content: space-between;
@@ -301,6 +307,170 @@
   line-height: 1.75;
 }
 
+.softinsa-primary-chart-body {
+  padding: 8px 24px 24px;
+}
+
+.softinsa-primary-chart-chart-wrap {
+  width: 100%;
+}
+
+.softinsa-primary-chart-periods {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: nowrap;
+}
+
+.softinsa-primary-chart-period-box {
+  width: 271px;
+  height: 37px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #ffffff;
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.softinsa-primary-chart-period-label {
+  color: #8a92a6;
+  font-size: 16px;
+  line-height: 1.75;
+  flex-shrink: 0;
+  height: 37px;
+  display: flex;
+  align-items: center;
+}
+
+.softinsa-primary-chart-year-dropdown {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.softinsa-primary-chart-year-dropdown-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8a92a6;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+  box-shadow: none !important;
+  text-decoration: none;
+}
+
+.softinsa-primary-chart-year-dropdown-toggle::after {
+  display: none;
+}
+
+.softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle,
+.softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:hover,
+.softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:focus,
+.softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:focus-visible,
+.softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:active,
+.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle,
+.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:hover,
+.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:focus,
+.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:active {
+  color: #8a92a6 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+.softinsa-primary-chart-year-dropdown-menu {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(66, 67, 75, 0.12);
+  padding: 8px;
+  min-width: 120px;
+}
+
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item {
+  border-radius: 8px;
+  color: #232d42;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item:hover,
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item:focus,
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item:focus-visible,
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item.active,
+.softinsa-primary-chart-year-dropdown-menu .dropdown-item:active {
+  background: #e9ecef;
+  color: #232d42;
+}
+
+.softinsa-primary-chart-period-dropdown {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.softinsa-primary-chart-period-toggle {
+  background: transparent;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  width: 100%;
+  color: #8a92a6 !important;
+}
+
+.softinsa-primary-chart-period-toggle::after {
+  display: none;
+}
+
+.softinsa-primary-chart-period-toggle:hover,
+.softinsa-primary-chart-period-toggle:focus,
+.softinsa-primary-chart-period-toggle:focus-visible,
+.softinsa-primary-chart-period-toggle:active,
+.softinsa-primary-chart-period-dropdown.show > .softinsa-primary-chart-period-toggle {
+  background: #ffffff !important;
+  color: #8a92a6 !important;
+  border-color: #eee !important;
+}
+
+.softinsa-primary-chart-period-placeholder,
+.softinsa-primary-chart-period-placeholder:hover,
+.softinsa-primary-chart-period-placeholder:focus,
+.softinsa-primary-chart-period-placeholder:focus-visible,
+.softinsa-primary-chart-period-placeholder:active,
+.softinsa-primary-chart-period-dropdown.show > .softinsa-primary-chart-period-placeholder {
+  color: #c5c9d3 !important;
+}
+
+.softinsa-primary-chart-period-menu {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(66, 67, 75, 0.12);
+  padding: 8px;
+  min-width: 120px;
+}
+
+.softinsa-primary-chart-period-menu .dropdown-item {
+  border-radius: 8px;
+  color: #232d42;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.softinsa-primary-chart-period-menu .dropdown-item:hover,
+.softinsa-primary-chart-period-menu .dropdown-item:focus,
+.softinsa-primary-chart-period-menu .dropdown-item:focus-visible,
+.softinsa-primary-chart-period-menu .dropdown-item.active,
+.softinsa-primary-chart-period-menu .dropdown-item:active {
+  background: #e9ecef;
+  color: #232d42;
+}
+
 @media (max-width: 992px) {
   .softinsa-dashboard-page {
     padding: 0 16px 20px;
@@ -330,5 +500,30 @@
   .softinsa-learning-path-legend-content p,
   .softinsa-learning-path-legend-content strong {
     font-size: 14px;
+  }
+
+  .softinsa-primary-chart-header {
+    flex-wrap: wrap;
+  }
+
+  .softinsa-primary-chart-body {
+    padding: 8px 20px 20px;
+  }
+
+  .softinsa-primary-chart-periods {
+    flex-wrap: wrap;
+  }
+
+  .softinsa-primary-chart-period-box {
+    width: auto;
+    flex: 1 1 220px;
+  }
+
+  .softinsa-primary-chart-period-dropdown {
+    flex: 1 1 220px;
+  }
+
+  .softinsa-primary-chart-period-box {
+    width: 100%;
   }
 }
