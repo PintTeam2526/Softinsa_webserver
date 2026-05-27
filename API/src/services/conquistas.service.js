@@ -72,16 +72,29 @@ async function findByIdConsultor(idConsultor) {
         where: { id_consultor: idConsultor }
     });
 
+    const totalBadges = await BadgesConcluidos.count({
+        where: { id_consultor: idConsultor }
+    });
+
+    const Consultores = require('../models/Consultores.models');
+    const consultor = await Consultores.findByPk(idConsultor, {
+        attributes: ['total_pontos']
+    });
+
     const idsObtidos = new Set(conquistasObtidas.map(c => c.id_conquista));
 
-    return todasConquistas.map(c => ({
-        id_conquista: c.id_conquista,
-        descricao_conquista: c.descricao_conquista,
-        pontos_conquista: c.pontos_conquista,
-        tipo_conquista: c.tipo_conquista,
-        valor_conquista: c.valor_conquista,
-        estado: idsObtidos.has(c.id_conquista) ? 'Obtido' : 'Por Obter'
-    }));
+    return {
+        total_badges: totalBadges,
+        total_pontos: consultor ? consultor.total_pontos : 0,
+        conquistas: todasConquistas.map(c => ({
+            id_conquista: c.id_conquista,
+            descricao_conquista: c.descricao_conquista,
+            pontos_conquista: c.pontos_conquista,
+            tipo_conquista: c.tipo_conquista,
+            valor_conquista: c.valor_conquista,
+            estado: idsObtidos.has(c.id_conquista) ? 'Obtido' : 'Por Obter'
+        }))
+    };
 }
 
 module.exports = {
