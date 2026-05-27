@@ -48,8 +48,7 @@ Consultores.afterUpdate(async (consultor) => {
         if (consultor.changed('total_pontos')) {
             const conquistasService = require('../services/conquistas.service'); // lazy require
             await conquistasService.verificarConquistasPontos(
-                consultor.id_consultor,
-                consultor.total_pontos
+                consultor.id_consultor
             );
         }
     } catch (err) {
