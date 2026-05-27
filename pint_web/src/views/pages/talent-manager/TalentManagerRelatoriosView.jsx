@@ -1,6 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import './TalentManagerRelatoriosView.css'
 
+import { getAreas } from '../../../controllers/areasController'
+import { getRelatorio } from '../../../controllers/gestaoController'
+
+// ── constantes de UI (não são dados, não vêm da API) ───────────────────────────
 const infoIcon = 'https://www.figma.com/api/mcp/asset/e9cb1122-307c-4ebc-938d-34bf0718335c'
 const calendarIcon = 'https://www.figma.com/api/mcp/asset/3d4c9dd9-6d87-4575-baf8-e93232ba25fd'
 const selectArrow = 'https://www.figma.com/api/mcp/asset/3ccd3cf8-7fc5-47f6-9509-a387af5d81f7'
@@ -13,40 +17,18 @@ const summaryCards = [
 ]
 
 const areaChartLabels = [
-  { text: 'LowCode (Outsystems) 34%', tone: 'is-dark', className: 'is-top-right' },
-  { text: 'DevOps 29%', tone: 'is-medium', className: 'is-left' },
-  { text: 'Sourc. & Talent Manag.\n37%', tone: 'is-light', className: 'is-bottom-right' },
+  { tone: 'is-dark', className: 'is-top-right' },
+  { tone: 'is-medium', className: 'is-left' },
+  { tone: 'is-light', className: 'is-bottom-right' },
 ]
 
 const levelChartLabels = [
-  { text: 'Junior 40%', tone: 'is-dark', className: 'is-top-right' },
-  { text: 'Intermédio 33%', tone: 'is-medium', className: 'is-left' },
-  { text: 'Senior 27%', tone: 'is-light', className: 'is-bottom-right' },
+  { tone: 'is-dark', className: 'is-top-right' },
+  { tone: 'is-medium', className: 'is-left' },
+  { tone: 'is-light', className: 'is-bottom-right' },
 ]
 
-const reportRows = [
-  { area: 'LowCode (Outsystems)', junior: 32, intermediate: 28, senior: 25, total: 85 },
-  { area: 'DevOps', junior: 28, intermediate: 24, senior: 20, total: 72 },
-  { area: 'Sourc. & Talent Manag.', junior: 38, intermediate: 30, senior: 23, total: 91 },
-]
-
-const reportEntries = [
-  { area: 'LowCode (Outsystems)', level: 'Junior', date: '2024-12-04', status: 'Aprovado' },
-  { area: 'LowCode (Outsystems)', level: 'Junior', date: '2024-11-20', status: 'Aprovado' },
-  { area: 'LowCode (Outsystems)', level: 'Intermédio', date: '2024-11-08', status: 'Aprovado' },
-  { area: 'LowCode (Outsystems)', level: 'Senior', date: '2024-10-13', status: 'Rejeitado' },
-  { area: 'DevOps', level: 'Junior', date: '2024-12-01', status: 'Aprovado' },
-  { area: 'DevOps', level: 'Intermédio', date: '2024-11-15', status: 'Aprovado' },
-  { area: 'DevOps', level: 'Senior', date: '2024-10-30', status: 'Aprovado' },
-  { area: 'DevOps', level: 'Senior', date: '2024-09-17', status: 'Rejeitado' },
-  { area: 'Sourc. & Talent Manag', level: 'Junior', date: '2024-12-06', status: 'Aprovado' },
-  { area: 'Sourc. & Talent Manag', level: 'Intermédio', date: '2024-11-11', status: 'Aprovado' },
-  { area: 'Sourc. & Talent Manag', level: 'Senior', date: '2024-10-22', status: 'Aprovado' },
-  { area: 'Sourc. & Talent Manag', level: 'Senior', date: '2024-09-05', status: 'Rejeitado' },
-]
-
-const reportAreaOptions = [...new Set(reportEntries.map((entry) => entry.area))]
-
+// ── componentes ────────────────────────────────────────────────────────────────
 function PieGraphic() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="161" height="161" viewBox="0 0 161 161" fill="none" aria-hidden="true" className="sll-relatorios-pie-svg">
@@ -61,10 +43,8 @@ function PieChartCard({ title, labels }) {
   return (
     <article className="sll-relatorios-chart-card">
       <h3>{title}</h3>
-
       <div className="sll-relatorios-chart-visual" aria-hidden="true">
         <PieGraphic />
-
         {labels.map((label) => (
           <span key={label.text} className={`sll-relatorios-chart-label ${label.className} ${label.tone}`}>
             {label.text}
@@ -84,97 +64,95 @@ function StatCard({ label, value }) {
   )
 }
 
+// ── view ───────────────────────────────────────────────────────────────────────
 function TalentManagerRelatoriosView() {
+  const [reportData, setReportData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [areas, setAreas] = useState([])
   const [selectedArea, setSelectedArea] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [appliedFilters, setAppliedFilters] = useState({
-    area: '',
-    startDate: '',
-    endDate: '',
-  })
 
-  const filteredEntries = useMemo(() => {
-    return reportEntries.filter((entry) => {
-      const matchesArea = !appliedFilters.area || entry.area === appliedFilters.area
-      const matchesStartDate = !appliedFilters.startDate || entry.date >= appliedFilters.startDate
-      const matchesEndDate = !appliedFilters.endDate || entry.date <= appliedFilters.endDate
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true)
+        setError(null)
 
-      return matchesArea && matchesStartDate && matchesEndDate
-    })
-  }, [appliedFilters.area, appliedFilters.endDate, appliedFilters.startDate])
+        const [relatorioData, areasData] = await Promise.all([
+          getRelatorio(),
+          getAreas(),
+        ])
 
-  const summaryValues = useMemo(() => {
-    const total = filteredEntries.length
-    const approved = filteredEntries.filter((entry) => entry.status === 'Aprovado').length
-    const rejected = filteredEntries.filter((entry) => entry.status === 'Rejeitado').length
-    const approvalRate = total > 0 ? Math.round((approved / total) * 100) : 0
+        setReportData(relatorioData)
+        setAreas(areasData)
+
+      } catch (err) {
+        console.log(err)
+        setError('Erro ao carregar relatório.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  const filteredReportData = useMemo(() => {
+    if (!reportData) return null
+
+    let detalhes = [...(reportData.detalhes || [])]
+
+    if (selectedArea) {
+      const areaSelecionada = areas.find(
+        (a) => String(a.id_area) === String(selectedArea)
+      )
+
+      if (areaSelecionada) {
+        detalhes = detalhes.filter(
+          (row) => row.area === areaSelecionada.nome_area
+        )
+      }
+    }
 
     return {
-      total,
-      approved,
-      rejected,
-      approvalRate,
+      ...reportData,
+      detalhes,
     }
-  }, [filteredEntries])
+  }, [reportData, selectedArea, areas])
 
-  const filteredAreaLabels = useMemo(() => {
-    const approvedEntries = filteredEntries.filter((entry) => entry.status === 'Aprovado')
-    const areaCounts = reportAreaOptions.map((area) => ({
-      area,
-      count: approvedEntries.filter((entry) => entry.area === area).length,
-    }))
-    const total = areaCounts.reduce((sum, item) => sum + item.count, 0) || 1
-
-    return areaCounts.map((item, index) => ({
-      text: `${item.area} ${Math.round((item.count / total) * 100)}%`,
-      tone: areaChartLabels[index].tone,
-      className: areaChartLabels[index].className,
-    }))
-  }, [filteredEntries])
-
-  const filteredLevelLabels = useMemo(() => {
-    const approvedEntries = filteredEntries.filter((entry) => entry.status === 'Aprovado')
-    const levelOrder = ['Junior', 'Intermédio', 'Senior']
-    const counts = levelOrder.map((level) => ({
-      level,
-      count: approvedEntries.filter((entry) => entry.level === level).length,
-    }))
-    const total = counts.reduce((sum, item) => sum + item.count, 0) || 1
-
-    return counts.map((item, index) => ({
-      text: `${item.level} ${Math.round((item.count / total) * 100)}%`,
-      tone: levelChartLabels[index].tone,
-      className: levelChartLabels[index].className,
-    }))
-  }, [filteredEntries])
-
-  const filteredReportRows = useMemo(() => {
-    return reportRows.map((row) => {
-      const approvedEntries = filteredEntries.filter((entry) => entry.status === 'Aprovado' && entry.area === row.area)
-      const counts = {
-        junior: approvedEntries.filter((entry) => entry.level === 'Junior').length,
-        intermediate: approvedEntries.filter((entry) => entry.level === 'Intermédio').length,
-        senior: approvedEntries.filter((entry) => entry.level === 'Senior').length,
-      }
-
-      return {
-        area: row.area,
-        junior: counts.junior,
-        intermediate: counts.intermediate,
-        senior: counts.senior,
-        total: counts.junior + counts.intermediate + counts.senior,
-      }
-    })
-  }, [filteredEntries])
-
-  function applyFilters() {
-    setAppliedFilters({
-      area: selectedArea,
-      startDate,
-      endDate,
-    })
+  const summaryValues = {
+    total: filteredReportData?.resumo?.total_badges || 0,
+    approved: filteredReportData?.resumo?.badges_aprovados || 0,
+    rejected: filteredReportData?.resumo?.badges_rejeitados || 0,
+    approvalRate: `${filteredReportData?.resumo?.taxa_aprovacao || 0}%`,
   }
+
+  const filteredAreaLabels =
+    filteredReportData?.distribuicao_por_area?.map((item, index) => ({
+      text: `${item.nome} ${item.percentagem}%`,
+      tone: areaChartLabels[index % areaChartLabels.length].tone,
+      className: areaChartLabels[index % areaChartLabels.length].className,
+    })) || []
+
+  const filteredLevelLabels =
+    filteredReportData?.distribuicao_por_nivel?.map((item, index) => ({
+      text: `${item.nome} ${item.percentagem}%`,
+      tone: levelChartLabels[index % levelChartLabels.length].tone,
+      className: levelChartLabels[index % levelChartLabels.length].className,
+    })) || []
+
+  const filteredReportRows = filteredReportData?.detalhes || []
+
+  const reportAreaOptions =
+    areas.map((area) => ({
+      id: area.id_area,
+      nome: area.nome_area,
+    }))
+
+  if (loading) return <div className="sll-relatorios-page"><p>A carregar...</p></div>
+  if (error) return <div className="sll-relatorios-page"><p>{error}</p></div>
 
   return (
     <div className="sll-relatorios-page">
@@ -190,7 +168,6 @@ function TalentManagerRelatoriosView() {
           <section className="sll-relatorios-filters-card" aria-label="Filtros para Relatórios">
             <div className="sll-relatorios-filters-heading">
               <h2>Filtros para Relatórios</h2>
-
               <div className="sll-relatorios-filters-help">
                 <img src={infoIcon} alt="" aria-hidden="true" />
                 <p>Selecione os filtros e clique em "Gerar Relatório"</p>
@@ -201,13 +178,11 @@ function TalentManagerRelatoriosView() {
               <div className="sll-relatorios-field">
                 <label>Área</label>
                 <div className="sll-relatorios-select-wrap">
-                  <select value={selectedArea} onChange={(event) => setSelectedArea(event.target.value)}>
-                    <option value="">
-                      Selecione a área
-                    </option>
+                  <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
+                    <option value="">Selecione a área</option>
                     {reportAreaOptions.map((area) => (
-                      <option key={area} value={area}>
-                        {area}
+                      <option key={area.id} value={area.id}>
+                        {area.nome}
                       </option>
                     ))}
                   </select>
@@ -218,34 +193,20 @@ function TalentManagerRelatoriosView() {
               <div className="sll-relatorios-field">
                 <label>Data início</label>
                 <div className="sll-relatorios-date-input">
-                  <span aria-hidden="true">
-                    <img src={calendarIcon} alt="" />
-                  </span>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(event) => setStartDate(event.target.value)}
-                    aria-label="Data início"
-                  />
+                  <span aria-hidden="true"><img src={calendarIcon} alt="" /></span>
+                  <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} aria-label="Data início" />
                 </div>
               </div>
 
               <div className="sll-relatorios-field">
                 <label>Data fim</label>
                 <div className="sll-relatorios-date-input">
-                  <span aria-hidden="true">
-                    <img src={calendarIcon} alt="" />
-                  </span>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(event) => setEndDate(event.target.value)}
-                    aria-label="Data fim"
-                  />
+                  <span aria-hidden="true"><img src={calendarIcon} alt="" /></span>
+                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} aria-label="Data fim" />
                 </div>
               </div>
 
-              <button type="button" className="sll-relatorios-generate-btn" onClick={applyFilters}>
+              <button type="button" className="sll-relatorios-generate-btn">
                 Gerar Relatório
               </button>
             </div>
@@ -258,19 +219,12 @@ function TalentManagerRelatoriosView() {
           </section>
 
           <section className="sll-relatorios-charts-grid" aria-label="Distribuição de badges">
-            <PieChartCard
-              title="Distribuição de Badges Aprovados por Área"
-              labels={filteredAreaLabels}
-            />
-            <PieChartCard
-              title="Distribuição de Badges Aprovados por Nível"
-              labels={filteredLevelLabels}
-            />
+            <PieChartCard title="Distribuição de Badges Aprovados por Área" labels={filteredAreaLabels} />
+            <PieChartCard title="Distribuição de Badges Aprovados por Nível" labels={filteredLevelLabels} />
           </section>
 
           <section className="sll-relatorios-table-card" aria-label="Detalhes por Área e Nível">
             <h2>Detalhes por Área e Nível</h2>
-
             <div className="sll-relatorios-table-wrap">
               <table className="sll-relatorios-table">
                 <thead>
@@ -286,9 +240,9 @@ function TalentManagerRelatoriosView() {
                   {filteredReportRows.map((row) => (
                     <tr key={row.area}>
                       <td>{row.area}</td>
-                      <td>{row.junior}</td>
-                      <td>{row.intermediate}</td>
-                      <td>{row.senior}</td>
+                      <td>{row.Junior || 0}</td>
+                      <td>{row['Intermédio'] || 0}</td>
+                      <td>{row.Senior || 0}</td>
                       <td className="is-total">{row.total}</td>
                     </tr>
                   ))}
