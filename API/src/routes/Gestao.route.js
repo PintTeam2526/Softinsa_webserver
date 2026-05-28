@@ -3,11 +3,11 @@ var router = express.Router();
 var controllerGestao = require('../controllers/Gestao.controller');
 var authVerification = require('../middleware/requireAuth.middleware')
 
-// Buscar todas as RGPD
-//router.get('/rgpd/get', controllerGestao.getRGPD);
+// Buscar o RGPD
+router.get('/rgpd/get', controllerGestao.getRGPD);
 
-// Atualizar uma RGPD
-//router.put('/rgpd/update', authVerification, controllerGestao.updateRGPD);
+// Atualizar o RGPD
+router.put('/rgpd/update', authVerification, controllerGestao.updateRGPD);
 
 // Buscar consultores e badges obtidos para certificado
 router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
@@ -16,7 +16,7 @@ router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
 router.get('/rank', authVerification, controllerGestao.rankConsultores)
 
 // Rota para dados de relatorio
-router.get("/relatorio", authVerification, controllerGestao.relatorio);
+router.post("/relatorio", authVerification, controllerGestao.relatorio);
 
 
 
