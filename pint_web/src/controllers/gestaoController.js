@@ -33,3 +33,25 @@ export async function getRelatorio(body = {}) {
     throw error
   }
 }
+
+// Listar as politicas RGPD
+export async function getRGPD() {
+  try {
+    const response = await api.get('/gestao/rgpd/get')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados das politicas RGPD', error)
+    throw error
+  }
+}
+
+// Editar as politicas RGPD
+export const updateRGPD = async (payload) => {
+  try {
+    const response = await api.put('/gestao/rgpd/update', payload)
+    return response.data
+  } catch (error) {
+    console.error('Erro ao atualizar politicas RGPD', error)
+    throw error
+  }
+}
