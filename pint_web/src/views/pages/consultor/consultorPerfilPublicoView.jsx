@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   HiOutlineCog6Tooth,
   HiOutlineLockClosed,
@@ -11,39 +11,33 @@ import {
 import './ConsultorPerfilPublicoView.css'
 import '../shared/profile-settings.css'
 
-const profileAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
-const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
-const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
-const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
-const pointsIcon = 'https://www.figma.com/api/mcp/asset/04bde155-b1b0-4e83-a0ac-bbe66455a2ac'
-const badgesIcon = 'https://www.figma.com/api/mcp/asset/82b97222-c9bc-455b-8ec3-a10e2b83a611'
-const emailIcon = 'https://www.figma.com/api/mcp/asset/f04e06a5-1254-43d1-8f09-ba10e5880272'
-const badgesHeaderIcon = 'https://www.figma.com/api/mcp/asset/deafc32c-7998-4d73-9605-1647183ccd65'
+import { getConsultor, updateConsultor } from '../../../controllers/utilizadoresController'
+import { getRGPD } from '../../../controllers/gestaoController'
 
-const badges = [
-  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
-  { image: badgeTeamLeader, name: 'Team Lider Beginner', date: '31/12/2025' },
-  { image: badgeDevOps, name: 'DevOps Intermidiate', date: '31/12/2025' },
-  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
-]
+// ─── Aceitação RGPD (estado local do browser) ────────────────────────────────
+const ACCEPTANCE_STORAGE_KEY = 'softinsa.rgpd.acceptance'
 
-const PREFERRED_AREAS = [
-  'LowCode (Outsystems)',
-  'Talent Management',
-  'DevOps',
-  'Hybrid Cloud',
-  'Data & Analytics',
-  'Cybersecurity',
-]
+function getStoredAcceptance() {
+  try {
+    const raw = localStorage.getItem(ACCEPTANCE_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : null
+  } catch {
+    localStorage.removeItem(ACCEPTANCE_STORAGE_KEY)
+    return null
+  }
+}
 
-function BadgeItem({ image, name, date }) {
+// ─── Componentes auxiliares ───────────────────────────────────────────────────
+function BadgeItem({ imagem, nome, data }) {
   return (
     <div className="sll-profile-badge-item">
       <div className="sll-profile-badge-image">
-        <img src={image} alt={name} />
+        <img src={imagem} alt={nome} />
       </div>
-      <p>{name}</p>
-      <span>{date}</span>
+      <p>{nome}</p>
+      <span>{data}</span>
     </div>
   )
 }
@@ -70,16 +64,11 @@ function Modal({ title, onClose, children }) {
         className="sll-profile-modal"
         role="dialog"
         aria-label={title}
-        onClick={(event) => event.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <header className="sll-profile-modal-header">
           <h3>{title}</h3>
-          <button
-            type="button"
-            className="sll-profile-modal-close"
-            onClick={onClose}
-            aria-label="Fechar"
-          >
+          <button type="button" className="sll-profile-modal-close" onClick={onClose} aria-label="Fechar">
             <HiOutlineXMark aria-hidden="true" />
           </button>
         </header>
@@ -89,83 +78,203 @@ function Modal({ title, onClose, children }) {
   )
 }
 
+function RgpdConsentModal({ politica, onAccept, onReject }) {
+  const [checked, setChecked] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleAccept = () => {
+    if (!checked) { setError('Para continuar, aceite a política.'); return }
+    onAccept()
+  }
+
+  const handleReject = () => {
+    setChecked(false)
+    setError('Sem aceitação não é possível concluir o primeiro acesso.')
+    onReject()
+  }
+
+  return (
+    <div className="sll-profile-modal-backdrop" role="presentation">
+      <div className="sll-profile-modal" role="dialog" aria-label="Aceitação de termos RGPD">
+        <header className="sll-profile-modal-header">
+          <h3>Aceitação de termos</h3>
+        </header>
+
+        <p>Primeiro acesso detetado. Para continuar no portal, confirme a política abaixo.</p>
+
+        <div className="sll-profile-rgpd-policy">{politica}</div>
+
+        <label className="sll-profile-rgpd-consent-item">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => { setChecked(e.target.checked); if (error) setError('') }}
+          />
+          <span>Li e aceito as políticas RGPD.</span>
+        </label>
+
+        {error ? <p className="sll-profile-rgpd-error">{error}</p> : null}
+
+        <div className="sll-profile-modal-actions">
+          <button type="button" className="sll-profile-btn-secondary" onClick={handleReject}>
+            Recusar
+          </button>
+          <button
+            type="button"
+            className={`sll-profile-btn-primary${!checked ? ' is-disabled' : ''}`}
+            onClick={handleAccept}
+            disabled={!checked}
+          >
+            Aceitar e continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── View principal ───────────────────────────────────────────────────────────
 function ConsultorPerfilPublicoView() {
+  // Dados do perfil
+  const [perfil, setPerfil] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // RGPD
+  const [rgpdPolitica, setRgpdPolitica] = useState(null)
+  const [acceptance, setAcceptance] = useState(getStoredAcceptance)
+
+  // UI
   const [activeModal, setActiveModal] = useState(null)
-  const [feedback, setFeedback] = useState('')
+  const [feedback, setFeedback] = useState({ message: '', type: 'success' })
+  const [isSaving, setIsSaving] = useState(false)
 
-  const [email, setEmail] = useState('antoniopt@gmail.com')
-  const [preferredArea, setPreferredArea] = useState('LowCode (Outsystems)')
-  const [avatarUrl, setAvatarUrl] = useState(profileAvatar)
-
+  // Formulários dos modais
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' })
-  const [emailForm, setEmailForm] = useState({ next: email, password: '' })
-  const [areaDraft, setAreaDraft] = useState(preferredArea)
-  const [avatarDraft, setAvatarDraft] = useState(avatarUrl)
+  const [emailForm, setEmailForm] = useState({ next: '', password: '' })
+  const [areaDraft, setAreaDraft] = useState('')
+  const [avatarDraft, setAvatarDraft] = useState('')
   const fileInputRef = useRef(null)
 
-  const profileStats = useMemo(
-    () => [
-      { icon: pointsIcon, label: '550 Pontos' },
-      { icon: badgesIcon, label: '9 Badges Obtidos' },
-      { icon: emailIcon, label: email },
-    ],
-    [email],
-  )
+  const hasAcceptedRgpd = useMemo(() => {
+    if (!rgpdPolitica?.trim()) return true
+    return Boolean(acceptance && acceptance.version === rgpdPolitica)
+  }, [acceptance, rgpdPolitica])
 
+  // Carrega perfil e RGPD em paralelo
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true)
+      try {
+        const [consultorData, rgpdData] = await Promise.all([
+          getConsultor(),
+          getRGPD(),
+        ])
+        setPerfil(consultorData)
+        setEmailForm((prev) => ({ ...prev, next: consultorData?.email ?? '' }))
+        setAreaDraft(consultorData?.area ?? '')
+        setAvatarDraft(consultorData?.foto ?? '')
+        setRgpdPolitica(rgpdData?.politica ?? '')
+      } catch (err) {
+        flashFeedback('Erro ao carregar os dados do perfil.', 'error')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  const profileStats = useMemo(() => {
+    if (!perfil) return []
+    return [
+      { label: `${perfil.total_pontos ?? 0} Pontos` },
+      { label: `${perfil.total_badges ?? 0} Badges Obtidos` },
+      { label: perfil.email ?? '' },
+    ]
+  }, [perfil])
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
   function openModal(name) {
-    setFeedback('')
-    if (name === 'email') setEmailForm({ next: email, password: '' })
-    if (name === 'area') setAreaDraft(preferredArea)
-    if (name === 'image') setAvatarDraft(avatarUrl)
+    setFeedback({ message: '', type: 'success' })
+    if (name === 'email') setEmailForm({ next: perfil?.email ?? '', password: '' })
+    if (name === 'area') setAreaDraft(perfil?.area ?? '')
+    if (name === 'image') setAvatarDraft(perfil?.foto ?? '')
     if (name === 'password') setPasswordForm({ current: '', next: '', confirm: '' })
     setActiveModal(name)
   }
 
-  function closeModal() {
-    setActiveModal(null)
+  function closeModal() { setActiveModal(null) }
+
+  function flashFeedback(message, type = 'success') {
+    setFeedback({ message, type })
+    window.setTimeout(() => setFeedback({ message: '', type: 'success' }), 2400)
   }
 
-  function flashFeedback(message) {
-    setFeedback(message)
-    window.setTimeout(() => setFeedback(''), 2400)
+  async function saveUpdate(payload, successMsg) {
+    setIsSaving(true)
+    try {
+      const updated = await updateConsultor(payload)
+      setPerfil((prev) => ({ ...prev, ...updated }))
+      closeModal()
+      flashFeedback(successMsg)
+    } catch {
+      flashFeedback('Não foi possível guardar as alterações.', 'error')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
-  function handlePasswordSubmit(event) {
-    event.preventDefault()
+  // ── Handlers dos modais ────────────────────────────────────────────────────
+  async function handlePasswordSubmit(e) {
+    e.preventDefault()
     const { current, next, confirm } = passwordForm
     if (!current || !next || next !== confirm) return
-    closeModal()
-    flashFeedback('Password atualizada com sucesso.')
+    await saveUpdate({ passwordAtual: current, passwordNova: next }, 'Password atualizada com sucesso.')
   }
 
-  function handleEmailSubmit(event) {
-    event.preventDefault()
+  async function handleEmailSubmit(e) {
+    e.preventDefault()
     if (!emailForm.next.trim()) return
-    setEmail(emailForm.next.trim())
-    closeModal()
-    flashFeedback('Email atualizado.')
+    await saveUpdate({ email: emailForm.next.trim(), password: emailForm.password }, 'Email atualizado.')
   }
 
-  function handleAreaSubmit(event) {
-    event.preventDefault()
-    setPreferredArea(areaDraft)
-    closeModal()
-    flashFeedback('Área de preferência atualizada.')
+  async function handleAreaSubmit(e) {
+    e.preventDefault()
+    await saveUpdate({ area: areaDraft }, 'Área de preferência atualizada.')
   }
 
-  function handleAvatarFile(event) {
-    const [file] = event.target.files || []
+  function handleAvatarFile(e) {
+    const [file] = e.target.files || []
     if (!file) return
     const reader = new FileReader()
     reader.onload = () => setAvatarDraft(String(reader.result))
     reader.readAsDataURL(file)
   }
 
-  function handleAvatarSubmit(event) {
-    event.preventDefault()
-    setAvatarUrl(avatarDraft)
-    closeModal()
-    flashFeedback('Imagem de perfil atualizada.')
+  async function handleAvatarSubmit(e) {
+    e.preventDefault()
+    await saveUpdate({ foto: avatarDraft }, 'Imagem de perfil atualizada.')
+  }
+
+  // ── RGPD ───────────────────────────────────────────────────────────────────
+  function handleRgpdAccept() {
+    const next = { version: rgpdPolitica, acceptedAt: new Date().toISOString() }
+    localStorage.setItem(ACCEPTANCE_STORAGE_KEY, JSON.stringify(next))
+    setAcceptance(next)
+  }
+
+  function handleRgpdReject() {
+    // Mantém o modal aberto com mensagem de erro (gerido dentro do RgpdConsentModal)
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="sll-profile-page">
+        <main className="sll-profile-main">
+          <div className="sll-profile-loading" aria-live="polite">A carregar perfil…</div>
+        </main>
+      </div>
+    )
   }
 
   return (
@@ -179,26 +288,28 @@ function ConsultorPerfilPublicoView() {
             </div>
           </section>
 
-          {feedback ? (
-            <div className="sll-profile-feedback" role="status">
-              {feedback}
+          {feedback.message ? (
+            <div
+              className={`sll-profile-feedback sll-profile-feedback--${feedback.type}`}
+              role="status"
+            >
+              {feedback.message}
             </div>
           ) : null}
 
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={avatarUrl} alt="António Portugal" />
+                <img src={perfil?.foto} alt={perfil?.nome} />
               </div>
-
               <div className="sll-profile-copy">
                 <div className="sll-profile-name-row">
-                  <h2>António Portugal</h2>
+                  <h2>{perfil?.nome}</h2>
                   <span className="sll-profile-role-pill">Consultor</span>
                 </div>
-                <p>Área: {preferredArea}</p>
-                <p>Service Line: Hybrid Cloud</p>
-                <p>Learning Path: Jornada Técnica</p>
+                <p>Área: {perfil?.area}</p>
+                <p>Service Line: {perfil?.service_line}</p>
+                <p>Learning Path: {perfil?.learning_path}</p>
               </div>
             </div>
 
@@ -207,7 +318,6 @@ function ConsultorPerfilPublicoView() {
             <div className="sll-profile-stats">
               {profileStats.map((stat) => (
                 <div key={stat.label} className="sll-profile-stat-item">
-                  <img src={stat.icon} alt={stat.label} />
                   <span>{stat.label}</span>
                 </div>
               ))}
@@ -219,7 +329,6 @@ function ConsultorPerfilPublicoView() {
               <HiOutlineCog6Tooth aria-hidden="true" />
               <h3>Definições da conta</h3>
             </header>
-
             <div className="sll-profile-settings-list">
               <SettingsRow
                 Icon={HiOutlineLockClosed}
@@ -230,13 +339,13 @@ function ConsultorPerfilPublicoView() {
               <SettingsRow
                 Icon={HiOutlineEnvelope}
                 label="Alterar email"
-                description={email}
+                description={perfil?.email}
                 onClick={() => openModal('email')}
               />
               <SettingsRow
                 Icon={HiOutlineMapPin}
                 label="Área de preferência"
-                description={preferredArea}
+                description={perfil?.area}
                 onClick={() => openModal('area')}
               />
               <SettingsRow
@@ -248,21 +357,22 @@ function ConsultorPerfilPublicoView() {
             </div>
           </section>
 
-          <section className="sll-profile-badges-card">
-            <div className="sll-profile-badges-header">
-              <img src={badgesHeaderIcon} alt="Badges" />
-              <h3>Badges Obtidos</h3>
-            </div>
-
-            <div className="sll-profile-badges-grid">
-              {badges.map((badge, index) => (
-                <BadgeItem key={`${badge.name}-${index}`} image={badge.image} name={badge.name} date={badge.date} />
-              ))}
-            </div>
-          </section>
+          {perfil?.badges?.length > 0 ? (
+            <section className="sll-profile-badges-card">
+              <div className="sll-profile-badges-header">
+                <h3>Badges Obtidos</h3>
+              </div>
+              <div className="sll-profile-badges-grid">
+                {perfil.badges.map((badge, i) => (
+                  <BadgeItem key={`${badge.nome}-${i}`} imagem={badge.imagem} nome={badge.nome} data={badge.data_conclusao} />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       </main>
 
+      {/* ── Modais de definições ─────────────────────────────────────────────── */}
       {activeModal === 'password' ? (
         <Modal title="Alterar password" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handlePasswordSubmit}>
@@ -271,7 +381,7 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="password"
                 value={passwordForm.current}
-                onChange={(event) => setPasswordForm({ ...passwordForm, current: event.target.value })}
+                onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
                 required
               />
             </label>
@@ -280,7 +390,7 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="password"
                 value={passwordForm.next}
-                onChange={(event) => setPasswordForm({ ...passwordForm, next: event.target.value })}
+                onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
                 minLength={6}
                 required
               />
@@ -290,7 +400,7 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="password"
                 value={passwordForm.confirm}
-                onChange={(event) => setPasswordForm({ ...passwordForm, confirm: event.target.value })}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
                 required
               />
               {passwordForm.confirm && passwordForm.confirm !== passwordForm.next ? (
@@ -298,11 +408,11 @@ function ConsultorPerfilPublicoView() {
               ) : null}
             </label>
             <div className="sll-profile-modal-actions">
-              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary">
-                Guardar
+              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+                {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
           </form>
@@ -317,7 +427,7 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="email"
                 value={emailForm.next}
-                onChange={(event) => setEmailForm({ ...emailForm, next: event.target.value })}
+                onChange={(e) => setEmailForm({ ...emailForm, next: e.target.value })}
                 required
               />
             </label>
@@ -326,16 +436,16 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="password"
                 value={emailForm.password}
-                onChange={(event) => setEmailForm({ ...emailForm, password: event.target.value })}
+                onChange={(e) => setEmailForm({ ...emailForm, password: e.target.value })}
                 required
               />
             </label>
             <div className="sll-profile-modal-actions">
-              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary">
-                Guardar
+              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+                {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
           </form>
@@ -347,21 +457,19 @@ function ConsultorPerfilPublicoView() {
           <form className="sll-profile-form" onSubmit={handleAreaSubmit}>
             <label className="sll-profile-field">
               <span>Seleciona a área que te interessa mais</span>
-              <select
+              <input
+                type="text"
                 value={areaDraft}
-                onChange={(event) => setAreaDraft(event.target.value)}
-              >
-                {PREFERRED_AREAS.map((area) => (
-                  <option key={area} value={area}>{area}</option>
-                ))}
-              </select>
+                onChange={(e) => setAreaDraft(e.target.value)}
+                required
+              />
             </label>
             <div className="sll-profile-modal-actions">
-              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary">
-                Guardar
+              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+                {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
           </form>
@@ -372,7 +480,7 @@ function ConsultorPerfilPublicoView() {
         <Modal title="Trocar imagem de perfil" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handleAvatarSubmit}>
             <div className="sll-profile-avatar-preview">
-              <img src={avatarDraft || profileAvatar} alt="Pré-visualização" />
+              <img src={avatarDraft} alt="Pré-visualização" />
             </div>
             <input
               ref={fileInputRef}
@@ -393,20 +501,29 @@ function ConsultorPerfilPublicoView() {
               <input
                 type="url"
                 value={avatarDraft.startsWith('data:') ? '' : avatarDraft}
-                onChange={(event) => setAvatarDraft(event.target.value)}
+                onChange={(e) => setAvatarDraft(e.target.value)}
                 placeholder="https://…"
               />
             </label>
             <div className="sll-profile-modal-actions">
-              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal}>
+              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary">
-                Guardar
+              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+                {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
           </form>
         </Modal>
+      ) : null}
+
+      {/* ── Modal RGPD ───────────────────────────────────────────────────────── */}
+      {!hasAcceptedRgpd ? (
+        <RgpdConsentModal
+          politica={rgpdPolitica}
+          onAccept={handleRgpdAccept}
+          onReject={handleRgpdReject}
+        />
       ) : null}
     </div>
   )

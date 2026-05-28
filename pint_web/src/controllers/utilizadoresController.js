@@ -51,4 +51,27 @@ export const updateUtilizador = async (id, payload) => {
   }
 }
 
+// Listar dados do Consultor
+export const getConsultor = async () => {
+  try {
+    const { id_consultor } = JSON.parse(atob(localStorage.getItem('token').split('.')[1]))
+    const response = await api.get(`/consultores/${id_consultor}/publico`)
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados do Consultor', error)
+    throw error
+  }
+}
+
+// Editar dados do Consultor
+export const updateConsultor = async (id, payload) => {
+  try {
+    const response = await api.put(`/autenticacao/update-me`, payload)
+    return response.data
+  } catch (error) {
+    console.error('Erro ao atualizar utilizador', error)
+    throw error
+  }
+}
+
 export { tipoByProfile }

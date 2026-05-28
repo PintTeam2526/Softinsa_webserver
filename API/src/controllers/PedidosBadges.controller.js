@@ -2,7 +2,6 @@ const Sequelize = require("sequelize");
 const sequelize = require("../../database");
 const Pedidos = require("../models/PedidosBadges.models");
 const HistoricoPedidos = require("../models/HistoricoPedidos.models");
-const NotificacoesPedidos = require("../models/NotificacoesPedidos.models");
 const BadgesConcluidos = require("../models/BadgesConcluidos.models");
 const TalentManager = require("../models/TalentManagers.models");
 const Badges = require("../models/Badges.models");
