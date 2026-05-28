@@ -364,5 +364,5 @@ INSERT INTO "Favoritos" (id_consultor, id_badge, "createdAt", "updatedAt") VALUE
 -- ============================================================
 -- 22. Politicas
 -- ============================================================
-INSERT INTO "Politicas" (id_administrador, politica, "createdAt", "updatedAt") VALUES
-(1, 'Política de privacidade e proteção de dados v1.0', NOW(), NOW());
+INSERT INTO "Politicas" ( politica, "createdAt", "updatedAt") VALUES
+('Política de privacidade e proteção de dados v1.0', NOW(), NOW());

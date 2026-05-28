@@ -6,7 +6,8 @@ const Consultores = require('../models/Consultores.models');
 const Utilizadores = require('../models/Utilizadores.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
-const PedidosBadges = require('../models/PedidosBadges.models'); // <-- em falta
+const PedidosBadges = require('../models/PedidosBadges.models');
+const Politicas = require('../models/Politicas.models');
 
 const controllers = {};
 
@@ -22,6 +23,54 @@ function isSL(req) {
     return req.user?.role === "s";
 }
 
+
+
+controllers.getRGPD = async (req, res) => {
+    try {
+        const rgpd = await Politicas.findOne({
+            attributes: ['politica']
+        });
+
+        if (!rgpd) {
+            return res.status(404).json({ mensagem: "RGPD não encontrado." });
+        }
+
+        return res.status(200).json(rgpd);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: "Erro ao obter RGPD.", erro: error.message });
+    }
+};
+
+controllers.updateRGPD = async (req, res) => {
+    try {
+        if (!isAdmin(req)) {
+            return res.status(403).json({ mensagem: "Acesso negado. Apenas administradores podem atualizar o RGPD." });
+        }
+
+        const { politica } = req.body;
+
+        if (!politica) {
+            return res.status(400).json({ mensagem: "O conteúdo da política é obrigatório." });
+        }
+
+        const rgpd = await Politicas.findOne();
+
+        if (!rgpd) {
+            return res.status(404).json({ mensagem: "RGPD não encontrado." });
+        }
+
+        rgpd.politica = politica;
+        await rgpd.save();
+
+        return res.status(200).json({ mensagem: "RGPD atualizado com sucesso.", dados: rgpd });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: "Erro ao atualizar RGPD.", erro: error.message });
+    }
+};
 controllers.badgesConsultores = async (req, res) => {
     try {
         if (!isTM(req) && !isSL(req)) {
@@ -283,11 +332,11 @@ controllers.relatorio = async (req, res) => {
             detalhes[nomeArea][nivel] = (detalhes[nomeArea][nivel] || 0) + 1;
         }
 
-       
+
         const tabelaDetalhes = Object.entries(detalhes).map(([area, nivelMap]) => {
             const linha = { area };
             let total = 0;
-            for (const nivel of Object.keys(nivelMap)) { 
+            for (const nivel of Object.keys(nivelMap)) {
                 linha[nivel] = nivelMap[nivel] || 0;
                 total += linha[nivel];
             }

@@ -10,23 +10,32 @@ function isSL(req) { return req.user?.role === "s"; }
 
 controllers.getNotificacoes = async (req, res) => {
     try {
-        if (req.user.role !== 'c') {
-            return res.status(403).json({ mensagem: "Acesso negado. Apenas consultores podem aceder a este recurso." });
+        const role = req.user.role;
+
+        if (!['c', 't', 's'].includes(role)) {
+            return res.status(403).json({ mensagem: "Acesso negado." });
         }
 
-        const id_consultor = req.user.id_consultor;
+        let where;
 
-        if (!id_consultor) {
-            return res.status(404).json({ mensagem: "Consultor não encontrado." });
-        }
-
-        const notificacoes = await Notificacoes.findAll({
-            where: {
+        if (role === 'c') {
+            const id_consultor = req.user.id_consultor;
+            if (!id_consultor) {
+                return res.status(404).json({ mensagem: "Consultor não encontrado." });
+            }
+            where = {
                 [Sequelize.Op.or]: [
                     { id_consultor },
                     { id_consultor: null }
                 ]
-            },
+            };
+        } else {
+            // TM e SLL apenas veem notificações globais
+            where = { id_consultor: null };
+        }
+
+        const notificacoes = await Notificacoes.findAll({
+            where,
             attributes: ['notificacao', 'data_de_envio', 'remetente', 'descricao'],
             order: [['data_de_envio', 'DESC']]
         });
