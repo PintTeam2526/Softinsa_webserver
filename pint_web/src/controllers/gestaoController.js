@@ -23,10 +23,10 @@ export async function getRanking() {
   }
 }
 
-// Obter dados para Estatisticas dos Relatorio
+// Obter dados para Estatisticas dos Relatorio (de acordo com os filtros enviados)
 export async function getRelatorio(body = {}) {
   try {
-    const response = await api.get('/gestao/relatorio', body)
+    const response = await api.post('/gestao/relatorio', body)
     return response.data
   } catch (error) {
     console.error('Erro ao obter dados do relatorio', error)

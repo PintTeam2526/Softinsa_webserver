@@ -294,6 +294,31 @@
   font-weight: 700;
 }
 
+.sll-relatorios-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sll-relatorios-visualize-btn {
+  height: 28px;
+  border: 1px solid #39639c;
+  border-radius: 10px;
+  padding: 0 14px;
+  background: transparent;
+  color: #39639c;
+  font-size: 16px;
+  line-height: 1.75;
+  cursor: pointer;
+}
+
+.sll-relatorios-visualize-btn:disabled,
+.sll-relatorios-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .sll-relatorios-charts-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

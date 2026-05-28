@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import './TalentManagerRelatoriosView.css'
 
 import { getAreas } from '../../../controllers/areasController'
@@ -65,11 +67,17 @@ function polarToCartesian(cx, cy, r, angleDeg) {
 }
 
 function arcPath(cx, cy, r, startAngle, endAngle) {
+  // caso especial: 100% — desenha círculo completo
+  if (endAngle - startAngle >= 359.99) {
+    return `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx} ${cy + r} A ${r} ${r} 0 1 1 ${cx} ${cy - r} Z`
+  }
+
   const start = polarToCartesian(cx, cy, r, startAngle)
   const end = polarToCartesian(cx, cy, r, endAngle)
   const large = endAngle - startAngle > 180 ? 1 : 0
   return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${end.x} ${end.y} Z`
 }
+
 
 function PieChartCard({ title, data }) {
   const VW = 200
@@ -161,7 +169,7 @@ function TalentManagerRelatoriosView() {
   }, [])
 
 
-  async function handleGerarRelatorio() {
+  async function handleVisualizarEstatisticas() {
     setLoadingRelatorio(true)
     setError(null)
     try {
@@ -178,6 +186,134 @@ function TalentManagerRelatoriosView() {
       setLoadingRelatorio(false)
     }
   }
+
+  // busca os dados (ou usa os que já estão) e gera o PDF
+  async function handleGerarPdf() {
+    setLoadingRelatorio(true)
+    setError(null)
+    try {
+      const params = {}
+      if (selectedArea) params.id_area = selectedArea
+      if (startDate) params.data_inicio = startDate
+      if (endDate) params.data_fim = endDate
+
+      // se já há dados na página usa-os, senão faz o fetch
+      const data = reportData ?? await getRelatorio(params)
+
+      const doc = new jsPDF()
+      const pageW = doc.internal.pageSize.getWidth()
+      const today = new Date().toLocaleDateString('pt-PT')
+      let currentY = 16
+
+      // ── cabeçalho ────────────────────────────────────────────────────────────
+      doc.setFillColor(57, 99, 156)
+      doc.rect(0, 0, pageW, 28, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(16)
+      doc.text('Relatório de Estatísticas de Badges', pageW / 2, 17, { align: 'center' })
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Emitido em ${today}`, pageW / 2, 24, { align: 'center' })
+
+      currentY = 36
+
+      // ── filtros aplicados ────────────────────────────────────────────────────
+      const areaLabel = selectedArea
+        ? (reportAreaOptions.find((a) => String(a.id) === String(selectedArea))?.nome ?? selectedArea)
+        : 'Todas'
+      doc.setTextColor(138, 146, 166)
+      doc.setFontSize(9)
+      doc.text(
+        `Filtros: Área — ${areaLabel}  |  Data início — ${startDate || '—'}  |  Data fim — ${endDate || '—'}`,
+        14, currentY
+      )
+      currentY += 10
+
+      // ── resumo ────────────────────────────────────────────────────────────────
+      doc.setTextColor(35, 45, 66)
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('Resumo', 14, currentY)
+      currentY += 4
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [['Total de Badges', 'Aprovados', 'Rejeitados', 'Taxa de Aprovação']],
+        body: [[
+          data.resumo.total_badges,
+          data.resumo.badges_aprovados,
+          data.resumo.badges_rejeitados,
+          `${data.resumo.taxa_aprovacao}%`,
+        ]],
+        styles: { fontSize: 10, halign: 'center' },
+        headStyles: { fillColor: [57, 99, 156] },
+      })
+      currentY = doc.lastAutoTable.finalY + 12
+
+      // ── distribuição por área ─────────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('Distribuição por Área', 14, currentY)
+      currentY += 4
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [['Área', 'Total', 'Percentagem']],
+        body: data.distribuicao_por_area.map((item) => [item.nome, item.total, `${item.percentagem}%`]),
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [57, 99, 156] },
+      })
+      currentY = doc.lastAutoTable.finalY + 12
+
+      // ── distribuição por nível ────────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('Distribuição por Nível', 14, currentY)
+      currentY += 4
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [['Nível', 'Total', 'Percentagem']],
+        body: data.distribuicao_por_nivel.map((item) => [item.nome, item.total, `${item.percentagem}%`]),
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [57, 99, 156] },
+      })
+      currentY = doc.lastAutoTable.finalY + 12
+
+      // ── detalhes por área e nível ─────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text('Badges Aprovados por Área e Nível', 14, currentY)
+      currentY += 4
+
+      autoTable(doc, {
+        startY: currentY,
+        head: [['Área', 'Júnior', 'Intermédio', 'Sénior', 'Especialista', 'Líder de Conhecimento', 'Total']],
+        body: data.detalhes.map((row) => [
+          row.area,
+          row['Júnior'] ?? 0,
+          row['Intermédio'] ?? 0,
+          row['Sénior'] ?? 0,
+          row['Especialista'] ?? 0,
+          row['Líder de Conhecimento'] ?? 0,
+          row.total,
+        ]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [57, 99, 156] },
+        columnStyles: { 0: { cellWidth: 40 } },
+      })
+
+      const filename = `relatorio-badges-${today.replace(/\//g, '-')}.pdf`
+      doc.save(filename)
+
+    } catch {
+      setError('Erro ao gerar PDF.')
+    } finally {
+      setLoadingRelatorio(false)
+    }
+  }
+
 
   const summaryValues = {
     total: reportData?.resumo?.total_badges ?? 0,
@@ -223,7 +359,7 @@ function TalentManagerRelatoriosView() {
               <h2>Filtros para Relatórios</h2>
               <div className="sll-relatorios-filters-help">
                 <InfoIcon />
-                <p>Selecione os filtros e clique em "Gerar Relatório"</p>
+                <p>Selecione os filtros e clique em "Visualizar Estatisticas"</p>
               </div>
             </div>
 
@@ -232,7 +368,7 @@ function TalentManagerRelatoriosView() {
                 <label>Área:</label>
                 <div className="sll-relatorios-select-wrap">
                   <select value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
-                    <option value="">Selecione a Área</option>
+                    <option value="">Todas as Áreas</option>
                     {reportAreaOptions.map((area) => (
                       <option key={area.id} value={area.id}>{area.nome}</option>
                     ))}
@@ -256,14 +392,25 @@ function TalentManagerRelatoriosView() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="sll-relatorios-generate-btn"
-                onClick={handleGerarRelatorio}
-                disabled={loadingRelatorio}
-              >
-                {loadingRelatorio ? 'A gerar...' : 'Gerar Relatório'}
-              </button>
+              <div className="sll-relatorios-actions">
+                <button
+                  type="button"
+                  className="sll-relatorios-visualize-btn"
+                  onClick={handleVisualizarEstatisticas}
+                  disabled={loadingRelatorio}
+                >
+                  {loadingRelatorio ? 'A carregar...' : 'Visualizar Estatísticas'}
+                </button>
+
+                <button
+                  type="button"
+                  className="sll-relatorios-generate-btn"
+                  onClick={handleGerarPdf}
+                  disabled={loadingRelatorio}
+                >
+                  {loadingRelatorio ? 'A gerar...' : 'Gerar Relatório'}
+                </button>
+              </div>
             </div>
           </section>
 

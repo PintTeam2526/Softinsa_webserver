@@ -16,7 +16,7 @@ router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
 router.get('/rank', authVerification, controllerGestao.rankConsultores)
 
 // Rota para dados de relatorio
-router.get("/relatorio", authVerification, controllerGestao.relatorio);
+router.post("/relatorio", authVerification, controllerGestao.relatorio);
 
 
 
