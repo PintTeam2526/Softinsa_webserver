@@ -8,7 +8,7 @@ const area = require('../models/Areas.models')
 const dashboardConsultorService = require("../services/dashboardConsultor.service");
 const dashboardTalentManagerService = require('../services/dashboardTM.service');
 const dashboardServiceLineLiderService = require('../services/dashboardSLL.service');
-//const dashboardAdministradorService = require('../services/dashboardAdministrador.service');
+const dashboardAdministradorService = require('../services/dashboardAdmin.service');
 const { listarPedidosPorCargo } = require('../services/listarPedidos.service')
 
 const controller = {};
@@ -207,9 +207,36 @@ controller.administrador = async (req, res) => {
             return res.status(401).json({mensagem: "Utilizador não autorizado"});
         }
 
+        //se não receber nada têm valores default, ano atual, mês inicial 1 e mês final 12
+        const ano = parseInt(req.query.ano) || new Date().getFullYear();
+        const mesInicial = parseInt(req.query.mes_inicial) || 1;
+        const mesFinal = parseInt(req.query.mes_final) || 12;
+        const nivel = req.query.nivel || 'Júnior';
+
         const id_administrador = req.user.id_administrador;
 
-        //const resultado = await dashboardAdministradorService.getDashboardAdministrador(id_administrador);
+        const nome = await dashboardAdministradorService.getNomeAdministrador(id_administrador);
+        const totalUtilizadores = await dashboardAdministradorService.getTotalUtilizadores(id_administrador);
+        const totalBadges = await dashboardAdministradorService.getTotalBadges(id_administrador);
+        const totalAreas = await dashboardAdministradorService.getTotalAreas(id_administrador);
+        const totalServiceLines = await dashboardAdministradorService.getTotalServiceLines(id_administrador);
+        const totalLearningPaths = await dashboardAdministradorService.getTotaltotalLearningPaths(id_administrador);
+        const NumeroBadgesObtidosMesAno = await dashboardAdministradorService.getNumeroBadgesObtidosMesAno(ano, mesInicial, mesFinal);
+        const PercentagemBadgesObtidosNivel = await dashboardAdministradorService.getPercentagemBadgesObtidosNivel(nivel);
+        const PercentagemBadgesObtidosMesAno = await dashboardAdministradorService.getPercentagemBadgesObtidosMesAno(ano);
+             
+        
+        const resultado = {
+            nome_administrador: nome,
+            total_utilizadores: totalUtilizadores,
+            total_badges: totalBadges,
+            total_areas: totalAreas,
+            total_service_lines: totalServiceLines,
+            total_learning_paths: totalLearningPaths,
+            numero_badges_obtidos_mes_ano_grafico_1: NumeroBadgesObtidosMesAno,
+            percentagem_badges_obtidos_nivel_gráfico_2: PercentagemBadgesObtidosNivel,
+            percentagem_badges_obtidos_mes_ano_grafico_3: PercentagemBadgesObtidosMesAno
+        }
 
         res.json(resultado);
 

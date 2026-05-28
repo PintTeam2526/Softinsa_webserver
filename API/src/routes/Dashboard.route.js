@@ -13,7 +13,7 @@ router.get('/tm', authVerification, controllerDashboard.talentManager);
 router.get('/sll', authVerification, controllerDashboard.serviceLineLider);
 
 // Dashboard Administrador
-//router.get('/admin', authVerification, controllerDashboard.administrador);
+router.get('/admin', authVerification, controllerDashboard.administrador);
 
 
 module.exports = router;
