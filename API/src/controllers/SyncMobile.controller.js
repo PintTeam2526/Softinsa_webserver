@@ -12,17 +12,32 @@ const Documentacoes = require("../models/Documentacoes.models");
 const Conquistas = require("../models/Conquistas.models");
 const ConquistasConsultores = require('../models/ConquistasConsultores.models')
 const Sequelize = require("sequelize");
+const { Op } = Sequelize;
 
 const controllers = {};
 
+// Função auxiliar para construir o WHERE clause com base no lastUpdate
+const getWhereClause = (params, baseWhere = {}) => {
+  const { lastUpdate } = params;
+  if (lastUpdate && lastUpdate !== "null" && lastUpdate !== "undefined") {
+    return {
+      ...baseWhere,
+      updatedAt: { [Op.gt]: new Date(lastUpdate) },
+    };
+  }
+  return baseWhere;
+};
+
 controllers.syncConquistasMobile = async (req, res) => {
   try {
-    const conquistas = await Conquistas.findAll();
+    const where = getWhereClause(req.params);
+    const conquistas = await Conquistas.findAll({ where });
 
     const data = conquistas.map((item) => ({
       ID_CONQUISTA: item.id_conquista,
       DESCRICAO_CONQUISTA: item.descricao_conquista,
       PONTOS_CONQUISTA: item.pontos_conquista,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -37,7 +52,9 @@ controllers.syncConquistasMobile = async (req, res) => {
 
 controllers.syncServiceLinesMobile = async (req, res) => {
   try {
+    const where = getWhereClause(req.params);
     const serviceLines = await ServiceLines.findAll({
+      where,
       include: [
         {
           model: LearningPaths,
@@ -55,6 +72,7 @@ controllers.syncServiceLinesMobile = async (req, res) => {
       ESTADO_A_I_: item.estado_a_i,
       DATA_INSERCAO: item.data_insercao,
       NOME_LP_PAI: item.LearningPath?.nome_learning_path || "",
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -69,7 +87,9 @@ controllers.syncServiceLinesMobile = async (req, res) => {
 
 controllers.syncAreasMobile = async (req, res) => {
   try {
+    const where = getWhereClause(req.params);
     const areas = await Areas.findAll({
+      where,
       include: [
         {
           model: ServiceLines,
@@ -89,6 +109,7 @@ controllers.syncAreasMobile = async (req, res) => {
       ServiceLine: {
         nomeServiceLine: item.ServiceLine?.nome_service_line || "",
       },
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -103,7 +124,8 @@ controllers.syncAreasMobile = async (req, res) => {
 
 controllers.syncLearningPathsMobile = async (req, res) => {
   try {
-    const learningPaths = await LearningPaths.findAll();
+    const where = getWhereClause(req.params);
+    const learningPaths = await LearningPaths.findAll({ where });
 
     const data = learningPaths.map((item) => ({
       ID_LEARNINGPATH: item.id_learning_path,
@@ -112,6 +134,7 @@ controllers.syncLearningPathsMobile = async (req, res) => {
       IMAGEM_LEARNING_PATH: item.imagem_learning_path,
       ESTADO_A_I_: item.estado_a_i,
       DATA_INSERCAO: item.data_insercao,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -126,7 +149,9 @@ controllers.syncLearningPathsMobile = async (req, res) => {
 
 controllers.syncBadgesMobile = async (req, res) => {
   try {
+    const where = getWhereClause(req.params);
     const badges = await Badges.findAll({
+      where,
       include: [
         {
           model: Areas,
@@ -147,6 +172,7 @@ controllers.syncBadgesMobile = async (req, res) => {
       nome_area_pai: item.Area?.nome_area || "",
       DATA_INSERCAO: item.data_insercao,
       ESTADO_A_I_: item.estado_a_i,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -161,12 +187,14 @@ controllers.syncBadgesMobile = async (req, res) => {
 
 controllers.syncEstadosMobile = async (req, res) => {
   try {
-    const estados = await Estados.findAll();
+    const where = getWhereClause(req.params);
+    const estados = await Estados.findAll({ where });
 
     const data = estados.map((item) => ({
       ID_ESTADO: item.id_estado,
       NOME_ESTADO: item.nome_estado,
       DESCRICAO_ESTADO: item.descricao_estado,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -187,8 +215,10 @@ controllers.syncBadgesConcluidosMobile = async (req, res) => {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
     }
 
+    const where = getWhereClause(req.params, { id_consultor: id });
+
     const conquistas = await BadgesConcluidos.findAll({
-      where: { id_consultor: id },
+      where,
       include: [
         {
           model: Badges,
@@ -218,6 +248,7 @@ controllers.syncBadgesConcluidosMobile = async (req, res) => {
         DATA_CONCLUSAO: c.data_conclusao_badge,
         VALIDADE: b?.validade,
         nome_sl_pai: sl?.nome_service_line || "N/A",
+        updatedAt: c.updatedAt,
       };
     });
 
@@ -239,8 +270,10 @@ controllers.syncPedidosBadgesMobile = async (req, res) => {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
     }
 
+    const where = getWhereClause(req.params, { id_consultor: id });
+
     const pedidos = await PedidosBadges.findAll({
-      where: { id_consultor: id },
+      where,
     });
 
     const data = pedidos.map((item) => ({
@@ -248,6 +281,7 @@ controllers.syncPedidosBadgesMobile = async (req, res) => {
       ID_CONSULTOR: item.id_consultor,
       ID_BADGE: item.id_badge,
       ESTADO_ATUAL: item.estado_atual,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -268,7 +302,10 @@ controllers.syncHistoricoPedidosMobile = async (req, res) => {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
     }
 
+    const where = getWhereClause(req.params);
+
     const historico = await HistoricoPedidos.findAll({
+      where,
       include: [
         {
           model: PedidosBadges,
@@ -283,6 +320,7 @@ controllers.syncHistoricoPedidosMobile = async (req, res) => {
       ID_BADGE: item.PedidosBadge?.id_badge,
       ID_CONSULTOR: item.PedidosBadge?.id_consultor,
       DATA: item.data,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -303,8 +341,10 @@ controllers.syncObjetivosMobile = async (req, res) => {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
     }
 
+    const where = getWhereClause(req.params, { id_consultor: id });
+
     const objetivos = await Objetivos.findAll({
-      where: { id_consultor: id },
+      where,
     });
 
     const data = objetivos.map((item) => ({
@@ -314,6 +354,7 @@ controllers.syncObjetivosMobile = async (req, res) => {
       DATA_LIMITE_CONCLUSAO: item.data_limite_conclusao,
       NOME_OBJETIVO: item.nome_objetivo,
       DATA_CONCLUSAO_OBJETIVO: item.data_conclusao_objetivo,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -328,7 +369,8 @@ controllers.syncObjetivosMobile = async (req, res) => {
 
 controllers.syncRequisitosMobile = async (req, res) => {
   try {
-    const requisitos = await Requisitos.findAll();
+    const where = getWhereClause(req.params);
+    const requisitos = await Requisitos.findAll({ where });
 
     const data = requisitos.map((item) => ({
       ID_REQUISITO: item.id_requisito,
@@ -337,6 +379,7 @@ controllers.syncRequisitosMobile = async (req, res) => {
       DESCRICAO_REQUISITO: item.descricao_requisito,
       IMAGEM_REQUISITO: item.imagem_requisito,
       ESTADO_A_I_: item.estado_a_i,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -357,8 +400,10 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
     }
 
+    const where = getWhereClause(req.params, { id_consultor: id });
+
     const docs = await Documentacoes.findAll({
-      where: { id_consultor: id },
+      where,
     });
 
     const data = docs.map((item) => ({
@@ -366,6 +411,7 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
       ID_HISTORICO: item.id_historico,
       ID_CONSULTOR: item.id_consultor,
       DOCUMENTACAO: item.documentacao,
+      updatedAt: item.updatedAt,
     }));
 
     return res.status(200).json(data);
@@ -386,14 +432,17 @@ controllers.syncConquistasConsultores = async (req, res) => {
       return res.status(400).json({ erro: 'ID do consultor é obrigatório' });
     }
 
+    const where = getWhereClause(req.params, { id_consultor: idConsultor });
+
     const resultado = await ConquistasConsultores.findAll({
-      where: { id_consultor: idConsultor }
+      where
     });
 
     const data = resultado.map(item => ({
       id_conquista_consultor: item.id_conquista_consultor,
       id_consultor: item.id_consultor,
-      id_conquista: item.id_conquista
+      id_conquista: item.id_conquista,
+      updatedAt: item.updatedAt
     }));
 
     return res.status(200).json(data);
@@ -406,6 +455,7 @@ controllers.syncConquistasConsultores = async (req, res) => {
     });
   }
 }
+
 
 
 module.exports = controllers;
