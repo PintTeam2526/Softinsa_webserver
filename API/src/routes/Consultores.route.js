@@ -15,6 +15,7 @@ router.get('/count/badgesPorObter/:id', consultoresController.getCountBadgesPorO
 router.get('/badgesPorObter/lista/:id', consultoresController.getBadgesPorObterMobile);
 router.get('/count/objetivos/porCompletar/:id', consultoresController.getCountObjetivosPorConcluirMobile);
 router.get('/objetivos/minDiasAteExpirar/:id', consultoresController.getDiasObjetivoExpirarMobile);
+router.get('/:id/publico', consultoresController.perfilPublico)
 
 router.post('/:id/objetivo/create', authVerification, consultoresController.createObjetivo);
 router.delete('/:id/objetivo/delete', authVerification, consultoresController.deleteObjetivoById);
