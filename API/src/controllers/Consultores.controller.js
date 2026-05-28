@@ -9,7 +9,9 @@ const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const Objetivos = require('../models/Objetivos.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
-const Notificacoes = require('../models/NotificacoesPedidos.models');
+const Notificacoes = require('../models/Notificacoes.models');
+const ServiceLines = require('../models/ServiceLines.models');
+const LearningPaths = require('../models/LearningPaths.models');
 
 const controllers = {};
 
@@ -423,6 +425,74 @@ controllers.createNotificacao = async (req, res) => {
         return res.status(201).json(resultado);
     } catch (error) {
         return res.status(500).json({ mensagem: "Erro ao criar notificação", erro: error.message });
+    }
+};
+controllers.perfilPublico = async (req, res) => {
+    try {
+        const idConsultor = req.params.id;
+
+        const consultor = await Consultores.findByPk(idConsultor, {
+            include: [
+                {
+                    model: Utilizador,
+                    attributes: ['nome_utilizador', 'imagem_utilizador', 'email_utilizador']
+                },
+                {
+                    model: Area,
+                    attributes: ['nome_area'],
+                    include: [
+                        {
+                            model: ServiceLines,
+                            attributes: ['nome_service_line'],
+                            include: [
+                                {
+                                    model: LearningPaths,
+                                    attributes: ['nome_learning_path']
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    model: BadgesConcluidos,
+                    attributes: ['data_conclusao_badge'],
+                    include: [
+                        {
+                            model: Badges,
+                            attributes: ['id_badge', 'nome_badge', 'imagem_badge', 'nivel_badge']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!consultor) {
+            return res.status(404).json({ mensagem: "Consultor não encontrado." });
+        }
+
+        const resultado = {
+            nome: consultor.Utilizadore?.nome_utilizador,
+            foto: consultor.Utilizadore?.imagem_utilizador,
+            email: consultor.Utilizadore?.email_utilizador,
+            total_pontos: consultor.total_pontos || 0,
+            total_badges: consultor.BadgesConcluidos.length,
+            area: consultor.Area?.nome_area,
+            service_line: consultor.Area?.ServiceLine?.nome_service_line,
+            learning_path: consultor.Area?.ServiceLine?.LearningPath?.nome_learning_path,
+            badges: consultor.BadgesConcluidos.map(bc => ({
+                id_badge: bc.Badge?.id_badge,
+                nome: bc.Badge?.nome_badge,
+                imagem: bc.Badge?.imagem_badge,
+                nivel: bc.Badge?.nivel_badge,
+                data_conclusao: bc.data_conclusao_badge
+            }))
+        };
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: "Erro ao obter perfil público.", erro: error.message });
     }
 };
 
