@@ -58,13 +58,17 @@ function getStoredAcceptance() {
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
 function BadgeItem({ imagem, nome, data }) {
+  const dataFormatada = data
+    ? new Date(data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '—'
+
   return (
     <div className="sll-profile-badge-item">
       <div className="sll-profile-badge-image">
         <img src={imagem} alt={nome} />
       </div>
       <p>{nome}</p>
-      <span>{data}</span>
+      <span>{dataFormatada}</span>
     </div>
   )
 }
