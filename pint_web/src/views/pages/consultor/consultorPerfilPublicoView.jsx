@@ -12,7 +12,33 @@ import './ConsultorPerfilPublicoView.css'
 import '../shared/profile-settings.css'
 
 import { getConsultor, updateConsultor } from '../../../controllers/utilizadoresController'
+import { getAreas } from '../../../controllers/areasController'
 import { getRGPD } from '../../../controllers/gestaoController'
+
+// ─── Helper: converte Base64 da BD num src válido para <img> ─────────────────
+function resolveImagem(raw) {
+  if (!raw) return null
+
+  // Sequelize pode devolver BLOB como { type: 'Buffer', data: [...] }
+  if (raw?.type === 'Buffer' && Array.isArray(raw?.data)) {
+    const binary = raw.data.reduce((acc, byte) => acc + String.fromCharCode(byte), '')
+    raw = btoa(binary)
+  }
+
+  if (typeof raw !== 'string') return null
+
+  // Já é data URI ou URL externo — devolve tal qual
+  if (raw.startsWith('data:') || raw.startsWith('http')) return raw
+
+  // Detecta o tipo pela assinatura Base64
+  let mime = 'image/jpeg' // fallback
+  if (raw.startsWith('iVBOR')) mime = 'image/png'
+  else if (raw.startsWith('R0lG')) mime = 'image/gif'
+  else if (raw.startsWith('UklG')) mime = 'image/webp'
+  else if (raw.startsWith('PHN2')) mime = 'image/svg+xml'
+
+  return `data:${mime};base64,${raw}`
+}
 
 // ─── Aceitação RGPD (estado local do browser) ────────────────────────────────
 const ACCEPTANCE_STORAGE_KEY = 'softinsa.rgpd.acceptance'
@@ -31,13 +57,17 @@ function getStoredAcceptance() {
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
 function BadgeItem({ imagem, nome, data }) {
+  const dataFormatada = data
+    ? new Date(data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '—'
+
   return (
     <div className="sll-profile-badge-item">
       <div className="sll-profile-badge-image">
         <img src={imagem} alt={nome} />
       </div>
       <p>{nome}</p>
-      <span>{data}</span>
+      <span>{dataFormatada}</span>
     </div>
   )
 }
@@ -137,6 +167,7 @@ function RgpdConsentModal({ politica, onAccept, onReject }) {
 function ConsultorPerfilPublicoView() {
   // Dados do perfil
   const [perfil, setPerfil] = useState(null)
+  const [areas, setAreas] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   // RGPD
@@ -165,13 +196,15 @@ function ConsultorPerfilPublicoView() {
     const load = async () => {
       setIsLoading(true)
       try {
-        const [consultorData, rgpdData] = await Promise.all([
+        const [consultorData, rgpdData, areasData] = await Promise.all([
           getConsultor(),
           getRGPD(),
+          getAreas(),
         ])
         setPerfil(consultorData)
+        setAreas(areasData ?? [])
         setEmailForm((prev) => ({ ...prev, next: consultorData?.email ?? '' }))
-        setAreaDraft(consultorData?.area ?? '')
+        setAreaDraft(consultorData?.id_area ?? '')
         setAvatarDraft(consultorData?.foto ?? '')
         setRgpdPolitica(rgpdData?.politica ?? '')
       } catch (err) {
@@ -196,7 +229,7 @@ function ConsultorPerfilPublicoView() {
   function openModal(name) {
     setFeedback({ message: '', type: 'success' })
     if (name === 'email') setEmailForm({ next: perfil?.email ?? '', password: '' })
-    if (name === 'area') setAreaDraft(perfil?.area ?? '')
+    if (name === 'area') setAreaDraft(perfil?.id_area ?? '')
     if (name === 'image') setAvatarDraft(perfil?.foto ?? '')
     if (name === 'password') setPasswordForm({ current: '', next: '', confirm: '' })
     setActiveModal(name)
@@ -212,8 +245,10 @@ function ConsultorPerfilPublicoView() {
   async function saveUpdate(payload, successMsg) {
     setIsSaving(true)
     try {
-      const updated = await updateConsultor(payload)
-      setPerfil((prev) => ({ ...prev, ...updated }))
+      await updateConsultor(payload)
+      // Backend devolve apenas { mensagem }, por isso refetch para reflectir as alterações
+      const updated = await getConsultor()
+      setPerfil(updated)
       closeModal()
       flashFeedback(successMsg)
     } catch {
@@ -228,18 +263,18 @@ function ConsultorPerfilPublicoView() {
     e.preventDefault()
     const { current, next, confirm } = passwordForm
     if (!current || !next || next !== confirm) return
-    await saveUpdate({ passwordAtual: current, passwordNova: next }, 'Password atualizada com sucesso.')
+    await saveUpdate({ password: next, password_antiga: current }, 'Password atualizada com sucesso.')
   }
 
   async function handleEmailSubmit(e) {
     e.preventDefault()
     if (!emailForm.next.trim()) return
-    await saveUpdate({ email: emailForm.next.trim(), password: emailForm.password }, 'Email atualizado.')
+    await saveUpdate({ email: emailForm.next.trim() }, 'Email atualizado.')
   }
 
   async function handleAreaSubmit(e) {
     e.preventDefault()
-    await saveUpdate({ area: areaDraft }, 'Área de preferência atualizada.')
+    await saveUpdate({ id_area: Number(areaDraft) }, 'Área de preferência atualizada.')
   }
 
   function handleAvatarFile(e) {
@@ -300,7 +335,7 @@ function ConsultorPerfilPublicoView() {
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={perfil?.foto} alt={perfil?.nome} />
+                <img src={resolveImagem(perfil?.foto)} alt={perfil?.nome} />
               </div>
               <div className="sll-profile-copy">
                 <div className="sll-profile-name-row">
@@ -364,7 +399,7 @@ function ConsultorPerfilPublicoView() {
               </div>
               <div className="sll-profile-badges-grid">
                 {perfil.badges.map((badge, i) => (
-                  <BadgeItem key={`${badge.nome}-${i}`} imagem={badge.imagem} nome={badge.nome} data={badge.data_conclusao} />
+                  <BadgeItem key={`${badge.nome}-${i}`} imagem={resolveImagem(badge.imagem)} nome={badge.nome} data={badge.data_conclusao} />
                 ))}
               </div>
             </section>
@@ -456,13 +491,19 @@ function ConsultorPerfilPublicoView() {
         <Modal title="Área de preferência" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handleAreaSubmit}>
             <label className="sll-profile-field">
-              <span>Seleciona a área que te interessa mais</span>
-              <input
-                type="text"
+              <span>Seleciona a tua área de preferência</span>
+              <select
                 value={areaDraft}
                 onChange={(e) => setAreaDraft(e.target.value)}
                 required
-              />
+              >
+                <option value="" disabled>Escolhe uma área…</option>
+                {areas.map((area) => (
+                  <option key={area.id_area} value={area.id_area}>
+                    {area.nome_area}
+                  </option>
+                ))}
+              </select>
             </label>
             <div className="sll-profile-modal-actions">
               <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
@@ -480,7 +521,7 @@ function ConsultorPerfilPublicoView() {
         <Modal title="Trocar imagem de perfil" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handleAvatarSubmit}>
             <div className="sll-profile-avatar-preview">
-              <img src={avatarDraft} alt="Pré-visualização" />
+              <img src={resolveImagem(avatarDraft)} alt="Pré-visualização" />
             </div>
             <input
               ref={fileInputRef}
@@ -496,15 +537,6 @@ function ConsultorPerfilPublicoView() {
             >
               Escolher ficheiro…
             </button>
-            <label className="sll-profile-field">
-              <span>ou cola um link para a imagem</span>
-              <input
-                type="url"
-                value={avatarDraft.startsWith('data:') ? '' : avatarDraft}
-                onChange={(e) => setAvatarDraft(e.target.value)}
-                placeholder="https://…"
-              />
-            </label>
             <div className="sll-profile-modal-actions">
               <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar

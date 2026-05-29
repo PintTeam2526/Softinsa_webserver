@@ -64,9 +64,9 @@ export const getConsultor = async () => {
 }
 
 // Editar dados do Consultor
-export const updateConsultor = async (id, payload) => {
+export const updateConsultor = async (payload) => {
   try {
-    const response = await api.put(`/autenticacao/update-me`, payload)
+    const response = await api.put('/autenticacao/update-me', payload)
     return response.data
   } catch (error) {
     console.error('Erro ao atualizar utilizador', error)
