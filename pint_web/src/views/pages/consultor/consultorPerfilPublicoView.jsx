@@ -7,6 +7,7 @@ import {
   HiOutlineCamera,
   HiOutlineChevronRight,
   HiOutlineXMark,
+  HiOutlineDocumentText,
 } from 'react-icons/hi2'
 import './ConsultorPerfilPublicoView.css'
 import '../shared/profile-settings.css'
@@ -57,17 +58,13 @@ function getStoredAcceptance() {
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
 function BadgeItem({ imagem, nome, data }) {
-  const dataFormatada = data
-    ? new Date(data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    : '—'
-
   return (
     <div className="sll-profile-badge-item">
       <div className="sll-profile-badge-image">
         <img src={imagem} alt={nome} />
       </div>
       <p>{nome}</p>
-      <span>{dataFormatada}</span>
+      <span>{data}</span>
     </div>
   )
 }
@@ -389,6 +386,12 @@ function ConsultorPerfilPublicoView() {
                 description="Carrega uma nova fotografia"
                 onClick={() => openModal('image')}
               />
+              <SettingsRow
+                Icon={HiOutlineDocumentText}
+                label="Política de privacidade (RGPD)"
+                description="Consulta os termos de privacidade aceites"
+                onClick={() => openModal('rgpd')}
+              />
             </div>
           </section>
 
@@ -546,6 +549,12 @@ function ConsultorPerfilPublicoView() {
               </button>
             </div>
           </form>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'rgpd' ? (
+        <Modal title="Política de privacidade (RGPD)" onClose={closeModal}>
+          <div className="sll-profile-rgpd-policy">{rgpdPolitica}</div>
         </Modal>
       ) : null}
 
