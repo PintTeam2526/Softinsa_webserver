@@ -3,6 +3,7 @@ const ServiceLine = require('../models/ServiceLines.models')
 const Badges = require('../models/Badges.models')
 const Sequelize = require('sequelize');
 const firebase = require('../services/firebase.service');
+const { notificarEstado } = require('../services/notificacoes.service');
 const Op = Sequelize.Op;
 
 const controllers = {};
@@ -62,18 +63,18 @@ controllers.getAreaByID = async (req, res) => {
         const resultado = await Areas.findByPk(id,
             {
                 attributes: {
-                include: [
-                    [
-                        // Usamos ${Badges.tableName} para o Sequelize colocar o nome correto automaticamente
-                        Sequelize.literal(`(
+                    include: [
+                        [
+                            // Usamos ${Badges.tableName} para o Sequelize colocar o nome correto automaticamente
+                            Sequelize.literal(`(
                 SELECT COUNT(*)::integer
                 FROM "${Badges.tableName}" AS badge
                 WHERE badge.id_area = "Areas"."id_area"
             )`),
-                        'total_badges'
+                            'total_badges'
+                        ]
                     ]
-                ]
-            },
+                },
                 include: [{
                     model: ServiceLine,
                     attributes: ['nome_service_line']
@@ -184,6 +185,8 @@ controllers.deleteAreaByID = async (req, res) => {
         resultado.estado_a_i = false;
         await resultado.save();
 
+        await notificarEstado(resultado.nome_area, "Área", false);
+
         await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
         await firebase.notificarSync('areas'); //tabela que esta na bd local
         return res.status(200).json({
@@ -251,6 +254,9 @@ controllers.updateAreaByID = async (req, res) => {
         area.data_insercao = new Date(); // DATA ATUALIZADA
 
         await area.save();
+        if (estado_a_i !== undefined && estado_a_i !== area.estado_a_i) {
+            await notificarEstado(area.nome_area, "Área", estado_a_i);
+        }
 
         if (estado_a_i === false) {
             await Badges.update({ estado_a_i: false }, { where: { id_area: id } });

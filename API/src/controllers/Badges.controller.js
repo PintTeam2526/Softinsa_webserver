@@ -9,6 +9,7 @@ const Sequelize = require('sequelize');
 const Favoritos = require('../models/Favoritos.models');
 const controller = require('./Dashboard.controller');
 const firebase = require('../services/firebase.service');
+const { notificarEstado } = require('../services/notificacoes.service');
 
 const controllers = {};
 
@@ -281,6 +282,8 @@ controllers.deleteBadgeById = async (req, res) => {
         resultado.estado_a_i = false;
 
         await resultado.save();
+        await notificarEstado(resultado.nome_badge, "Badge", false);
+
         await firebase.notificarSync('badges'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Badge eliminado com sucesso"
@@ -358,6 +361,11 @@ controllers.updateBadgeById = async (req, res) => {
         badge.data_insercao = new Date(); // DATA ATUALIZADA
 
         await badge.save();
+
+        if (estado_a_i !== undefined && estado_a_i !== badge.estado_a_i) {
+            await notificarEstado(badge.nome_badge, "Badge", estado_a_i);
+        }
+        
         await firebase.notificarSync('badges'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Badge atualizado com sucesso",
