@@ -1,23 +1,5 @@
 import api from '../services/api'
 
-// ###############################################################################################################
-// ######################## RETIRAR QUANDO AS DASHBOARDS ESTIVEREM TODAS MIGRADAS ################################
-// ###############################################################################################################
-import { badgesChartOptions, badgesChartByYear, badgesChartSeries, badgesChartYearOptions, dashboardMetrics, dashboardUser, learningPathBadgeLevels } from '../models/dashboard.model'
-
-
-export function useDashboardController() {
-  return {
-    user: dashboardUser,
-    metrics: dashboardMetrics,
-    chartOptions: badgesChartOptions,
-    chartSeries: badgesChartSeries,
-    badgesChartByYear: badgesChartByYear,
-    badgesChartYearOptions: badgesChartYearOptions,
-    learningPathBadgeLevels: learningPathBadgeLevels,
-  }
-}
-// ###############################################################################################################
 
 // Para chamar a rota do back com os dados do consultor
 export async function getDashboardConsultor() {
