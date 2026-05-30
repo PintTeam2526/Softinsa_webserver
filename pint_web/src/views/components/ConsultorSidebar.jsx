@@ -3,6 +3,9 @@ import { NavLink } from 'react-router-dom'
 import { HiOutlineChevronRight } from 'react-icons/hi2'
 import './softinsa-sidebar.css'
 
+import { getSideBarConsultor } from '../../controllers/sidebar.controller'
+
+
 const iconSvgProps = {
   xmlns: 'http://www.w3.org/2000/svg',
   fill: 'none',
@@ -118,98 +121,55 @@ function SoftinsaLogo() {
 
 const storageKey = 'softinsa-sidebar-collapsed'
 
-const navigationSections = [
-  {
-    title: 'Home',
-    items: [{ text: 'Dashboard', icon: IconDashboard, to: '/consultor/dashboard', end: true }],
-  },
-  {
-    title: 'Área',
-    items: [
-      {
-        text: 'LowCode\n(Outsystems)',
-        icon: IconArea,
-        to: '/consultor/area/lowcode',
-        hasDropdown: true,
-        subItems: [
-          { text: 'Citizen Developer', to: '/consultor/area/lowcode/citizen-developer' },
-          { text: 'Low-Code Builder', to: '/consultor/area/lowcode/low-code-builder' },
-          { text: 'Application Creator', to: '/consultor/area/lowcode/application-creator' },
-          { text: 'Full-Stack Low-Code', to: '/consultor/area/lowcode/full-stack-low-code' },
-          { text: 'Elite OutSystems', to: '/consultor/area/lowcode/elite-outsystems' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Badges',
-    items: [
-      {
-        text: 'Pedidos',
-        icon: IconPedidos,
-        to: '/consultor/badges/pedidos',
-      },
-      {
-        text: 'Listas de Badges',
-        icon: IconListaBadges,
-        to: '/consultor/badges/listas-badges',
-      },
-      {
-        text: 'Objetivos',
-        icon: IconObjetivos,
-        to: '/consultor/badges/objetivos',
-      },
-      {
-        text: 'Conquistas',
-        icon: IconConquistas,
-        to: '/consultor/badges/conquistas',
-      },
-      {
-        text: 'Outras Áreas',
-        icon: IconOutrasAreas,
-        to: '/consultor/badges/outras-areas',
-      },
-    ],
-  },
-]
-
 function SidebarItem({ item, collapsed, isOpen, onToggle }) {
   const Icon = item.icon
 
-  const handleClick = () => {
-    if (item.subItems && onToggle) {
-      onToggle()
-    }
+  if (item.subItems?.length) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`softinsa-sidebar-item${collapsed ? ' is-collapsed' : ''}`}
+        title={item.text.replace(/\n/g, ' ')}
+      >
+        <span className="softinsa-sidebar-item-icon-wrap">
+          <Icon className="softinsa-sidebar-item-icon" aria-hidden="true" />
+        </span>
+
+        {!collapsed && (
+          <>
+            <span className="softinsa-sidebar-item-text">
+              {item.text.split('\n').map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+
+            <HiOutlineChevronRight
+              className={`softinsa-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
+              aria-hidden="true"
+            />
+          </>
+        )}
+      </button>
+    )
   }
 
   return (
     <NavLink
       to={item.to}
-      end={item.end}
-      onClick={handleClick}
       className={({ isActive }) =>
         `softinsa-sidebar-item${isActive ? ' active' : ''}${collapsed ? ' is-collapsed' : ''}`
       }
-      title={item.text.replace(/\n/g, ' ')}
     >
       <span className="softinsa-sidebar-item-icon-wrap">
         <Icon className="softinsa-sidebar-item-icon" aria-hidden="true" />
       </span>
 
-      {!collapsed ? (
+      {!collapsed && (
         <span className="softinsa-sidebar-item-text">
-          {item.text.split('\n').map((line) => (
-            <span key={line}>{line}</span>
-          ))}
+          {item.text}
         </span>
-      ) : null}
-
-      {!collapsed && item.hasDropdown ? (
-        <HiOutlineChevronRight
-          className={`softinsa-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
-          aria-hidden="true"
-        />
-      ) : null}
+      )}
     </NavLink>
   )
 }
@@ -242,16 +202,71 @@ function ConsultorSidebar() {
 
     return window.localStorage.getItem(storageKey) === 'true'
   })
-
   const [openDropdowns, setOpenDropdowns] = useState({})
+  const [navigationSections, setNavigationSections] = useState([])
 
   const toggleDropdown = (key) => {
     setOpenDropdowns((previous) => ({ ...previous, [key]: !previous[key] }))
   }
 
+  const loadSidebar = async () => {
+    try {
+      const response = await getSideBarConsultor()
+
+      const sections = [
+        {
+          title: 'Home',
+          items: [
+            {
+              text: 'Dashboard',
+              icon: IconDashboard,
+              to: '/consultor/dashboard',
+            },
+          ],
+        },
+        {
+          title: 'Área',
+          items: [
+            {
+              text: response.nome_area,
+              icon: IconArea,
+              to: '/consultor/area',
+              hasDropdown: true,
+              subItems: (response.badges || []).map((badge) => ({
+                text: badge.nome_badge,
+                to: `/consultor/badge/${badge.nome_badge
+                  .toLowerCase()
+                  .replace(/\s+/g, '-')}`,
+              })),
+            },
+          ],
+        },
+        {
+          title: 'Home',
+          items: [
+            {
+              text: 'Pedidos',
+              icon: IconPedidos,
+              to: '/consultor/pedidos',
+            },
+            {
+              text: 'Objetivos',
+              icon: IconObjetivos,
+              to: '/consultor/objetivos',
+            },
+          ],
+        },
+      ]
+
+      setNavigationSections(sections)
+    } catch (error) {
+      console.error('Erro ao carregar sidebar', error)
+    }
+  }
+
   useEffect(() => {
-    window.localStorage.setItem(storageKey, String(isCollapsed))
-  }, [isCollapsed])
+    loadSidebar()
+  }, [])
 
   return (
     <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
@@ -295,8 +310,7 @@ function ConsultorSidebar() {
               <div className="softinsa-sidebar-items">
                 {section.items.map((item) => {
                   const isOpen = Boolean(openDropdowns[item.to])
-                  const showSubItems =
-                    !isCollapsed && item.subItems && item.subItems.length > 0 && isOpen
+                  const showSubItems = item.subItems && item.subItems.length > 0 && isOpen
 
                   return (
                     <div key={item.to} className="softinsa-sidebar-item-group">

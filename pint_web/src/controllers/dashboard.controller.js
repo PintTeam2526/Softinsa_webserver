@@ -38,7 +38,6 @@ export async function getDashboardSLL() {
 export const getDashboardAdmin = async (ano) => {
   try {
     const response = await api.get('/dashboard/admin', { params: { ano } })
-    // console.log('Dados da Dashboard Admin:', response.data) // RETIRAR DEPOIS
     return response.data
   } catch (error) {
     console.error('Erro ao obter dados da dashboard', error)
