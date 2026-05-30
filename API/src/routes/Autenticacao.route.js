@@ -21,5 +21,10 @@ router.put('/update-me', authVerification,controllerAutenticacao.updatePerfil);
 router.delete('/delete-me', authVerification,controllerAutenticacao.deleteUser);
 
 
+router.post("/recuperar-password/enviar-codigo", controllerAutenticacao.enviarCodigoRecuperacao);
+router.post("/recuperar-password/verificar-codigo", controllerAutenticacao.verificarCodigoRecuperacao);
+router.put("/recuperar-password/redefinir", controllerAutenticacao.redefinirPassword);
+
+
 
 module.exports = router;
