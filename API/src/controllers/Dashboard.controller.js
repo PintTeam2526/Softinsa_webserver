@@ -97,7 +97,7 @@ const controller = {};
 
 //dashboard Consultor
 controller.consultor = async (req, res) => {
-    try{
+    try {
         const isConsultor = req.user?.role === "c";
 
         if (!isConsultor) {
@@ -127,16 +127,15 @@ controller.consultor = async (req, res) => {
         }
         res.json(resultado);
     }
-    catch(error)
-    {
+    catch (error) {
         console.error(error)
-        res.status(500).json({mensagem: "Erro de servidor"})
+        res.status(500).json({ mensagem: "Erro de servidor" })
     }
 }
 
 //dashboard Talent Manager
 controller.talentManager = async (req, res) => {
-    try{
+    try {
         const isTM = req.user?.role === "t";
 
         if (!isTM) {
@@ -155,16 +154,15 @@ controller.talentManager = async (req, res) => {
         };
         res.json(resultado);
     }
-    catch(error)
-    {
+    catch (error) {
         console.error(error)
-        res.status(500).json({mensagem: "Erro de servidor"})
+        res.status(500).json({ mensagem: "Erro de servidor" })
     }
 }
 
 //dashboard Service Line Lider
 controller.serviceLineLider = async (req, res) => {
-    try{
+    try {
         const isSLL = req.user?.role === "s";
 
         if (!isSLL) {
@@ -179,7 +177,7 @@ controller.serviceLineLider = async (req, res) => {
         const topConsultores = await dashboardServiceLineLiderService.getTopConsultores(id_service_line_lider);
         const totalConsultores = await dashboardServiceLineLiderService.getTotalConsultores(id_service_line_lider);
         const totalBadges = await dashboardServiceLineLiderService.getTotalBadges(id_service_line_lider);
-        
+
         const resultado = {
             nome_service_line_lider: nome,
             nome_service_line: serviceLine,
@@ -191,10 +189,9 @@ controller.serviceLineLider = async (req, res) => {
         }
         res.json(resultado);
     }
-    catch(error)
-    {
+    catch (error) {
         console.error(error)
-        res.status(500).json({mensagem: "Erro de servidor"})
+        res.status(500).json({ mensagem: "Erro de servidor" })
     }
 }
 
@@ -204,14 +201,19 @@ controller.administrador = async (req, res) => {
         const isAdministrador = req.user?.role === "a";
 
         if (!isAdministrador) {
-            return res.status(401).json({mensagem: "Utilizador não autorizado"});
+            return res.status(401).json({ mensagem: "Utilizador não autorizado" });
         }
 
         //se não receber nada têm valores default, ano atual, mês inicial 1 e mês final 12
         const ano = parseInt(req.query.ano) || new Date().getFullYear();
         const mesInicial = parseInt(req.query.mes_inicial) || 1;
         const mesFinal = parseInt(req.query.mes_final) || 12;
-        const nivel = req.query.nivel || 'Júnior';
+        const niveis = ['Júnior', 'Intermédio', 'Sénior', 'Especialista', 'Líder de Conhecimento']
+        const numeroBadgesPorNivel = {}
+        for (const n of niveis) {
+            numeroBadgesPorNivel[n] = await dashboardAdministradorService.getNumeroBadgesObtidosNivel(n)
+        }
+
 
         const id_administrador = req.user.id_administrador;
 
@@ -222,10 +224,9 @@ controller.administrador = async (req, res) => {
         const totalServiceLines = await dashboardAdministradorService.getTotalServiceLines(id_administrador);
         const totalLearningPaths = await dashboardAdministradorService.getTotaltotalLearningPaths(id_administrador);
         const NumeroBadgesObtidosMesAno = await dashboardAdministradorService.getNumeroBadgesObtidosMesAno(ano, mesInicial, mesFinal);
-        const PercentagemBadgesObtidosNivel = await dashboardAdministradorService.getPercentagemBadgesObtidosNivel(nivel);
         const PercentagemBadgesObtidosMesAno = await dashboardAdministradorService.getPercentagemBadgesObtidosMesAno(ano);
-             
-        
+
+
         const resultado = {
             nome_administrador: nome,
             total_utilizadores: totalUtilizadores,
@@ -234,7 +235,7 @@ controller.administrador = async (req, res) => {
             total_service_lines: totalServiceLines,
             total_learning_paths: totalLearningPaths,
             numero_badges_obtidos_mes_ano_grafico_1: NumeroBadgesObtidosMesAno,
-            percentagem_badges_obtidos_nivel_gráfico_2: PercentagemBadgesObtidosNivel,
+            numero_badges_obtidos_nivel_grafico_2: numeroBadgesPorNivel,
             percentagem_badges_obtidos_mes_ano_grafico_3: PercentagemBadgesObtidosMesAno
         }
 
@@ -242,7 +243,7 @@ controller.administrador = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({mensagem: "Erro de servidor"});
+        res.status(500).json({ mensagem: "Erro de servidor" });
     }
 };
 

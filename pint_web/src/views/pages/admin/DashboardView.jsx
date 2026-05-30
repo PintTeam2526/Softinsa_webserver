@@ -50,18 +50,19 @@ const badgesGroupedChartOptions = {
   chart: {
     type: 'bar',
     toolbar: { show: false },
-    stacked: true,
+    stacked: false,
   },
   colors: LP_COLORS,
   plotOptions: {
     bar: {
       horizontal: false,
       columnWidth: '50%',
-      borderRadius: 10,
-      borderRadiusApplication: 'around',
+      borderRadius: 6,
+      borderRadiusApplication: 'end',
       borderRadiusWhenStacked: 'last',
     },
   },
+
   dataLabels: { enabled: false },
   legend: { show: false },
   xaxis: {
@@ -157,9 +158,8 @@ function DashboardView() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedLevel, setSelectedLevel] = useState('Geral')
+  const [selectedLevel, setSelectedLevel] = useState('Júnior')
   const [selectedPrimaryYear, setSelectedPrimaryYear] = useState(new Date().getFullYear())
-  const [selectedGroupedYear, setSelectedGroupedYear] = useState(new Date().getFullYear())
   const [selectedMonthStart, setSelectedMonthStart] = useState(null)
   const [selectedMonthEnd, setSelectedMonthEnd] = useState(null)
 
@@ -184,50 +184,56 @@ function DashboardView() {
     ]
   }, [data])
 
-  // ── Gráfico 1: badges obtidos por mês — { 2025: { series: [...] } } ──
+  // Gráfico 1: badges obtidos por mês
   const badgesChartByYear = useMemo(() => {
     const meses = data?.numero_badges_obtidos_mes_ano_grafico_1
-    if (!meses?.length) return { 2025: { series: [] } }
+    if (!meses?.length) return { [selectedPrimaryYear]: { series: [] } }
     const lps = Object.keys(meses[0]).filter(k => k !== 'mes')
     return {
-      2025: {
+      [selectedPrimaryYear]: {
         series: lps.map(lp => ({
           name: lp,
           data: meses.map(m => m[lp] ?? 0),
         })),
       },
     }
-  }, [data])
+  }, [data, selectedPrimaryYear])
 
-  // ── Gráfico 2: percentagem por nível — [{ value, label, chartSeries, paths }] ──
+  // Gráfico 2: percentagem por nível
   const learningPathBadgeLevels = useMemo(() => {
-    const nivel = data?.['percentagem_badges_obtidos_nivel_gráfico_2']
-    if (!nivel) return []
-    const entries = Object.entries(nivel)
-    return [{
-      value: 'Geral',
-      label: 'Geral',
-      chartSeries: entries.map(([, pct]) => pct),
-      paths: entries.map(([nome, pct], i) => ({
-        label: nome,
-        value: `${pct}%`,
-        color: LP_COLORS[i] ?? '#ccc',
-      })),
-    }]
+    const niveis = data?.numero_badges_obtidos_nivel_grafico_2
+    if (!niveis) return []
+
+    return Object.entries(niveis).map(([nivelNome, lps]) => {
+      const entries = Object.entries(lps)
+      return {
+        value: nivelNome,
+        label: nivelNome,
+        chartSeries: entries.map(([, v]) =>
+          v.total === 0 ? 0 : Number(((v.obtidos / v.total) * 100).toFixed(2))
+        ),
+        paths: entries.map(([lpNome, v], i) => ({
+          label: lpNome,
+          value: `${v.obtidos} / ${v.total}`,
+          color: LP_COLORS[i] ?? '#ccc',
+        })),
+      }
+    })
   }, [data])
 
-  // ── Gráfico 3: percentagem por mês — { 2025: [{ name, data: [...] }] } ──
+
+  // Gráfico 3: percentagem por mês
   const badgesChartLearningPathByYear = useMemo(() => {
     const meses = data?.percentagem_badges_obtidos_mes_ano_grafico_3
-    if (!meses?.length) return { 2025: [] }
+    if (!meses?.length) return { [selectedPrimaryYear]: [] }
     const lps = Object.keys(meses[0]).filter(k => k !== 'mes')
     return {
-      2025: lps.map(lp => ({
+      [selectedPrimaryYear]: lps.map(lp => ({
         name: lp,
         data: meses.map(m => m[lp] ?? 0),
       })),
     }
-  }, [data])
+  }, [data, selectedPrimaryYear])
 
   const currentYear = new Date().getFullYear()
 
@@ -246,8 +252,8 @@ function DashboardView() {
   )
 
   // ── Dados do ano selecionado ──
-  const selectedPrimaryYearData = badgesChartByYear[selectedPrimaryYear] ?? badgesChartByYear[2025] ?? { series: [] }
-  const selectedGroupedYearData = badgesChartLearningPathByYear[selectedGroupedYear] ?? badgesChartLearningPathByYear[2025] ?? []
+  const selectedPrimaryYearData = badgesChartByYear[selectedPrimaryYear] ?? { series: [] }
+  const selectedGroupedYearData = badgesChartLearningPathByYear[selectedPrimaryYear] ?? []
 
   // ── Filtragem por mês ──
   const lastMonthIndex = badgesChartMonthOptions.length - 1
@@ -298,12 +304,16 @@ function DashboardView() {
         <Card.Header className="softinsa-chart-card-header softinsa-primary-chart-header">
           <h5 className="mb-0">Badges Obtidos</h5>
           <Dropdown className="softinsa-primary-chart-year-dropdown">
-            <Dropdown.Toggle variant="link" id="softinsa-primary-chart-year-dropdown" className="softinsa-primary-chart-year-dropdown-toggle">
+            <Dropdown.Toggle variant="link" id="softinsa-badges-year-dropdown" className="softinsa-badges-dropdown-toggle">
               {selectedPrimaryYear}
             </Dropdown.Toggle>
             <Dropdown.Menu align="end" className="softinsa-primary-chart-year-dropdown-menu">
               {badgesChartYearOptions.map((year) => (
-                <Dropdown.Item key={year} active={year === selectedPrimaryYear} onClick={() => setSelectedPrimaryYear(year)}>
+                <Dropdown.Item
+                  key={year}
+                  active={year === selectedPrimaryYear}
+                  onClick={() => setSelectedPrimaryYear(year)}
+                >
                   {year}
                 </Dropdown.Item>
               ))}
@@ -367,7 +377,16 @@ function DashboardView() {
             </Card.Header>
             <Card.Body className="softinsa-learning-path-card-body">
               <div className="softinsa-learning-path-chart-wrap">
-                <Chart options={learningPathChartOptions} series={selectedLearningPathLevel.chartSeries} type="radialBar" height={250} />
+                <Chart
+                  key={selectedLearningPathLevel.value}
+                  options={{
+                    ...learningPathChartOptions,
+                    labels: selectedLearningPathLevel.paths.map(p => p.label),
+                  }}
+                  series={selectedLearningPathLevel.chartSeries}
+                  type="radialBar"
+                  height={250}
+                />
               </div>
               <div className="softinsa-learning-path-legend" aria-label="Quantidade por learning path">
                 {selectedLearningPathLevel.paths.map((path) => (
@@ -390,11 +409,15 @@ function DashboardView() {
               <h5 className="mb-0">Badges Obtidos (%)</h5>
               <Dropdown className="softinsa-badges-dropdown">
                 <Dropdown.Toggle variant="link" id="softinsa-badges-year-dropdown" className="softinsa-badges-dropdown-toggle">
-                  {selectedGroupedYear}
+                  {selectedPrimaryYear}
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end" className="softinsa-badges-dropdown-menu">
                   {badgesChartYearOptions.map((year) => (
-                    <Dropdown.Item key={year} active={year === selectedGroupedYear} onClick={() => setSelectedGroupedYear(year)}>
+                    <Dropdown.Item
+                      key={year}
+                      active={year === selectedPrimaryYear}
+                      onClick={() => setSelectedPrimaryYear(year)}
+                    >
                       {year}
                     </Dropdown.Item>
                   ))}

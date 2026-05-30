@@ -18,7 +18,7 @@ service.getNomeAdministrador = async (id_administrador) => {
 };
 
 //obter o total de utilizadores
-service.getTotalUtilizadores =async () => {
+service.getTotalUtilizadores = async () => {
     return await Utilizadores.count();
 };
 
@@ -55,13 +55,13 @@ service.getNumeroBadgesObtidosMesAno = async (ano, mesInicial, mesFinal) => {
     for (var mes = mesInicial; mes <= mesFinal; mes++) {
         const dataInicio = new Date(ano, mes - 1, 1);
         const dataFim = new Date(ano, mes, 0, 23, 59, 59);
-        const dadosMes = {mes};
+        const dadosMes = { mes };
 
         // percorrer learning paths
         for (const learningPath of learningPaths) {
             const total = await BadgesConcluidos.count({
                 where: {
-                    data_conclusao_badge: {[Op.between]: [dataInicio, dataFim]}
+                    data_conclusao_badge: { [Op.between]: [dataInicio, dataFim] }
                 },
                 include: [{
                     model: Badges,
@@ -69,7 +69,7 @@ service.getNumeroBadgesObtidosMesAno = async (ano, mesInicial, mesFinal) => {
                         model: Areas,
                         include: [{
                             model: ServiceLines,
-                                where: {id_learning_path: learningPath.id_learning_path}
+                            where: { id_learning_path: learningPath.id_learning_path }
                         }]
                     }]
                 }]
@@ -105,23 +105,19 @@ service.getPercentagemBadgesObtidosNivel = async (nivel) => {
         //áreas da learning path
         const areas = await Areas.findAll({
             where: {
-                id_service_line: {[Op.in]: idsServiceLines}
+                id_service_line: { [Op.in]: idsServiceLines }
             }
         });
         const idsAreas = areas.map(area => area.id_area);
 
-        const consultores = await Consultores.findAll({
-            where: {
-                id_area: {[Op.in]: idsAreas},
-            }
-        });
+        const consultores = await Consultores.findAll()
         const idsConsultores = consultores.map(c => c.id_consultor);
         const totalConsultores = idsConsultores.length;
 
         //badges da learning path
         const badges = await Badges.findAll({
             where: {
-                id_area: {[Op.in]: idsAreas},
+                id_area: { [Op.in]: idsAreas },
                 nivel_badge: nivel
             }
         });
@@ -140,9 +136,9 @@ service.getPercentagemBadgesObtidosNivel = async (nivel) => {
         //badges concluídos
         const totalObtidos = await BadgesConcluidos.count({
             where: {
-                id_consultor: {[Op.in]: idsConsultores},
-                id_badge: {[Op.in]: idsBadges}
-            }
+                id_consultor: { [Op.in]: idsConsultores },
+                id_badge: { [Op.in]: idsBadges }
+            },
         });
 
         //calcular percentagem com duas casas decimais
@@ -152,6 +148,47 @@ service.getPercentagemBadgesObtidosNivel = async (nivel) => {
 
     return resultado;
 };
+
+
+service.getNumeroBadgesObtidosNivel = async (nivel) => {
+    const learningPaths = await LearningPaths.findAll({
+        order: [['id_learning_path', 'ASC']]
+    });
+    const resultado = {};
+
+    for (const learningPath of learningPaths) {
+        const serviceLines = await ServiceLines.findAll({
+            where: { id_learning_path: learningPath.id_learning_path }
+        });
+        const idsServiceLines = serviceLines.map(sl => sl.id_service_line);
+
+        const areas = await Areas.findAll({
+            where: { id_service_line: { [Op.in]: idsServiceLines } }
+        });
+        const idsAreas = areas.map(area => area.id_area);
+
+        const badges = await Badges.findAll({
+            where: {
+                id_area: { [Op.in]: idsAreas },
+                nivel_badge: nivel
+            }
+        });
+        const idsBadges = badges.map(badge => badge.id_badge);
+        const totalBadges = idsBadges.length;
+
+        const totalObtidos = await BadgesConcluidos.count({
+            where: { id_badge: { [Op.in]: idsBadges } }
+        });
+
+        resultado[learningPath.nome_learning_path] = {
+            obtidos: totalObtidos,
+            total: totalBadges,
+        }
+    }
+
+    return resultado;
+};
+
 
 //obter percentagem de badges obtidos por ano, por mês e por learning path até aquele momento
 service.getPercentagemBadgesObtidosMesAno = async (ano) => {
@@ -165,34 +202,30 @@ service.getPercentagemBadgesObtidosMesAno = async (ano) => {
     for (var mes = 1; mes <= 12; mes++) {
         // último dia do mês
         const dataFim = new Date(ano, mes, 0, 23, 59, 59);
-        const dadosMes = {mes};
+        const dadosMes = { mes };
 
         // percorrer learning paths
         for (const learningPath of learningPaths) {
             const serviceLines = await ServiceLines.findAll({
-                where: {id_learning_path: learningPath.id_learning_path}
+                where: { id_learning_path: learningPath.id_learning_path }
             });
 
             const idsServiceLines = serviceLines.map(sl => sl.id_service_line);
             const areas = await Areas.findAll({
                 where: {
-                    id_service_line: {[Op.in]: idsServiceLines}
+                    id_service_line: { [Op.in]: idsServiceLines }
                 }
             });
             const idsAreas = areas.map(area => area.id_area);
             const badges = await Badges.findAll({
-                 where: {
-                    id_area: {[Op.in]: idsAreas}
+                where: {
+                    id_area: { [Op.in]: idsAreas }
                 }
             });
             const idsBadges = badges.map(badge => badge.id_badge);
             const totalBadgesLP = idsBadges.length;
 
-            const consultores = await Consultores.findAll({
-                where: {
-                    id_area: {[Op.in]: idsAreas}
-                }
-            })
+            const consultores = await Consultores.findAll()
             const idsConsultores = consultores.map(c => c.id_consultor);
             const totalConsultoresLP = idsConsultores.length;
 
@@ -207,9 +240,9 @@ service.getPercentagemBadgesObtidosMesAno = async (ano) => {
             //badges obtidos até ao mês
             const totalObtidos = await BadgesConcluidos.count({
                 where: {
-                    id_badge: {[Op.in]: idsBadges},
-                    id_consultor: {[Op.in]: idsConsultores},
-                    data_conclusao_badge: {[Op.lte]: dataFim}
+                    id_badge: { [Op.in]: idsBadges },
+                    id_consultor: { [Op.in]: idsConsultores },
+                    data_conclusao_badge: { [Op.lte]: dataFim }
                 }
             });
 
