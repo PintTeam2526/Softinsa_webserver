@@ -6,6 +6,12 @@ import * as XLSX from 'xlsx'
 import SLLPagination from '../../components/SLLPagination'
 import './TalentManagerHistoricoView.css'
 
+import { getAreas } from '../../../controllers/areasController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
+
+
 function ExportIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
@@ -16,14 +22,11 @@ function ExportIcon() {
   )
 }
 
-import { getAreas } from '../../../controllers/areasController'
-import { getServiceLines } from '../../../controllers/serviceLinesController'
-import { getLearningPaths } from '../../../controllers/learningPathsController'
-import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
-
-const requestAvatar = 'https://www.figma.com/api/mcp/asset/cf64d835-06cf-435b-8bfd-8b387bf43fa7'
-
-// ── helpers ───────────────────────────────────────────────────────────────────
+function normalizeImage(base64) {
+  return base64
+    ? `data:image/png;base64,${base64}`
+    : ''
+}
 
 function PaginationArrow({ direction = 'left', double = false }) {
   return (
@@ -218,6 +221,7 @@ function mapPedido(row, areaMap, slMap, lpMap) {
   return {
     id: row.id_pedido_badge,
     title: badge.nome_badge ?? `Pedido ${row.id_pedido_badge}`,
+    image: normalizeImage(badge.imagem_badge),
     consultant,
     status,
     approvedDate: dateStr ? String(dateStr).slice(0, 10) : '',
@@ -247,7 +251,7 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
     <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
       <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
         <div className="sll-history-card-avatar" aria-hidden="true">
-          <img src={requestAvatar} alt="" />
+          <img src={request.image || requestAvatar} alt={request.title} />
           <span className="sll-history-card-avatar-ring" />
         </div>
         <div className="sll-history-card-copy">
