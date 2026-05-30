@@ -13,8 +13,11 @@ const devolverEstadoBadgeService = require("../services/devolverEstadoBadge.serv
 const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models")
 const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
-const Objetivos = require('../models/Objetivos.models')
+const Objetivos = require('../models/Objetivos.models');
+const NotificacoesPedidos = require('../models/Notificacoes.models');
 const controllers = {};
+
+
 
 /* =====================================================
    FUNÇÕES AUXILIARES
@@ -51,12 +54,18 @@ async function criarHistorico(
   });
 }
 
-async function criarNotificacao(idConsultor, idPedido, texto) {
+async function criarNotificacao(
+  idConsultor,
+  notificacao,
+  descricao = null,
+  remetente = "Sistema"
+) {
   await NotificacoesPedidos.create({
     id_consultor: idConsultor,
-    id_pedido_badge: idPedido,
-    justificacao: texto,
-    data_envio_notificacao: new Date(),
+    notificacao,
+    descricao,
+    remetente,
+    data_de_envio: new Date(),
   });
 }
 
@@ -276,9 +285,10 @@ controllers.createPedido = async (req, res) => {
       await NotificacoesPedidos.create(
         {
           id_consultor,
-          id_pedido_badge: pedido.id_pedido_badge,
-          justificacao: "Novo pedido criado. Aguarda validação.",
-          data_envio_notificacao: new Date(),
+          notificacao: "Novo pedido criado",
+          descricao: "O pedido foi submetido e aguarda validação.",
+          remetente: "Sistema",
+          data_de_envio: new Date(),
         },
         { transaction },
       );
@@ -366,8 +376,9 @@ controllers.tmReview = async (req, res) => {
 
     await criarNotificacao(
       pedido.id_consultor,
-      pedido.id_pedido_badge,
       mensagemNotificacao,
+      `Pedido #${pedido.id_pedido_badge}`,
+      "Talent Manager"
     );
 
     return res.status(200).json({
@@ -461,36 +472,36 @@ controllers.slReview = async (req, res) => {
     pedido.estado_atual = config.estado;
     await pedido.save();
 
-   if (acao === "aprovar") {
-    await BadgesConcluidos.create({
+    if (acao === "aprovar") {
+      await BadgesConcluidos.create({
         id_badge: pedido.id_badge,
         id_consultor: pedido.id_consultor,
         data_conclusao_badge: new Date(),
         url_validacao: "Interno",
-    });
+      });
 
-    const badge = await Badges.findByPk(pedido.id_badge);
-    if (badge) {
+      const badge = await Badges.findByPk(pedido.id_badge);
+      if (badge) {
         // Usar .save() em vez de .increment() para disparar o afterUpdate
         const consultor = await Consultor.findByPk(pedido.id_consultor);
         consultor.total_pontos = (consultor.total_pontos || 0) + badge.pontos_badge;
         await consultor.save(); // dispara afterUpdate → verificarConquistasPontos
-    }
+      }
 
-    await Objetivos.update(
+      await Objetivos.update(
         {
-            estado_objetivo: "Concluido",
-            data_conclusao_objetivo: new Date(),
+          estado_objetivo: "Concluido",
+          data_conclusao_objetivo: new Date(),
         },
         {
-            where: {
-                id_badge: pedido.id_badge,
-                id_consultor: pedido.id_consultor,
-                estado_objetivo: "Por Concluir"
-            }
+          where: {
+            id_badge: pedido.id_badge,
+            id_consultor: pedido.id_consultor,
+            estado_objetivo: "Por Concluir"
+          }
         }
-    );
-}
+      );
+    }
 
     await criarHistorico(
       pedido.id_pedido_badge,
@@ -501,8 +512,9 @@ controllers.slReview = async (req, res) => {
 
     await criarNotificacao(
       pedido.id_consultor,
-      pedido.id_pedido_badge,
       config.notificacao,
+      `Pedido #${pedido.id_pedido_badge}`,
+      "Service Line Leader"
     );
 
     return res.status(200).json({
