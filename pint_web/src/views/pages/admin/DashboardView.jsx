@@ -154,17 +154,19 @@ function DashboardView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedLevel, setSelectedLevel] = useState('Geral')
-  const [selectedPrimaryYear, setSelectedPrimaryYear] = useState(2025)
-  const [selectedGroupedYear, setSelectedGroupedYear] = useState(2025)
+  const [selectedPrimaryYear, setSelectedPrimaryYear] = useState(new Date().getFullYear())
+  const [selectedGroupedYear, setSelectedGroupedYear] = useState(new Date().getFullYear())
   const [selectedMonthStart, setSelectedMonthStart] = useState(null)
   const [selectedMonthEnd, setSelectedMonthEnd] = useState(null)
 
   useEffect(() => {
-    getDashboardAdmin()
+    setLoading(true)
+
+    getDashboardAdmin(selectedPrimaryYear)
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false))
-  }, [])
+  }, [selectedPrimaryYear])
 
   // ── Métricas ──
   const metrics = useMemo(() => {
@@ -223,7 +225,14 @@ function DashboardView() {
     }
   }, [data])
 
-  const badgesChartYearOptions = [2025]
+  const currentYear = new Date().getFullYear()
+
+  const badgesChartYearOptions = [
+    currentYear - 2,
+    currentYear - 1,
+    currentYear
+  ]
+
   const badgesChartMonthOptions = MONTH_LABELS
 
   // ── Nível selecionado para o radialBar ──

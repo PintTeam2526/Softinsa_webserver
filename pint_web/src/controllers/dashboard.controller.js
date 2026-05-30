@@ -35,9 +35,9 @@ export async function getDashboardSLL() {
 }
 
 // Para chamar a rota do back com os dados do Admin
-export async function getDashboardAdmin() {
+export const getDashboardAdmin = async (ano) => {
   try {
-    const response = await api.get('/dashboard/admin')
+    const response = await api.get('/dashboard/admin', { params: { ano } })
     console.log('Dados da Dashboard Admin:', response.data) // RETIRAR DEPOIS
     return response.data
   } catch (error) {
