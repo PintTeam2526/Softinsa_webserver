@@ -22,6 +22,9 @@ router.put('/:id/update', authVerification, controllerUtilizador.updateUtilizado
 //Eliminar um utilizador com um determinado id
 router.delete('/:id/delete', authVerification, controllerUtilizador.deleteUtilizadorById);
 
+//Obter dados para a topbar de um utilizador
+router.get('/topbar', authVerification, controllerUtilizador.getDadosTopbar);
+
 
 
 

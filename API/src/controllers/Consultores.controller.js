@@ -12,6 +12,7 @@ const PedidosBadges = require('../models/PedidosBadges.models');
 const Notificacoes = require('../models/Notificacoes.models');
 const ServiceLines = require('../models/ServiceLines.models');
 const LearningPaths = require('../models/LearningPaths.models');
+const sidebarService = require('../services/sidebar.service');
 
 const controllers = {};
 
@@ -495,5 +496,28 @@ controllers.perfilPublico = async (req, res) => {
         return res.status(500).json({ mensagem: "Erro ao obter perfil público.", erro: error.message });
     }
 };
+
+//obter área e os seus badges para a sidebar do consultor
+controllers.getAreaEBadges = async (req, res) => {
+    
+    try {
+        const isConsultor = req.user?.role === "c";
+
+        if (!isConsultor) {
+            return res.status(401).json({
+                mensagem: "Utilizador não autorizado"
+            });
+        }
+
+        const id_consultor = req.user.id_consultor;
+        const resultado = await sidebarService.getAreaEBadges(id_consultor);
+        res.json(resultado);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({mensagem: "Erro de servidor"});
+    }
+};
+
 
   module.exports = controllers;
