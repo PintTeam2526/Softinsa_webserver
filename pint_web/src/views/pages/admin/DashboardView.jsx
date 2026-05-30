@@ -47,15 +47,19 @@ const areaChartOptions = {
 }
 
 const badgesGroupedChartOptions = {
-  chart: { type: 'bar', toolbar: { show: false }, stacked: true },
+  chart: {
+    type: 'bar',
+    toolbar: { show: false },
+    stacked: true,
+  },
   colors: LP_COLORS,
   plotOptions: {
     bar: {
-      borderRadius: 8,
-      borderRadiusApplication: 'end',
+      horizontal: false,
+      columnWidth: '50%',
+      borderRadius: 10,
+      borderRadiusApplication: 'around',
       borderRadiusWhenStacked: 'last',
-      columnWidth: '22%',
-      dataLabels: { position: 'top' },
     },
   },
   dataLabels: { enabled: false },
@@ -398,7 +402,7 @@ function DashboardView() {
               </Dropdown>
             </Card.Header>
             <Card.Body>
-              <Chart options={badgesGroupedChartOptions} series={selectedGroupedYearData} type="bar" height={250} />
+              <Chart options={badgesGroupedChartOptions} series={selectedGroupedYearData} type="bar" height={400} />
             </Card.Body>
           </Card>
         </Col>
