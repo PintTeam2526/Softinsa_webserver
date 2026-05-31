@@ -43,7 +43,7 @@ import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistas
 import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'
 import ConsultorListaBadgesView from './views/pages/consultor/ConsultorListaBadgesView'
 import ConsultorBadgePageView from './views/pages/consultor/ConsultorBadgePageView'
-import ConsultorDefinicoesView from './views/pages/consultor/ConsultorPerfilPublicoView'
+import ConsultorDefinicoesView from './views/pages/consultor/ConsultorDefinicoesView'
 
 import ScrollToTop from './views/components/ScrollToTop'
 

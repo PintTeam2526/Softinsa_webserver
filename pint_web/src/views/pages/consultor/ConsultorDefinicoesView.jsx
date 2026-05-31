@@ -11,7 +11,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineArrowRightOnRectangle
 } from 'react-icons/hi2'
-import './ConsultorPerfilPublicoView.css'
+import './ConsultorDefinicoesView.css'
 import '../shared/profile-settings.css'
 
 import { getConsultor, updatemeUtilizador } from '../../../controllers/utilizadoresController'
@@ -167,7 +167,7 @@ function RgpdConsentModal({ politica, onAccept, onReject }) {
 }
 
 // ─── View principal ───────────────────────────────────────────────────────────
-function ConsultorPerfilPublicoView() {
+function ConsultorDefinicoesView() {
   const navigate = useNavigate()
 
   // Dados do perfil
@@ -328,7 +328,7 @@ function ConsultorPerfilPublicoView() {
         <div className="sll-profile-scroll">
           <section className="sll-profile-hero" aria-label="Perfil público consultor">
             <div className="sll-profile-hero-copy">
-              <h1>Perfis Públicos</h1>
+              <h1>Perfil Público</h1>
               <p>Estamos aqui para te ajudar a melhorar o currículo</p>
             </div>
           </section>
@@ -589,4 +589,4 @@ function ConsultorPerfilPublicoView() {
   )
 }
 
-export default ConsultorPerfilPublicoView
+export default ConsultorDefinicoesView

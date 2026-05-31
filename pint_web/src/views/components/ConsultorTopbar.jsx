@@ -110,7 +110,7 @@ function ProfileButton({ profile }) {
     : profile.cargo
 
   return (
-    <Link to="/consultor/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+    <Link to="/consultor/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
       <div className="softinsa-shell-profile-wrap">
         <img
           src={`data:image/jpeg;base64,${profile.imagem_utilizador}`}
