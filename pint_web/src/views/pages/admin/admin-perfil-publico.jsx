@@ -4,37 +4,29 @@ import {
   HiOutlineCog6Tooth,
   HiOutlineLockClosed,
   HiOutlineEnvelope,
-  HiOutlineMapPin,
   HiOutlineCamera,
   HiOutlineChevronRight,
   HiOutlineXMark,
-  HiOutlineDocumentText,
+  HiOutlineUserCircle,
   HiOutlineArrowRightOnRectangle
 } from 'react-icons/hi2'
-import './ConsultorPerfilPublicoView.css'
-import '../shared/profile-settings.css'
 
-import { getConsultor, updatemeUtilizador } from '../../../controllers/utilizadoresController'
-import { getAreas } from '../../../controllers/areasController'
-import { getRGPD } from '../../../controllers/gestaoController'
+import { getUtilizadorById, updatemeUtilizador } from '../../../controllers/utilizadoresController'
 
-// ─── Helper: converte Base64 da BD num src válido para <img> ─────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function resolveImagem(raw) {
   if (!raw) return null
 
-  // Sequelize pode devolver BLOB como { type: 'Buffer', data: [...] }
   if (raw?.type === 'Buffer' && Array.isArray(raw?.data)) {
     const binary = raw.data.reduce((acc, byte) => acc + String.fromCharCode(byte), '')
     raw = btoa(binary)
   }
 
   if (typeof raw !== 'string') return null
-
-  // Já é data URI ou URL externo — devolve tal qual
   if (raw.startsWith('data:') || raw.startsWith('http')) return raw
 
-  // Detecta o tipo pela assinatura Base64
-  let mime = 'image/jpeg' // fallback
+  let mime = 'image/jpeg'
   if (raw.startsWith('iVBOR')) mime = 'image/png'
   else if (raw.startsWith('R0lG')) mime = 'image/gif'
   else if (raw.startsWith('UklG')) mime = 'image/webp'
@@ -43,37 +35,16 @@ function resolveImagem(raw) {
   return `data:${mime};base64,${raw}`
 }
 
-// ─── Aceitação RGPD (estado local do browser) ────────────────────────────────
-const ACCEPTANCE_STORAGE_KEY = 'softinsa.rgpd.acceptance'
-
-function getStoredAcceptance() {
+function getAdminIdFromToken() {
   try {
-    const raw = localStorage.getItem(ACCEPTANCE_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' ? parsed : null
+    const payload = JSON.parse(atob(localStorage.getItem('token').split('.')[1]))
+    return payload.id_administrador
   } catch {
-    localStorage.removeItem(ACCEPTANCE_STORAGE_KEY)
-    return null
+    return localStorage.getItem('id_utilizador')
   }
 }
 
-// ─── Componentes auxiliares ───────────────────────────────────────────────────
-function BadgeItem({ imagem, nome, data }) {
-  const dataFormatada = data
-    ? new Date(data).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    : '—'
-
-  return (
-    <div className="sll-profile-badge-item">
-      <div className="sll-profile-badge-image">
-        <img src={imagem} alt={nome} />
-      </div>
-      <p>{nome}</p>
-      <span>{dataFormatada}</span>
-    </div>
-  )
-}
+// ─── Sub-componentes ──────────────────────────────────────────────────────────
 
 function SettingsRow({ Icon, label, description, onClick }) {
   return (
@@ -111,131 +82,47 @@ function Modal({ title, onClose, children }) {
   )
 }
 
-function RgpdConsentModal({ politica, onAccept, onReject }) {
-  const [checked, setChecked] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleAccept = () => {
-    if (!checked) { setError('Para continuar, aceite a política.'); return }
-    onAccept()
-  }
-
-  const handleReject = () => {
-    setChecked(false)
-    setError('Sem aceitação não é possível concluir o primeiro acesso.')
-    onReject()
-  }
-
-  return (
-    <div className="sll-profile-modal-backdrop" role="presentation">
-      <div className="sll-profile-modal" role="dialog" aria-label="Aceitação de termos RGPD">
-        <header className="sll-profile-modal-header">
-          <h3>Aceitação de termos</h3>
-        </header>
-
-        <p>Primeiro acesso detetado. Para continuar no portal, confirme a política abaixo.</p>
-
-        <div className="sll-profile-rgpd-policy">{politica}</div>
-
-        <label className="sll-profile-rgpd-consent-item">
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={(e) => { setChecked(e.target.checked); if (error) setError('') }}
-          />
-          <span>Li e aceito as políticas RGPD.</span>
-        </label>
-
-        {error ? <p className="sll-profile-rgpd-error">{error}</p> : null}
-
-        <div className="sll-profile-modal-actions">
-          <button type="button" className="sll-profile-btn-secondary" onClick={handleReject}>
-            Recusar
-          </button>
-          <button
-            type="button"
-            className={`sll-profile-btn-primary${!checked ? ' is-disabled' : ''}`}
-            onClick={handleAccept}
-            disabled={!checked}
-          >
-            Aceitar e continuar
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ─── View principal ───────────────────────────────────────────────────────────
-function ConsultorPerfilPublicoView() {
-  const navigate = useNavigate()
 
-  // Dados do perfil
+function AdminPerfilView() {
+  const navigate = useNavigate()
+  const idUtilizador = getAdminIdFromToken()
+
   const [perfil, setPerfil] = useState(null)
-  const [areas, setAreas] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // RGPD
-  const [rgpdPolitica, setRgpdPolitica] = useState(null)
-  const [acceptance, setAcceptance] = useState(getStoredAcceptance)
-
-  // UI
   const [activeModal, setActiveModal] = useState(null)
   const [feedback, setFeedback] = useState({ message: '', type: 'success' })
   const [isSaving, setIsSaving] = useState(false)
 
-  // Formulários dos modais
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' })
   const [emailForm, setEmailForm] = useState({ next: '', password: '' })
-  const [areaDraft, setAreaDraft] = useState('')
   const [avatarDraft, setAvatarDraft] = useState('')
   const fileInputRef = useRef(null)
 
-  const hasAcceptedRgpd = useMemo(() => {
-    if (!rgpdPolitica?.trim()) return true
-    return Boolean(acceptance && acceptance.version === rgpdPolitica)
-  }, [acceptance, rgpdPolitica])
-
-  // Carrega perfil e RGPD em paralelo
+  // ── Carrega perfil ─────────────────────────────────────────────────────────
   useEffect(() => {
     const load = async () => {
       setIsLoading(true)
       try {
-        const [consultorData, rgpdData, areasData] = await Promise.all([
-          getConsultor(),
-          getRGPD(),
-          getAreas(),
-        ])
-        setPerfil(consultorData)
-        setAreas(areasData ?? [])
-        setEmailForm((prev) => ({ ...prev, next: consultorData?.email ?? '' }))
-        setAreaDraft(consultorData?.id_area ?? '')
-        setAvatarDraft(consultorData?.foto ?? '')
-        setRgpdPolitica(rgpdData?.politica ?? '')
-      } catch (err) {
+        const data = await getUtilizadorById(idUtilizador)
+        setPerfil(data)
+        setEmailForm((prev) => ({ ...prev, next: data?.email ?? '' }))
+        setAvatarDraft(data?.imagem_utilizador ?? '')
+      } catch {
         flashFeedback('Erro ao carregar os dados do perfil.', 'error')
       } finally {
         setIsLoading(false)
       }
     }
     load()
-  }, [])
-
-  const profileStats = useMemo(() => {
-    if (!perfil) return []
-    return [
-      { label: `${perfil.total_pontos ?? 0} Pontos` },
-      { label: `${perfil.total_badges ?? 0} Badges Obtidos` },
-      { label: perfil.email ?? '' },
-    ]
-  }, [perfil])
+  }, [idUtilizador])
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   function openModal(name) {
     setFeedback({ message: '', type: 'success' })
     if (name === 'email') setEmailForm({ next: perfil?.email ?? '', password: '' })
-    if (name === 'area') setAreaDraft(perfil?.id_area ?? '')
-    if (name === 'image') setAvatarDraft(perfil?.foto ?? '')
+    if (name === 'image') setAvatarDraft(perfil?.imagem_utilizador ?? '')
     if (name === 'password') setPasswordForm({ current: '', next: '', confirm: '' })
     setActiveModal(name)
   }
@@ -251,8 +138,7 @@ function ConsultorPerfilPublicoView() {
     setIsSaving(true)
     try {
       await updatemeUtilizador(payload)
-      // Backend devolve apenas { mensagem }, por isso refetch para reflectir as alterações
-      const updated = await getConsultor()
+      const updated = await getUtilizadorById(idUtilizador)
       setPerfil(updated)
       closeModal()
       flashFeedback(successMsg)
@@ -263,7 +149,7 @@ function ConsultorPerfilPublicoView() {
     }
   }
 
-  // ── Handlers dos modais ────────────────────────────────────────────────────
+  // ── Handlers ───────────────────────────────────────────────────────────────
   async function handlePasswordSubmit(e) {
     e.preventDefault()
     const { current, next, confirm } = passwordForm
@@ -277,33 +163,20 @@ function ConsultorPerfilPublicoView() {
     await saveUpdate({ email: emailForm.next.trim() }, 'Email atualizado.')
   }
 
-  async function handleAreaSubmit(e) {
-    e.preventDefault()
-    await saveUpdate({ id_area: Number(areaDraft) }, 'Área de preferência atualizada.')
-  }
-
   function handleAvatarFile(e) {
     const [file] = e.target.files || []
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => setAvatarDraft(String(reader.result))
+    reader.onload = () => {
+      const base64 = String(reader.result).split(',')[1]
+      setAvatarDraft(base64)
+    }
     reader.readAsDataURL(file)
   }
 
   async function handleAvatarSubmit(e) {
     e.preventDefault()
     await saveUpdate({ foto: avatarDraft }, 'Imagem de perfil atualizada.')
-  }
-
-  // ── RGPD ───────────────────────────────────────────────────────────────────
-  function handleRgpdAccept() {
-    const next = { version: rgpdPolitica, acceptedAt: new Date().toISOString() }
-    localStorage.setItem(ACCEPTANCE_STORAGE_KEY, JSON.stringify(next))
-    setAcceptance(next)
-  }
-
-  function handleRgpdReject() {
-    // Mantém o modal aberto com mensagem de erro (gerido dentro do RgpdConsentModal)
   }
 
   function handleLogout() {
@@ -322,17 +195,22 @@ function ConsultorPerfilPublicoView() {
     )
   }
 
+  const avatarSrc = resolveImagem(perfil?.imagem_utilizador)
+
   return (
     <div className="sll-profile-page">
       <main className="sll-profile-main">
         <div className="sll-profile-scroll">
-          <section className="sll-profile-hero" aria-label="Perfil público consultor">
+
+          {/* Hero */}
+          <section className="sll-profile-hero" aria-label="Perfil do Administrador">
             <div className="sll-profile-hero-copy">
-              <h1>Perfis Públicos</h1>
-              <p>Estamos aqui para te ajudar a melhorar o currículo</p>
+              <h1>O teu Perfil</h1>
+              <p>Gere as tuas informações e credenciais de acesso</p>
             </div>
           </section>
 
+          {/* Feedback */}
           {feedback.message ? (
             <div
               className={`sll-profile-feedback sll-profile-feedback--${feedback.type}`}
@@ -342,33 +220,32 @@ function ConsultorPerfilPublicoView() {
             </div>
           ) : null}
 
+          {/* Cartão de perfil */}
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={resolveImagem(perfil?.foto)} alt={perfil?.nome} />
+                {avatarSrc
+                  ? <img src={avatarSrc} alt={perfil?.nome} />
+                  : (
+                    <span className="sll-profile-avatar-placeholder" aria-hidden="true">
+                      <HiOutlineUserCircle />
+                    </span>
+                  )
+                }
               </div>
               <div className="sll-profile-copy">
                 <div className="sll-profile-name-row">
-                  <h2>{perfil?.nome}</h2>
-                  <span className="sll-profile-role-pill">Consultor</span>
+                  <h2>{perfil?.nome_utilizador}</h2>
+                  <span className="sll-profile-role-pill sll-profile-role-pill--admin">
+                    Administrador
+                  </span>
                 </div>
-                <p>Área: {perfil?.area}</p>
-                <p>Service Line: {perfil?.service_line}</p>
-                <p>Learning Path: {perfil?.learning_path}</p>
+                <p>{perfil?.email_utilizador}</p>
               </div>
-            </div>
-
-            <div className="sll-profile-divider" />
-
-            <div className="sll-profile-stats">
-              {profileStats.map((stat) => (
-                <div key={stat.label} className="sll-profile-stat-item">
-                  <span>{stat.label}</span>
-                </div>
-              ))}
             </div>
           </section>
 
+          {/* Definições da conta */}
           <section className="sll-profile-settings-card" aria-label="Definições da conta">
             <header className="sll-profile-settings-header">
               <HiOutlineCog6Tooth aria-hidden="true" />
@@ -384,26 +261,14 @@ function ConsultorPerfilPublicoView() {
               <SettingsRow
                 Icon={HiOutlineEnvelope}
                 label="Alterar email"
-                description={perfil?.email}
+                description={perfil?.email_utilizador}
                 onClick={() => openModal('email')}
-              />
-              <SettingsRow
-                Icon={HiOutlineMapPin}
-                label="Área de preferência"
-                description={perfil?.area}
-                onClick={() => openModal('area')}
               />
               <SettingsRow
                 Icon={HiOutlineCamera}
                 label="Trocar imagem de perfil"
                 description="Carrega uma nova fotografia"
                 onClick={() => openModal('image')}
-              />
-              <SettingsRow
-                Icon={HiOutlineDocumentText}
-                label="Política de privacidade (RGPD)"
-                description="Consulta os termos de privacidade aceites"
-                onClick={() => openModal('rgpd')}
               />
               <SettingsRow
                 Icon={HiOutlineArrowRightOnRectangle}
@@ -413,23 +278,10 @@ function ConsultorPerfilPublicoView() {
               />
             </div>
           </section>
-
-          {perfil?.badges?.length > 0 ? (
-            <section className="sll-profile-badges-card">
-              <div className="sll-profile-badges-header">
-                <h3>Badges Obtidos</h3>
-              </div>
-              <div className="sll-profile-badges-grid">
-                {perfil.badges.map((badge, i) => (
-                  <BadgeItem key={`${badge.nome}-${i}`} imagem={resolveImagem(badge.imagem)} nome={badge.nome} data={badge.data_conclusao} />
-                ))}
-              </div>
-            </section>
-          ) : null}
         </div>
       </main>
 
-      {/* ── Modais de definições ─────────────────────────────────────────────── */}
+      {/* ── Modal: Password ──────────────────────────────────────────────────── */}
       {activeModal === 'password' ? (
         <Modal title="Alterar password" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handlePasswordSubmit}>
@@ -468,7 +320,11 @@ function ConsultorPerfilPublicoView() {
               <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+              <button
+                type="submit"
+                className="sll-profile-btn-primary"
+                disabled={isSaving || !passwordForm.current || !passwordForm.next || passwordForm.next !== passwordForm.confirm}
+              >
                 {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
@@ -476,6 +332,7 @@ function ConsultorPerfilPublicoView() {
         </Modal>
       ) : null}
 
+      {/* ── Modal: Email ─────────────────────────────────────────────────────── */}
       {activeModal === 'email' ? (
         <Modal title="Alterar email" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handleEmailSubmit}>
@@ -509,41 +366,19 @@ function ConsultorPerfilPublicoView() {
         </Modal>
       ) : null}
 
-      {activeModal === 'area' ? (
-        <Modal title="Área de preferência" onClose={closeModal}>
-          <form className="sll-profile-form" onSubmit={handleAreaSubmit}>
-            <label className="sll-profile-field">
-              <span>Seleciona a tua área de preferência</span>
-              <select
-                value={areaDraft}
-                onChange={(e) => setAreaDraft(e.target.value)}
-                required
-              >
-                <option value="" disabled>Escolhe uma área…</option>
-                {areas.map((area) => (
-                  <option key={area.id_area} value={area.id_area}>
-                    {area.nome_area}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="sll-profile-modal-actions">
-              <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
-                Cancelar
-              </button>
-              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
-                {isSaving ? 'A guardar…' : 'Guardar'}
-              </button>
-            </div>
-          </form>
-        </Modal>
-      ) : null}
-
+      {/* ── Modal: Imagem ────────────────────────────────────────────────────── */}
       {activeModal === 'image' ? (
         <Modal title="Trocar imagem de perfil" onClose={closeModal}>
           <form className="sll-profile-form" onSubmit={handleAvatarSubmit}>
             <div className="sll-profile-avatar-preview">
-              <img src={resolveImagem(avatarDraft)} alt="Pré-visualização" />
+              {resolveImagem(avatarDraft)
+                ? <img src={resolveImagem(avatarDraft)} alt="Pré-visualização" />
+                : (
+                  <span className="sll-profile-avatar-placeholder sll-profile-avatar-placeholder--lg" aria-hidden="true">
+                    <HiOutlineUserCircle />
+                  </span>
+                )
+              }
             </div>
             <input
               ref={fileInputRef}
@@ -563,30 +398,15 @@ function ConsultorPerfilPublicoView() {
               <button type="button" className="sll-profile-btn-secondary" onClick={closeModal} disabled={isSaving}>
                 Cancelar
               </button>
-              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving}>
+              <button type="submit" className="sll-profile-btn-primary" disabled={isSaving || !avatarDraft}>
                 {isSaving ? 'A guardar…' : 'Guardar'}
               </button>
             </div>
           </form>
         </Modal>
       ) : null}
-
-      {activeModal === 'rgpd' ? (
-        <Modal title="Política de privacidade (RGPD)" onClose={closeModal}>
-          <div className="sll-profile-rgpd-policy">{rgpdPolitica}</div>
-        </Modal>
-      ) : null}
-
-      {/* ── Modal RGPD ───────────────────────────────────────────────────────── */}
-      {!hasAcceptedRgpd ? (
-        <RgpdConsentModal
-          politica={rgpdPolitica}
-          onAccept={handleRgpdAccept}
-          onReject={handleRgpdReject}
-        />
-      ) : null}
     </div>
   )
 }
 
-export default ConsultorPerfilPublicoView
+export default AdminPerfilView

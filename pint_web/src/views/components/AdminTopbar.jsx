@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './AdminTopbar.css'
 
 import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
@@ -165,6 +166,7 @@ function ProfileSkeleton() {
 }
 
 const AdminTopbar = memo(() => {
+  const navigate = useNavigate()
   const {
     notificationWrapRef,
     isNotificationsOpen,
@@ -239,7 +241,12 @@ const AdminTopbar = memo(() => {
           {profileLoading ? (
             <ProfileSkeleton />
           ) : profile ? (
-            <div className="softinsa-shell-profile-btn" aria-label="Perfil de utilizador">
+            <div
+              className="softinsa-shell-profile-btn"
+              aria-label="Perfil de utilizador"
+              onClick={() => navigate('/softinsa/perfil-publico')}
+              style={{ cursor: 'pointer' }}
+            >
               <img
                 src={imageSrc}
                 alt={profile.nome_utilizador}

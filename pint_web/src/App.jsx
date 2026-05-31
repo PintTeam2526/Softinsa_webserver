@@ -1,6 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
 import ConsultorLayout from './views/layouts/ConsultorLayout'
+
+import LoginView from './views/pages/auth/LoginView'
+import RegisterView from './views/pages/auth/RegisterView'
+
 import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/admin-users'
 import SoftinsaPedidos from './views/pages/admin/admin-pedidos'
@@ -9,9 +14,10 @@ import SoftinsaBadges from './views/pages/admin/admin-badges'
 import SoftinsaAreas from './views/pages/admin/admin-areas'
 import SoftinsaServiceLines from './views/pages/admin/admin-service-lines'
 import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
-import LoginView from './views/pages/auth/LoginView'
-import RegisterView from './views/pages/auth/RegisterView'
+import SoftinsaPerfilPublico from './views/pages/admin/admin-perfil-publico'
+
 import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
+
 import SLLDashboard from './views/pages/SLL/SLLDashboard'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
 import SLLBadgesView from './views/pages/SLL/SLLBadgesView'
@@ -20,6 +26,7 @@ import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
 import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
 import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
+
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
 import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
 import ConsultorObjetivosView from './views/pages/consultor/ConsultorObjetivosView'
@@ -59,6 +66,7 @@ function App() {
           <Route path="areas" element={<SoftinsaAreas />} />
           <Route path="service-lines" element={<SoftinsaServiceLines />} />
           <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
+          <Route path="perfil-publico" element={<SoftinsaPerfilPublico />} />
         </Route>
 
         <Route path="/consultor" element={<ConsultorLayout />}>

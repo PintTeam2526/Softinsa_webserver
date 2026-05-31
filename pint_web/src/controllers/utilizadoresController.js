@@ -64,7 +64,7 @@ export const getConsultor = async () => {
 }
 
 // Editar dados do Consultor
-export const updateConsultor = async (payload) => {
+export const updatemeUtilizador = async (payload) => {
   try {
     const response = await api.put('/autenticacao/update-me', payload)
     return response.data
