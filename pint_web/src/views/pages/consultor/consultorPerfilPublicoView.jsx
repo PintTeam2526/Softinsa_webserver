@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   HiOutlineCog6Tooth,
   HiOutlineLockClosed,
@@ -8,6 +9,7 @@ import {
   HiOutlineChevronRight,
   HiOutlineXMark,
   HiOutlineDocumentText,
+  HiOutlineArrowRightOnRectangle
 } from 'react-icons/hi2'
 import './ConsultorPerfilPublicoView.css'
 import '../shared/profile-settings.css'
@@ -166,6 +168,8 @@ function RgpdConsentModal({ politica, onAccept, onReject }) {
 
 // ─── View principal ───────────────────────────────────────────────────────────
 function ConsultorPerfilPublicoView() {
+  const navigate = useNavigate()
+
   // Dados do perfil
   const [perfil, setPerfil] = useState(null)
   const [areas, setAreas] = useState([])
@@ -302,6 +306,11 @@ function ConsultorPerfilPublicoView() {
     // Mantém o modal aberto com mensagem de erro (gerido dentro do RgpdConsentModal)
   }
 
+  function handleLogout() {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
@@ -395,6 +404,12 @@ function ConsultorPerfilPublicoView() {
                 label="Política de privacidade (RGPD)"
                 description="Consulta os termos de privacidade aceites"
                 onClick={() => openModal('rgpd')}
+              />
+              <SettingsRow
+                Icon={HiOutlineArrowRightOnRectangle}
+                label="Terminar sessão"
+                description="Sair da aplicação"
+                onClick={handleLogout}
               />
             </div>
           </section>
