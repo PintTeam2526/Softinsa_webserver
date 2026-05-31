@@ -2,9 +2,13 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
 import ConsultorLayout from './views/layouts/ConsultorLayout'
+import TalentManagerLayout from './views/layouts/TalentManagerLayout'
+import SllLayout from './views/layouts/SllLayout'
 
-import LoginView from './views/pages/auth/LoginView'
-import RegisterView from './views/pages/auth/RegisterView'
+import PerfilPublicoView from './views/pages/shared/PerfilPublicoView'
+
+import LoginView from './views/pages/auth/login'
+import RegisterView from './views/pages/auth/register'
 
 import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/admin-users'
@@ -14,9 +18,15 @@ import SoftinsaBadges from './views/pages/admin/admin-badges'
 import SoftinsaAreas from './views/pages/admin/admin-areas'
 import SoftinsaServiceLines from './views/pages/admin/admin-service-lines'
 import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
-import SoftinsaPerfilPublico from './views/pages/admin/admin-perfil-publico'
+import SoftinsaDefinicoes from './views/pages/admin/admin-definicoes'
 
-import TalentManagerHomeView from './views/pages/talent-manager/TalentManagerHomeView'
+import TalentManagerDashboardView from './views/pages/talent-manager/TalentManagerDashboardView'
+import TalentManagerPedidosView from './views/pages/talent-manager/TalentManagerPedidosView'
+import TalentManagerHistoricoView from './views/pages/talent-manager/TalentManagerHistoricoView'
+import TalentManagerBadgesView from './views/pages/talent-manager/TalentManagerBadgesView'
+import TalentManagerCertificadosView from './views/pages/talent-manager/TalentManagerCertificadosView'
+import TalentManagerConsultoresView from './views/pages/talent-manager/TalentManagerConsultoresView'
+import TalentManagerRelatoriosView from './views/pages/talent-manager/TalentManagerRelatoriosView'
 
 import SLLDashboard from './views/pages/SLL/SLLDashboard'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
@@ -25,7 +35,6 @@ import SLLMinhaEquipaView from './views/pages/SLL/SLLMinhaEquipaView'
 import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
 import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
-import SLLPerfilPublicoView from './views/pages/SLL/SLLPerfilPublicoView'
 
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
 import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
@@ -34,7 +43,7 @@ import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistas
 import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'
 import ConsultorListaBadgesView from './views/pages/consultor/ConsultorListaBadgesView'
 import ConsultorBadgePageView from './views/pages/consultor/ConsultorBadgePageView'
-import ConsultorPerfilPublicoView from './views/pages/consultor/ConsultorPerfilPublicoView'
+import ConsultorDefinicoesView from './views/pages/consultor/ConsultorPerfilPublicoView'
 
 import ScrollToTop from './views/components/ScrollToTop'
 
@@ -47,16 +56,6 @@ function App() {
         <Route path="/login" element={<LoginView />} />
         <Route path="/registar" element={<RegisterView />} />
 
-        <Route path="/talent-manager/*" element={<TalentManagerHomeView />} />
-        <Route path="/sll" element={<SLLDashboard />} />
-        <Route path="/sll/certificados" element={<SLLCertificadosView />} />
-        <Route path="/sll/badges" element={<SLLBadgesView />} />
-        <Route path="/sll/equipa" element={<SLLMinhaEquipaView />} />
-        <Route path="/sll/relatorios" element={<SLLRelatoriosView />} />
-        <Route path="/sll/historico" element={<SLLHistoricoView />} />
-        <Route path="/sll/pendentes" element={<SLLPendentesView />} />
-        <Route path="/sll/perfil-publico" element={<SLLPerfilPublicoView />} />
-
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />
           <Route path="utilizadores" element={<SoftinsaUsers />} />
@@ -66,7 +65,30 @@ function App() {
           <Route path="areas" element={<SoftinsaAreas />} />
           <Route path="service-lines" element={<SoftinsaServiceLines />} />
           <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
-          <Route path="perfil-publico" element={<SoftinsaPerfilPublico />} />
+          <Route path="definicoes" element={<SoftinsaDefinicoes />} />
+          <Route path="perfil-publico" element={<PerfilPublicoView />} />
+        </Route>
+
+        <Route path="/talent-manager" element={<TalentManagerLayout />}>
+          <Route index element={<TalentManagerDashboardView />} />
+          <Route path="pedidos" element={<TalentManagerPedidosView />} />
+          <Route path="historico" element={<TalentManagerHistoricoView />} />
+          <Route path="badges" element={<TalentManagerBadgesView />} />
+          <Route path="certificados" element={<TalentManagerCertificadosView />} />
+          <Route path="consultores" element={<TalentManagerConsultoresView />} />
+          <Route path="relatorios" element={<TalentManagerRelatoriosView />} />
+          <Route path="perfil-publico" element={<PerfilPublicoView />} />
+        </Route>
+
+        <Route path="/sll" element={<TalentManagerLayout />}>
+          <Route index element={<SLLDashboard />} />
+          <Route path="/sll/certificados" element={<SLLCertificadosView />} />
+          <Route path="/sll/badges" element={<SLLBadgesView />} />
+          <Route path="/sll/equipa" element={<SLLMinhaEquipaView />} />
+          <Route path="/sll/relatorios" element={<SLLRelatoriosView />} />
+          <Route path="/sll/historico" element={<SLLHistoricoView />} />
+          <Route path="/sll/pendentes" element={<SLLPendentesView />} />
+          <Route path="/sll/perfil-publico" element={<PerfilPublicoView />} />
         </Route>
 
         <Route path="/consultor" element={<ConsultorLayout />}>
@@ -88,13 +110,13 @@ function App() {
           <Route path="badges/outras-areas" element={<ConsultorOutrasAreasView />} />
           <Route path="badge/:badgeId" element={<ConsultorBadgePageView />} />
           <Route path="area/lowcode/:badgeId" element={<ConsultorBadgePageView />} />
-          <Route path="perfil-publico" element={<ConsultorPerfilPublicoView />} />
           <Route path="badges" element={<ConsultorDashboardView />} />
           <Route path="mensagens" element={<ConsultorDashboardView />} />
+          <Route path="definicoes" element={<ConsultorDefinicoesView />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      </Routes >
     </>
   )
 }

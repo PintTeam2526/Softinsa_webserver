@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react'
-import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   FaCheckCircle,
@@ -11,8 +10,6 @@ import {
   FaUserCircle,
   FaUsers,
 } from 'react-icons/fa'
-import SLLSidebar from '../../components/SLLSidebar'
-import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-dashboard.css'
 
 import { getDashboardSLL } from '../../../controllers/dashboard.controller'
@@ -241,7 +238,6 @@ const RANK_LABEL = ['1o', '2o', '3o']
 
 
 function SLLDashboard() {
-  const topbarRef = useRef(null)
   const [dados, setDados] = useState(null)
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState(null)
@@ -252,10 +248,6 @@ function SLLDashboard() {
       .catch(() => setErro('Não foi possível carregar o dashboard.'))
       .finally(() => setLoading(false))
   }, [])
-
-  function handleOpenNotifications() {
-    topbarRef.current?.openNotifications()
-  }
 
   if (loading) return <p className="sll-loading">A carregar...</p>
   if (erro) return <p className="sll-error">{erro}</p>
@@ -287,9 +279,7 @@ function SLLDashboard() {
 
   return (
     <div className="sll-homepage">
-      <SLLSidebar />
       <main className="sll-main-content">
-        <SLLTopbar ref={topbarRef} />
         <div className="sll-main-scroll">
 
           <section className="sll-hero" aria-label="Resumo de boas-vindas">
@@ -304,7 +294,7 @@ function SLLDashboard() {
             type="button"
             className="sll-alert-card"
             aria-label="Abrir notificações"
-            onClick={handleOpenNotifications}
+            onClick={() => window.dispatchEvent(new CustomEvent('softinsa:open-notifications'))}
           >
             <div className="sll-alert-icon"><IconAlertBell /></div>
             <div className="sll-alert-copy">
