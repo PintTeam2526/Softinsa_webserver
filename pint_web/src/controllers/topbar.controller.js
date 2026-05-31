@@ -1,5 +1,8 @@
+import api from '../services/api'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { availableLanguages, initialNotificationItems } from '../models/topbar.model'
+
 
 export function useTopbarController() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
@@ -150,5 +153,16 @@ export function useTopbarController() {
     sendBroadcast,
     setNotificationBroadcastMessage,
     setSelectedLanguage,
+  }
+}
+
+// Para chamar a rota do back com os dados da TopBar do Utilizador
+export async function getTopbarUtilizador() {
+  try {
+    const response = await api.get('/utilizadores/topbar')
+    return response.data
+  } catch (error) {
+    console.error('Erro ao obter dados da topbar', error)
+    throw error
   }
 }

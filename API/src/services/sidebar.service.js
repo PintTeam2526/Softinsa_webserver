@@ -30,6 +30,7 @@ service.getAreaEBadges = async (id_consultor) => {
         nome_area: area.nome_area,
 
         badges: badges.map(badge => ({
+            id: badge.id_badge,
             nome_badge: badge.nome_badge
         }))
     };

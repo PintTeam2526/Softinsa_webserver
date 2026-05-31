@@ -358,6 +358,7 @@
 .softinsa-shell-profile-meta {
   display: inline-flex;
   flex-direction: column;
+  margin-left: 5px; 
   line-height: 1.2;
   min-width: 0;
 }

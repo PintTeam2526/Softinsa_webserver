@@ -3,6 +3,7 @@ import api from '../services/api'
 import { useState } from 'react'
 import { sidebarSections } from '../models/sidebar.model'
 
+
 export function useSidebarController() {
   const [isCollapsed, setIsCollapsed] = useState(false)
 

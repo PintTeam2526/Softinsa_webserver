@@ -1,27 +1,9 @@
-import { memo, useEffect } from 'react'
+import { memo, useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { useTopbarController } from '../../controllers/topbar.controller'
-import avatarImg from '../../assets/images/avatars/01.png'
 import './ConsultorTopbar.css'
 
-const consultorTopbarProfile = {
-  name: 'António Portugal',
-  role: 'Consultor · 550 pontos',
-  avatar: avatarImg,
-}
+import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
 
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-shell-topbar-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 function NotificationIcon() {
   return (
@@ -98,9 +80,7 @@ function NotificationRepository({ items, expandedId, onToggleItem, onClose }) {
               </button>
 
               {isExpanded ? (
-                <div
-                  className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}
-                >
+                <div className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}>
                   {item.message}
                 </div>
               ) : null}
@@ -109,6 +89,40 @@ function NotificationRepository({ items, expandedId, onToggleItem, onClose }) {
         })}
       </div>
     </div>
+  )
+}
+
+function ProfileSkeleton() {
+  return (
+    <div className="softinsa-shell-profile-skeleton" aria-busy="true" aria-label="A carregar perfil">
+      <div className="softinsa-shell-profile-skeleton-avatar" />
+      <div className="softinsa-shell-profile-skeleton-meta">
+        <div className="softinsa-shell-profile-skeleton-name" />
+        <div className="softinsa-shell-profile-skeleton-role" />
+      </div>
+    </div>
+  )
+}
+
+function ProfileButton({ profile }) {
+  const roleLabel = profile.total_pontos != null
+    ? `${profile.cargo} · ${profile.total_pontos} pontos`
+    : profile.cargo
+
+  return (
+    <Link to="/consultor/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+      <div className="softinsa-shell-profile-wrap">
+        <img
+          src={`data:image/jpeg;base64,${profile.imagem_utilizador}`}
+          alt={profile.nome_utilizador}
+          className="softinsa-shell-profile-avatar"
+        />
+        <span className="softinsa-shell-profile-meta">
+          <span className="softinsa-shell-profile-name">{profile.nome_utilizador}</span>
+          <span className="softinsa-shell-profile-role">{roleLabel}</span>
+        </span>
+      </div>
+    </Link>
   )
 }
 
@@ -123,11 +137,28 @@ const ConsultorTopbar = memo(() => {
     toggleNotificationMessage,
   } = useTopbarController()
 
+  const [profile, setProfile] = useState(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+
+  const loadProfile = useCallback(async () => {
+    setProfileLoading(true)
+    try {
+      const data = await getTopbarUtilizador()
+      setProfile(data)
+    } catch (err) {
+      console.error('Erro ao carregar topbar', err)
+    } finally {
+      setProfileLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
+
   useEffect(() => {
     function handleOpenNotifications() {
-      if (!isNotificationsOpen) {
-        toggleNotifications()
-      }
+      if (!isNotificationsOpen) toggleNotifications()
     }
     window.addEventListener('consultor:open-notifications', handleOpenNotifications)
     return () => window.removeEventListener('consultor:open-notifications', handleOpenNotifications)
@@ -136,6 +167,7 @@ const ConsultorTopbar = memo(() => {
   return (
     <div className="softinsa-shell-topbar">
       <div className="softinsa-shell-topbar-actions">
+        {/* Notifications */}
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button
             type="button"
@@ -157,19 +189,12 @@ const ConsultorTopbar = memo(() => {
           ) : null}
         </div>
 
-        <Link to="/consultor/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
-          <div className="softinsa-shell-profile-wrap">
-            <img
-              src={consultorTopbarProfile.avatar}
-              alt={consultorTopbarProfile.name}
-              className="softinsa-shell-profile-avatar"
-            />
-            <span className="softinsa-shell-profile-meta">
-              <span className="softinsa-shell-profile-name">{consultorTopbarProfile.name}</span>
-              <span className="softinsa-shell-profile-role">{consultorTopbarProfile.role}</span>
-            </span>
-          </div>
-        </Link>
+        {/* Profile */}
+        {profileLoading ? (
+          <ProfileSkeleton />
+        ) : profile ? (
+          <ProfileButton profile={profile} />
+        ) : null}
       </div>
     </div>
   )
