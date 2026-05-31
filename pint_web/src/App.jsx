@@ -80,7 +80,7 @@ function App() {
           <Route path="perfil-publico" element={<PerfilPublicoView />} />
         </Route>
 
-        <Route path="/sll" element={<TalentManagerLayout />}>
+        <Route path="/sll" element={<SllLayout />}>
           <Route index element={<SLLDashboard />} />
           <Route path="/sll/certificados" element={<SLLCertificadosView />} />
           <Route path="/sll/badges" element={<SLLBadgesView />} />
