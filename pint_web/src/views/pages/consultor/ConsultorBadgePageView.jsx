@@ -279,7 +279,7 @@ function IconStatus({ status, className }) {
 
 // ─── view principal ───────────────────────────────────────────────────────────
 
-function ConsultorBadgePageView() {
+function ConsultorBadgePageView({ isGuest = false }) {
   const { badgeId } = useParams()
 
   const [badge, setBadge] = useState(null)
@@ -302,15 +302,20 @@ function ConsultorBadgePageView() {
         setLoading(true)
         setError(null)
 
-        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData, favoritos] = await Promise.all([
+        const basePromises = [
           getBadgeById(badgeId),
           getRequisitosByBadge(badgeId),
           getAreas(),
           getServiceLines(),
           getLearningPaths(),
-          getPedidos(),
-          getFavoritos(),
-        ])
+        ]
+
+        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData, favoritos] =
+          await Promise.all([
+            ...basePromises,
+            ...(!isGuest ? [getPedidos(), getFavoritos()] : [Promise.resolve([]), Promise.resolve([])]),
+          ])
+
 
         if (!cancelled) {
           const raw = badgeData?.badge ?? badgeData?.data ?? badgeData
@@ -392,7 +397,7 @@ function ConsultorBadgePageView() {
     }
 
     return () => { cancelled = true }
-  }, [badgeId])
+  }, [badgeId, isGuest])
 
   async function handleToggleFavorito() {
     if (!badge) return
@@ -486,6 +491,7 @@ function ConsultorBadgePageView() {
   // ── render ───────────────────────────────────────────────────────────────────
 
   return (
+
     <section className="consultor-badge-page">
       <header className="consultor-badge-hero">
         <div className="consultor-badge-hero-copy">
@@ -535,27 +541,31 @@ function ConsultorBadgePageView() {
 
           </div>
           <div className="consultor-badge-info-actions">
-            <button
-              type="button"
-              className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
-              onClick={handleToggleFavorito}
-              aria-pressed={isFavorite}
-            >
-              {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
-              <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
-            </button>
-            <button
-              type="button"
-              className="consultor-badge-info-action-btn"
-              onClick={() => setIsShareOpen(true)}
-              aria-haspopup="dialog"
-              aria-expanded={isShareOpen}
-              disabled={!badgeAceite}
-              title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
-            >
-              <HiOutlineShare aria-hidden="true" />
-              <span>Partilhar Badge</span>
-            </button>
+            {!isGuest && (
+              <button
+                type="button"
+                className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
+                onClick={handleToggleFavorito}
+                aria-pressed={isFavorite}
+              >
+                {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
+                <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
+              </button>
+            )}
+            {!isGuest && (
+              <button
+                type="button"
+                className="consultor-badge-info-action-btn"
+                onClick={() => setIsShareOpen(true)}
+                aria-haspopup="dialog"
+                aria-expanded={isShareOpen}
+                disabled={!badgeAceite}
+                title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
+              >
+                <HiOutlineShare aria-hidden="true" />
+                <span>Partilhar Badge</span>
+              </button>
+            )}
           </div>
         </article>
 
@@ -593,8 +603,12 @@ function ConsultorBadgePageView() {
                 <h3 className="consultor-badge-req-title">{req.title}</h3>
                 <span className="consultor-badge-req-section-label">Descrição:</span>
                 <p className="consultor-badge-req-text">{req.descricao}</p>
-                <span className="consultor-badge-req-section-label">Documentação:</span>
-                <UploadRow id={`req-upload-${req.id}`} onFileChange={(f) => handleFileChange(req.id, f)} />
+                {!isGuest && (
+                  <span className="consultor-badge-req-section-label">Documentação:</span>
+                )}
+                {!isGuest && (
+                  <UploadRow id={`req-upload-${req.id}`} onFileChange={(f) => handleFileChange(req.id, f)} />
+                )}
               </div>
             </div>
           ))}
@@ -604,9 +618,11 @@ function ConsultorBadgePageView() {
         {submitError && <p className="consultor-badge-submit-feedback is-error" role="alert">{submitError}</p>}
 
         <div className="consultor-badge-card-actions">
-          <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar} disabled={isSubmitting} aria-busy={isSubmitting}>
-            {isSubmitting ? 'A submeter…' : 'Candidatar ao Badge'}
-          </button>
+          {!isGuest && (
+            <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar} disabled={isSubmitting} aria-busy={isSubmitting}>
+              {isSubmitting ? 'A submeter…' : 'Candidatar ao Badge'}
+            </button>
+          )}
         </div>
       </article>
 

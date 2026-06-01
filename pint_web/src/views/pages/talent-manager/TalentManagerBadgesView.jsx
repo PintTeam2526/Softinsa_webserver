@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaTimes } from 'react-icons/fa'
 import { HiOutlineStar, HiOutlineCurrencyEuro } from 'react-icons/hi2'
-import { useState, useEffect } from 'react'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
@@ -98,12 +99,15 @@ function ExportFormatOption({ label, value, selected, onSelect, cp }) {
 // ── componente principal ──────────────────────────────────────────────────────
 
 function TalentManagerBadgesView({
+  isGuest = false,
   heroTitle = 'Badges',
-  heroSubtitle = null,         // null → calculado automaticamente
+  heroSubtitle = null,
   showExportButton = true,
   classPrefix = 'tm-badges',
   onBadgeClick = null,
 } = {}) {
+  const navigate = useNavigate()
+
   const [learningPaths, setLearningPaths] = useState([])
   const [activeTabId, setActiveTabId] = useState(null)
   const [openSection, setOpenSection] = useState(null)
@@ -232,7 +236,14 @@ function TalentManagerBadgesView({
   // ── handlers ──────────────────────────────────────────────────────────────
 
   async function handleBadgeClick(badge) {
-    if (onBadgeClick) { onBadgeClick(badge); return }
+    if (isGuest) {
+      navigate(`/guest/badge/${badge.id}`)
+      return
+    }
+    if (onBadgeClick) {
+      onBadgeClick(badge);
+      return
+    }
     setSelectedBadge(badge)
     setSelectedBadgeRequisitos([])
     setLoadingRequisitos(true)

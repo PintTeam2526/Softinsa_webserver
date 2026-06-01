@@ -1,9 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import GuestLayout from './views/layouts/GuestLayout'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
-import ConsultorLayout from './views/layouts/ConsultorLayout'
-import TalentManagerLayout from './views/layouts/TalentManagerLayout'
 import SllLayout from './views/layouts/SllLayout'
+import TalentManagerLayout from './views/layouts/TalentManagerLayout'
+import ConsultorLayout from './views/layouts/ConsultorLayout'
 
 import PerfilPublicoView from './views/pages/shared/PerfilPublicoView'
 
@@ -57,6 +58,11 @@ function App() {
         <Route path="/" element={<LoginView />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/registar" element={<RegisterView />} />
+
+        <Route path="/guest" element={<GuestLayout />}>
+          <Route path="badges" element={<TalentManagerBadgesView isGuest={true} />} />
+          <Route path="badge/:badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
+        </Route>
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />
