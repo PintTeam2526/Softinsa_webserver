@@ -42,6 +42,7 @@ router.get("/documentacoes/:id/:lastUpdate", controllerSyncMobile.syncDocumentac
 router.get("/conquistasConsultores/:idConsultor", controllerSyncMobile.syncConquistasConsultores);
 router.get("/conquistasConsultores/:idConsultor/:lastUpdate", controllerSyncMobile.syncConquistasConsultores);
 
-
+router.get("/notificacoes/:id", controllerSyncMobile.syncNotificacoesMobileByConsultorID);
+router.get("/notificacoes/:id/:lastUpdate", controllerSyncMobile.syncNotificacoesMobileByConsultorID);
 
 module.exports = router;

@@ -11,6 +11,7 @@ const Requisitos = require("../models/Requisitos.models");
 const Documentacoes = require("../models/Documentacoes.models");
 const Conquistas = require("../models/Conquistas.models");
 const ConquistasConsultores = require('../models/ConquistasConsultores.models')
+const Notificacoes = require("../models/Notificacoes.models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
@@ -456,6 +457,41 @@ controllers.syncConquistasConsultores = async (req, res) => {
   }
 }
 
+controllers.syncNotificacoesMobileByConsultorID = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ mensagem: "ID do consultor é obrigatório." });
+    }
+
+    const where = getWhereClause(req.params, {
+      [Op.or]: [{ id_consultor: id }, { id_consultor: null }],
+    });
+
+    const notificacoes = await Notificacoes.findAll({
+      where,
+      order: [["data_de_envio", "DESC"]],
+    });
+
+    const data = notificacoes.map((item) => ({
+      ID_NOTIFICACAO: item.id_notificacao,
+      ID_CONSULTOR: item.id_consultor === null ? 0 : item.id_consultor,
+      NOTIFICACAO: item.notificacao,
+      DATA_DE_ENVIO: item.data_de_envio,
+      REMETENTE: item.remetente,
+      DESCRICAO: item.descricao,
+      updatedAt: item.updatedAt,
+    }));
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Erro no sync de Notificações:", error);
+    return res.status(500).json({
+      error: "Erro interno ao sincronizar Notificações",
+      details: error.message,
+    });
+  }
+};
 
 module.exports = controllers;
