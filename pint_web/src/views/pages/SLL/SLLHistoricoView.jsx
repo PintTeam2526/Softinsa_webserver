@@ -539,11 +539,7 @@ function SLLHistoricoView() {
 
   return (
     <div className="sll-history-page">
-      <SLLSidebar />
-
       <main className="sll-history-main">
-        <SLLTopbar />
-
         <div className="sll-history-content">
           <section className="sll-history-hero" aria-label="Histórico de pedidos">
             <div className="sll-history-hero-copy">

@@ -168,9 +168,7 @@ function SLLCertificadosView() {
   if (loading) {
     return (
       <div className="sll-certificates-page">
-        <SLLSidebar />
         <main className="sll-certificates-main">
-          <SLLTopbar />
           <div className="sll-certificates-content"><p>A carregar...</p></div>
         </main>
       </div>
@@ -180,9 +178,7 @@ function SLLCertificadosView() {
   if (error) {
     return (
       <div className="sll-certificates-page">
-        <SLLSidebar />
         <main className="sll-certificates-main">
-          <SLLTopbar />
           <div className="sll-certificates-content"><p>{error}</p></div>
         </main>
       </div>
@@ -191,11 +187,7 @@ function SLLCertificadosView() {
 
   return (
     <div className="sll-certificates-page">
-      <SLLSidebar />
-
       <main className="sll-certificates-main">
-        <SLLTopbar />
-
         <div className="sll-certificates-content">
           <section className="sll-certificates-hero" aria-label="Certificados de Badges">
             <div className="sll-certificates-hero-copy">

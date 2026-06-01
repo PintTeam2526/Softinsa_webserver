@@ -105,7 +105,7 @@ function ProfileButton({ profile }) {
     : `data:image/jpeg;base64,${profile.imagem_utilizador}`
 
   return (
-    <Link to="/talent-manager/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+    <Link to="/talent-manager/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
       <div className="softinsa-shell-profile-wrap">
         <img
           src={imageSrc}

@@ -162,9 +162,7 @@ function SLLMinhaEquipaView() {
   if (loading) {
     return (
       <div className="sll-team-page">
-        <SLLSidebar />
         <main className="sll-team-main">
-          <SLLTopbar />
           <div className="sll-team-content"><p>A carregar...</p></div>
         </main>
       </div>
@@ -174,9 +172,7 @@ function SLLMinhaEquipaView() {
   if (error) {
     return (
       <div className="sll-team-page">
-        <SLLSidebar />
         <main className="sll-team-main">
-          <SLLTopbar />
           <div className="sll-team-content"><p>{error}</p></div>
         </main>
       </div>
@@ -185,11 +181,7 @@ function SLLMinhaEquipaView() {
 
   return (
     <div className="sll-team-page">
-      <SLLSidebar />
-
       <main className="sll-team-main">
-        <SLLTopbar />
-
         <div className="sll-team-content">
           <section className="sll-team-hero" aria-label="A minha equipa">
             <div className="sll-team-hero-copy">

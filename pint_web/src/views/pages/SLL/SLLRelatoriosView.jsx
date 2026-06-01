@@ -250,25 +250,23 @@ function SLLRelatoriosView() {
 
   if (loadingAreas) return (
     <div className="sll-relatorios-page">
-      <SLLSidebar />
-      <main className="sll-relatorios-main"><SLLTopbar /><div className="sll-relatorios-content"><p>A carregar...</p></div></main>
+      <main className="sll-relatorios-main">
+        <div className="sll-relatorios-content"><p>A carregar...</p></div>
+      </main>
     </div>
   )
 
   if (error) return (
     <div className="sll-relatorios-page">
-      <SLLSidebar />
-      <main className="sll-relatorios-main"><SLLTopbar /><div className="sll-relatorios-content"><p>{error}</p></div></main>
+      <main className="sll-relatorios-main">
+        <div className="sll-relatorios-content"><p>{error}</p></div>
+      </main>
     </div>
   )
 
   return (
     <div className="sll-relatorios-page">
-      <SLLSidebar />
-
       <main className="sll-relatorios-main">
-        <SLLTopbar />
-
         <div className="sll-relatorios-content">
           <section className="sll-relatorios-hero" aria-label="Relatórios e Estatísticas">
             <div className="sll-relatorios-hero-copy">

@@ -400,11 +400,7 @@ function SLLPendentesView() {
 
   return (
     <div className="sll-pending-page">
-      <SLLSidebar />
-
       <main className="sll-pending-main">
-        <SLLTopbar />
-
         <div className="sll-pending-content">
           <section className="sll-pending-hero" aria-label="Pedidos pendentes">
             <div className="sll-pending-hero-copy">

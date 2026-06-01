@@ -244,7 +244,7 @@ const AdminTopbar = memo(() => {
             <div
               className="softinsa-shell-profile-btn"
               aria-label="Perfil de utilizador"
-              onClick={() => navigate('/softinsa/perfil-publico')}
+              onClick={() => navigate('/softinsa/definicoes')}
               style={{ cursor: 'pointer' }}
             >
               <img

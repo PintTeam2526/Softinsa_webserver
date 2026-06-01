@@ -243,11 +243,7 @@ function SLLBadgesView() {
 
   return (
     <div className="sll-badges-page">
-      <SLLSidebar />
-
       <main className="sll-badges-main">
-        <SLLTopbar />
-
         <div className="sll-badges-content">
           <section className="sll-badges-hero" aria-label="Badges">
             <div className="sll-badges-hero-copy">

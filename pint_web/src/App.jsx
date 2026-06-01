@@ -18,15 +18,7 @@ import SoftinsaBadges from './views/pages/admin/admin-badges'
 import SoftinsaAreas from './views/pages/admin/admin-areas'
 import SoftinsaServiceLines from './views/pages/admin/admin-service-lines'
 import SoftinsaLearningPaths from './views/pages/admin/admin-learning-paths'
-import SoftinsaDefinicoes from './views/pages/admin/admin-definicoes'
-
-import TalentManagerDashboardView from './views/pages/talent-manager/TalentManagerDashboardView'
-import TalentManagerPedidosView from './views/pages/talent-manager/TalentManagerPedidosView'
-import TalentManagerHistoricoView from './views/pages/talent-manager/TalentManagerHistoricoView'
-import TalentManagerBadgesView from './views/pages/talent-manager/TalentManagerBadgesView'
-import TalentManagerCertificadosView from './views/pages/talent-manager/TalentManagerCertificadosView'
-import TalentManagerConsultoresView from './views/pages/talent-manager/TalentManagerConsultoresView'
-import TalentManagerRelatoriosView from './views/pages/talent-manager/TalentManagerRelatoriosView'
+import SoftinsaPerfilView from './views/pages/admin/admin-definicoes'
 
 import SLLDashboard from './views/pages/SLL/SLLDashboard'
 import SLLCertificadosView from './views/pages/SLL/SLLCertificadosView'
@@ -35,6 +27,16 @@ import SLLMinhaEquipaView from './views/pages/SLL/SLLMinhaEquipaView'
 import SLLHistoricoView from './views/pages/SLL/SLLHistoricoView'
 import SLLRelatoriosView from './views/pages/SLL/SLLRelatoriosView'
 import SLLPendentesView from './views/pages/SLL/SLLPendentesView'
+import SLLDefinicoesView from './views/pages/SLL/SLLDefinicoesView'
+
+import TalentManagerDashboardView from './views/pages/talent-manager/TalentManagerDashboardView'
+import TalentManagerPedidosView from './views/pages/talent-manager/TalentManagerPedidosView'
+import TalentManagerHistoricoView from './views/pages/talent-manager/TalentManagerHistoricoView'
+import TalentManagerBadgesView from './views/pages/talent-manager/TalentManagerBadgesView'
+import TalentManagerCertificadosView from './views/pages/talent-manager/TalentManagerCertificadosView'
+import TalentManagerConsultoresView from './views/pages/talent-manager/TalentManagerConsultoresView'
+import TalentManagerRelatoriosView from './views/pages/talent-manager/TalentManagerRelatoriosView'
+import TalentManagerDefinicoesView from './views/pages/talent-manager/TalentManagerDefinicoesView'
 
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
 import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
@@ -65,18 +67,7 @@ function App() {
           <Route path="areas" element={<SoftinsaAreas />} />
           <Route path="service-lines" element={<SoftinsaServiceLines />} />
           <Route path="learning-paths" element={<SoftinsaLearningPaths />} />
-          <Route path="definicoes" element={<SoftinsaDefinicoes />} />
-          <Route path="perfil-publico" element={<PerfilPublicoView />} />
-        </Route>
-
-        <Route path="/talent-manager" element={<TalentManagerLayout />}>
-          <Route index element={<TalentManagerDashboardView />} />
-          <Route path="pedidos" element={<TalentManagerPedidosView />} />
-          <Route path="historico" element={<TalentManagerHistoricoView />} />
-          <Route path="badges" element={<TalentManagerBadgesView />} />
-          <Route path="certificados" element={<TalentManagerCertificadosView />} />
-          <Route path="consultores" element={<TalentManagerConsultoresView />} />
-          <Route path="relatorios" element={<TalentManagerRelatoriosView />} />
+          <Route path="definicoes" element={<SoftinsaPerfilView />} />
           <Route path="perfil-publico" element={<PerfilPublicoView />} />
         </Route>
 
@@ -88,7 +79,20 @@ function App() {
           <Route path="/sll/relatorios" element={<SLLRelatoriosView />} />
           <Route path="/sll/historico" element={<SLLHistoricoView />} />
           <Route path="/sll/pendentes" element={<SLLPendentesView />} />
+          <Route path="/sll/definicoes" element={<SLLDefinicoesView />} />
           <Route path="/sll/perfil-publico" element={<PerfilPublicoView />} />
+        </Route>
+
+        <Route path="/talent-manager" element={<TalentManagerLayout />}>
+          <Route index element={<TalentManagerDashboardView />} />
+          <Route path="pedidos" element={<TalentManagerPedidosView />} />
+          <Route path="historico" element={<TalentManagerHistoricoView />} />
+          <Route path="badges" element={<TalentManagerBadgesView />} />
+          <Route path="certificados" element={<TalentManagerCertificadosView />} />
+          <Route path="consultores" element={<TalentManagerConsultoresView />} />
+          <Route path="relatorios" element={<TalentManagerRelatoriosView />} />
+          <Route path="definicoes" element={<TalentManagerDefinicoesView />} />
+          <Route path="perfil-publico" element={<PerfilPublicoView />} />
         </Route>
 
         <Route path="/consultor" element={<ConsultorLayout />}>

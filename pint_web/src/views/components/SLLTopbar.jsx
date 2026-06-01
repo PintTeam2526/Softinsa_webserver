@@ -110,7 +110,7 @@ function ProfileButton({ profile }) {
     : `data:image/jpeg;base64,${profile.imagem_utilizador}`
 
   return (
-    <Link to="/sll/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+    <Link to="/sll/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
       <div className="softinsa-shell-profile-wrap">
         <img
           src={imageSrc}
