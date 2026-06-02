@@ -1,6 +1,7 @@
 .tm-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: row;
   background: #ffffff;
   color: #232d42;
 }
@@ -116,12 +117,19 @@
 
 .tm-hero {
   position: relative;
-  min-height: 155px;
   height: 155px;
-  margin: 1px 0 0;
+  min-height: 155px;
+  max-height: 155px;
   overflow: hidden;
+  margin: 1px 0 0;
+  padding: 0;
   border-radius: 0 0 16px 16px;
-  background: radial-gradient(circle at 50% 0%, #3b8aff 0%, #1e69d9 48%, #0f58c6 78%, #0048b2 100%);
+  background: radial-gradient(circle at 50% 0%,
+      #3b8aff 0%,
+      #1e69d9 48%,
+      #0f58c6 78%,
+      #0048b2 100%);
+  flex: 0 0 155px;
 }
 
 .tm-hero-art {
@@ -182,7 +190,8 @@
 .tm-hero-copy {
   position: absolute;
   left: 50px;
-  top: 35px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
 }
 
@@ -496,6 +505,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
+  color: #232d42;
+}
 
 .tm-placeholder-panel {
   margin: 24px;
@@ -519,11 +531,8 @@
   font-size: 16px;
   line-height: 1.75;
 }
-  gap: 24px;
-  color: #232d42;
-}
 
-.tm-footer > div {
+.tm-footer>div {
   display: flex;
   align-items: center;
   gap: 24px;
@@ -553,6 +562,7 @@
 }
 
 @media (max-width: 768px) {
+
   .tm-topbar,
   .tm-dashboard-grid,
   .tm-notification-callout,

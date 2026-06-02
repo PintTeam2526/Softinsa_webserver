@@ -55,14 +55,14 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<GuestLayout />} />
-        <Route path="/login" element={<LoginView />} />
-        <Route path="/registar" element={<RegisterView />} />
 
         <Route path="/" element={<GuestLayout />}>
           <Route index element={<TalentManagerBadgesView isGuest={true} />} />
           <Route path=":badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
         </Route>
+
+        <Route path="/login" element={<LoginView />} />
+        <Route path="/registar" element={<RegisterView />} />
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />
@@ -93,7 +93,7 @@ function App() {
           <Route index element={<TalentManagerDashboardView />} />
           <Route path="pedidos" element={<TalentManagerPedidosView />} />
           <Route path="historico" element={<TalentManagerHistoricoView />} />
-          <Route path="badges" element={<TalentManagerBadgesView />} />
+          <Route path="badges" element={<TalentManagerBadgesView isGuest={false} />} />
           <Route path="certificados" element={<TalentManagerCertificadosView />} />
           <Route path="consultores" element={<TalentManagerConsultoresView />} />
           <Route path="relatorios" element={<TalentManagerRelatoriosView />} />
