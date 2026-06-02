@@ -67,6 +67,18 @@ function RegisterView() {
           <div className="register-circle register-circle-2" />
           <div className="register-circle register-circle-1" />
         </div>
+
+        {/* Logo */}
+        <div className="register-logo-container">
+          <svg className="register-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" rx="100" fill="#000000" />
+            <text x="100" y="115" fontFamily="Inter, sans-serif" fontSize="35" fontWeight="700" textAnchor="middle" fill="#ffffff">
+              SOF
+              <tspan fill="#2596be">TI</tspan>
+              NSA
+            </text>
+          </svg>
+        </div>
       </div>
 
       <div className="register-form-side">

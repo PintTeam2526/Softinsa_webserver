@@ -46,6 +46,23 @@
 .register-circle-2 { width: 746.643px;  height: 746.643px;  left: -239.07px; top: 494.02px; }
 .register-circle-1 { width: 593.685px;  height: 593.685px;  left: -180.3px;  top: 526.86px; }
 
+/* Logo */
+.register-logo-container {
+ position: relative;
+  z-index: 10;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-logo {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0px 8px 24px rgba(0, 0, 0, 0.12));
+}
+
 /* ── FORM SIDE (direita) ──────────────────────────────── */
 .register-form-side {
   flex: 1;

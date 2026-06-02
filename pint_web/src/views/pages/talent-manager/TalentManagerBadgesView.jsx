@@ -237,7 +237,7 @@ function TalentManagerBadgesView({
 
   async function handleBadgeClick(badge) {
     if (isGuest) {
-      navigate(`/guest/badge/${badge.id}`)
+      navigate(`/badges/${badge.id}`)
       return
     }
     if (onBadgeClick) {
@@ -313,7 +313,8 @@ function TalentManagerBadgesView({
             ))}
           </div>
 
-          {showExportButton ? (
+
+          {!isGuest && showExportButton ? (
             <button type="button" className={`${cp}-export-btn`} onClick={() => setShowExport(true)}>
               <ExportIcon />
               <span>Exportar</span>
