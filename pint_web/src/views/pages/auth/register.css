@@ -9,13 +9,11 @@
 /* ── GRAPHIC SIDE (esquerda) ──────────────────────────── */
 .register-graphic-side {
   flex: 1;
-  background: linear-gradient(
-    135deg,
-    rgba(59, 138, 255, 1) 0%,
-    rgba(30, 105, 217, 1) 50%,
-    rgba(15, 88, 198, 1) 75%,
-    rgba(0, 72, 178, 1) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(59, 138, 255, 1) 0%,
+      rgba(30, 105, 217, 1) 50%,
+      rgba(15, 88, 198, 1) 75%,
+      rgba(0, 72, 178, 1) 100%);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -40,11 +38,90 @@
   transform: rotate(90deg);
 }
 
-.register-circle-5 { width: 1546px;     height: 1514.89px;  left: -354px;  top: 87px; }
-.register-circle-4 { width: 1197.74px;  height: 1172.679px; left: -354px;  top: 257.11px; }
-.register-circle-3 { width: 1017.128px; height: 996.388px;  left: -285.41px; top: 402.42px; }
-.register-circle-2 { width: 746.643px;  height: 746.643px;  left: -239.07px; top: 494.02px; }
-.register-circle-1 { width: 593.685px;  height: 593.685px;  left: -180.3px;  top: 526.86px; }
+.register-circle-5 {
+  width: 1546px;
+  height: 1514.89px;
+  left: -354px;
+  top: 87px;
+}
+
+.register-circle-4 {
+  width: 1197.74px;
+  height: 1172.679px;
+  left: -354px;
+  top: 257.11px;
+}
+
+.register-circle-3 {
+  width: 1017.128px;
+  height: 996.388px;
+  left: -285.41px;
+  top: 402.42px;
+}
+
+.register-circle-2 {
+  width: 746.643px;
+  height: 746.643px;
+  left: -239.07px;
+  top: 494.02px;
+}
+
+.register-circle-1 {
+  width: 593.685px;
+  height: 593.685px;
+  left: -180.3px;
+  top: 526.86px;
+}
+
+/* Logo */
+.register-logo-container {
+  position: absolute;
+  z-index: 10;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.register-logo {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0px 8px 24px rgba(0, 0, 0, 0.12));
+}
+
+/* Back Button */
+.register-back-button {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-back-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.register-back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 8px 24px rgba(255, 255, 255, 0.2);
+  transform: translateX(-50%) scale(1.1);
+}
 
 /* ── FORM SIDE (direita) ──────────────────────────────── */
 .register-form-side {

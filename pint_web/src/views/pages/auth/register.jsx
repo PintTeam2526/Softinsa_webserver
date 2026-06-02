@@ -67,6 +67,29 @@ function RegisterView() {
           <div className="register-circle register-circle-2" />
           <div className="register-circle register-circle-1" />
         </div>
+
+        {/* Logo */}
+        <div className="register-logo-container">
+          <svg className="register-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" rx="100" fill="#000000" />
+            <text x="100" y="115" fontFamily="Inter, sans-serif" fontSize="35" fontWeight="700" textAnchor="middle" fill="#ffffff">
+              SOF
+              <tspan fill="#2596be">TI</tspan>
+              NSA
+            </text>
+          </svg>
+        </div>
+
+        {/* Back Arrow */}
+        <button
+          className="register-back-button"
+          onClick={() => navigate(-1)}
+          aria-label="Voltar atrás"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
       </div>
 
       <div className="register-form-side">

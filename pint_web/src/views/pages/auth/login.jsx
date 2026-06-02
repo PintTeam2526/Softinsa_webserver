@@ -4,11 +4,6 @@ import './login.css'
 import api from '../../../services/api'
 
 const imgTick = 'http://localhost:3845/assets/0b2cf47547393ab971bf1e9c667b682519c74f46.svg'
-const imgEllipse5 = '../../../assets/images/auth/05.png'
-const imgEllipse4 = '../../../assets/images/auth/04.png'
-const imgEllipse3 = '../../../assets/images/auth/03.png'
-const imgEllipse2 = '../../../assets/images/auth/02.png'
-const imgEllipse1 = '../../../assets/images/auth/01.png'
 
 function LoginView() {
   const navigate = useNavigate()
@@ -64,23 +59,36 @@ function LoginView() {
     <div className="login-container">
       {/* Graphic Side with Circles */}
       <div className="login-graphic-side">
-        <div className="login-big-circles">
-          <div className="login-circles-container">
-            <img alt="" className="login-circle" src={imgEllipse5} />
-          </div>
-          <div className="login-circles-container">
-            <img alt="" className="login-circle" src={imgEllipse4} />
-          </div>
-          <div className="login-circles-container">
-            <img alt="" className="login-circle" src={imgEllipse3} />
-          </div>
-          <div className="login-circles-container">
-            <img alt="" className="login-circle" src={imgEllipse2} />
-          </div>
-          <div className="login-circles-container">
-            <img alt="" className="login-circle" src={imgEllipse1} />
-          </div>
+        <div className="login-big-circles" aria-hidden="true">
+          <div className="login-circle login-circle-5" />
+          <div className="login-circle login-circle-4" />
+          <div className="login-circle login-circle-3" />
+          <div className="login-circle login-circle-2" />
+          <div className="login-circle login-circle-1" />
         </div>
+
+        {/* Logo */}
+        <div className="login-logo-container">
+          <svg className="login-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" rx="100" fill="#000000" />
+            <text x="100" y="115" fontFamily="Inter, sans-serif" fontSize="35" fontWeight="700" textAnchor="middle" fill="#ffffff">
+              SOF
+              <tspan fill="#2596be">TI</tspan>
+              NSA
+            </text>
+          </svg>
+        </div>
+
+        {/* Back Arrow */}
+        <button
+          className="login-back-button"
+          onClick={() => navigate(-1)}
+          aria-label="Voltar atrás"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
       </div>
 
       {/* Form Side */}

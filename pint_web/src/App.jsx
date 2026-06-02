@@ -60,8 +60,8 @@ function App() {
         <Route path="/registar" element={<RegisterView />} />
 
         <Route path="/guest" element={<GuestLayout />}>
-          <Route path="badges" element={<TalentManagerBadgesView isGuest={true} />} />
-          <Route path="badge/:badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
+          <Route path="" element={<TalentManagerBadgesView isGuest={true} />} />
+          <Route path=":badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
         </Route>
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
