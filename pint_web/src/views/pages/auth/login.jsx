@@ -78,6 +78,17 @@ function LoginView() {
             </text>
           </svg>
         </div>
+
+        {/* Back Arrow */}
+        <button 
+          className="login-back-button" 
+          onClick={() => navigate(-1)}
+          aria-label="Voltar atrás"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
       </div>
 
       {/* Form Side */}
