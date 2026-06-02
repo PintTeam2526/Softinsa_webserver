@@ -26,23 +26,13 @@
   gap: 12px;
 }
 
-.guest-topbar-register,
-.guest-topbar-login {
+.guest-topbar-register {
   height: 42px;
   padding: 0 20px;
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
-}
-
-.guest-topbar-register {
   background: white;
   border: 1px solid #39639c;
   color: #39639c;
-}
-
-.guest-topbar-login {
-  background: #39639c;
-  border: 1px solid #39639c;
-  color: white;
 }

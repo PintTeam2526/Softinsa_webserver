@@ -237,7 +237,7 @@ function TalentManagerBadgesView({
 
   async function handleBadgeClick(badge) {
     if (isGuest) {
-      navigate(`/${badge.id}`)
+      navigate(`/badges/${badge.id}`)
       return
     }
     if (onBadgeClick) {

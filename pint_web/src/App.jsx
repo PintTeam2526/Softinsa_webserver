@@ -8,6 +8,7 @@ import ConsultorLayout from './views/layouts/ConsultorLayout'
 
 import PerfilPublicoView from './views/pages/shared/PerfilPublicoView'
 
+import WelcomeView from './views/pages/auth/WelcomeView'
 import LoginView from './views/pages/auth/login'
 import RegisterView from './views/pages/auth/register'
 
@@ -57,8 +58,9 @@ function App() {
       <Routes>
 
         <Route path="/" element={<GuestLayout />}>
-          <Route index element={<TalentManagerBadgesView isGuest={true} />} />
-          <Route path=":badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
+          <Route index element={<WelcomeView />} />
+          <Route path="/badges" element={<TalentManagerBadgesView isGuest={true} />} />
+          <Route path="/badges/:badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
         </Route>
 
         <Route path="/login" element={<LoginView />} />

@@ -16,15 +16,7 @@ const GuestTopbar = memo(() => {
           className="guest-topbar-register"
           onClick={() => navigate('/registar')}
         >
-          Registo
-        </button>
-
-        <button
-          type="button"
-          className="guest-topbar-login"
-          onClick={() => navigate('/login')}
-        >
-          Login
+          Registar-me
         </button>
       </div>
     </header>
