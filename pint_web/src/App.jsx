@@ -55,12 +55,12 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<LoginView />} />
+        <Route path="/" element={<GuestLayout />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/registar" element={<RegisterView />} />
 
-        <Route path="/guest" element={<GuestLayout />}>
-          <Route path="" element={<TalentManagerBadgesView isGuest={true} />} />
+        <Route path="/" element={<GuestLayout />}>
+          <Route index element={<TalentManagerBadgesView isGuest={true} />} />
           <Route path=":badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
         </Route>
 
