@@ -1,16 +1,13 @@
-import { memo } from 'react'
 import { Outlet } from 'react-router-dom'
-import GuestTopbar from '../components/GuestTopbar'
-import './SllLayout.css'
 
-const GuestLayout = memo(() => {
+function GuestLayout() {
     return (
-        <div className="tm-page">
-            <main className="tm-main">
-                <GuestTopbar />
+        <div className="guest-layout">
+            {/* navbar pública opcional */}
+            <main>
                 <Outlet />
             </main>
         </div>
     )
-})
+}
 export default GuestLayout
