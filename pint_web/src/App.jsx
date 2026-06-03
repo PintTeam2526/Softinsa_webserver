@@ -67,6 +67,7 @@ function App() {
         <Route path="/registar" element={<RegisterView />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/recuperar" element={<RecuperacaoView />} />
+        <Route path="/perfil-consultor" element={<PerfilPublicoView />} />
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />

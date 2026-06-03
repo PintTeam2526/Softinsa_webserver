@@ -24,6 +24,8 @@
   gap: 24px;
 }
 
+/* ── Hero ───────────────────────────────────────────────────────────── */
+
 .sll-profile-hero {
   position: relative;
   height: 155px;
@@ -31,61 +33,6 @@
   border-radius: 0 0 16px 16px;
   background: radial-gradient(circle at 52% 52%, #3b8aff 0%, #1e69d9 46%, #0f58c6 76%, #0048b2 100%);
   box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
-}
-
-.sll-profile-hero-art {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.sll-profile-hero-circle {
-  position: absolute;
-  display: block;
-  max-width: none;
-  pointer-events: none;
-  user-select: none;
-  mix-blend-mode: multiply;
-}
-
-.sll-profile-hero-circle-5 {
-  width: 2156px;
-  height: 2112.615px;
-  left: -194px;
-  top: -233px;
-  transform: rotate(90deg);
-}
-
-.sll-profile-hero-circle-4 {
-  width: 1670.328px;
-  height: 1635.378px;
-  left: -194px;
-  top: 5.62px;
-  transform: rotate(90deg);
-}
-
-.sll-profile-hero-circle-3 {
-  width: 1418.453px;
-  height: 1389.529px;
-  left: -100px;
-  top: 206.88px;
-  transform: rotate(90deg);
-}
-
-.sll-profile-hero-circle-2 {
-  width: 1041.243px;
-  height: 1041.243px;
-  left: -33.72px;
-  top: 334.62px;
-  transform: rotate(90deg);
-}
-
-.sll-profile-hero-circle-1 {
-  width: 827.933px;
-  height: 827.933px;
-  left: 48.23px;
-  top: 380.42px;
-  transform: rotate(90deg);
 }
 
 .sll-profile-hero-copy {
@@ -111,6 +58,8 @@
   font-weight: 500;
   color: #ffffff;
 }
+
+/* ── Cartão principal ───────────────────────────────────────────────── */
 
 .sll-profile-card {
   background: #ffffff;
@@ -198,6 +147,8 @@
   opacity: 0.55;
 }
 
+/* ── Stats (pontos, badges, email) ──────────────────────────────────── */
+
 .sll-profile-stats {
   display: flex;
   flex-direction: column;
@@ -226,6 +177,8 @@
   line-height: 1.75;
   white-space: nowrap;
 }
+
+/* ── Badges ─────────────────────────────────────────────────────────── */
 
 .sll-profile-badges-card {
   background: #ffffff;
@@ -293,6 +246,8 @@
   font-size: 16px;
   line-height: 1.75;
 }
+
+/* ── Responsivo ─────────────────────────────────────────────────────── */
 
 @media (max-width: 1200px) {
   .sll-profile-badges-grid {
