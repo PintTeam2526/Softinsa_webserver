@@ -205,6 +205,7 @@ controllers.rankConsultores = async (req, res) => {
                 : 0;
 
             return {
+                id_consultor: consultor.id_consultor,
                 nome: consultor.Utilizadore?.nome_utilizador || "Sem nome",
                 area: consultor.Area?.nome_area || "Sem área",
                 total_pontos: consultor.total_pontos || 0,

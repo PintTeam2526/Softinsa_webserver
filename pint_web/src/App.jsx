@@ -62,12 +62,12 @@ function App() {
           <Route index element={<WelcomeView />} />
           <Route path="/badges" element={<TalentManagerBadgesView isGuest={true} />} />
           <Route path="/badges/:badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
+          <Route path="/perfil-publico/:id_consultor" element={<PerfilPublicoView />} />
         </Route>
 
         <Route path="/registar" element={<RegisterView />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/recuperar" element={<RecuperacaoView />} />
-        <Route path="/perfil-consultor" element={<PerfilPublicoView />} />
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />
@@ -91,7 +91,7 @@ function App() {
           <Route path="/sll/historico" element={<SLLHistoricoView />} />
           <Route path="/sll/pendentes" element={<SLLPendentesView />} />
           <Route path="/sll/definicoes" element={<SLLDefinicoesView />} />
-          <Route path="/sll/perfil-publico" element={<PerfilPublicoView />} />
+          <Route path="/sll/perfil-publico/:id_consultor" element={<PerfilPublicoView />} />
         </Route>
 
         <Route path="/talent-manager" element={<TalentManagerLayout />}>
@@ -103,7 +103,7 @@ function App() {
           <Route path="consultores" element={<TalentManagerConsultoresView />} />
           <Route path="relatorios" element={<TalentManagerRelatoriosView />} />
           <Route path="definicoes" element={<TalentManagerDefinicoesView />} />
-          <Route path="perfil-publico" element={<PerfilPublicoView />} />
+          <Route path="perfil-publico/:id_consultor" element={<PerfilPublicoView />} />
         </Route>
 
         <Route path="/consultor" element={<ConsultorLayout />}>

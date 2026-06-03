@@ -52,10 +52,10 @@ export const updateUtilizador = async (id, payload) => {
 }
 
 // Listar dados do Consultor
-export const getConsultor = async () => {
+export const getConsultor = async (id) => {
   try {
-    const { id_consultor } = JSON.parse(atob(localStorage.getItem('token').split('.')[1]))
-    const response = await api.get(`/consultores/${id_consultor}/publico`)
+    const consultorId = id ?? JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id_consultor
+    const response = await api.get(`/consultores/${consultorId}/publico`)
     return response.data
   } catch (error) {
     console.error('Erro ao obter dados do Consultor', error)

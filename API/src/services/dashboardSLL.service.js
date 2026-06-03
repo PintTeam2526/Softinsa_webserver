@@ -162,6 +162,7 @@ service.getTopConsultores = async (id_service_line_lider) => {
         });
 
         resultado.push({
+            id_consultor: consultor.id_consultor,
             nome_consultor: consultor.Utilizadore.nome_utilizador,
             total_badges: totalBadges
         });

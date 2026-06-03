@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaFilter, FaTimes, FaUpload } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -19,6 +20,7 @@ function getProgressTone(progress) {
 
 function mapMember(consultor, index) {
   return {
+    id: consultor.id_consultor,
     rank: `${index + 1}º`,
     name: consultor.nome,
     area: consultor.area,
@@ -59,6 +61,8 @@ function ExportFormatOption({ label, selected, onClick }) {
 }
 
 function SLLMinhaEquipaView() {
+  const navigate = useNavigate()
+
   const [teamMembers, setTeamMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -133,6 +137,10 @@ function SLLMinhaEquipaView() {
   }
 
   function closeExportModal() { setShowExport(false) }
+
+  function handleRowClick(member) {
+    navigate(`/sll/perfil-publico/${member.id}`)
+  }
 
   function handleExport() {
     if (selectedExportFormat === 'pdf') {
@@ -259,7 +267,15 @@ function SLLMinhaEquipaView() {
                 </thead>
                 <tbody>
                   {paginatedMembers.map((member) => (
-                    <tr key={`${member.rank}-${member.name}`}>
+                    <tr
+                      key={`${member.rank}-${member.name}`}
+                      className="sll-team-row-clickable"
+                      onClick={() => handleRowClick(member)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => e.key === 'Enter' && handleRowClick(member)}
+                      aria-label={`Ver perfil de ${member.name}`}
+                    >
                       <td className={`sll-team-rank ${getRankClass(member.rank)}`}>{member.rank}</td>
                       <td className="sll-team-name">{member.name}</td>
                       <td>{member.area}</td>

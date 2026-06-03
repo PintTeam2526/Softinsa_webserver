@@ -274,7 +274,7 @@ function SLLDashboard() {
     badges: `${consultor.total_badges} badges`,
     rank: RANK_LABEL[i],
     rankTone: RANK_MAP[i],
-    profilePath: `/sll/perfil-publico?name=${encodeURIComponent(consultor.nome_consultor)}`,
+    profilePath: `/sll/perfil-publico/${consultor.id_consultor}`,
   }))
 
   return (

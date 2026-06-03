@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaTimes } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -40,7 +41,9 @@ function PaginationButton({ children, active = false, disabled = false, narrow =
 }
 
 function mapConsultor(consultor, index) {
+  console.log('consultor raw:', consultor)
   return {
+    id: consultor.id_consultor,
     name: consultor.nome,
     area: consultor.area,
     points: consultor.total_pontos,
@@ -51,6 +54,8 @@ function mapConsultor(consultor, index) {
 }
 
 function TalentManagerConsultoresView() {
+  const navigate = useNavigate()
+
   const [consultantRows, setConsultantRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -126,6 +131,11 @@ function TalentManagerConsultoresView() {
   function goToPreviousPage() { setCurrentPage((prev) => Math.max(1, prev - 1)) }
   function goToNextPage() { setCurrentPage((prev) => Math.min(totalPages, prev + 1)) }
   function closeExportModal() { setShowExport(false) }
+
+  // Navega para o perfil público do consultor selecionado
+  function handleRowClick(consultant) {
+    navigate(`/talent-manager/perfil-publico/${consultant.id}`)
+  }
 
   function handleExport() {
     if (selectedExportFormat === 'pdf') {
@@ -282,7 +292,15 @@ function TalentManagerConsultoresView() {
             </thead>
             <tbody>
               {paginatedConsultants.map((consultant) => (
-                <tr key={`${consultant.name}-${consultant.ranking}`}>
+                <tr
+                  key={`${consultant.name}-${consultant.ranking}`}
+                  className="tm-consultores-row-clickable"
+                  onClick={() => handleRowClick(consultant)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRowClick(consultant)}
+                  aria-label={`Ver perfil de ${consultant.name}`}
+                >
                   <td>
                     <span className={`tm-consultores-ranking ${getRankingTone(consultant.ranking)}`}>
                       {consultant.ranking}

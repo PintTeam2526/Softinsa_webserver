@@ -1,52 +1,106 @@
-// ConsultorPublicProfileView.jsx
-// View pública e partilhável — não requer autenticação nem pertença à plataforma.
-// Recebe os dados do consultor via props (ou substitui pelos teus dados reais / fetch).
-
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import './PerfilPublicoView.css'
 
+import { getConsultor } from '../../../controllers/utilizadoresController'
 
-const defaultAvatar = 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856'
-const badgeEntryLevel = 'https://www.figma.com/api/mcp/asset/41229589-8f50-47c3-8553-3b4939eafc0c'
-const badgeTeamLeader = 'https://www.figma.com/api/mcp/asset/b4a91d17-1fb7-4a47-bc42-d9284b60851f'
-const badgeDevOps = 'https://www.figma.com/api/mcp/asset/b1a47080-ecc6-400f-b8f3-775875949b31'
-const pointsIcon = 'https://www.figma.com/api/mcp/asset/04bde155-b1b0-4e83-a0ac-bbe66455a2ac'
-const badgesIcon = 'https://www.figma.com/api/mcp/asset/82b97222-c9bc-455b-8ec3-a10e2b83a611'
-const emailIcon = 'https://www.figma.com/api/mcp/asset/f04e06a5-1254-43d1-8f09-ba10e5880272'
-const badgesHeaderIcon = 'https://www.figma.com/api/mcp/asset/deafc32c-7998-4d73-9605-1647183ccd65'
-
-// Dados de exemplo — substituir por props ou fetch conforme a tua integração.
-const DEMO_PROFILE = {
-  name: 'António Portugal',
-  role: 'Consultor',
-  area: 'LowCode (Outsystems)',
-  serviceLine: 'Hybrid Cloud',
-  learningPath: 'Jornada Técnica',
-  points: '550 Pontos',
-  badges: '9 Badges Obtidos',
-  email: 'antoniopt@gmail.com',
-  avatarUrl: defaultAvatar,
+// Converte base64 puro para data URL utilizável numa <img>
+function normalizeImage(raw) {
+  if (!raw) return null
+  if (raw.startsWith('data:') || raw.startsWith('http')) return raw
+  return `data:image/png;base64,${raw}`
 }
 
-const DEMO_BADGES = [
-  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
-  { image: badgeTeamLeader, name: 'Team Lider Beginner', date: '31/12/2025' },
-  { image: badgeDevOps, name: 'DevOps Intermidiate', date: '31/12/2025' },
-  { image: badgeEntryLevel, name: 'Citzen Developer', date: '31/12/2025' },
-]
+// Formata uma data ISO para dd/mm/aaaa
+function formatDate(raw) {
+  if (!raw) return '—'
+  const d = new Date(raw)
+  if (isNaN(d)) return raw
+  return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
 
 function BadgeItem({ image, name, date }) {
   return (
     <div className="sll-profile-badge-item">
       <div className="sll-profile-badge-image">
-        <img src={image} alt={name} />
+        <img src={normalizeImage(image)} alt={name} />
       </div>
       <p>{name}</p>
-      <span>{date}</span>
+      <span>{formatDate(date)}</span>
     </div>
   )
 }
 
-function PerfilPublicoView({ profile = DEMO_PROFILE, badges = DEMO_BADGES }) {
+function mapApiResponse(data) {
+  return {
+    profile: {
+      name: data.nome,
+      role: 'Consultor',
+      area: data.area,
+      serviceLine: data.service_line ?? '—',
+      learningPath: data.learning_path ?? '—',
+      points: `${data.total_pontos} Pontos`,
+      badges: `${data.total_badges} Badges Obtidos`,
+      email: data.email,
+      avatarUrl: normalizeImage(data.foto),
+    },
+    badges: (data.badges ?? []).map((b) => ({
+      image: b.imagem,
+      name: b.nome,
+      date: b.data_conclusao,
+    })),
+  }
+}
+
+function ConsultorPublicProfileView() {
+  const { id_consultor } = useParams()
+
+  const [profile, setProfile] = useState(null)
+  const [badges, setBadges] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    getConsultor(id_consultor)
+      .then((data) => {
+        const mapped = mapApiResponse(data)
+        setProfile(mapped.profile)
+        setBadges(mapped.badges)
+      })
+      .catch(() => setError('Não foi possível carregar o perfil. Tente novamente.'))
+      .finally(() => setLoading(false))
+  }, [id_consultor])
+
+  if (loading) {
+    return (
+      <div className="sll-profile-page">
+        <main className="sll-profile-main">
+          <div className="sll-profile-scroll">
+            <section className="sll-profile-hero" aria-hidden="true">
+              <div className="sll-profile-hero-copy"><h1>Perfis Públicos</h1></div>
+            </section>
+            <p style={{ padding: '24px', color: '#8a92a6' }}>A carregar perfil…</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (error || !profile) {
+    return (
+      <div className="sll-profile-page">
+        <main className="sll-profile-main">
+          <div className="sll-profile-scroll">
+            <section className="sll-profile-hero" aria-hidden="true">
+              <div className="sll-profile-hero-copy"><h1>Perfis Públicos</h1></div>
+            </section>
+            <p style={{ padding: '24px', color: '#e74c3c' }}>{error ?? 'Perfil não encontrado.'}</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="sll-profile-page">
       <main className="sll-profile-main">
@@ -64,9 +118,11 @@ function PerfilPublicoView({ profile = DEMO_PROFILE, badges = DEMO_BADGES }) {
           <section className="sll-profile-card">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
-                <img src={profile.avatarUrl || defaultAvatar} alt={profile.name} />
+                <img
+                  src={profile.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=3b8aff&color=fff`}
+                  alt={profile.name}
+                />
               </div>
-
               <div className="sll-profile-copy">
                 <div className="sll-profile-name-row">
                   <h2>{profile.name}</h2>
@@ -82,15 +138,12 @@ function PerfilPublicoView({ profile = DEMO_PROFILE, badges = DEMO_BADGES }) {
 
             <div className="sll-profile-stats">
               <div className="sll-profile-stat-item">
-                <img src={pointsIcon} alt="Pontos" />
                 <span>{profile.points}</span>
               </div>
               <div className="sll-profile-stat-item">
-                <img src={badgesIcon} alt="Badges obtidos" />
                 <span>{profile.badges}</span>
               </div>
               <div className="sll-profile-stat-item">
-                <img src={emailIcon} alt="Email" />
                 <span>{profile.email}</span>
               </div>
             </div>
@@ -99,20 +152,23 @@ function PerfilPublicoView({ profile = DEMO_PROFILE, badges = DEMO_BADGES }) {
           {/* Badges */}
           <section className="sll-profile-badges-card">
             <div className="sll-profile-badges-header">
-              <img src={badgesHeaderIcon} alt="Badges" />
               <h3>Badges Obtidos</h3>
             </div>
 
-            <div className="sll-profile-badges-grid">
-              {badges.map((badge, index) => (
-                <BadgeItem
-                  key={`${badge.name}-${index}`}
-                  image={badge.image}
-                  name={badge.name}
-                  date={badge.date}
-                />
-              ))}
-            </div>
+            {badges.length === 0 ? (
+              <p style={{ color: '#8a92a6', fontSize: '16px' }}>Ainda não foram obtidos badges.</p>
+            ) : (
+              <div className="sll-profile-badges-grid">
+                {badges.map((badge, index) => (
+                  <BadgeItem
+                    key={`${badge.name}-${index}`}
+                    image={badge.image}
+                    name={badge.name}
+                    date={badge.date}
+                  />
+                ))}
+              </div>
+            )}
           </section>
 
         </div>
@@ -121,4 +177,4 @@ function PerfilPublicoView({ profile = DEMO_PROFILE, badges = DEMO_BADGES }) {
   )
 }
 
-export default PerfilPublicoView
+export default ConsultorPublicProfileView
