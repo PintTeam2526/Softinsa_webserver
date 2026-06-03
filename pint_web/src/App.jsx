@@ -9,8 +9,9 @@ import ConsultorLayout from './views/layouts/ConsultorLayout'
 import PerfilPublicoView from './views/pages/shared/PerfilPublicoView'
 
 import WelcomeView from './views/pages/auth/WelcomeView'
-import LoginView from './views/pages/auth/login'
 import RegisterView from './views/pages/auth/register'
+import LoginView from './views/pages/auth/login'
+import RecuperacaoView from './views/pages/auth/rec-pass'
 
 import DashboardView from './views/pages/admin/DashboardView'
 import SoftinsaUsers from './views/pages/admin/admin-users'
@@ -63,8 +64,9 @@ function App() {
           <Route path="/badges/:badgeId" element={<ConsultorBadgePageView isGuest={true} />} />
         </Route>
 
-        <Route path="/login" element={<LoginView />} />
         <Route path="/registar" element={<RegisterView />} />
+        <Route path="/login" element={<LoginView />} />
+        <Route path="/recuperar" element={<RecuperacaoView />} />
 
         <Route path="/softinsa" element={<SoftinsaLayout />}>
           <Route index element={<DashboardView />} />

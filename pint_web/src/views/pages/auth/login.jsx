@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import './login.css'
 import api from '../../../services/api'
 
@@ -172,9 +172,9 @@ function LoginView() {
 
             {/* Forgot Password Link */}
             <div className="login-recover-container">
-              <a href="#" className="login-recover-link">
+              <Link to="/recuperar" className="login-recover-link">
                 Recuperar Password
-              </a>
+              </Link>
             </div>
           </div>
         </div>
