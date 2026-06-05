@@ -96,6 +96,51 @@ function ExportFormatOption({ label, value, selected, onSelect, cp }) {
   )
 }
 
+function InfoButton({ name, description, image, cp }) {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <span
+      className={`${cp}-info-wrap`}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      <span
+        className={`${cp}-info-btn`}
+        role="button"
+        tabIndex="0"
+        onFocus={() => setVisible(true)}
+        onBlur={() => setVisible(false)}
+        aria-label={`Informação sobre ${name}`}
+      >
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+          <line x1="12" y1="8" x2="12" y2="8.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="12" y1="11" x2="12" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </span>
+
+      {visible && (
+        <div className={`${cp}-info-tooltip`} role="tooltip">
+          {image && (
+            <img
+              src={image}
+              alt=""
+              className={`${cp}-info-tooltip-img`}
+              onError={(e) => { e.target.style.display = 'none' }}
+            />
+          )}
+          <strong className={`${cp}-info-tooltip-name`}>{name}</strong>
+          {description
+            ? <p className={`${cp}-info-tooltip-desc`}>{description}</p>
+            : <p className={`${cp}-info-tooltip-desc`} style={{ opacity: 0.5 }}>Sem descrição disponível.</p>
+          }
+        </div>
+      )}
+    </span>
+  )
+}
+
 // ── componente principal ──────────────────────────────────────────────────────
 
 function TalentManagerBadgesView({
@@ -148,10 +193,14 @@ function TalentManagerBadgesView({
 
       const areasBySL = {}
       areasData.forEach((a) => {
-        if (!areasBySL[a.id_service_line]) areasBySL[a.id_service_line] = []
+        if (!areasBySL[a.id_service_line]) {
+          areasBySL[a.id_service_line] = []
+        }
         areasBySL[a.id_service_line].push({
           id: a.id_area,
           title: a.nome_area,
+          image: normalizeImage(a.imagem_area),
+          description: a.descricao_area ?? '',
           badges: badgesByArea[a.id_area] || [],
         })
       })
@@ -162,6 +211,8 @@ function TalentManagerBadgesView({
         slByLP[sl.id_learning_path].push({
           id: sl.id_service_line,
           title: sl.nome_service_line,
+          image: normalizeImage(sl.imagem_service_line),
+          description: sl.descricao_service_line ?? '',
           areas: areasBySL[sl.id_service_line] || [],
         })
       })
@@ -169,6 +220,8 @@ function TalentManagerBadgesView({
       const lps = lpData.map((lp) => ({
         id: lp.id_learning_path,
         title: lp.nome_learning_path,
+        image: normalizeImage(lp.imagem_learning_path),
+        description: lp.descricao_learning_path ?? '',
         serviceLines: slByLP[lp.id_learning_path] || [],
       }))
 
@@ -308,7 +361,10 @@ function TalentManagerBadgesView({
                   setOpenSection(firstSL ? firstSL.id : null)
                 }}
               >
-                {lp.title}
+                <span className={`${cp}-tab-label`}>
+                  {lp.title}
+                  <InfoButton cp={cp} name={lp.title} description={lp.description} image={lp.image} />
+                </span>
               </button>
             ))}
           </div>
@@ -356,7 +412,7 @@ function TalentManagerBadgesView({
               const isOpen = openSection === sl.id
               const areaCount = sl.areas.length
               const badgeCount = sl.areas.reduce((sum, a) => sum + a.badges.length, 0)
-              const detail = `${areaCount} área${areaCount !== 1 ? 's' : ''} • ${badgeCount} badge${badgeCount !== 1 ? 's' : ''}`
+              const detail = `${areaCount} Área${areaCount !== 1 ? 's' : ''} • ${badgeCount} Badge${badgeCount !== 1 ? 's' : ''}`
 
               return (
                 <div key={sl.id}>
@@ -374,7 +430,7 @@ function TalentManagerBadgesView({
                           <IconAreaMenu className={`${cp}-area-icon-svg`} />
                         </div>
                         <div className={`${cp}-area-trigger-copy`}>
-                          <strong>{sl.title}</strong>
+                          <strong>Service Line: {sl.title} <InfoButton cp={cp} name={sl.title} description={sl.description} image={sl.image} /> </strong>
                           <span>{detail}</span>
                         </div>
                       </div>
@@ -391,7 +447,7 @@ function TalentManagerBadgesView({
                           sl.areas.map((area) => (
                             <div key={area.id} className={`${cp}-badge-group`}>
                               <div className={`${cp}-badge-group-title`}>
-                                <span>{area.title} - {area.badges.length} badge{area.badges.length !== 1 ? 's' : ''}</span>
+                                <span>Área: {area.title} <InfoButton cp={cp} name={area.title} description={area.description} image={area.image} /></span>
                               </div>
 
                               {area.badges.length === 0 ? (
