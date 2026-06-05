@@ -5,95 +5,41 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
 }
 
-/* ── HERO ──────────────────────────────────────────────── */
 .consultor-conquistas-hero {
   position: relative;
-  height: 155px;
+  min-height: 155px;
   margin: 0 -24px;
   overflow: hidden;
-  border-radius: 0 0 16px 16px;
-  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
-}
-
-.consultor-conquistas-hero-art {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.consultor-conquistas-hero-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: #ffffff;
-  opacity: 0.75;
-  mix-blend-mode: multiply;
-  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
-  transform: rotate(90deg);
-}
-
-.consultor-conquistas-hero-circle-5 {
-  width: 2156px;
-  height: 2112.615px;
-  left: -194px;
-  top: -233px;
-}
-
-.consultor-conquistas-hero-circle-4 {
-  width: 1670.328px;
-  height: 1635.378px;
-  left: -194px;
-  top: 5.62px;
-}
-
-.consultor-conquistas-hero-circle-3 {
-  width: 1418.453px;
-  height: 1389.529px;
-  left: -100px;
-  top: 206.88px;
-}
-
-.consultor-conquistas-hero-circle-2 {
-  width: 1041.243px;
-  height: 1041.243px;
-  left: -33.72px;
-  top: 334.62px;
-}
-
-.consultor-conquistas-hero-circle-1 {
-  width: 827.933px;
-  height: 827.933px;
-  left: 48.23px;
-  top: 380.42px;
+  background: linear-gradient(130deg, #2f6fd8, #24489a);
+  padding: clamp(20px, 4vw, 35px) clamp(20px, 4vw, 50px);
+  display: flex;
+  align-items: center;
 }
 
 .consultor-conquistas-hero-copy {
-  position: absolute;
-  left: 50px;
-  top: 35px;
-  z-index: 1;
-  max-width: calc(100% - 100px);
+  position: static;
+  max-width: 100%;
 }
 
 .consultor-conquistas-hero-copy h1 {
   margin: 0 0 8px;
-  font-size: clamp(28px, 2.8vw, 40px);
+  font-size: clamp(24px, 4vw, 40px);
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.1;
   color: #ffffff;
 }
 
 .consultor-conquistas-hero-copy p {
   margin: 0;
-  font-size: clamp(14px, 1.3vw, 19px);
+  font-size: clamp(14px, 2vw, 23px);
   font-weight: 500;
   line-height: 1.3;
   color: #ffffff;
 }
 
-/* ── CARD ──────────────────────────────────────────────── */
 .consultor-conquistas-card {
   background: #ffffff;
   border-radius: 8px;
@@ -102,6 +48,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .consultor-conquistas-card-header {
@@ -119,17 +68,39 @@
 
 .consultor-conquistas-card-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(18px, 3vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: #232d42;
 }
 
-/* ── TABLE ─────────────────────────────────────────────── */
-.consultor-conquistas-table {
+.consultor-conquistas-table-wrap {
+  display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #adb5bd transparent;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar {
+  height: 8px;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.consultor-conquistas-table {
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 .consultor-conquistas-table thead th {
@@ -143,15 +114,8 @@
   letter-spacing: 0.02em;
 }
 
-.consultor-conquistas-table thead th:first-child {
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-
-.consultor-conquistas-table thead th:last-child {
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
+.consultor-conquistas-table thead th:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.consultor-conquistas-table thead th:last-child  { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
 .consultor-conquistas-table tbody tr {
   border-bottom: 1px solid #eeeeee;
@@ -170,17 +134,9 @@
   vertical-align: middle;
 }
 
-.consultor-conquistas-col-description {
-  width: 41%;
-}
-
-.consultor-conquistas-col-points {
-  width: 16%;
-}
-
-.consultor-conquistas-col-progress {
-  width: 43%;
-}
+.consultor-conquistas-col-description { min-width: 260px; }
+.consultor-conquistas-col-points      { min-width: 120px; }
+.consultor-conquistas-col-progress    { min-width: 200px; }
 
 .consultor-conquistas-description-cell {
   display: flex;
@@ -248,98 +204,9 @@
   min-width: 28px;
 }
 
-.consultor-conquistas-progress-bar.is-tier-0 {
-  background: #b8d4f1;
-}
+.consultor-conquistas-progress-bar.is-tier-0 { background: rgba(57, 99, 156, 0.75); }
+.consultor-conquistas-progress-bar.is-tier-1 { background: #369bff; }
+.consultor-conquistas-progress-bar.is-tier-2 { background: #05666c; }
+.consultor-conquistas-progress-bar.is-tier-3 { background: #1aa053; }
+.consultor-conquistas-progress-bar.is-tier-4 { background: #409900; }
 
-.consultor-conquistas-progress-bar.is-tier-1 {
-  background: #7fb3e8;
-}
-
-.consultor-conquistas-progress-bar.is-tier-2 {
-  background: #4690d9;
-}
-
-.consultor-conquistas-progress-bar.is-tier-3 {
-  background: #369bff;
-}
-
-.consultor-conquistas-progress-bar.is-tier-4 {
-  background: #0048b3;
-}
-
-.consultor-conquistas-row--obtida {
-  opacity: 0.7;
-}
-
-.consultor-conquistas-badge-obtida {
-  font-size: 0.75rem;
-  color: var(--color-success, #22c55e);
-  font-weight: 600;
-  margin-left: 0.5rem;
-}
-
-.consultor-conquistas-check-icon {
-  width: 20px;
-  height: 20px;
-  color: #22c55e;
-  flex-shrink: 0;
-}
-
-/* ── RESPONSIVE ────────────────────────────────────────── */
-@media (max-width: 992px) {
-  .consultor-conquistas-page {
-    padding-inline: 16px;
-  }
-
-  .consultor-conquistas-hero {
-    margin-inline: -16px;
-  }
-
-  .consultor-conquistas-card {
-    padding: 20px;
-  }
-
-  .consultor-conquistas-card-header h2 {
-    font-size: 22px;
-  }
-
-  .consultor-conquistas-table thead th,
-  .consultor-conquistas-table tbody td {
-    padding: 10px 12px;
-  }
-
-  .consultor-conquistas-col-description {
-    width: 50%;
-  }
-
-  .consultor-conquistas-col-points {
-    width: 18%;
-  }
-
-  .consultor-conquistas-col-progress {
-    width: 32%;
-  }
-}
-
-@media (max-width: 768px) {
-  .consultor-conquistas-hero-copy {
-    left: 24px;
-    top: 28px;
-  }
-
-  .consultor-conquistas-thumb {
-    width: 36px;
-    height: 36px;
-  }
-
-  .consultor-conquistas-table thead th,
-  .consultor-conquistas-description-text,
-  .consultor-conquistas-points-cell {
-    font-size: 13px;
-  }
-
-  .consultor-conquistas-progress-bar {
-    font-size: 11px;
-  }
-}

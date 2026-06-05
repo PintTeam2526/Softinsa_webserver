@@ -254,7 +254,7 @@ function SLLBadgesView() {
             </div>
           </section>
 
-          <section className="sll-badges-toolbar" aria-label="Pesquisa e exportação de badges">
+          <section className="sll-badges-toolbar flex-column flex-lg-row align-items-stretch align-items-lg-center" aria-label="Pesquisa e exportação de badges">
             <label className="sll-badges-search">
               <FaSearch aria-hidden="true" />
               <input

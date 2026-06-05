@@ -1,19 +1,41 @@
 import { useEffect, useState } from 'react'
-import { HiOutlineStar, HiOutlineCheckCircle } from 'react-icons/hi2'
+import { HiOutlineStar } from 'react-icons/hi2'
+
+import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
+import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
+import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
+import tm1 from '../../../assets/images/badges/tm_1.png'
+import devops2 from '../../../assets/images/badges/devops_2.png'
 
 import { getConquistasConsultor } from '../../../controllers/conquistasController'
 import './ConsultorConquistasView.css'
 
-// ─── Cálculo de progresso ─────────────────────────────────────────────────────
-
-function calcularProgresso(conquista, total_badges, total_pontos) {
-  const { tipo_conquista, valor_conquista } = conquista
-  if (!valor_conquista || valor_conquista === 0) return 0
-  const valor = tipo_conquista === 'pontos' ? total_pontos : total_badges
-  return Math.min(Math.round((valor / valor_conquista) * 100), 100)
+const BADGE_MAP = {
+  1: outsystems1,
+  2: outsystems3,
+  3: devops2,
+  4: tm1,
+  5: outsystemsSpecial,
+  6: outsystems1,
+  7: outsystems3,
+  8: devops2,
+  9: tm1,
+  10: outsystemsSpecial,
 }
 
-// ─── Icon ─────────────────────────────────────────────────────────────────────
+function resolveBadge(id) {
+  return BADGE_MAP[id] ?? outsystems1
+}
+
+function calcularProgresso(conquista, total_badges, total_pontos) {
+  const desc = conquista.descricao_conquista?.toLowerCase() ?? ''
+  const meta = parseInt(desc)   // extrai o número (1, 5, 10, 50, 100…)
+
+  if (isNaN(meta) || meta === 0) return 0
+
+  const valor = desc.includes('ponto') ? total_pontos : total_badges
+  return Math.min(Math.round((valor / meta) * 100), 100)
+}
 
 function IconConquistas({ className }) {
   return (
@@ -23,8 +45,6 @@ function IconConquistas({ className }) {
   )
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function progressTier(progress) {
   if (progress >= 100) return 'is-tier-4'
   if (progress >= 75) return 'is-tier-3'
@@ -33,23 +53,16 @@ function progressTier(progress) {
   return 'is-tier-0'
 }
 
-// ─── Row ──────────────────────────────────────────────────────────────────────
-
 function ConquistaRow({ conquista, total_badges, total_pontos }) {
   const progress = calcularProgresso(conquista, total_badges, total_pontos)
   const tier = progressTier(progress)
-  const obtida = conquista.estado === 'Obtido'
 
   return (
-    <tr className={obtida ? 'consultor-conquistas-row--obtida' : ''}>
+    <tr>
       <td>
         <div className="consultor-conquistas-description-cell">
-          {obtida && (
-            <HiOutlineCheckCircle className="consultor-conquistas-check-icon" aria-hidden="true" />
-          )}
-          <span className="consultor-conquistas-description-text">
-            Obter {conquista.descricao_conquista}
-          </span>
+          <img src={resolveBadge(conquista.id_conquista)} alt="" className="consultor-conquistas-thumb" />
+          <span className="consultor-conquistas-description-text">{conquista.descricao_conquista}</span>
         </div>
       </td>
 
@@ -79,8 +92,6 @@ function ConquistaRow({ conquista, total_badges, total_pontos }) {
     </tr>
   )
 }
-
-// ─── Estados de UI ────────────────────────────────────────────────────────────
 
 function LoadingRows() {
   return Array.from({ length: 4 }).map((_, i) => (
@@ -115,8 +126,6 @@ function EmptyMessage() {
   )
 }
 
-// ─── View principal ───────────────────────────────────────────────────────────
-
 function ConsultorConquistasView() {
   const [dados, setDados] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -142,29 +151,14 @@ function ConsultorConquistasView() {
     if (error) return <ErrorMessage message={error} onRetry={fetchConquistas} />
     if (!dados?.conquistas?.length) return <EmptyMessage />
 
-    return [...dados.conquistas]
-      .sort((a, b) => {
-        // Primeiro, conquistas não obtidas aparecem antes
-        const obtidaA = a.estado === 'Obtido'
-        const obtidaB = b.estado === 'Obtido'
-        
-        if (obtidaA !== obtidaB) {
-          return obtidaA ? 1 : -1
-        }
-        
-        // Se têm o mesmo estado, ordena por progresso
-        const progressoA = calcularProgresso(a, dados.total_badges, dados.total_pontos)
-        const progressoB = calcularProgresso(b, dados.total_badges, dados.total_pontos)
-        return progressoB - progressoA
-      })
-      .map((c) => (
-        <ConquistaRow
-          key={c.id_conquista}
-          conquista={c}
-          total_badges={dados.total_badges}
-          total_pontos={dados.total_pontos}
-        />
-      ))
+    return dados.conquistas.map((c) => (
+      <ConquistaRow
+        key={c.id_conquista}
+        conquista={c}
+        total_badges={dados.total_badges}
+        total_pontos={dados.total_pontos}
+      />
+    ))
   }
 
   return (
@@ -177,23 +171,25 @@ function ConsultorConquistasView() {
       </header>
 
       <article className="consultor-conquistas-card" aria-label="Histórico de Conquistas">
-        <header className="consultor-conquistas-card-header">
-          <IconConquistas className="consultor-conquistas-card-header-icon" />
+        <header className="consultor-conquistas-card-header d-flex align-items-center gap-2 flex-wrap">
+          <IconConquistas className="consultor-conquistas-card-header-icon flex-shrink-0" />
           <h2>Histórico de Conquistas</h2>
         </header>
 
-        <table className="consultor-conquistas-table">
-          <thead>
-            <tr>
-              <th className="consultor-conquistas-col-description" scope="col">DESCRIÇÃO</th>
-              <th className="consultor-conquistas-col-points" scope="col">PONTOS</th>
-              <th className="consultor-conquistas-col-progress" scope="col">PROGRESSO</th>
-            </tr>
-          </thead>
-          <tbody>
-            {renderBody()}
-          </tbody>
-        </table>
+        <div className="consultor-conquistas-table-wrap">
+          <table className="consultor-conquistas-table">
+            <thead>
+              <tr>
+                <th className="consultor-conquistas-col-description" scope="col">DESCRIÇÃO</th>
+                <th className="consultor-conquistas-col-points" scope="col">PONTOS</th>
+                <th className="consultor-conquistas-col-progress" scope="col">PROGRESSO</th>
+              </tr>
+            </thead>
+            <tbody>
+              {renderBody()}
+            </tbody>
+          </table>
+        </div>
       </article>
     </section>
   )

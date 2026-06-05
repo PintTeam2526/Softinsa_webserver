@@ -101,7 +101,7 @@
 .sll-relatorios-hero-copy h1 {
   margin: 0;
   color: #ffffff;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
 }
@@ -109,7 +109,7 @@
 .sll-relatorios-hero-copy p {
   margin: 0;
   color: #ffffff;
-  font-size: 23px;
+  font-size: clamp(18px, 2.5vw, 23px);
   line-height: 1.3;
   font-weight: 500;
   max-width: 730px;
@@ -166,7 +166,7 @@
 .sll-relatorios-chart-card h3 {
   margin: 0;
   color: #232d42;
-  font-size: 23px;
+  font-size: clamp(18px, 2.5vw, 23px);
   line-height: 1.3;
   font-weight: 500;
 }
@@ -316,14 +316,14 @@
 .sll-relatorios-stat-card p {
   margin: 0;
   color: #8a92a6;
-  font-size: 23px;
+  font-size: clamp(18px, 2.5vw, 23px);
   line-height: 1.3;
   font-weight: 500;
 }
 
 .sll-relatorios-stat-card strong {
   color: #232d42;
-  font-size: 28px;
+  font-size: clamp(24px, 3vw, 28px);
   line-height: 1.3;
   font-weight: 700;
 }
@@ -493,41 +493,4 @@
 
 .sll-relatorios-footer .is-brand {
   color: transparent;
-}
-
-@media (max-width: 768px) {
-  .sll-relatorios-content {
-    padding: 16px 18px 20px;
-  }
-
-  .sll-relatorios-filters-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .sll-relatorios-select-wrap,
-  .sll-relatorios-date-input {
-    width: 100%;
-  }
-}
-
-@media (max-width: 720px) {
-  .sll-relatorios-hero-copy h1 {
-    font-size: 30px;
-  }
-
-  .sll-relatorios-hero-copy p,
-  .sll-relatorios-filters-heading h2,
-  .sll-relatorios-table-card h2,
-  .sll-relatorios-chart-card h3 {
-    font-size: 18px;
-  }
-
-  .sll-relatorios-stat-card p {
-    font-size: 18px;
-  }
-
-  .sll-relatorios-stat-card strong {
-    font-size: 24px;
-  }
 }

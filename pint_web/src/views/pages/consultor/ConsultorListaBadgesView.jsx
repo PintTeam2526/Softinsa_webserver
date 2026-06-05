@@ -15,14 +15,11 @@ import './ConsultorListaBadgesView.css'
 
 import { getFavoritos, getBadgesEmAnalise, getBadgesObtidos, getBadgesPorObter, getBadgesExpirados, getBadgesDevolvidos } from '../../../controllers/badgesController'
 
-
 function resolveImage(raw) {
   if (!raw) return null
   if (raw.startsWith('data:') || raw.startsWith('http')) return raw
   return `data:image/png;base64,${raw}`
 }
-
-// ── Normalise each filter's response to a common shape ───────────────────────
 
 function normaliseBadge(raw) {
   const b = raw.Badge ?? raw
@@ -38,9 +35,6 @@ function normaliseBadge(raw) {
   }
 }
 
-
-// ── Filter definitions ────────────────────────────────────────────────────────
-
 const FILTERS = [
   { id: 'favoritos', label: 'Favoritos', Icon: HiOutlineStar, fetchFn: getFavoritos },
   { id: 'analise', label: 'Em análise', Icon: HiOutlineClock, fetchFn: getBadgesEmAnalise },
@@ -52,14 +46,12 @@ const FILTERS = [
 
 const FILTER_MAP = Object.fromEntries(FILTERS.map((f) => [f.id, f]))
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
 function FilterChip({ filter, isActive, onClick }) {
   const { Icon, label, id } = filter
   return (
     <button
       type="button"
-      className={`consultor-lista-chip${isActive ? ' is-active' : ''}`}
+      className={`consultor-lista-chip d-inline-flex align-items-center gap-2${isActive ? ' is-active' : ''}`}
       onClick={() => onClick(id)}
       aria-pressed={isActive}
     >
@@ -76,7 +68,7 @@ function BadgeRow({ badge, onOpen }) {
 
   return (
     <tr
-      className="consultor-lista-row is-clickable"
+      className="consultor-lista-row is-clickable align-middle"
       onClick={onOpen}
       onKeyDown={handleKeyDown}
       role="button"
@@ -84,9 +76,9 @@ function BadgeRow({ badge, onOpen }) {
       aria-label={`Ver detalhes do badge ${badge.name}`}
     >
       <td>
-        <div className="consultor-lista-name-cell">
+        <div className="consultor-lista-name-cell d-flex align-items-center gap-2">
           {badge.image ? (
-            <img src={badge.image} alt="" className="consultor-lista-thumb" />
+            <img src={badge.image} alt="" className="consultor-lista-thumb rounded-circle flex-shrink-0" />
           ) : (
             <div className="consultor-lista-thumb consultor-lista-thumb--placeholder" aria-hidden="true" />
           )}
@@ -97,13 +89,13 @@ function BadgeRow({ badge, onOpen }) {
         <span className="consultor-lista-level-cell">{badge.level}</span>
       </td>
       <td>
-        <span className="consultor-lista-points-cell">
-          <HiOutlineStar className="consultor-lista-points-icon" aria-hidden="true" />
-          <span>{badge.points}</span>
+        <span className="consultor-lista-points-cell d-inline-flex align-items-center gap-1">
+          <HiOutlineStar className="consultor-lista-points-icon flex-shrink-0" aria-hidden="true" />
+          <span>{badge.points} Pontos</span>
         </span>
       </td>
       <td>
-        <div className="consultor-lista-action-cell">
+        <div className="consultor-lista-action-cell d-flex justify-content-end">
           <button
             type="button"
             className="consultor-lista-action-btn"
@@ -117,8 +109,6 @@ function BadgeRow({ badge, onOpen }) {
     </tr>
   )
 }
-
-// ── Main view ────────────────────────────────────────────────────────────────
 
 function ConsultorListaBadgesView() {
   const navigate = useNavigate()
@@ -181,17 +171,16 @@ function ConsultorListaBadgesView() {
   const headerLabel = activeFilterDef?.label ?? ''
 
   return (
-    <section className="consultor-lista-page">
-      <header className="consultor-lista-hero">
+    <section className="consultor-lista-page d-flex flex-column gap-3">
+      <header className="consultor-lista-hero d-flex align-items-center">
         <div className="consultor-lista-hero-copy">
           <h1>Listas de Badges</h1>
           <p>Encontra os teus badges de forma mais eficiente</p>
         </div>
       </header>
 
-      {/* ── Filter panel: chips (centred) → search bar ── */}
-      <article className="consultor-lista-filter" aria-label="Filtros">
-        <div className="consultor-lista-chips" role="group" aria-label="Categorias">
+      <article className="consultor-lista-filter d-flex flex-column gap-3" aria-label="Filtros">
+        <div className="consultor-lista-chips d-flex flex-wrap justify-content-center gap-2" role="group" aria-label="Categorias">
           {FILTERS.map((filter) => (
             <FilterChip
               key={filter.id}
@@ -202,10 +191,10 @@ function ConsultorListaBadgesView() {
           ))}
         </div>
 
-        <div className="consultor-lista-filter-search">
-          <HiOutlineMagnifyingGlass className="consultor-lista-filter-search-icon" aria-hidden="true" />
+        <div className="consultor-lista-filter-search d-flex align-items-center w-100">
+          <HiOutlineMagnifyingGlass className="consultor-lista-filter-search-icon flex-shrink-0" aria-hidden="true" />
           <input
-            className="consultor-lista-filter-search-input"
+            className="consultor-lista-filter-search-input w-100"
             type="search"
             placeholder="Pesquisar badge pelo nome…"
             value={search}
@@ -216,18 +205,19 @@ function ConsultorListaBadgesView() {
         </div>
       </article>
 
-      {/* ── Results ── */}
       {activeFilter ? (
-        <article className="consultor-lista-card" aria-label={`Badges ${headerLabel}`}>
-          <header className="consultor-lista-card-header">
-            {HeaderIcon && <HeaderIcon className="consultor-lista-card-header-icon" aria-hidden="true" />}
-            <h2>
-              Badges {headerLabel}
-              {!loading && <span> — {filtered.length}</span>}
-            </h2>
+        <article className="consultor-lista-card d-flex flex-column gap-3" aria-label={`Badges ${headerLabel}`}>
+          <header className="consultor-lista-card-header d-flex align-items-center justify-content-between gap-2 flex-wrap">
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              {HeaderIcon && <HeaderIcon className="consultor-lista-card-header-icon flex-shrink-0" aria-hidden="true" />}
+              <h2 className="m-0">
+                Badges {headerLabel}
+                {!loading && <span> — {filtered.length}</span>}
+              </h2>
+            </div>
             <button
               type="button"
-              className="consultor-lista-card-close"
+              className="consultor-lista-card-close d-inline-flex align-items-center justify-content-center flex-shrink-0"
               onClick={handleClose}
               aria-label="Fechar lista"
             >
@@ -244,21 +234,23 @@ function ConsultorListaBadgesView() {
           )}
 
           {!loading && !error && filtered.length > 0 && (
-            <table className="consultor-lista-table">
-              <thead>
-                <tr>
-                  <th className="consultor-lista-col-name" scope="col">NOME DO BADGE</th>
-                  <th className="consultor-lista-col-level" scope="col">NÍVEL</th>
-                  <th className="consultor-lista-col-points" scope="col">PONTOS</th>
-                  <th className="consultor-lista-col-action" scope="col" aria-label="Ações"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((badge) => (
-                  <BadgeRow key={badge.id} badge={badge} onOpen={() => openBadge(badge)} />
-                ))}
-              </tbody>
-            </table>
+            <div className="consultor-lista-table-wrap w-100">
+              <table className="consultor-lista-table w-100">
+                <thead>
+                  <tr>
+                    <th className="consultor-lista-col-name" scope="col">NOME DO BADGE</th>
+                    <th className="consultor-lista-col-level" scope="col">NÍVEL</th>
+                    <th className="consultor-lista-col-points" scope="col">PONTOS</th>
+                    <th className="consultor-lista-col-action" scope="col" aria-label="Ações"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((badge) => (
+                    <BadgeRow key={badge.id} badge={badge} onOpen={() => openBadge(badge)} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {!loading && !error && filtered.length === 0 && (

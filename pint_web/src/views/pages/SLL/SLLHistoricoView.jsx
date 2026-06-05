@@ -548,7 +548,7 @@ function SLLHistoricoView() {
             </div>
           </section>
 
-          <section className="sll-history-toolbar" aria-label="Filtros do histórico">
+          <section className="sll-history-toolbar flex-column flex-md-row align-items-stretch align-items-md-center" aria-label="Filtros do histórico">
             <div className="sll-history-tabs" role="tablist" aria-label="Estado dos pedidos">
               <button type="button" className={`sll-history-tab-button ${activeTab === 'Aprovado' ? 'is-active is-approved' : ''}`} onClick={() => setActiveTab('Aprovado')}>
                 Aprovados
@@ -567,7 +567,7 @@ function SLLHistoricoView() {
             </button>
           </section>
 
-          <section className="sll-history-search-row" aria-label="Pesquisar histórico">
+          <section className="sll-history-search-row flex-column flex-md-row align-items-stretch align-items-md-center" aria-label="Pesquisar histórico">
             <label className="sll-history-search">
               <FaSearch aria-hidden="true" />
               <input

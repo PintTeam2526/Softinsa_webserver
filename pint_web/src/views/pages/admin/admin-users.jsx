@@ -6,7 +6,6 @@ import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
 
-
 // Mapeamento tipo_utilizador (BD) → label legível
 const profileByTipo = {
   c: "Consultor",
@@ -51,8 +50,6 @@ const getDefaultFilterDraft = () => ({ profile: "", status: "" });
 const normalizeSearchValue = (value) =>
   String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-// ── icons (sem alterações) ────────────────────────────────────────────────────
-
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="softinsa-users-icon" aria-hidden="true">
@@ -64,8 +61,8 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-users-icon" aria-hidden="true">
-      <path d="M4 5H20L13 13V19L11 20V13L4 5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-users-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
@@ -89,9 +86,10 @@ function PencilIcon() {
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-users-icon" aria-hidden="true">
-      <path d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-users-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -113,8 +111,6 @@ function SelectArrowIcon() {
   );
 }
 
-// ── componente principal ──────────────────────────────────────────────────────
-
 const SoftinsaUsers = memo(() => {
   const [users, setUsers] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -132,8 +128,6 @@ const SoftinsaUsers = memo(() => {
   const [serviceLines, setServiceLines] = useState([]);
   const [areas, setAreas] = useState([]);
   const filterWrapRef = useRef(null);
-
-  // ── fetch ─────────────────────────────────────────────────────────────────
 
   useEffect(() => { loadUsers(); }, []);
 
@@ -178,8 +172,6 @@ const SoftinsaUsers = memo(() => {
       .catch((error) => { console.error(error); });
   }
 
-  // ── estado derivado ───────────────────────────────────────────────────────
-
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.profile || activeFilters.status);
@@ -195,8 +187,6 @@ const SoftinsaUsers = memo(() => {
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / entriesPerPage));
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
-
-  // ── handlers (sem alterações) ─────────────────────────────────────────────
 
   useEffect(() => {
     const handleClickOutside = (e) => { if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(e.target)) setIsFilterOpen(false); };
@@ -334,7 +324,7 @@ const SoftinsaUsers = memo(() => {
       };
 
       try {
-        const created = await createUtilizador(payload);
+        await createUtilizador(payload);
         await loadUsers();
         setCurrentPage(1);
       } catch (error) {
@@ -392,28 +382,26 @@ const SoftinsaUsers = memo(() => {
       Number(area.id_service_line) === Number(formData.serviceLine)
   );
 
-  // ── render (sem alterações) ───────────────────────────────────────────────
-
   return (
     <section className="softinsa-users-page" data-node-id="3882:8944">
-      <div className="softinsa-users-hero" data-node-id="3882:8950">
+      <div className="softinsa-users-hero d-flex flex-column justify-content-center" data-node-id="3882:8950">
         <h1>Utilizadores</h1>
         <p>Controlo de contas, atribuição de permissões e acessos ao sistema</p>
       </div>
 
-      <div className="softinsa-users-toolbar" data-node-id="4111:9084">
-        <label className="softinsa-users-search" aria-label="Pesquisar utilizador">
+      <div className="softinsa-users-toolbar d-flex align-items-center flex-wrap" data-node-id="4111:9084">
+        <label className="softinsa-users-search d-flex align-items-center flex-grow-1" aria-label="Pesquisar utilizador">
           <SearchIcon />
-          <input type="text" placeholder="Pesquisar por nome do consultor ou email..." value={searchTerm} onChange={handleSearchChange} />
+          <input type="text" className="flex-grow-1" placeholder="Pesquisar por nome do consultor ou email..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
         <div className="softinsa-users-filter-wrap" ref={filterWrapRef}>
-          <button type="button" className="softinsa-users-filter-btn" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
+          <button type="button" className="softinsa-users-filter-btn d-inline-flex align-items-center justify-content-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
             <FilterIcon /><span>Filtro</span>
           </button>
           {isFilterOpen ? (
-            <div className="softinsa-users-filter-panel" data-node-id="4153:12021" role="dialog" aria-label="Filtro de utilizadores">
-              <div className="softinsa-users-filter-field">
+            <div className="softinsa-users-filter-panel d-flex flex-column" data-node-id="4153:12021" role="dialog" aria-label="Filtro de utilizadores">
+              <div className="softinsa-users-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-filter-profile">Tipo de perfil</label>
                 <div className="softinsa-users-select-wrap softinsa-users-filter-select-wrap">
                   <select id="softinsa-filter-profile" value={filterDraft.profile} onChange={(e) => handleFilterDraftChange("profile", e.target.value)}>
@@ -423,7 +411,7 @@ const SoftinsaUsers = memo(() => {
                   <SelectArrowIcon />
                 </div>
               </div>
-              <div className="softinsa-users-filter-field">
+              <div className="softinsa-users-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-filter-status">Estado</label>
                 <div className="softinsa-users-select-wrap softinsa-users-filter-select-wrap">
                   <select id="softinsa-filter-status" value={filterDraft.status} onChange={(e) => handleFilterDraftChange("status", e.target.value)}>
@@ -433,7 +421,7 @@ const SoftinsaUsers = memo(() => {
                   <SelectArrowIcon />
                 </div>
               </div>
-              <div className="softinsa-users-filter-actions">
+              <div className="softinsa-users-filter-actions d-flex align-items-center">
                 <button type="button" className="softinsa-users-filter-clear" onClick={handleClearFilters}>Limpar</button>
                 <button type="button" className="softinsa-users-filter-submit" onClick={handleApplyFilters}>Filtrar</button>
               </div>
@@ -441,12 +429,16 @@ const SoftinsaUsers = memo(() => {
           ) : null}
         </div>
 
-        <button type="button" className="softinsa-users-add-btn" aria-label="Adicionar utilizador" onClick={handleOpenAddUser}>
-          <PlusIcon /><span>Adicionar Utilizador</span>
+        <button type="button" className="softinsa-users-export-btn d-inline-flex align-items-center" aria-label="Exportar utilizadores" onClick={handleOpenExportAlert}>
+          <ExportIcon /><span>Exportar</span>
+        </button>
+
+        <button type="button" className="softinsa-users-add-btn d-inline-flex align-items-center justify-content-center" aria-label="Adicionar utilizador" onClick={handleOpenAddUser}>
+          <PlusIcon /><span>Adicionar</span>
         </button>
       </div>
 
-      <div className="softinsa-users-table-meta" data-node-id="4123:15417">
+      <div className="softinsa-users-table-meta d-flex align-items-center" data-node-id="4123:15417">
         <span>Mostrar</span>
         <div className="softinsa-users-entries-select-wrap">
           <select className="softinsa-users-entries-select" value={entriesPerPage} onChange={handleEntriesChange} aria-label="Quantidade de entradas por página">
@@ -473,8 +465,8 @@ const SoftinsaUsers = memo(() => {
                 paginatedUsers.map((user) => (
                   <tr key={user.id}>
                     <td>
-                      <div className="softinsa-users-name-cell">
-                        <img src={user.avatar} alt={user.name} className="softinsa-users-avatar" />
+                      <div className="softinsa-users-name-cell d-flex align-items-center">
+                        <img src={user.avatar} alt={user.name} className="softinsa-users-avatar rounded-circle" />
                         <span className="softinsa-users-name">{user.name}</span>
                       </div>
                     </td>
@@ -495,26 +487,23 @@ const SoftinsaUsers = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-users-table-footer" data-node-id="4436:2951">
-          <button type="button" className="softinsa-users-export-btn" aria-label="Exportar utilizadores" onClick={handleOpenExportAlert}>
-            <ExportIcon /><span>Exportar</span>
-          </button>
-          <div className="softinsa-users-pagination" aria-label="Paginação">
+        <div className="softinsa-users-table-footer d-flex align-items-center justify-content-end" data-node-id="4436:2951">
+          <div className="softinsa-users-pagination d-inline-flex align-items-center" aria-label="Paginação">
             <button type="button" className={`softinsa-users-page-link${currentPage === 1 ? " is-disabled" : ""}`} onClick={handlePreviousPage} disabled={currentPage === 1}>Anterior</button>
-            {pageNumbers.map((n) => <button key={n} type="button" className={`softinsa-users-page-btn${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>)}
+            {pageNumbers.map((n) => <button key={n} type="button" className={`softinsa-users-page-btn d-inline-flex align-items-center justify-content-center${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>)}
             <button type="button" className={`softinsa-users-page-link${currentPage === totalPages ? " is-disabled" : ""}`} onClick={handleNextPage} disabled={currentPage === totalPages}>Próximo</button>
           </div>
         </div>
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-users-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
-          <div className="softinsa-users-export-alert" data-node-id="4123:15715" role="dialog" aria-label="Alerta Exportar" onClick={(e) => e.stopPropagation()}>
-            <div className="softinsa-users-export-alert-header">
+        <div className="softinsa-users-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
+          <div className="softinsa-users-export-alert d-flex flex-column" data-node-id="4123:15715" role="dialog" aria-label="Alerta Exportar" onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-users-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Alerta</h3>
               <button type="button" className="softinsa-users-modal-close" aria-label="Fechar alerta" onClick={handleCloseExportAlert}><CloseIcon /></button>
             </div>
-            <div className="softinsa-users-export-alert-body">
+            <div className="softinsa-users-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
               <button type="button" className="softinsa-users-export-option" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
@@ -533,23 +522,23 @@ const SoftinsaUsers = memo(() => {
       ) : null}
 
       {isModalOpen ? (
-        <div className="softinsa-users-modal-backdrop" role="presentation" onClick={handleCloseModal}>
+        <div className="softinsa-users-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseModal}>
           <div className="softinsa-users-modal" data-node-id={isEditMode ? "3882:10265" : "3882:10288"} role="dialog" aria-label={isEditMode ? "Editar Utilizador" : "Novo Utilizador"} onClick={(e) => e.stopPropagation()}>
-            <div className="softinsa-users-modal-header" data-node-id="3932:7484">
+            <div className="softinsa-users-modal-header d-flex align-items-center justify-content-between" data-node-id="3932:7484">
               <h2>{isEditMode ? "Editar Utilizador" : "Novo Utilizador"}</h2>
               <button type="button" className="softinsa-users-modal-close" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
             </div>
-            <form className="softinsa-users-modal-form" onSubmit={handleSubmitUser}>
-              <div className="softinsa-users-modal-field">
+            <form className="softinsa-users-modal-form d-flex flex-column" onSubmit={handleSubmitUser}>
+              <div className="softinsa-users-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-user-name">Nome:</label>
                 <input id="softinsa-user-name" type="text" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} />
               </div>
-              <div className="softinsa-users-modal-field">
+              <div className="softinsa-users-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-user-email">Email:</label>
                 <input id="softinsa-user-email" type="email" value={formData.email} onChange={(e) => handleFieldChange("email", e.target.value)} />
               </div>
               {!isEditMode ? (
-                <div className="softinsa-users-modal-field">
+                <div className="softinsa-users-modal-field d-flex flex-column">
                   <label htmlFor="softinsa-user-password">Password:</label>
                   <input
                     id="softinsa-user-password"
@@ -563,7 +552,7 @@ const SoftinsaUsers = memo(() => {
               {!isEditMode && formData.profile === "Consultor" ? (
                 <div className="softinsa-users-modal-row">
 
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Learning Path:</label>
 
                     <div className="softinsa-users-select-wrap">
@@ -589,7 +578,7 @@ const SoftinsaUsers = memo(() => {
                     </div>
                   </div>
 
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Service Line:</label>
 
                     <div className="softinsa-users-select-wrap">
@@ -616,7 +605,7 @@ const SoftinsaUsers = memo(() => {
                     </div>
                   </div>
 
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Área:</label>
 
                     <div className="softinsa-users-select-wrap">
@@ -649,7 +638,7 @@ const SoftinsaUsers = memo(() => {
               {!isEditMode && formData.profile === "Service Line Lider" ? (
                 <div className="softinsa-users-modal-row">
 
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Learning Path:</label>
 
                     <div className="softinsa-users-select-wrap">
@@ -675,7 +664,7 @@ const SoftinsaUsers = memo(() => {
                     </div>
                   </div>
 
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Service Line:</label>
 
                     <div className="softinsa-users-select-wrap">
@@ -708,7 +697,7 @@ const SoftinsaUsers = memo(() => {
               <div className="softinsa-users-modal-row softinsa-users-modal-row-bottom">
 
                 {!isEditMode ? (
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label htmlFor="softinsa-user-profile">Perfil:</label>
 
                     <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">
@@ -730,7 +719,7 @@ const SoftinsaUsers = memo(() => {
                 ) : null}
 
                 {isEditMode ? (
-                  <div className="softinsa-users-modal-field">
+                  <div className="softinsa-users-modal-field d-flex flex-column">
                     <label htmlFor="softinsa-user-status">Estado:</label>
 
                     <div className="softinsa-users-select-wrap softinsa-users-select-wrap-small">

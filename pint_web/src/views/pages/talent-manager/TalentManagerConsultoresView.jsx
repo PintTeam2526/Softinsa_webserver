@@ -179,7 +179,7 @@ function TalentManagerConsultoresView() {
         </div>
       </section>
 
-      <section className="tm-consultores-toolbar" aria-label="Ferramentas de consultores">
+      <section className="tm-consultores-toolbar flex-column flex-lg-row align-items-stretch align-items-lg-center" aria-label="Ferramentas de consultores">
         <div className="tm-consultores-search">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" />

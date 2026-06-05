@@ -198,7 +198,7 @@ function SLLMinhaEquipaView() {
             </div>
           </section>
 
-          <section className="sll-team-toolbar" aria-label="Ações da equipa">
+          <section className="sll-team-toolbar flex-column flex-lg-row align-items-stretch align-items-lg-center" aria-label="Ações da equipa">
             <label className="sll-team-search">
               <span className="sll-team-search-icon" aria-hidden="true">⌕</span>
               <input

@@ -90,6 +90,7 @@
 .softinsa-primary-chart-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -320,7 +321,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 18px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .softinsa-primary-chart-period-box {
@@ -471,59 +472,3 @@
   color: #232d42;
 }
 
-@media (max-width: 992px) {
-  .softinsa-dashboard-page {
-    padding: 0 16px 20px;
-  }
-
-  .softinsa-summary-grid {
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .softinsa-dashboard-hero {
-    margin: 0 -16px 16px;
-  }
-
-  .softinsa-learning-path-card-body {
-    padding: 16px 20px 24px;
-  }
-
-  .softinsa-learning-path-legend {
-    gap: 14px;
-  }
-
-  .softinsa-learning-path-legend-item {
-    gap: 12px;
-  }
-
-  .softinsa-learning-path-legend-content p,
-  .softinsa-learning-path-legend-content strong {
-    font-size: 14px;
-  }
-
-  .softinsa-primary-chart-header {
-    flex-wrap: wrap;
-  }
-
-  .softinsa-primary-chart-body {
-    padding: 8px 20px 20px;
-  }
-
-  .softinsa-primary-chart-periods {
-    flex-wrap: wrap;
-  }
-
-  .softinsa-primary-chart-period-box {
-    width: auto;
-    flex: 1 1 220px;
-  }
-
-  .softinsa-primary-chart-period-dropdown {
-    flex: 1 1 220px;
-  }
-
-  .softinsa-primary-chart-period-box {
-    width: 100%;
-  }
-}

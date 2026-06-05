@@ -198,7 +198,7 @@ function ConfirmActionDialog({ action, onConfirm, onCancel }) {
 function PendingRequestCard({ request, isDownloading, onDownload }) {
   return (
     <article className="sll-pending-card">
-      <div className="sll-pending-card-head">
+      <div className="sll-pending-card-head flex-column flex-md-row">
         <RequestBadge tone={request.avatarTone} image={request.avatarImage}>{request.avatar}</RequestBadge>
         <div className="sll-pending-card-head-copy">
           <h3>{request.title}</h3>

@@ -84,7 +84,7 @@
   margin: 0;
   color: #ffffff;
   font-family: Inter, sans-serif;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
 }
@@ -680,35 +680,3 @@
   color: #232d42;
 }
 
-@media (max-width: 1200px) {
-  .tm-consultores-table-card {
-    margin-left: 24px;
-    width: calc(100% - 24px);
-  }
-}
-
-@media (max-width: 768px) {
-  .tm-consultores-page {
-    padding: 1px 16px 16px;
-  }
-
-  .tm-consultores-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .tm-consultores-actions {
-    justify-content: flex-start;
-  }
-
-  .tm-consultores-table-card {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .tm-consultores-footer {
-    padding-top: 64px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}

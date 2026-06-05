@@ -96,9 +96,17 @@
 
 .sll-badges-hero-copy h1 {
   margin: 0 0 4px;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
+  color: #ffffff;
+}
+
+.sll-badges-hero-copy p {
+  margin: 0;
+  font-size: clamp(18px, 2.5vw, 23px);
+  line-height: 1.3;
+  font-weight: 500;
   color: #ffffff;
 }
 
@@ -327,7 +335,7 @@
 
 .sll-badges-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
 }
 
@@ -395,26 +403,6 @@
   gap: 4px;
 }
 
-@media (max-width: 1320px) {
-  .sll-badges-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 980px) {
-  .sll-badges-content {
-    padding: 16px 18px 20px;
-  }
-
-  .sll-badges-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .sll-badges-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
 /* ── Modal de detalhe do badge ─────────────────────────────────────────── */
 
@@ -722,18 +710,4 @@
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
-}
-
-@media (max-width: 720px) {
-  .sll-badges-hero-copy h1 {
-    font-size: 30px;
-  }
-
-  .sll-badges-hero-copy p {
-    font-size: 18px;
-  }
-
-  .sll-badges-grid {
-    grid-template-columns: 1fr;
-  }
 }

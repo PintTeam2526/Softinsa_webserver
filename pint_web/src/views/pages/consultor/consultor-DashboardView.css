@@ -94,7 +94,8 @@
 .consultor-dashboard-summary {
   display: flex;
   justify-content: center;
-  gap: 80px;
+  flex-wrap: wrap;
+  gap: clamp(16px, 4vw, 80px);
   margin-bottom: 24px;
 }
 
@@ -129,7 +130,7 @@
 
 .consultor-dashboard-summary-copy h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(24px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
 }
@@ -226,7 +227,7 @@
 
 .consultor-dashboard-metric-copy h3 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(24px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: #232d42;
@@ -263,7 +264,7 @@
 /* ── BOTTOM GRID ───────────────────────────────────────── */
 .consultor-dashboard-bottom-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 455px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
   gap: 24px;
   align-items: start;
   margin-bottom: 64px;
@@ -287,7 +288,7 @@
 
 .consultor-dashboard-card-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(24px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: #000000;
@@ -462,51 +463,3 @@
   color: #8a92a6;
 }
 
-/* ── RESPONSIVE ────────────────────────────────────────── */
-@media (max-width: 1280px) {
-  .consultor-dashboard-summary {
-    gap: 24px;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .consultor-dashboard-bottom-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .consultor-dashboard-card--my-badges {
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 992px) {
-  .consultor-dashboard-page {
-    padding-inline: 16px;
-  }
-
-  .consultor-dashboard-hero {
-    margin-inline: -16px;
-  }
-
-  .consultor-dashboard-summary {
-    gap: 16px;
-  }
-
-  .consultor-dashboard-summary-card.is-area,
-  .consultor-dashboard-summary-card.is-service-line,
-  .consultor-dashboard-summary-card.is-learning-path {
-    width: min(100%, 100%);
-    flex: 1 1 240px;
-  }
-
-  .consultor-dashboard-card,
-  .consultor-dashboard-metric {
-    padding: 20px;
-  }
-
-  .consultor-dashboard-card-header h2,
-  .consultor-dashboard-metric-copy h3,
-  .consultor-dashboard-summary-copy h2 {
-    font-size: 24px;
-  }
-}

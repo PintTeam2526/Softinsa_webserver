@@ -284,7 +284,7 @@ function SLLRelatoriosView() {
               </div>
             </div>
 
-            <div className="sll-relatorios-filters-row">
+            <div className="sll-relatorios-filters-row flex-column flex-md-row align-items-stretch align-items-md-end">
               <div className="sll-relatorios-field">
                 <label>Área:</label>
                 <div className="sll-relatorios-select-wrap">

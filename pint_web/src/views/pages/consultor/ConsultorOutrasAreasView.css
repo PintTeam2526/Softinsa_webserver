@@ -79,7 +79,7 @@
   margin: 0;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
-  font-size: 40px;
+  font-size: clamp(32px, 3vw, 40px);
   line-height: 1;
   font-weight: 700;
 }
@@ -88,7 +88,7 @@
   margin: 8px 0 0;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
-  font-size: 23px;
+  font-size: clamp(18px, 1.6vw, 23px);
   line-height: 1.3;
   font-weight: 500;
 }
@@ -797,27 +797,4 @@
   line-height: 1.4;
   margin: 0;
   color: #495057;
-}
-
-@media (max-width: 900px) {
-  .consultor-outras-banner-copy h1 {
-    font-size: 32px;
-  }
-
-  .consultor-outras-banner-copy p {
-    font-size: 18px;
-  }
-
-  .consultor-outras-toolbar {
-    margin-top: 0;
-  }
-
-  .consultor-outras-badge-grid {
-    justify-content: center;
-  }
-
-  .consultor-outras-card {
-    width: calc(50% - 10px);
-    min-width: 160px;
-  }
 }

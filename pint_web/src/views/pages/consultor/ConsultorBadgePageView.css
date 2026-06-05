@@ -112,7 +112,7 @@
 /* ── TOP ROW ───────────────────────────────────────────── */
 .consultor-badge-top-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
   gap: 24px;
   align-items: start;
 }
@@ -134,7 +134,7 @@
 
 .consultor-badge-card-title {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(22px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: #232d42;
@@ -151,14 +151,14 @@
 
 .consultor-badge-info-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(22px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: #232d42;
 }
 
 .consultor-badge-info-level {
-  font-size: 28px;
+  font-size: clamp(22px, 2vw, 28px);
   font-weight: 700;
   line-height: 1.3;
   color: rgba(57, 99, 156, 0.75);
@@ -166,7 +166,7 @@
 
 .consultor-badge-info-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 20px;
   align-items: center;
 }
@@ -193,8 +193,8 @@
 }
 
 .consultor-badge-info-image {
-  width: 196px;
-  height: 196px;
+  width: clamp(140px, 18vw, 196px);
+  height: clamp(140px, 18vw, 196px);
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -762,56 +762,3 @@
   border-radius: inherit;
 }
 
-/* ── RESPONSIVE ────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .consultor-badge-top-grid:not(.is-single) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 992px) {
-  .consultor-badge-page {
-    padding-inline: 16px;
-  }
-
-  .consultor-badge-hero {
-    margin-inline: -16px;
-  }
-
-  .consultor-badge-card {
-    padding: 20px;
-  }
-
-  .consultor-badge-info-header h2,
-  .consultor-badge-info-level,
-  .consultor-badge-card-title {
-    font-size: 22px;
-  }
-
-  .consultor-badge-info-body {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    text-align: left;
-  }
-
-  .consultor-badge-info-image {
-    width: 140px;
-    height: 140px;
-  }
-
-  .consultor-badge-info-status {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .consultor-badge-hero-copy {
-    left: 24px;
-    top: 28px;
-  }
-
-  .consultor-badge-hero-meta {
-    gap: 12px;
-    font-size: 13px;
-  }
-}

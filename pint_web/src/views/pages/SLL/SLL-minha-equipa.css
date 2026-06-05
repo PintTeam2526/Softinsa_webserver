@@ -21,8 +21,7 @@
 
 .sll-team-hero {
   position: relative;
-  min-height: 155px;
-  height: 155px;
+  min-height: clamp(110px, 18vw, 155px);
   overflow: hidden;
   border-radius: 0 0 16px 16px;
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1184 155" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="0" y="0" height="100%" width="100%" fill="url(%23grad)" opacity="1"/><defs><radialGradient id="grad" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="10" gradientTransform="matrix(0.000015204 23.394 -42.961 0.0000060493 592 77.5)"><stop stop-color="rgba(59,138,255,1)" offset="0"/><stop stop-color="rgba(30,105,217,1)" offset="0.5"/><stop stop-color="rgba(15,88,198,1)" offset="0.75"/><stop stop-color="rgba(0,72,178,1)" offset="1"/></radialGradient></defs></svg>');
@@ -96,7 +95,7 @@
 
 .sll-team-hero-copy h1 {
   margin: 0 0 4px;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
   color: #ffffff;
@@ -104,7 +103,7 @@
 
 .sll-team-hero-copy p {
   margin: 0;
-  font-size: 23px;
+  font-size: clamp(18px, 2.5vw, 23px);
   line-height: 1.3;
   font-weight: 500;
   color: #ffffff;
@@ -194,7 +193,7 @@
   right: 0;
   top: calc(100% + 8px);
   z-index: 20;
-  width: 357px;
+  width: min(357px, calc(100vw - 32px));
   padding: 32px;
   border-radius: 16px;
   background: #ffffff;
@@ -445,7 +444,7 @@
   margin: 0;
   padding: 18px 16px 10px;
   color: #232d42;
-  font-size: 22px;
+  font-size: clamp(19px, 2.5vw, 22px);
   line-height: 1.4;
   font-weight: 700;
 }
@@ -568,41 +567,3 @@
   opacity: 1;
 }
 
-@media (max-width: 980px) {
-  .sll-team-content {
-    padding: 16px 18px 20px;
-  }
-
-  .sll-team-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .sll-team-toolbar-actions {
-    justify-content: flex-end;
-  }
-
-  .sll-team-filter-popover {
-    width: 100%;
-    max-width: 357px;
-  }
-}
-
-@media (max-width: 760px) {
-  .sll-team-hero {
-    min-height: 110px;
-    height: auto;
-  }
-
-  .sll-team-hero-copy h1 {
-    font-size: 30px;
-  }
-
-  .sll-team-hero-copy p {
-    font-size: 18px;
-  }
-
-  .sll-team-table-card h2 {
-    font-size: 19px;
-  }
-}
