@@ -110,16 +110,6 @@
 }
 
 /* ── TOP ROW ───────────────────────────────────────────── */
-.consultor-badge-top-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
-  gap: 24px;
-  align-items: start;
-}
-
-.consultor-badge-top-grid.is-single {
-  grid-template-columns: minmax(0, 1fr);
-}
 
 /* ── CARDS BASE ────────────────────────────────────────── */
 .consultor-badge-card {
@@ -164,12 +154,6 @@
   color: rgba(57, 99, 156, 0.75);
 }
 
-.consultor-badge-info-body {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  gap: 20px;
-  align-items: center;
-}
 
 .consultor-badge-info-description {
   display: flex;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Row, Col } from 'react-bootstrap'
 import './PerfilPublicoView.css'
 
 import { getConsultor } from '../../../controllers/utilizadoresController'
@@ -115,7 +116,7 @@ function ConsultorPublicProfileView() {
           </section>
 
           {/* Cartão principal */}
-          <section className="sll-profile-card">
+          <section className="sll-profile-card d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
                 <img
@@ -134,7 +135,8 @@ function ConsultorPublicProfileView() {
               </div>
             </div>
 
-            <div className="sll-profile-divider" />
+            <div className="vr d-none d-lg-block" />
+            <hr className="d-lg-none w-100 m-0" />
 
             <div className="sll-profile-stats">
               <div className="sll-profile-stat-item">
@@ -158,16 +160,17 @@ function ConsultorPublicProfileView() {
             {badges.length === 0 ? (
               <p style={{ color: '#8a92a6', fontSize: '16px' }}>Ainda não foram obtidos badges.</p>
             ) : (
-              <div className="sll-profile-badges-grid">
+              <Row className="row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
                 {badges.map((badge, index) => (
-                  <BadgeItem
-                    key={`${badge.name}-${index}`}
-                    image={badge.image}
-                    name={badge.name}
-                    date={badge.date}
-                  />
+                  <Col key={`${badge.name}-${index}`}>
+                    <BadgeItem
+                      image={badge.image}
+                      name={badge.name}
+                      date={badge.date}
+                    />
+                  </Col>
                 ))}
-              </div>
+              </Row>
             )}
           </section>
 

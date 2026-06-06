@@ -37,15 +37,15 @@
 
 .sll-profile-hero-copy {
   position: absolute;
-  left: 50px;
-  top: 35px;
+  left: clamp(24px, 4vw, 50px);
+  top: clamp(24px, 3vw, 35px);
   z-index: 1;
   color: #ffffff;
 }
 
 .sll-profile-hero-copy h1 {
   margin: 0 0 8px;
-  font-size: 40px;
+  font-size: clamp(32px, 3vw, 40px);
   line-height: 1;
   font-weight: 700;
   color: #ffffff;
@@ -53,7 +53,7 @@
 
 .sll-profile-hero-copy p {
   margin: 0;
-  font-size: 23px;
+  font-size: clamp(18px, 1.6vw, 23px);
   line-height: 1.3;
   font-weight: 500;
   color: #ffffff;
@@ -140,10 +140,10 @@
   white-space: nowrap;
 }
 
-.sll-profile-divider {
-  width: 1px;
-  align-self: stretch;
-  background: #8a92a6;
+/* Divisor do cartão (Bootstrap .vr no desktop, <hr> no mobile) com a cor do kit */
+.sll-profile-card .vr,
+.sll-profile-card hr {
+  color: #8a92a6;
   opacity: 0.55;
 }
 
@@ -209,12 +209,6 @@
   font-weight: 700;
 }
 
-.sll-profile-badges-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px 20px;
-}
-
 .sll-profile-badge-item {
   display: flex;
   flex-direction: column;
@@ -247,53 +241,3 @@
   line-height: 1.75;
 }
 
-/* ── Responsivo ─────────────────────────────────────────────────────── */
-
-@media (max-width: 1200px) {
-  .sll-profile-badges-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 992px) {
-  .sll-profile-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .sll-profile-divider {
-    width: 100%;
-    height: 1px;
-  }
-
-  .sll-profile-badges-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .sll-profile-scroll {
-    padding: 0 16px 16px;
-  }
-
-  .sll-profile-hero-copy {
-    left: 24px;
-    top: 24px;
-  }
-
-  .sll-profile-hero-copy h1 {
-    font-size: 32px;
-  }
-
-  .sll-profile-hero-copy p {
-    font-size: 18px;
-  }
-
-  .sll-profile-card {
-    padding: 20px;
-  }
-
-  .sll-profile-badges-grid {
-    grid-template-columns: 1fr;
-  }
-}

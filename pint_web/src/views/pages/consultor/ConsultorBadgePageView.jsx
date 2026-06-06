@@ -7,6 +7,7 @@ import {
   HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineArrowUturnLeft,
   HiOutlineCalendarDays,
 } from 'react-icons/hi2'
+import { Row, Col } from 'react-bootstrap'
 import './ConsultorBadgePageView.css'
 
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
@@ -504,19 +505,24 @@ function ConsultorBadgePageView({ isGuest = false }) {
         </div>
       </header>
 
-      <div className={`consultor-badge-top-grid${!badgeDevolvido ? ' is-single' : ''}`}>
+      <Row className="g-4 justify-content-center">
+        <Col xs={12} lg={badgeDevolvido ? 6 : 8}>
         <article className="consultor-badge-card" aria-label={`Detalhes do badge ${badge.name}`}>
           <header className="consultor-badge-info-header">
             <h2>{badge.name}</h2>
             <span className="consultor-badge-info-level">{badge.level}</span>
           </header>
-          <div className="consultor-badge-info-body">
-            <div className="consultor-badge-info-description">
-              <span className="consultor-badge-info-description-label">Descrição:</span>
-              <p className="consultor-badge-info-description-text">{badge.description}</p>
-            </div>
-            <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
-          </div>
+          <Row className="g-3 align-items-center">
+            <Col xs={12} md>
+              <div className="consultor-badge-info-description">
+                <span className="consultor-badge-info-description-label">Descrição:</span>
+                <p className="consultor-badge-info-description-text">{badge.description}</p>
+              </div>
+            </Col>
+            <Col xs={12} md="auto">
+              <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
+            </Col>
+          </Row>
           <div className="consultor-badge-info-status">
             <span className="consultor-badge-info-status-row">
               <IconStatus status={badge.status} />
@@ -568,8 +574,10 @@ function ConsultorBadgePageView({ isGuest = false }) {
             )}
           </div>
         </article>
+        </Col>
 
         {badgeDevolvido && (
+          <Col xs={12} lg={6}>
           <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
             <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
             <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
@@ -583,8 +591,9 @@ function ConsultorBadgePageView({ isGuest = false }) {
               <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
             </div>
           </article>
+          </Col>
         )}
-      </div>
+      </Row>
 
       <article className="consultor-badge-card" aria-label="Lista de Requisitos">
         <h2 className="consultor-badge-card-title">Lista de Requisitos</h2>

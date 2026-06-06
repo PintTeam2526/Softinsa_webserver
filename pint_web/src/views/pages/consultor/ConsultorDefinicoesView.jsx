@@ -11,6 +11,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineArrowRightOnRectangle
 } from 'react-icons/hi2'
+import { Row, Col } from 'react-bootstrap'
 import './ConsultorDefinicoesView.css'
 import '../shared/profile-settings.css'
 
@@ -342,7 +343,7 @@ function ConsultorDefinicoesView() {
             </div>
           ) : null}
 
-          <section className="sll-profile-card">
+          <section className="sll-profile-card d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center">
             <div className="sll-profile-card-main">
               <div className="sll-profile-avatar">
                 <img src={resolveImagem(perfil?.foto)} alt={perfil?.nome} />
@@ -358,7 +359,8 @@ function ConsultorDefinicoesView() {
               </div>
             </div>
 
-            <div className="sll-profile-divider" />
+            <div className="vr d-none d-lg-block" />
+            <hr className="d-lg-none w-100 m-0" />
 
             <div className="sll-profile-stats">
               {profileStats.map((stat) => (
@@ -419,11 +421,13 @@ function ConsultorDefinicoesView() {
               <div className="sll-profile-badges-header">
                 <h3>Badges Obtidos</h3>
               </div>
-              <div className="sll-profile-badges-grid">
+              <Row className="row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
                 {perfil.badges.map((badge, i) => (
-                  <BadgeItem key={`${badge.nome}-${i}`} imagem={resolveImagem(badge.imagem)} nome={badge.nome} data={badge.data_conclusao} />
+                  <Col key={`${badge.nome}-${i}`}>
+                    <BadgeItem imagem={resolveImagem(badge.imagem)} nome={badge.nome} data={badge.data_conclusao} />
+                  </Col>
                 ))}
-              </div>
+              </Row>
             </section>
           ) : null}
         </div>

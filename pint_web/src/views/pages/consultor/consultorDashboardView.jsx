@@ -8,6 +8,7 @@ import {
   HiOutlineXCircle,
   HiOutlineChevronRight,
 } from 'react-icons/hi2'
+import { Row, Col } from 'react-bootstrap'
 import './consultor-DashboardView.css'
 
 import { getDashboardConsultor } from '../../../controllers/dashboard.controller'
@@ -287,17 +288,19 @@ function DashboardView() {
         </div>
       </header>
 
-      <section className="consultor-dashboard-summary" aria-label="Métricas">
+      <Row as="section" className="g-4 justify-content-center mb-4" aria-label="Métricas">
         {metricCards.map((metric) => (
-          <article key={metric.title} className={`consultor-dashboard-summary-card ${metric.widthClass}`}>
-            <div className="consultor-dashboard-summary-copy">
-              <h2>{metric.title}</h2>
-              <p>{metric.percent}%</p>
-            </div>
-            <DonutChart percent={metric.percent} />
-          </article>
+          <Col xs={12} sm={6} lg={4} key={metric.title}>
+            <article className={`consultor-dashboard-summary-card w-100 ${metric.widthClass}`}>
+              <div className="consultor-dashboard-summary-copy">
+                <h2>{metric.title}</h2>
+                <p>{metric.percent}%</p>
+              </div>
+              <DonutChart percent={metric.percent} />
+            </article>
+          </Col>
         ))}
-      </section>
+      </Row>
 
       <section className="consultor-dashboard-alerts" aria-label="Alertas">
         {alertCards.map((alert) => (
@@ -305,19 +308,21 @@ function DashboardView() {
         ))}
       </section>
 
-      <section className="consultor-dashboard-bottom-grid is-single" aria-label="Badges">
-        <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
-          <div className="consultor-dashboard-card-header">
-            <h2>Os meus badges</h2>
-          </div>
+      <Row as="section" className="justify-content-center mb-5" aria-label="Badges">
+        <Col xs={12} xl={8}>
+          <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
+            <div className="consultor-dashboard-card-header">
+              <h2>Os meus badges</h2>
+            </div>
 
-          <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
-            {myBadges.map((badge, i) => (
-              <BadgeRow key={i} badge={badge} isLarge navigate={navigate} />
-            ))}
-          </div>
-        </article>
-      </section>
+            <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
+              {myBadges.map((badge, i) => (
+                <BadgeRow key={i} badge={badge} isLarge navigate={navigate} />
+              ))}
+            </div>
+          </article>
+        </Col>
+      </Row>
     </section>
   )
 }
