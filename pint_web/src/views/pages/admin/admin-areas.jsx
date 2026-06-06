@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-areas.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
@@ -16,7 +17,7 @@ const getDefaultAreaForm = () => ({
 });
 
 const normalizeSearchValue = (value) =>
-  String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  String(value).toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").trim();
 
 const formatAreaImage = (img) => {
   if (!img || typeof img !== "string" || img.trim() === "") return "";
@@ -493,52 +494,62 @@ const SoftinsaAreas = memo(() => {
                 <label htmlFor="softinsa-area-description">Descrição:</label>
                 <textarea id="softinsa-area-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-              <div className="softinsa-areas-modal-row-top">
-                <div className="softinsa-areas-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+              <Row className="g-3 align-items-end">
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                        {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-areas-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-service-line" className="w-100" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
-                      {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-service-line" className="w-100" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
+                        {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-areas-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-area-status">Estado</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-status">Estado</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="softinsa-areas-modal-row-bottom w-100">
-                <div className="softinsa-areas-modal-field d-flex flex-column">
-                  <label>Icon</label>
-                  <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Pré-visualização"
-                      style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
-                    />
-                  ) : null}
-                </div>
-                <button type="submit" className="softinsa-areas-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+              </Row>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-areas-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>
