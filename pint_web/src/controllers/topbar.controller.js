@@ -1,8 +1,6 @@
 import api from '../services/api'
-
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { availableLanguages, initialNotificationItems } from '../models/topbar.model'
-
+import { getNotifications, createNotification } from './notificacoesController'
 
 export function useTopbarController() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
@@ -10,8 +8,7 @@ export function useTopbarController() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [expandedNotificationId, setExpandedNotificationId] = useState(null)
   const [notificationBroadcastMessage, setNotificationBroadcastMessage] = useState('')
-  const [notificationItems, setNotificationItems] = useState(initialNotificationItems)
-  const [selectedLanguage, setSelectedLanguage] = useState('')
+  const [notificationItems, setNotificationItems] = useState([])
 
   const notificationWrapRef = useRef(null)
   const profileWrapRef = useRef(null)
@@ -38,44 +35,44 @@ export function useTopbarController() {
   }, [resetNotificationsState])
 
   useEffect(() => {
-    function handleOpenNotifications() {
-      openNotifications()
-    }
+    getNotifications()
+      .then((data) =>
+        setNotificationItems(
+          data.map((n, index) => ({
+            id: `notif-${index}`,
+            title: n.notificacao,
+            source: n.remetente,
+            tone: 'info',
+            message: n.descricao ?? n.notificacao,
+          }))
+        )
+      )
+      .catch((err) => console.error('Erro ao carregar notificacoes', err))
+  }, [])
 
-    window.addEventListener('softinsa:open-notifications', handleOpenNotifications)
-    return () => {
-      window.removeEventListener('softinsa:open-notifications', handleOpenNotifications)
-    }
+  useEffect(() => {
+    window.addEventListener('softinsa:open-notifications', openNotifications)
+    return () => window.removeEventListener('softinsa:open-notifications', openNotifications)
   }, [openNotifications])
 
   useEffect(() => {
     function handleClickOutside(event) {
-      const clickedInsideNotifications =
-        notificationWrapRef.current && notificationWrapRef.current.contains(event.target)
-      const clickedInsideProfile =
-        profileWrapRef.current && profileWrapRef.current.contains(event.target)
-
-      if (!clickedInsideNotifications) {
+      if (notificationWrapRef.current && !notificationWrapRef.current.contains(event.target)) {
         closeNotifications()
       }
-
-      if (!clickedInsideProfile) {
+      if (profileWrapRef.current && !profileWrapRef.current.contains(event.target)) {
         closeProfileMenu()
       }
     }
 
     function handleEscape(event) {
-      if (event.key !== 'Escape') {
-        return
-      }
-
+      if (event.key !== 'Escape') return
       closeNotifications()
       closeProfileMenu()
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     document.addEventListener('keydown', handleEscape)
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
@@ -83,19 +80,17 @@ export function useTopbarController() {
   }, [closeNotifications, closeProfileMenu])
 
   function toggleNotifications() {
-    setIsNotificationsOpen((previousValue) => !previousValue)
+    setIsNotificationsOpen((prev) => !prev)
     closeProfileMenu()
     resetNotificationsState()
   }
 
   function toggleNotificationMessage(notificationId) {
-    setExpandedNotificationId((previousId) =>
-      previousId === notificationId ? null : notificationId,
-    )
+    setExpandedNotificationId((prev) => prev === notificationId ? null : notificationId)
   }
 
   function toggleComposer() {
-    setIsNotificationComposerOpen((previousValue) => !previousValue)
+    setIsNotificationComposerOpen((prev) => !prev)
     setExpandedNotificationId(null)
   }
 
@@ -104,34 +99,44 @@ export function useTopbarController() {
   }
 
   function toggleProfileMenu() {
-    setIsProfileMenuOpen((previousValue) => !previousValue)
+    setIsProfileMenuOpen((prev) => !prev)
     closeNotifications()
   }
 
-  function sendBroadcast() {
+  async function sendBroadcast() {
     const trimmedMessage = notificationBroadcastMessage.trim()
+    if (!trimmedMessage) return
 
-    if (!trimmedMessage) {
-      return
+    try {
+      await createNotification({
+        notificacao: trimmedMessage,
+        descricao: trimmedMessage,
+        remetente: 'Admin',
+        id_consultor: null,
+      })
+
+      const data = await getNotifications()
+      setNotificationItems(
+        data.map((n, index) => ({
+          id: `notif-${index}`,
+          title: n.notificacao,
+          source: n.remetente,
+          tone: 'info',
+          message: n.descricao ?? n.notificacao,
+        }))
+      )
+
+      setExpandedNotificationId('notif-0')
+      setIsNotificationComposerOpen(false)
+      setNotificationBroadcastMessage('')
+      setIsNotificationsOpen(true)
+
+    } catch (err) {
+      console.error('Erro ao enviar notificacao global', err)
     }
-
-    const title = trimmedMessage.length > 42 ? `${trimmedMessage.slice(0, 42)}...` : trimmedMessage
-
-    const newNotification = {
-      id: `broadcast-${Date.now()}`,
-      title,
-      source: 'Admin',
-      tone: 'info',
-      message: trimmedMessage,
-    }
-
-    setNotificationItems((previousItems) => [newNotification, ...previousItems])
-    setExpandedNotificationId(newNotification.id)
-    setIsNotificationComposerOpen(false)
-    setNotificationBroadcastMessage('')
-    setIsNotificationsOpen(true)
   }
 
+  // ← return aqui, fora do sendBroadcast, dentro do useTopbarController
   return {
     notificationWrapRef,
     profileWrapRef,
@@ -141,8 +146,6 @@ export function useTopbarController() {
     expandedNotificationId,
     notificationBroadcastMessage,
     notificationItems,
-    selectedLanguage,
-    availableLanguages,
     toggleNotifications,
     openNotifications,
     closeNotifications,
@@ -152,11 +155,9 @@ export function useTopbarController() {
     toggleProfileMenu,
     sendBroadcast,
     setNotificationBroadcastMessage,
-    setSelectedLanguage,
   }
 }
 
-// Para chamar a rota do back com os dados da TopBar do Utilizador
 export async function getTopbarUtilizador() {
   try {
     const response = await api.get('/utilizadores/topbar')

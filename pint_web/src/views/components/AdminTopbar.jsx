@@ -209,7 +209,6 @@ const AdminTopbar = memo(() => {
   return (
     <div className="softinsa-shell-topbar">
       <div className="softinsa-shell-topbar-actions">
-        {/* Notifications */}
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button
             type="button"
