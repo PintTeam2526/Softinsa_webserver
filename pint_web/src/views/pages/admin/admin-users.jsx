@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-users.css";
 
 import { getUtilizadores, createUtilizador, updateUtilizador, tipoByProfile } from '../../../controllers/utilizadoresController'
@@ -389,12 +390,13 @@ const SoftinsaUsers = memo(() => {
         <p>Controlo de contas, atribuição de permissões e acessos ao sistema</p>
       </div>
 
-      <div className="softinsa-users-toolbar d-flex align-items-center flex-wrap" data-node-id="4111:9084">
+      <div className="softinsa-users-toolbar d-flex align-items-center flex-wrap gap-3" data-node-id="4111:9084">
         <label className="softinsa-users-search d-flex align-items-center flex-grow-1" aria-label="Pesquisar utilizador">
           <SearchIcon />
           <input type="text" className="flex-grow-1" placeholder="Pesquisar por nome do consultor ou email..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
+        <div className="softinsa-users-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
         <div className="softinsa-users-filter-wrap" ref={filterWrapRef}>
           <button type="button" className="softinsa-users-filter-btn d-inline-flex align-items-center justify-content-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
             <FilterIcon /><span>Filtro</span>
@@ -436,6 +438,7 @@ const SoftinsaUsers = memo(() => {
         <button type="button" className="softinsa-users-add-btn d-inline-flex align-items-center justify-content-center" aria-label="Adicionar utilizador" onClick={handleOpenAddUser}>
           <PlusIcon /><span>Adicionar</span>
         </button>
+        </div>
       </div>
 
       <div className="softinsa-users-table-meta d-flex align-items-center" data-node-id="4123:15417">
@@ -550,8 +553,9 @@ const SoftinsaUsers = memo(() => {
                 </div>
               ) : null}
               {!isEditMode && formData.profile === "Consultor" ? (
-                <div className="softinsa-users-modal-row">
+                <Row className="g-3">
 
+                  <Col xs={12} md={4}>
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Learning Path:</label>
 
@@ -577,7 +581,9 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
 
+                  <Col xs={12} md={4}>
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Service Line:</label>
 
@@ -604,7 +610,9 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
 
+                  <Col xs={12} md={4}>
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Área:</label>
 
@@ -631,13 +639,15 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
 
-                </div>
+                </Row>
               ) : null}
 
               {!isEditMode && formData.profile === "Service Line Lider" ? (
-                <div className="softinsa-users-modal-row">
+                <Row className="g-3">
 
+                  <Col xs={12} md={4}>
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Learning Path:</label>
 
@@ -663,7 +673,9 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
 
+                  <Col xs={12} md={4}>
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label>Service Line:</label>
 
@@ -690,13 +702,15 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
 
-                </div>
+                </Row>
               ) : null}
 
-              <div className="softinsa-users-modal-row softinsa-users-modal-row-bottom">
+              <Row className="g-3 align-items-end">
 
                 {!isEditMode ? (
+                  <Col xs={12} md="auto">
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label htmlFor="softinsa-user-profile">Perfil:</label>
 
@@ -716,9 +730,11 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
                 ) : null}
 
                 {isEditMode ? (
+                  <Col xs={12} md="auto">
                   <div className="softinsa-users-modal-field d-flex flex-column">
                     <label htmlFor="softinsa-user-status">Estado:</label>
 
@@ -738,12 +754,15 @@ const SoftinsaUsers = memo(() => {
                       <SelectArrowIcon />
                     </div>
                   </div>
+                  </Col>
                 ) : null}
 
+                <Col xs={12} md="auto">
                 <button type="submit" className="softinsa-users-modal-submit">
                   {isEditMode ? "Confirmar" : "Adicionar"}
                 </button>
-              </div>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

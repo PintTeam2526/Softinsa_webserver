@@ -393,6 +393,7 @@ const SoftinsaPedidos = memo(() => {
           />
         </label>
 
+        <div className="softinsa-pedidos-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
         <div className="softinsa-pedidos-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button
             type="button"
@@ -483,6 +484,7 @@ const SoftinsaPedidos = memo(() => {
         <button type="button" className="softinsa-pedidos-export-btn d-inline-flex align-items-center" aria-label="Exportar pedidos" onClick={handleOpenExportAlert}>
           <ExportIcon /><span>Exportar</span>
         </button>
+        </div>
       </div>
 
       <div className="softinsa-pedidos-table-meta d-inline-flex align-items-center flex-wrap" data-node-id="4123:15751">

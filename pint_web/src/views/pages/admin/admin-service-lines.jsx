@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-service-lines.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
@@ -342,6 +343,7 @@ const SoftinsaServiceLines = memo(() => {
           <input type="text" className="w-100" placeholder="Pesquisar por Service Line..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
+        <div className="softinsa-service-lines-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
         <div className="softinsa-service-lines-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button type="button" className="softinsa-service-lines-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
             <FilterIcon /><span>Filtro</span>
@@ -387,6 +389,7 @@ const SoftinsaServiceLines = memo(() => {
         <button type="button" className="softinsa-service-lines-add-btn d-inline-flex align-items-center" onClick={handleOpenAddServiceLine}>
           <PlusIcon /><span>Adicionar</span>
         </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
@@ -489,56 +492,64 @@ const SoftinsaServiceLines = memo(() => {
                 <label htmlFor="softinsa-service-line-description">Descrição:</label>
                 <textarea id="softinsa-service-line-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-              <div className="softinsa-service-lines-modal-row-top">
-                <div className="softinsa-service-lines-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-service-line-learning-path">Learning Path Associada</label>
-                  <div className="softinsa-service-lines-select-wrap">
-                    <select id="softinsa-service-line-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((lp) => (
-                        <option
-                          key={lp.id_learning_path}
-                          value={lp.id_learning_path}
-                        >
-                          {lp.nome_learning_path}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+              <Row className="g-3 align-items-end">
+                <Col xs={12} md={6}>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-service-line-learning-path">Learning Path Associada</label>
+                    <div className="softinsa-service-lines-select-wrap">
+                      <select id="softinsa-service-line-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                        {learningPathOptions.map((lp) => (
+                          <option
+                            key={lp.id_learning_path}
+                            value={lp.id_learning_path}
+                          >
+                            {lp.nome_learning_path}
+                          </option>
+                        ))}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-service-lines-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-service-line-status">Estado</label>
-                  <div className="softinsa-service-lines-select-wrap">
-                    <select id="softinsa-service-line-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={6}>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-service-line-status">Estado</label>
+                    <div className="softinsa-service-lines-select-wrap">
+                      <select id="softinsa-service-line-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="softinsa-service-lines-modal-row-bottom w-100">
-                <div className="softinsa-service-lines-modal-field d-flex flex-column">
-                  <label>Icon</label>
-                  <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da service line" />
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Pré-visualização"
-                      style={{
-                        display: "block",
-                        marginTop: 8,
-                        maxHeight: 64,
-                        maxWidth: 64,
-                        objectFit: "contain",
-                      }}
-                    />
-                  ) : null}
-                </div>
-                <button type="submit" className="softinsa-service-lines-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+              </Row>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da service line" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{
+                          display: "block",
+                          marginTop: 8,
+                          maxHeight: 64,
+                          maxWidth: 64,
+                          objectFit: "contain",
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-service-lines-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

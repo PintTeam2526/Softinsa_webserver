@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-learning-paths.css";
 
 import { getLearningPaths, createLearningPath, updateLearningPath } from '../../../controllers/learningPathsController'
@@ -449,6 +450,7 @@ const SoftinsaLearningPaths = memo(() => {
           />
         </label>
 
+        <div className="softinsa-learning-paths-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
         <div className="softinsa-learning-paths-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button
             type="button"
@@ -498,6 +500,7 @@ const SoftinsaLearningPaths = memo(() => {
           <PlusIcon />
           <span>Adicionar</span>
         </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
@@ -648,52 +651,58 @@ const SoftinsaLearningPaths = memo(() => {
                 <label htmlFor="softinsa-learning-path-description">Descrição:</label>
                 <textarea id="softinsa-learning-path-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-              <div className="softinsa-learning-paths-modal-row-bottom w-100">
-                <div className="softinsa-learning-paths-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-learning-path-status">Estado</label>
-                  <div className="softinsa-learning-paths-select-wrap">
-                    <select id="softinsa-learning-path-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((option) => {
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md={3}>
+                  <div className="softinsa-learning-paths-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-learning-path-status">Estado</label>
+                    <div className="softinsa-learning-paths-select-wrap">
+                      <select id="softinsa-learning-path-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((option) => {
 
-                        const cannotDeactivate =
-                          option === "Inativo" &&
-                          isEditMode &&
-                          (
-                            formData.serviceLines > 0 ||
-                            formData.areas > 0 ||
-                            formData.badges > 0
+                          const cannotDeactivate =
+                            option === "Inativo" &&
+                            isEditMode &&
+                            (
+                              formData.serviceLines > 0 ||
+                              formData.areas > 0 ||
+                              formData.badges > 0
+                            );
+
+                          return (
+                            <option
+                              key={option}
+                              value={option}
+                              disabled={cannotDeactivate}
+                            >
+                              {option}
+                            </option>
                           );
-
-                        return (
-                          <option
-                            key={option}
-                            value={option}
-                            disabled={cannotDeactivate}
-                          >
-                            {option}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <SelectArrowIcon />
+                        })}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-learning-paths-modal-field d-flex flex-column">
-                  <label>Icon</label>
-                  <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da learning path" />
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Pré-visualização"
-                      style={{ marginTop: 8, maxHeight: 64, objectFit: "contain" }}
-                    />
-                  ) : null}
-                </div>
-                <button type="submit" className="softinsa-learning-paths-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+                <Col xs={12} md>
+                  <div className="softinsa-learning-paths-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da learning path" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{ marginTop: 8, maxHeight: 64, objectFit: "contain" }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-learning-paths-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

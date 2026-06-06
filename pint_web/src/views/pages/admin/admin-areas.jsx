@@ -341,6 +341,7 @@ const SoftinsaAreas = memo(() => {
           <input type="text" className="w-100" placeholder="Pesquisar por area, Service Line..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
+        <div className="softinsa-areas-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
         <div className="softinsa-areas-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button type="button" className="softinsa-areas-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
             <FilterIcon /><span>Filtro</span>
@@ -392,6 +393,7 @@ const SoftinsaAreas = memo(() => {
         <button type="button" className="softinsa-areas-add-btn d-inline-flex align-items-center" onClick={handleOpenAddArea}>
           <PlusIcon /><span>Adicionar</span>
         </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
