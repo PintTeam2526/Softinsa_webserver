@@ -364,16 +364,18 @@ function ConsultorPedidosView() {
           <h2>Histórico de Pedidos</h2>
         </header>
 
-        <table className="consultor-pedidos-table">
-          <thead>
-            <tr>
-              <th className="consultor-pedidos-col-badge" scope="col">BADGE</th>
-              <th className="consultor-pedidos-col-evaluators" scope="col">AVALIADORES</th>
-              <th className="consultor-pedidos-col-status" scope="col">ESTADO</th>
-            </tr>
-          </thead>
-          <tbody>{renderTableBody()}</tbody>
-        </table>
+        <div className="table-responsive">
+          <table className="consultor-pedidos-table">
+            <thead>
+              <tr>
+                <th className="consultor-pedidos-col-badge" scope="col">BADGE</th>
+                <th className="consultor-pedidos-col-evaluators" scope="col">AVALIADORES</th>
+                <th className="consultor-pedidos-col-status" scope="col">ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>{renderTableBody()}</tbody>
+          </table>
+        </div>
       </article>
 
       <article className="consultor-pedidos-card" aria-label="Candidatar a um Badge">

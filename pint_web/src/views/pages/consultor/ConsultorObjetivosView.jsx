@@ -289,31 +289,33 @@ function ConsultorObjetivosView() {
         ) : objetivos.length === 0 ? (
           <p className="consultor-objetivos-empty">Ainda não tens objetivos definidos.</p>
         ) : (
-          <table className="consultor-objetivos-table">
-            <thead>
-              <tr>
-                <th className="consultor-objetivos-col-description" scope="col">DESCRIÇÃO</th>
-                <th className="consultor-objetivos-col-status" scope="col">ESTADO</th>
-                <th className="consultor-objetivos-col-date" scope="col">DATA OBJETIVO</th>
-              </tr>
-            </thead>
-            <tbody>
-              {objetivos.map((obj) => (
-                <ObjetivoRow
-                  key={obj.id_objetivo}
-                  row={{
-                    id: obj.id_objetivo,
-                    badgeName: obj.badge?.nome_badge ?? obj.nome_objetivo,
-                    description: `Completar Badge: ${obj.badge?.nome_badge ?? obj.nome_objetivo}`,
-                    thumb: obj.badge?.imagem_badge ?? null,
-                    status: deriveStatus(obj),
-                    date: formatDate(obj.data_limite_conclusao),
-                  }}
-                  onOpen={() => openBadge(obj.id_badge)}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="consultor-objetivos-table">
+              <thead>
+                <tr>
+                  <th className="consultor-objetivos-col-description" scope="col">DESCRIÇÃO</th>
+                  <th className="consultor-objetivos-col-status" scope="col">ESTADO</th>
+                  <th className="consultor-objetivos-col-date" scope="col">DATA OBJETIVO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {objetivos.map((obj) => (
+                  <ObjetivoRow
+                    key={obj.id_objetivo}
+                    row={{
+                      id: obj.id_objetivo,
+                      badgeName: obj.badge?.nome_badge ?? obj.nome_objetivo,
+                      description: `Completar Badge: ${obj.badge?.nome_badge ?? obj.nome_objetivo}`,
+                      thumb: obj.badge?.imagem_badge ?? null,
+                      status: deriveStatus(obj),
+                      date: formatDate(obj.data_limite_conclusao),
+                    }}
+                    onOpen={() => openBadge(obj.id_badge)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </article>
 

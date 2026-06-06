@@ -112,10 +112,13 @@
 .consultor-outras-tabs {
   display: flex;
   align-items: flex-end;
+  flex: 1;
+  max-width: 420px;
 }
 
 .consultor-outras-tab {
-  min-width: 128px;
+  flex: 1 1 0;
+  min-width: 0;
   border: 0;
   border-radius: 8px 8px 0 0;
   background: #ffffff;

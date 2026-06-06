@@ -139,6 +139,7 @@
 /* ── HISTORICO TABLE ───────────────────────────────────── */
 .consultor-pedidos-table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -199,15 +200,15 @@
 }
 
 .consultor-pedidos-col-badge {
-  width: 45%;
+  width: 36%;
 }
 
 .consultor-pedidos-col-evaluators {
-  width: 23%;
+  width: 28%;
 }
 
 .consultor-pedidos-col-status {
-  width: 32%;
+  width: 36%;
 }
 
 .consultor-pedidos-badge-cell {

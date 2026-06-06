@@ -8,6 +8,8 @@
 }
 
 .consultor-lista-hero {
+  position: relative;
+  overflow: hidden;
   height: 160px;
   margin: 0 -24px;
   border-radius: 0 0 20px 20px;
@@ -210,6 +212,7 @@
 
 .consultor-lista-table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   table-layout: fixed;
 }

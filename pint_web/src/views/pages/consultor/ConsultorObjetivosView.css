@@ -99,6 +99,7 @@
 /* ── OBJETIVOS TABLE ───────────────────────────────────── */
 .consultor-objetivos-table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   table-layout: fixed;
 }

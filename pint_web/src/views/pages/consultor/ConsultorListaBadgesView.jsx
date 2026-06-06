@@ -234,7 +234,7 @@ function ConsultorListaBadgesView() {
           )}
 
           {!loading && !error && filtered.length > 0 && (
-            <div className="consultor-lista-table-wrap w-100">
+            <div className="consultor-lista-table-wrap w-100 table-responsive">
               <table className="consultor-lista-table w-100">
                 <thead>
                   <tr>
