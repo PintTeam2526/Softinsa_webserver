@@ -5,7 +5,9 @@ import {
   HiOutlineCurrencyEuro, HiOutlineStar, HiOutlinePaperClip,
   HiOutlineShare, HiOutlineXMark, HiStar,
   HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineArrowUturnLeft,
-  HiOutlineCalendarDays,
+  HiOutlineCalendarDays, HiOutlineArrowDownTray,
+  HiOutlineLink,
+  HiOutlineClipboard,
 } from 'react-icons/hi2'
 import './ConsultorBadgePageView.css'
 
@@ -143,7 +145,7 @@ function ShareModal({ badge, onClose }) {
     return () => { document.removeEventListener('mousedown', onOut); document.removeEventListener('keydown', onEsc) }
   }, [onClose])
 
-  const badgeUrl = window.location.href
+  const badgeUrl = `${window.location.origin}/badges/${badge.id}`
 
   function handleEmailExport() {
     const s = encodeURIComponent(`Badge Softinsa: ${badge.name}`)
@@ -192,6 +194,21 @@ function ShareModal({ badge, onClose }) {
     onClose()
   }
 
+  async function handleImageDownload() {
+    try {
+      const response = await fetch(badge.image)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `badge-${badge.name.toLowerCase().replace(/\s+/g, '-')}.png`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // fallback: abre em nova aba para o utilizador guardar manualmente
+      window.open(badge.image, '_blank', 'noopener,noreferrer')
+    }
+  }
 
   return (
     <div className="consultor-badge-share-backdrop" role="presentation">
@@ -209,9 +226,44 @@ function ShareModal({ badge, onClose }) {
 
         {activeTab === 'email' && (
           <div className="consultor-badge-share-body">
-            <div className="consultor-badge-share-field"><label>Imagem:</label><span className="consultor-badge-share-field-value">link para descarregar a imagem do badge</span></div>
-            <div className="consultor-badge-share-field"><label>Link do Badge:</label><span className="consultor-badge-share-field-value">{badgeUrl}</span></div>
-            <div className="consultor-badge-share-actions"><button type="button" className="consultor-badge-share-submit" onClick={handleEmailExport}>Exportar</button></div>
+
+            {/* Preview do badge */}
+            <div className="consultor-badge-share-email-preview">
+              <img src={badge.image} alt={badge.name} className="consultor-badge-share-email-preview-img" />
+              <div className="consultor-badge-share-email-preview-info">
+                <p className="consultor-badge-share-email-preview-name">{badge.name}</p>
+                <p className="consultor-badge-share-email-preview-meta">{badge.level} · {badge.area}</p>
+              </div>
+            </div>
+
+            {/* Imagem */}
+            <div className="consultor-badge-share-field">
+              <span className="consultor-badge-share-field-section-label">Imagem do badge</span>
+              <div className="consultor-badge-share-field-row">
+                <HiOutlinePaperClip className="consultor-badge-share-field-row-icon" aria-hidden="true" />
+                <span className="consultor-badge-share-field-value">
+                  badge-{badge.name.toLowerCase().replace(/\s+/g, '-')}.png
+                </span>
+                <button type="button" className="consultor-badge-share-download-btn" onClick={handleImageDownload}>
+                  <HiOutlineArrowDownTray aria-hidden="true" />
+                  Descarregar
+                </button>
+              </div>
+            </div>
+
+            {/* Link público */}
+            <div className="consultor-badge-share-field">
+              <span className="consultor-badge-share-field-section-label">Link público</span>
+              <div className="consultor-badge-share-field-row">
+                <HiOutlineLink className="consultor-badge-share-field-row-icon" aria-hidden="true" />
+                <span className="consultor-badge-share-field-value">{badgeUrl}</span>
+                <button type="button" className="consultor-badge-share-copy-btn"
+                  onClick={() => navigator.clipboard.writeText(badgeUrl)}>
+                  <HiOutlineClipboard aria-hidden="true" />
+                  Copiar
+                </button>
+              </div>
+            </div>
           </div>
         )}
         {activeTab === 'linkedin' && (
