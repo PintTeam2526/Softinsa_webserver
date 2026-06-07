@@ -1,5 +1,6 @@
 .sll-relatorios-page {
-  min-height: 100%;
+  flex: 1;
+  min-width: 0;
   display: flex;
   background: #ffffff;
   color: #232d42;
@@ -455,6 +456,7 @@
 
 .sll-relatorios-table {
   width: 100%;
+  min-width: 680px;
   border-collapse: collapse;
   table-layout: fixed;
   font-size: 13px;

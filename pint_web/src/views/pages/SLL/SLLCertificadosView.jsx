@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { jsPDF } from 'jspdf'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
@@ -196,7 +197,8 @@ function SLLCertificadosView() {
             </div>
           </section>
 
-          <section className="sll-certificates-layout" aria-label="Configuração do certificado">
+          <Row as="section" className="g-4" aria-label="Configuração do certificado">
+            <Col xs={12} lg={4}>
             <article className="sll-certificates-form-card">
               <h2>Selecionar Dados</h2>
 
@@ -247,7 +249,9 @@ function SLLCertificadosView() {
                 <span>Descarregar PDF</span>
               </button>
             </article>
+            </Col>
 
+            <Col xs={12} lg={8}>
             <article className="sll-certificates-preview-card">
               <h2>Pre-visualização</h2>
 
@@ -292,7 +296,8 @@ function SLLCertificadosView() {
                 )}
               </div>
             </article>
-          </section>
+            </Col>
+          </Row>
         </div>
       </main>
     </div>

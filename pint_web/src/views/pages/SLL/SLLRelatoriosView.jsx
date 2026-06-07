@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import SLLSidebar from '../../components/SLLSidebar'
@@ -334,16 +335,22 @@ function SLLRelatoriosView() {
             </div>
           </section>
 
-          <section className="sll-relatorios-summary-grid" aria-label="Resumo de relatórios">
+          <Row as="section" className="row-cols-2 row-cols-md-3 row-cols-xl-4 g-3" aria-label="Resumo de relatórios">
             {summaryCards.map((card) => (
-              <StatCard key={card.label} label={card.label} value={summaryValues[card.key]} />
+              <Col key={card.label}>
+                <StatCard label={card.label} value={summaryValues[card.key]} />
+              </Col>
             ))}
-          </section>
+          </Row>
 
-          <section className="sll-relatorios-charts-grid" aria-label="Distribuição de badges">
-            <PieChartCard title="Distribuição de Badges Aprovados por Área" data={reportData?.distribuicao_por_area ?? []} />
-            <PieChartCard title="Distribuição de Badges Aprovados por Nível" data={reportData?.distribuicao_por_nivel ?? []} />
-          </section>
+          <Row as="section" className="g-4" aria-label="Distribuição de badges">
+            <Col xs={12} md={6}>
+              <PieChartCard title="Distribuição de Badges Aprovados por Área" data={reportData?.distribuicao_por_area ?? []} />
+            </Col>
+            <Col xs={12} md={6}>
+              <PieChartCard title="Distribuição de Badges Aprovados por Nível" data={reportData?.distribuicao_por_nivel ?? []} />
+            </Col>
+          </Row>
 
           <section className="sll-relatorios-table-card" aria-label="Badges Aprovados por Área e Nível">
             <h2>Badges Aprovados por Área e Nível</h2>

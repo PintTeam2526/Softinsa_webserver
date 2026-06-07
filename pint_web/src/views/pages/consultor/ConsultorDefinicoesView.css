@@ -4,7 +4,8 @@
   --sll-profile-text-muted: #8a92a6;
   --sll-profile-line: #e9ecef;
 
-  min-height: 100%;
+  flex: 1;
+  min-width: 0;
   display: flex;
   background: var(--sll-profile-bg);
   color: var(--sll-profile-text-main);

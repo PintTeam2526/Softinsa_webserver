@@ -1,5 +1,6 @@
 .sll-team-page {
-  min-height: 100%;
+  flex: 1;
+  min-width: 0;
   display: flex;
   background: #ffffff;
   color: #232d42;
