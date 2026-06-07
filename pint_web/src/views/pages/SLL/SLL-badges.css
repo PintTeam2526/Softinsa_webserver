@@ -334,13 +334,9 @@
   font-weight: 700;
 }
 
-.sll-badges-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
-}
 
 .sll-badges-card {
+  width: 100%;
   border: 1px solid #f1f3f5;
   border-radius: 8px;
   background: #ffffff;

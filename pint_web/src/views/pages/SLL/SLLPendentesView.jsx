@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { FaFilter, FaSearch } from 'react-icons/fa'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLPagination from '../../components/SLLPagination'
@@ -210,8 +211,8 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
         </div>
       </div>
 
-      <div className="sll-pending-card-body">
-        <div className="sll-pending-requirements">
+      <Row as="div" className="sll-pending-card-body g-3">
+        <Col xs={12} md={8} className="sll-pending-requirements">
           {request.requirements.map((requirement, index) => (
             <div className="sll-pending-requirement-row" key={`${request.title}-${index}`}>
               <div className="sll-pending-requirement-copy">
@@ -223,9 +224,9 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
               </div>
             </div>
           ))}
-        </div>
+        </Col>
 
-        <div className="sll-pending-documents">
+        <Col xs={12} md={4} className="sll-pending-documents">
           <h4>Documentos Anexados:</h4>
           <button
             type="button"
@@ -236,8 +237,8 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
             <EvidenceDownloadIcon />
             <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
           </button>
-        </div>
-      </div>
+        </Col>
+      </Row>
 
       <div className="sll-pending-card-actions">
         <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>

@@ -277,6 +277,7 @@ function SidebarError({ message, onRetry }) {
 function ConsultorSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false
+    if (window.innerWidth < 768) return true
     return window.localStorage.getItem(STORAGE_KEY) === 'true'
   })
 
@@ -310,6 +311,14 @@ function ConsultorSidebar() {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, String(isCollapsed))
   }, [isCollapsed])
+
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth < 768) setIsCollapsed(true)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   return (
     <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>

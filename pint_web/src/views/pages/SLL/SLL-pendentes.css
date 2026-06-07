@@ -328,11 +328,6 @@
   line-height: 1.5;
 }
 
-.sll-pending-card-body {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-  gap: 20px;
-}
 
 .sll-pending-requirements {
   display: flex;

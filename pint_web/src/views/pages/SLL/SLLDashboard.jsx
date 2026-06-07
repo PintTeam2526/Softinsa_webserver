@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import {
   FaCheckCircle,
@@ -303,7 +304,8 @@ function SLLDashboard() {
             </div>
           </button>
 
-          <section className="sll-dashboard-grid">
+          <Row as="section" className="row-cols-1 row-cols-md-2 g-3">
+            <Col>
             <article className="sll-card sll-pending-card">
               <header className="sll-card-header">
                 <div className="sll-title-wrap">
@@ -318,7 +320,9 @@ function SLLDashboard() {
                 ))}
               </div>
             </article>
+            </Col>
 
+            <Col>
             <div className="sll-status-column">
               {teamStatusCards.map((statusCard) => {
                 const Icon = statusCard.Icon
@@ -333,9 +337,11 @@ function SLLDashboard() {
                 )
               })}
             </div>
-          </section>
+            </Col>
+          </Row>
 
-          <section className="sll-bottom-grid">
+          <Row as="section" className="row-cols-1 row-cols-md-2 g-3">
+            <Col>
             <article className="sll-card sll-top-consultants-card">
               <h3>Top 3 Consultores</h3>
               <div className="sll-top-list">
@@ -360,7 +366,9 @@ function SLLDashboard() {
                 ))}
               </div>
             </article>
+            </Col>
 
+            <Col>
             <article className="sll-card sll-team-card">
               <header className="sll-team-header">
                 <h3>Service Line Pessoal</h3>
@@ -382,7 +390,8 @@ function SLLDashboard() {
                 </article>
               </div>
             </article>
-          </section>
+            </Col>
+          </Row>
 
         </div>
       </main>

@@ -265,12 +265,6 @@
   white-space: nowrap;
 }
 
-.sll-relatorios-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  gap: 20px;
-}
-
 .sll-relatorios-stat-card {
   padding: 15px 24px;
   min-height: 63px;
@@ -322,12 +316,6 @@
 .sll-relatorios-generate-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.sll-relatorios-charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 20px;
 }
 
 .sll-relatorios-chart-card {

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { FaSearch, FaTimes } from 'react-icons/fa'
 import { HiOutlineCurrencyEuro } from 'react-icons/hi2'
 import { jsPDF } from 'jspdf'
@@ -302,15 +303,16 @@ function SLLBadgesView() {
                     </div>
                   </h2>
 
-                  <div className="sll-badges-grid">
+                  <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-2">
                     {group.badges.map((badge) => (
-                      <BadgeCard
-                        key={`${group.id}-${badge.name}-${badge.level}`}
-                        badge={badge}
-                        onClick={() => handleBadgeClick(badge)}
-                      />
+                      <Col key={`${group.id}-${badge.name}-${badge.level}`}>
+                        <BadgeCard
+                          badge={badge}
+                          onClick={() => handleBadgeClick(badge)}
+                        />
+                      </Col>
                     ))}
-                  </div>
+                  </Row>
                 </div>
               ))
             )}

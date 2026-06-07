@@ -385,11 +385,6 @@
   font-size: 19px;
 }
 
-.sll-dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 18px;
-}
 
 .sll-pending-card {
   padding: 24px;
@@ -608,11 +603,6 @@
   font-weight: 500;
 }
 
-.sll-bottom-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 18px;
-}
 
 .sll-top-consultants-card,
 .sll-team-card {

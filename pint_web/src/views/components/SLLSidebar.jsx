@@ -136,12 +136,21 @@ function SectionDivider() {
 
 function SLLSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (window.innerWidth < 768) return true
     return localStorage.getItem('softinsa-sidebar-collapsed') === 'true'
   })
 
   useEffect(() => {
     localStorage.setItem('softinsa-sidebar-collapsed', String(isCollapsed))
   }, [isCollapsed])
+
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth < 768) setIsCollapsed(true)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   function toggleSidebar() {
     setIsCollapsed((previousValue) => !previousValue)
