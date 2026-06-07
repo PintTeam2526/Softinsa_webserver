@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaFilter, FaSearch } from 'react-icons/fa'
 import SLLPagination from '../../components/SLLPagination'
+import { Row, Col } from 'react-bootstrap'
 import './TalentManagerPedidosView.css'
 
 import { getAreas } from '../../../controllers/areasController'
@@ -199,31 +200,35 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
         </div>
       </div>
 
-      <div className="sll-pending-card-body">
-        <div className="sll-pending-requirements">
-          {request.requirements.map((requirement, index) => (
-            <div className="sll-pending-requirement-row" key={`${request.title}-${index}`}>
-              <div className="sll-pending-requirement-copy">
-                <strong>Requisito {index + 1}</strong>
-                <span>{requirement}</span>
+      <Row className="g-4">
+        <Col xs={12} md>
+          <div className="sll-pending-requirements">
+            {request.requirements.map((requirement, index) => (
+              <div className="sll-pending-requirement-row" key={`${request.title}-${index}`}>
+                <div className="sll-pending-requirement-copy">
+                  <strong>Requisito {index + 1}</strong>
+                  <span>{requirement}</span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Col>
 
-        <div className="sll-pending-documents">
-          <h4>Documentos Anexados:</h4>
-          <button
-            type="button"
-            className="sll-pending-document-download-all"
-            onClick={onDownload}
-            disabled={isDownloading}
-          >
-            <EvidenceDownloadIcon />
-            <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
-          </button>
-        </div>
-      </div>
+        <Col xs={12} md>
+          <div className="sll-pending-documents">
+            <h4>Documentos Anexados:</h4>
+            <button
+              type="button"
+              className="sll-pending-document-download-all"
+              onClick={onDownload}
+              disabled={isDownloading}
+            >
+              <EvidenceDownloadIcon />
+              <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
+            </button>
+          </div>
+        </Col>
+      </Row>
 
       <div className="sll-pending-card-actions">
         <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Row, Col } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FaTimes } from 'react-icons/fa'
 import { HiOutlineStar, HiOutlineCurrencyEuro } from 'react-icons/hi2'
@@ -453,19 +454,20 @@ function TalentManagerBadgesView({
                               {area.badges.length === 0 ? (
                                 <p style={{ padding: '0.5rem', opacity: 0.6 }}>Sem badges definidos.</p>
                               ) : (
-                                <div className={`${cp}-badge-grid`}>
+                                <Row className="justify-content-center g-2">
                                   {area.badges.map((badge) => (
-                                    <BadgeCard
-                                      key={badge.id}
-                                      cp={cp}
-                                      icon={badge.icon}
-                                      title={badge.title}
-                                      level={badge.level}
-                                      points={badge.points}
-                                      onClick={() => handleBadgeClick(badge)}
-                                    />
+                                    <Col xs="auto" key={badge.id}>
+                                      <BadgeCard
+                                        cp={cp}
+                                        icon={badge.icon}
+                                        title={badge.title}
+                                        level={badge.level}
+                                        points={badge.points}
+                                        onClick={() => handleBadgeClick(badge)}
+                                      />
+                                    </Col>
                                   ))}
-                                </div>
+                                </Row>
                               )}
                             </div>
                           ))

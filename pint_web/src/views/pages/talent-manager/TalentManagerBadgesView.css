@@ -102,6 +102,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 0;
   margin-bottom: 12px;
@@ -112,10 +113,14 @@
 .tm-badges-tabs {
   display: flex;
   align-items: flex-end;
+  flex: 1 1 auto;
+  min-width: 220px;
+  max-width: 420px;
 }
 
 .tm-badges-tab {
-  min-width: 128px;
+  flex: 1 1 0;
+  min-width: 0;
   border: 0;
   border-radius: 8px 8px 0 0;
   background: #ffffff;

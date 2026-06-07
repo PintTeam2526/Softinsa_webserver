@@ -348,25 +348,3 @@
   transform: rotate(180deg);
 }
 
-/* ── RESPONSIVE ───────────────────────────────────────── */
-@media (max-width: 992px) {
-  .softinsa-sidebar-shell {
-    --softinsa-sidebar-open-width: 12.5rem;
-  }
-
-  .softinsa-sidebar-item {
-    min-height: 42px;
-  }
-}
-
-@media (max-width: 768px) {
-  .softinsa-sidebar-shell {
-    --softinsa-sidebar-open-width: 11rem;
-    --softinsa-sidebar-collapsed-width: 4.25rem;
-  }
-
-  .softinsa-sidebar-header {
-    height: 68px;
-    padding-top: 12px;
-  }
-}

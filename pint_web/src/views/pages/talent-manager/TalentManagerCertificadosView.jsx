@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { jsPDF } from 'jspdf'
+import { Row, Col } from 'react-bootstrap'
 import './TalentManagerCertificadosView.css'
 
 import { getCertificado } from '../../../controllers/gestaoController'
@@ -175,7 +176,8 @@ function TalentManagerCertificadosView() {
         </div>
       </section>
 
-      <section className="sll-certificates-layout" aria-label="Configuração do certificado">
+      <Row as="section" className="g-4" aria-label="Configuração do certificado">
+        <Col xs={12} md={6}>
         <article className="sll-certificates-form-card">
           <h2>Selecionar Dados</h2>
 
@@ -226,7 +228,9 @@ function TalentManagerCertificadosView() {
             <span>Descarregar PDF</span>
           </button>
         </article>
+        </Col>
 
+        <Col xs={12} md={6}>
         <article className="sll-certificates-preview-card">
           <h2>Pre-visualização</h2>
 
@@ -271,7 +275,8 @@ function TalentManagerCertificadosView() {
             )}
           </div>
         </article>
-      </section>
+        </Col>
+      </Row>
     </div>
   )
 }
