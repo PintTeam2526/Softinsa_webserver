@@ -1,34 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaTimes } from 'react-icons/fa'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import './TalentManagerConsultoresView.css'
 
-const consultantRows = [
-  { name: 'João Silva', badges: 34, points: 520, ranking: '1º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-12-04' },
-  { name: 'Ana Matos', badges: 37, points: 500, ranking: '2º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-09-15' },
-  { name: 'Miguel Cardoso', badges: 25, points: 456, ranking: '3º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-10-01' },
-  { name: 'Antonio Silva', badges: 15, points: 276, ranking: '4º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-11-20' },
-  { name: 'Guilherme Santos', badges: 7, points: 120, ranking: '5º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-08-08' },
-  { name: 'Guilherme Santos', badges: 14, points: 100, ranking: '5º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-07-19' },
-  { name: 'Guilherme Santos', badges: 6, points: 79, ranking: '5º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-06-03' },
-  { name: 'Guilherme Santos', badges: 4, points: 76, ranking: '5º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-05-12' },
-  { name: 'Guilherme Santos', badges: 3, points: 68, ranking: '5º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-04-21' },
-  { name: 'Guilherme Santos', badges: 2, points: 40, ranking: '5º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-03-14' },
-  { name: 'Sofia Ribeiro', badges: 18, points: 330, ranking: '6º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-11-08' },
-  { name: 'Carlos Pereira', badges: 22, points: 315, ranking: '7º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-10-23' },
-  { name: 'Mariana Costa', badges: 16, points: 290, ranking: '8º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-09-30' },
-  { name: 'Pedro Mendes', badges: 13, points: 248, ranking: '9º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-09-12' },
-  { name: 'Rita Alves', badges: 11, points: 230, ranking: '10º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-08-26' },
-  { name: 'Bruno Carvalho', badges: 10, points: 212, ranking: '11º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-08-14' },
-  { name: 'Inês Martins', badges: 9, points: 198, ranking: '12º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-07-28' },
-  { name: 'Tiago Nunes', badges: 8, points: 184, ranking: '13º', learningPath: 'Data Strategy', serviceLine: 'Managed Services', area: 'Operações', registrationDate: '2024-07-06' },
-  { name: 'Sara Fernandes', badges: 7, points: 170, ranking: '14º', learningPath: 'Agile Leadership', serviceLine: 'Advisory', area: 'Consultoria', registrationDate: '2024-06-18' },
-  { name: 'André Moreira', badges: 5, points: 155, ranking: '15º', learningPath: 'Cloud Fundamentals', serviceLine: 'Delivery', area: 'Tecnologia', registrationDate: '2024-05-30' },
-]
+import { getRanking } from '../../../controllers/gestaoController'
 
-// ── ícone de exportação ─────────────────────────────────────────────────────────
 
 function ExportIcon() {
   return (
@@ -37,17 +16,6 @@ function ExportIcon() {
       <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
       <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  )
-}
-
-function AvatarBadge() {
-  return (
-    <span className="tm-consultores-avatar" aria-hidden="true">
-      <img
-        alt=""
-        src="https://www.figma.com/api/mcp/asset/e6f36e3b-7e8e-42a1-83bb-3de240749085"
-      />
-    </span>
   )
 }
 
@@ -72,37 +40,55 @@ function PaginationButton({ children, active = false, disabled = false, narrow =
   )
 }
 
+function mapConsultor(consultor, index) {
+  console.log('consultor raw:', consultor)
+  return {
+    id: consultor.id_consultor,
+    name: consultor.nome,
+    area: consultor.area,
+    points: consultor.total_pontos,
+    badges: consultor.badges_obtidos,
+    progresso: consultor.progresso_area,
+    ranking: `${index + 1}º`,
+  }
+}
+
 function TalentManagerConsultoresView() {
+  const navigate = useNavigate()
+
+  const [consultantRows, setConsultantRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
   const [showFilter, setShowFilter] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [draftFilters, setDraftFilters] = useState({ dateFrom: '', dateTo: '', area: '', serviceLine: '', learningPath: '' })
-  const [appliedFilters, setAppliedFilters] = useState({ dateFrom: '', dateTo: '', area: '', serviceLine: '', learningPath: '' })
+  const [draftFilters, setDraftFilters] = useState({ area: '' })
+  const [appliedFilters, setAppliedFilters] = useState({ area: '' })
 
   const filterRef = useRef(null)
 
+  useEffect(() => {
+    getRanking()
+      .then((data) => setConsultantRows(data.map(mapConsultor)))
+      .catch(() => setError('Erro ao carregar o ranking. Tente novamente.'))
+      .finally(() => setLoading(false))
+  }, [])
+
   const filterOptions = useMemo(() => ({
-    learningPaths: Array.from(new Set(consultantRows.map((consultant) => consultant.learningPath))),
-    serviceLines: Array.from(new Set(consultantRows.map((consultant) => consultant.serviceLine))),
-    areas: Array.from(new Set(consultantRows.map((consultant) => consultant.area))),
-  }), [])
+    areas: Array.from(new Set(consultantRows.map((c) => c.area))),
+  }), [consultantRows])
 
   const filteredConsultants = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
-
     return consultantRows.filter((consultant) => {
       const matchesSearch = !normalizedSearch || consultant.name.toLowerCase().includes(normalizedSearch)
-      const matchesDateFrom = !appliedFilters.dateFrom || consultant.registrationDate >= appliedFilters.dateFrom
-      const matchesDateTo = !appliedFilters.dateTo || consultant.registrationDate <= appliedFilters.dateTo
       const matchesArea = !appliedFilters.area || consultant.area === appliedFilters.area
-      const matchesServiceLine = !appliedFilters.serviceLine || consultant.serviceLine === appliedFilters.serviceLine
-      const matchesLearningPath = !appliedFilters.learningPath || consultant.learningPath === appliedFilters.learningPath
-
-      return matchesSearch && matchesDateFrom && matchesDateTo && matchesArea && matchesServiceLine && matchesLearningPath
+      return matchesSearch && matchesArea
     })
-  }, [appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine, searchTerm])
+  }, [consultantRows, searchTerm, appliedFilters.area])
 
   const consultantsPerPage = 10
   const totalPages = Math.max(1, Math.ceil(filteredConsultants.length / consultantsPerPage))
@@ -112,40 +98,28 @@ function TalentManagerConsultoresView() {
     return filteredConsultants.slice(startIndex, startIndex + consultantsPerPage)
   }, [currentPage, filteredConsultants])
 
-  function closeExportModal() {
-    setShowExport(false)
-  }
-
   useEffect(() => {
     function onDoc(event) {
       if (showFilter && filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilter(false)
       }
     }
-
     document.addEventListener('mousedown', onDoc)
     return () => document.removeEventListener('mousedown', onDoc)
   }, [showFilter])
 
   useEffect(() => {
-    if (showFilter) {
-      setDraftFilters(appliedFilters)
-    }
+    if (showFilter) setDraftFilters(appliedFilters)
   }, [showFilter, appliedFilters])
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [searchTerm, appliedFilters.area, appliedFilters.dateFrom, appliedFilters.dateTo, appliedFilters.learningPath, appliedFilters.serviceLine])
+  useEffect(() => { setCurrentPage(1) }, [searchTerm, appliedFilters.area])
 
   useEffect(() => {
-    setCurrentPage((previousPage) => Math.min(previousPage, totalPages))
+    setCurrentPage((prev) => Math.min(prev, totalPages))
   }, [totalPages])
 
   function updateDraftFilter(field, value) {
-    setDraftFilters((previousFilters) => ({
-      ...previousFilters,
-      [field]: value,
-    }))
+    setDraftFilters((prev) => ({ ...prev, [field]: value }))
   }
 
   function applyFilters() {
@@ -153,16 +127,14 @@ function TalentManagerConsultoresView() {
     setShowFilter(false)
   }
 
-  function goToPage(pageNumber) {
-    setCurrentPage(pageNumber)
-  }
+  function goToPage(pageNumber) { setCurrentPage(pageNumber) }
+  function goToPreviousPage() { setCurrentPage((prev) => Math.max(1, prev - 1)) }
+  function goToNextPage() { setCurrentPage((prev) => Math.min(totalPages, prev + 1)) }
+  function closeExportModal() { setShowExport(false) }
 
-  function goToPreviousPage() {
-    setCurrentPage((previousPage) => Math.max(1, previousPage - 1))
-  }
-
-  function goToNextPage() {
-    setCurrentPage((previousPage) => Math.min(totalPages, previousPage + 1))
+  // Navega para o perfil público do consultor selecionado
+  function handleRowClick(consultant) {
+    navigate(`/talent-manager/perfil-publico/${consultant.id}`)
   }
 
   function handleExport() {
@@ -170,34 +142,33 @@ function TalentManagerConsultoresView() {
       const documentPdf = new jsPDF()
       documentPdf.setFontSize(16)
       documentPdf.text('Consultores', 14, 16)
-
       autoTable(documentPdf, {
         startY: 24,
-        head: [['Consultor', 'Badges', 'Pontos', 'Ranking']],
-        body: filteredConsultants.map((consultant) => [consultant.name, consultant.badges, consultant.points, consultant.ranking]),
+        head: [['Ranking', 'Consultor', 'Área', 'Badges', 'Pontos', 'Progresso na Área']],
+        body: filteredConsultants.map((c) => [c.ranking, c.name, c.area, c.badges, c.points, `${c.progresso}%`]),
         styles: { fontSize: 10 },
       })
-
       documentPdf.save('consultores_export.pdf')
       closeExportModal()
       return
     }
 
-    const worksheet = XLSX.utils.json_to_sheet(filteredConsultants.map((consultant) => ({
-      Consultor: consultant.name,
-      Badges: consultant.badges,
-      Pontos: consultant.points,
-      Ranking: consultant.ranking,
-      'Learning Path': consultant.learningPath,
-      'Service Line': consultant.serviceLine,
-      Área: consultant.area,
-      'Data de registo': consultant.registrationDate,
+    const worksheet = XLSX.utils.json_to_sheet(filteredConsultants.map((c) => ({
+      Ranking: c.ranking,
+      Consultor: c.name,
+      Área: c.area,
+      Badges: c.badges,
+      Pontos: c.points,
+      'Progresso na Área (%)': c.progresso,
     })))
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Consultores')
     XLSX.writeFile(workbook, 'consultores_export.xlsx')
     closeExportModal()
   }
+
+  if (loading) return <div className="tm-consultores-page"><p>A carregar...</p></div>
+  if (error) return <div className="tm-consultores-page"><p>{error}</p></div>
 
   return (
     <div className="tm-consultores-page">
@@ -208,7 +179,7 @@ function TalentManagerConsultoresView() {
         </div>
       </section>
 
-      <section className="tm-consultores-toolbar" aria-label="Ferramentas de consultores">
+      <section className="tm-consultores-toolbar flex-column flex-lg-row align-items-stretch align-items-lg-center" aria-label="Ferramentas de consultores">
         <div className="tm-consultores-search">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" />
@@ -219,7 +190,7 @@ function TalentManagerConsultoresView() {
             placeholder="Pesquisar por nome do consultor"
             aria-label="Pesquisar por nome do consultor"
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
@@ -230,67 +201,33 @@ function TalentManagerConsultoresView() {
           </button>
 
           <div className="tm-consultores-filter-popover-wrap" ref={filterRef}>
-            <button type="button" className="tm-consultores-filter-btn" onClick={() => setShowFilter((previousValue) => !previousValue)} aria-expanded={showFilter}>
+            <button
+              type="button"
+              className="tm-consultores-filter-btn"
+              onClick={() => setShowFilter((prev) => !prev)}
+              aria-expanded={showFilter}
+            >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 5H20L14 12V18L10 20V12L4 5Z" />
               </svg>
               <span>Filtro</span>
             </button>
 
-            {showFilter ? (
+            {showFilter && (
               <div className="tm-consultores-filter-popover">
-                <div className="tm-consultores-filter-field">
-                  <label htmlFor="consultor-filter-learning-path">Learning Path</label>
-                  <div className="tm-consultores-filter-select-wrap">
-                    <select id="consultor-filter-learning-path" value={draftFilters.learningPath} onChange={(event) => updateDraftFilter('learningPath', event.target.value)}>
-                      <option value="">Selecione a Learning Path</option>
-                      {filterOptions.learningPaths.map((learningPath) => (
-                        <option key={learningPath} value={learningPath}>
-                          {learningPath}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="tm-consultores-filter-field">
-                  <label htmlFor="consultor-filter-service-line">Service Line</label>
-                  <div className="tm-consultores-filter-select-wrap">
-                    <select id="consultor-filter-service-line" value={draftFilters.serviceLine} onChange={(event) => updateDraftFilter('serviceLine', event.target.value)}>
-                      <option value="">Selecione a Service Line</option>
-                      {filterOptions.serviceLines.map((serviceLine) => (
-                        <option key={serviceLine} value={serviceLine}>
-                          {serviceLine}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
                 <div className="tm-consultores-filter-field">
                   <label htmlFor="consultor-filter-area">Área</label>
                   <div className="tm-consultores-filter-select-wrap">
-                    <select id="consultor-filter-area" value={draftFilters.area} onChange={(event) => updateDraftFilter('area', event.target.value)}>
-                      <option value="">Selecione a Área</option>
+                    <select
+                      id="consultor-filter-area"
+                      value={draftFilters.area}
+                      onChange={(e) => updateDraftFilter('area', e.target.value)}
+                    >
+                      <option value="">Todas as áreas</option>
                       {filterOptions.areas.map((area) => (
-                        <option key={area} value={area}>
-                          {area}
-                        </option>
+                        <option key={area} value={area}>{area}</option>
                       ))}
                     </select>
-                  </div>
-                </div>
-
-                <div className="tm-consultores-filter-field">
-                  <label>Data de registo</label>
-                  <div className="tm-consultores-filter-date-grid">
-                    <div className="tm-consultores-filter-select-wrap is-date">
-                      <input type="date" value={draftFilters.dateFrom} onChange={(event) => updateDraftFilter('dateFrom', event.target.value)} aria-label="Data de registo inicial" />
-                    </div>
-                    <div className="tm-consultores-filter-date-separator">até</div>
-                    <div className="tm-consultores-filter-select-wrap is-date">
-                      <input type="date" value={draftFilters.dateTo} onChange={(event) => updateDraftFilter('dateTo', event.target.value)} aria-label="Data de registo final" />
-                    </div>
                   </div>
                 </div>
 
@@ -298,14 +235,14 @@ function TalentManagerConsultoresView() {
                   Filtrar
                 </button>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </section>
 
-      {showExport ? (
+      {showExport && (
         <div className="tm-consultores-export-backdrop" role="presentation" onClick={closeExportModal}>
-          <div className="tm-consultores-export-modal" role="dialog" aria-modal="true" aria-label="Exportar consultores" onClick={(event) => event.stopPropagation()}>
+          <div className="tm-consultores-export-modal" role="dialog" aria-modal="true" aria-label="Exportar consultores" onClick={(e) => e.stopPropagation()}>
             <div className="tm-consultores-export-header">
               <h2>Exportar</h2>
               <button type="button" className="tm-consultores-export-close" onClick={closeExportModal} aria-label="Fechar exportação">
@@ -320,13 +257,13 @@ function TalentManagerConsultoresView() {
               <div className="tm-consultores-export-options">
                 <button type="button" className="tm-consultores-export-option" onClick={() => setSelectedExportFormat('xlsx')} aria-pressed={selectedExportFormat === 'xlsx'}>
                   <span className={`tm-consultores-export-option-toggle${selectedExportFormat === 'xlsx' ? ' is-selected' : ''}`} aria-hidden="true">
-                    {selectedExportFormat === 'xlsx' ? <span className="tm-consultores-export-option-dot" /> : null}
+                    {selectedExportFormat === 'xlsx' && <span className="tm-consultores-export-option-dot" />}
                   </span>
                   <span>Excel (.xlsx)</span>
                 </button>
                 <button type="button" className="tm-consultores-export-option" onClick={() => setSelectedExportFormat('pdf')} aria-pressed={selectedExportFormat === 'pdf'}>
                   <span className={`tm-consultores-export-option-toggle${selectedExportFormat === 'pdf' ? ' is-selected' : ''}`} aria-hidden="true">
-                    {selectedExportFormat === 'pdf' ? <span className="tm-consultores-export-option-dot" /> : null}
+                    {selectedExportFormat === 'pdf' && <span className="tm-consultores-export-option-dot" />}
                   </span>
                   <span>PDF (.pdf)</span>
                 </button>
@@ -334,16 +271,12 @@ function TalentManagerConsultoresView() {
             </div>
 
             <div className="tm-consultores-export-actions">
-              <button type="button" className="tm-consultores-export-cancel" onClick={closeExportModal}>
-                Cancelar
-              </button>
-              <button type="button" className="tm-consultores-export-confirm" onClick={handleExport}>
-                Exportar
-              </button>
+              <button type="button" className="tm-consultores-export-cancel" onClick={closeExportModal}>Cancelar</button>
+              <button type="button" className="tm-consultores-export-confirm" onClick={handleExport}>Exportar</button>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
 
       <section className="tm-consultores-table-card" aria-label="Lista de consultores">
         <div className="tm-consultores-table-wrap">
@@ -354,11 +287,20 @@ function TalentManagerConsultoresView() {
                 <th>Consultor</th>
                 <th>Badges</th>
                 <th>Pontos</th>
+                <th>Progresso na Área</th>
               </tr>
             </thead>
             <tbody>
               {paginatedConsultants.map((consultant) => (
-                <tr key={`${consultant.name}-${consultant.badges}-${consultant.points}-${consultant.ranking}`}>
+                <tr
+                  key={`${consultant.name}-${consultant.ranking}`}
+                  className="tm-consultores-row-clickable"
+                  onClick={() => handleRowClick(consultant)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRowClick(consultant)}
+                  aria-label={`Ver perfil de ${consultant.name}`}
+                >
                   <td>
                     <span className={`tm-consultores-ranking ${getRankingTone(consultant.ranking)}`}>
                       {consultant.ranking}
@@ -366,7 +308,6 @@ function TalentManagerConsultoresView() {
                   </td>
                   <td>
                     <div className="tm-consultores-name-cell">
-                      <AvatarBadge />
                       <span>{consultant.name}</span>
                     </div>
                   </td>
@@ -379,27 +320,35 @@ function TalentManagerConsultoresView() {
                       </svg>
                     </span>
                   </td>
+                  <td>
+                    <div className="tm-consultores-progress-wrap" title={`${consultant.progresso}%`}>
+                      <div className="tm-consultores-progress-bar">
+                        <div className="tm-consultores-progress-fill" style={{ width: `${consultant.progresso}%` }} />
+                      </div>
+                      <span className="tm-consultores-progress-label">{consultant.progresso}%</span>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        <div className="tm-consultores-pagination" aria-label="Paginação">
-          <PaginationButton narrow onClick={goToPreviousPage} disabled={currentPage === 1}>{'«'}</PaginationButton>
-          <PaginationButton narrow onClick={goToPreviousPage} disabled={currentPage === 1}>{'‹'}</PaginationButton>
-          {Array.from({ length: totalPages }, (_, index) => {
-            const pageNumber = index + 1
-            return (
-              <PaginationButton key={pageNumber} active={pageNumber === currentPage} onClick={() => goToPage(pageNumber)}>
-                {pageNumber}
-              </PaginationButton>
-            )
-          })}
-          <PaginationButton narrow onClick={goToNextPage} disabled={currentPage === totalPages}>{'›'}</PaginationButton>
-          <PaginationButton narrow onClick={goToNextPage} disabled={currentPage === totalPages}>{'»'}</PaginationButton>
-        </div>
       </section>
+
+      <div className="tm-consultores-pagination" aria-label="Paginação">
+        <PaginationButton narrow onClick={goToPreviousPage} disabled={currentPage === 1}>{'«'}</PaginationButton>
+        <PaginationButton narrow onClick={goToPreviousPage} disabled={currentPage === 1}>{'‹'}</PaginationButton>
+        {Array.from({ length: totalPages }, (_, index) => {
+          const pageNumber = index + 1
+          return (
+            <PaginationButton key={pageNumber} active={pageNumber === currentPage} onClick={() => goToPage(pageNumber)}>
+              {pageNumber}
+            </PaginationButton>
+          )
+        })}
+        <PaginationButton narrow onClick={goToNextPage} disabled={currentPage === totalPages}>{'›'}</PaginationButton>
+        <PaginationButton narrow onClick={goToNextPage} disabled={currentPage === totalPages}>{'»'}</PaginationButton>
+      </div>
     </div>
   )
 }

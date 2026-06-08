@@ -84,7 +84,7 @@
   margin: 0;
   color: #ffffff;
   font-family: Inter, sans-serif;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
 }
@@ -480,54 +480,59 @@
 
 .tm-consultores-table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
 .tm-consultores-table thead th {
-  padding: 10px 16px 8px;
+  padding: 8px 12px;
   color: #39639c;
   font-family: Inter, sans-serif;
-  font-size: 16px;
-  line-height: 21px;
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 600;
   text-align: left;
 }
 
 .tm-consultores-table thead th:nth-child(1) {
-  width: 10%;
+  width: 8%;
 }
 
 .tm-consultores-table thead th:nth-child(2) {
-  width: 50%;
+  width: 30%;
 }
 
 .tm-consultores-table thead th:nth-child(3) {
-  width: 15%;
+  width: 12%;
 }
 
 .tm-consultores-table thead th:nth-child(4) {
-  width: 25%;
+  width: 15%;
+}
+
+.tm-consultores-table thead th:nth-child(5) {
+  width: 35%;
 }
 
 .tm-consultores-table tbody td {
-  padding: 9px 16px;
+  padding: 8px 12px;
   color: #232d42;
   font-family: Inter, sans-serif;
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: 14px;
+  line-height: 1.5;
   vertical-align: middle;
 }
 
 .tm-consultores-name-cell {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
 .tm-consultores-avatar {
-  width: 43px;
-  height: 43px;
+  width: 36px;
+  height: 36px;
   border-radius: 50px;
   overflow: hidden;
   flex-shrink: 0;
@@ -577,12 +582,43 @@
   display: block;
 }
 
+.tm-consultores-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tm-consultores-progress-bar {
+  flex: 1;
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.tm-consultores-progress-fill {
+  height: 100%;
+  background: #3f6aa7;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.tm-consultores-progress-label {
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
 .tm-consultores-pagination {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0;
-  margin: 18px 0 0;
+  width: min(100%, 1100px);
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tm-consultores-pagination-btn {
@@ -645,35 +681,3 @@
   color: #232d42;
 }
 
-@media (max-width: 1200px) {
-  .tm-consultores-table-card {
-    margin-left: 24px;
-    width: calc(100% - 24px);
-  }
-}
-
-@media (max-width: 768px) {
-  .tm-consultores-page {
-    padding: 1px 16px 16px;
-  }
-
-  .tm-consultores-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .tm-consultores-actions {
-    justify-content: flex-start;
-  }
-
-  .tm-consultores-table-card {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .tm-consultores-footer {
-    padding-top: 64px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}

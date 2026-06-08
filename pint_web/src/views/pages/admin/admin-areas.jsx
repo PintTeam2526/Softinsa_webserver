@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-areas.css";
 
 import { getLearningPaths } from '../../../controllers/learningPathsController'
@@ -8,7 +9,6 @@ import { getBadges } from '../../../controllers/badgesController'
 
 const statusOptions = ["Ativo", "Inativo"];
 
-
 const getDefaultFilterDraft = () => ({ serviceLine: "", learningPath: "", status: "" });
 
 const getDefaultAreaForm = () => ({
@@ -17,7 +17,7 @@ const getDefaultAreaForm = () => ({
 });
 
 const normalizeSearchValue = (value) =>
-  String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  String(value).toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").trim();
 
 const formatAreaImage = (img) => {
   if (!img || typeof img !== "string" || img.trim() === "") return "";
@@ -41,8 +41,6 @@ const mapArea = (row, slMap, lpMap) => {
   };
 };
 
-// ── icons (sem alterações) ────────────────────────────────────────────────────
-
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
@@ -54,8 +52,8 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
-      <path d="M4 5H20L13 13V19L11 20V13L4 5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-areas-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
@@ -79,9 +77,10 @@ function PencilIcon() {
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
-      <path d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-areas-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -105,15 +104,13 @@ function CloseIcon() {
 
 function FileSelector({ fileName, onChange, ariaLabel }) {
   return (
-    <label className="softinsa-areas-file-field">
+    <label className="softinsa-areas-file-field d-inline-flex w-100">
       <input type="file" accept="image/*" className="softinsa-areas-file-input" onChange={onChange} onClick={(e) => { e.target.value = null; }} aria-label={ariaLabel} />
-      <span className="softinsa-areas-file-choose">Choose File</span>
-      <span className="softinsa-areas-file-name">{fileName || "No file chosen"}</span>
+      <span className="softinsa-areas-file-choose d-inline-flex align-items-center">Choose File</span>
+      <span className="softinsa-areas-file-name d-inline-flex align-items-center">{fileName || "No file chosen"}</span>
     </label>
   );
 }
-
-// ── componente principal ──────────────────────────────────────────────────────
 
 const SoftinsaAreas = memo(() => {
   const [areas, setAreas] = useState([]);
@@ -132,8 +129,6 @@ const SoftinsaAreas = memo(() => {
   const [formData, setFormData] = useState(getDefaultAreaForm());
   const [slRaw, setSlRaw] = useState([]);
   const filterWrapRef = useRef(null);
-
-  // ── fetch ─────────────────────────────────────────────────────────────────
 
   useEffect(() => { loadData(); }, []);
 
@@ -173,8 +168,6 @@ const SoftinsaAreas = memo(() => {
     }
   }
 
-  // ── estado derivado ───────────────────────────────────────────────────────
-
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.serviceLine || activeFilters.learningPath || activeFilters.status);
@@ -191,8 +184,6 @@ const SoftinsaAreas = memo(() => {
   const totalPages = Math.max(1, Math.ceil(filteredAreas.length / entriesPerPage));
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedAreas = filteredAreas.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
-
-  // ── handlers ──────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -337,75 +328,79 @@ const SoftinsaAreas = memo(() => {
     }
   };
 
-  // ── render (sem alterações) ───────────────────────────────────────────────
-
   return (
     <section className="softinsa-areas-page" data-node-id="3899:9615">
-      <div className="softinsa-areas-hero" data-node-id="3899:9621">
+      <div className="softinsa-areas-hero d-flex flex-column justify-content-center" data-node-id="3899:9621">
         <h1>Áreas</h1>
         <p>Configuração das áreas de cada Service Line</p>
       </div>
 
-      <div className="softinsa-areas-toolbar">
-        <label className="softinsa-areas-search" aria-label="Pesquisar áreas">
+      <div className="softinsa-areas-toolbar d-flex align-items-center flex-wrap gap-3">
+        <label className="softinsa-areas-search d-inline-flex align-items-center" aria-label="Pesquisar áreas">
           <SearchIcon />
-          <input type="text" placeholder="Pesquisar por area, Service Line..." value={searchTerm} onChange={handleSearchChange} />
+          <input type="text" className="w-100" placeholder="Pesquisar por area, Service Line..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
-        <div className="softinsa-areas-filter-wrap" ref={filterWrapRef}>
-          <button type="button" className="softinsa-areas-filter-btn" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
+        <div className="softinsa-areas-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
+        <div className="softinsa-areas-filter-wrap d-inline-flex" ref={filterWrapRef}>
+          <button type="button" className="softinsa-areas-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
             <FilterIcon /><span>Filtro</span>
           </button>
 
           {isFilterOpen ? (
-            <div className="softinsa-areas-filter-panel" role="dialog" aria-label="Filtro de áreas">
-              <div className="softinsa-areas-filter-field">
+            <div className="softinsa-areas-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de áreas">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-learning-path">Learning Path</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select id="softinsa-areas-filter-learning-path" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
+                  <select id="softinsa-areas-filter-learning-path" className="w-100" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
                     <option value="">Selecione a Learning Path</option>
                     {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-              <div className="softinsa-areas-filter-field">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-service-line">Service Line</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select id="softinsa-areas-filter-service-line" value={filterDraft.serviceLine} onChange={(e) => handleFilterDraftChange("serviceLine", e.target.value)}>
+                  <select id="softinsa-areas-filter-service-line" className="w-100" value={filterDraft.serviceLine} onChange={(e) => handleFilterDraftChange("serviceLine", e.target.value)}>
                     <option value="">Selecione a Service Line</option>
                     {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-              <div className="softinsa-areas-filter-field">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-status">Estado</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select id="softinsa-areas-filter-status" value={filterDraft.status} onChange={(e) => handleFilterDraftChange("status", e.target.value)}>
+                  <select id="softinsa-areas-filter-status" className="w-100" value={filterDraft.status} onChange={(e) => handleFilterDraftChange("status", e.target.value)}>
                     <option value="">Selecione o estado</option>
                     {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-              <div className="softinsa-areas-filter-actions">
+              <div className="softinsa-areas-filter-actions w-100 d-inline-flex align-items-center">
                 <button type="button" className="softinsa-areas-filter-submit" onClick={handleApplyFilters}>Filtrar</button>
               </div>
             </div>
           ) : null}
         </div>
 
-        <button type="button" className="softinsa-areas-add-btn" onClick={handleOpenAddArea}>
-          <PlusIcon /><span>Adicionar Área</span>
+        <button type="button" className="softinsa-areas-export-btn d-inline-flex align-items-center" onClick={handleOpenExportAlert}>
+          <ExportIcon /><span>Exportar</span>
         </button>
+
+        <button type="button" className="softinsa-areas-add-btn d-inline-flex align-items-center" onClick={handleOpenAddArea}>
+          <PlusIcon /><span>Adicionar</span>
+        </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
         <button type="button" className="softinsa-areas-clear-filter-inline" onClick={handleClearFilters}>Remover filtros</button>
       ) : null}
 
-      <div className="softinsa-areas-table-meta">
+      <div className="softinsa-areas-table-meta d-inline-flex align-items-center flex-wrap">
         <span>Mostrar</span>
         <div className="softinsa-areas-entries-select-wrap">
           <select className="softinsa-areas-entries-select" aria-label="Entradas por página" value={entriesPerPage} onChange={handleEntriesChange}>
@@ -417,7 +412,7 @@ const SoftinsaAreas = memo(() => {
       </div>
 
       <div className="softinsa-areas-table-card">
-        <div className="softinsa-areas-table-scroll">
+        <div className="softinsa-areas-table-scroll w-100">
           <table className="softinsa-areas-table" aria-label="Tabela de áreas">
             <thead>
               <tr>
@@ -434,7 +429,7 @@ const SoftinsaAreas = memo(() => {
                     <td>{area.badges}</td>
                     <td>{area.status}</td>
                     <td>
-                      <button type="button" className="softinsa-areas-edit-btn" aria-label={`Editar ${area.name}`} onClick={() => handleOpenEditArea(area)}>
+                      <button type="button" className="softinsa-areas-edit-btn d-inline-flex align-items-center justify-content-center" aria-label={`Editar ${area.name}`} onClick={() => handleOpenEditArea(area)}>
                         <PencilIcon />
                       </button>
                     </td>
@@ -449,14 +444,11 @@ const SoftinsaAreas = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-areas-table-footer">
-          <button type="button" className="softinsa-areas-export-btn" onClick={handleOpenExportAlert}>
-            <ExportIcon /><span>Exportar</span>
-          </button>
-          <div className="softinsa-areas-pagination" aria-label="Paginação">
+        <div className="softinsa-areas-table-footer d-flex align-items-center justify-content-end">
+          <div className="softinsa-areas-pagination d-inline-flex align-items-center" aria-label="Paginação">
             <button type="button" className={`softinsa-areas-page-link${currentPage === 1 ? " is-disabled" : ""}`} onClick={handlePreviousPage} disabled={currentPage === 1}>Anterior</button>
             {pageNumbers.map((n) => (
-              <button key={n} type="button" className={`softinsa-areas-page-btn${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>
+              <button key={n} type="button" className={`softinsa-areas-page-btn d-inline-flex align-items-center justify-content-center${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>
             ))}
             <button type="button" className={`softinsa-areas-page-link${currentPage === totalPages ? " is-disabled" : ""}`} onClick={handleNextPage} disabled={currentPage === totalPages}>Próximo</button>
           </div>
@@ -464,23 +456,23 @@ const SoftinsaAreas = memo(() => {
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-areas-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
-          <div className="softinsa-areas-export-alert" role="dialog" aria-label="Exportar áreas" onClick={(e) => e.stopPropagation()}>
-            <div className="softinsa-areas-export-alert-header">
+        <div className="softinsa-areas-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
+          <div className="softinsa-areas-export-alert d-flex flex-column" role="dialog" aria-label="Exportar áreas" onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-areas-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Exportar</h3>
-              <button type="button" className="softinsa-areas-modal-close" aria-label="Fechar exportação" onClick={handleCloseExportAlert}><CloseIcon /></button>
+              <button type="button" className="softinsa-areas-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar exportação" onClick={handleCloseExportAlert}><CloseIcon /></button>
             </div>
-            <div className="softinsa-areas-export-alert-body">
+            <div className="softinsa-areas-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
-              <button type="button" className="softinsa-areas-export-option" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
-                <span className={`softinsa-areas-export-radio${exportFormat === "xlsx" ? " is-active" : ""}`}></span><span>Excel (.xlsx)</span>
+              <button type="button" className="softinsa-areas-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
+                <span className={`softinsa-areas-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "xlsx" ? " is-active" : ""}`}></span><span>Excel (.xlsx)</span>
               </button>
-              <button type="button" className="softinsa-areas-export-option" aria-pressed={exportFormat === "pdf"} onClick={() => setExportFormat("pdf")}>
-                <span className={`softinsa-areas-export-radio${exportFormat === "pdf" ? " is-active" : ""}`}></span><span>PDF (.pdf)</span>
+              <button type="button" className="softinsa-areas-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "pdf"} onClick={() => setExportFormat("pdf")}>
+                <span className={`softinsa-areas-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "pdf" ? " is-active" : ""}`}></span><span>PDF (.pdf)</span>
               </button>
             </div>
-            <div className="softinsa-areas-export-alert-actions">
+            <div className="softinsa-areas-export-alert-actions d-inline-flex align-items-center justify-content-end">
               <button type="button" className="softinsa-areas-export-cancel" onClick={handleCloseExportAlert}>Cancelar</button>
               <button type="button" className={`softinsa-areas-export-confirm${!exportFormat ? " is-disabled" : ""}`} onClick={handleConfirmExport} disabled={!exportFormat}>Exportar</button>
             </div>
@@ -489,67 +481,77 @@ const SoftinsaAreas = memo(() => {
       ) : null}
 
       {isModalOpen ? (
-        <div className="softinsa-areas-modal-backdrop" role="presentation" onClick={handleCloseModal}>
+        <div className="softinsa-areas-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseModal}>
           <div className="softinsa-areas-modal" data-node-id="3983:4909" role="dialog" aria-label={isEditMode ? "Editar Área" : "Adicionar Área"} onClick={(e) => e.stopPropagation()}>
-            <div className="softinsa-areas-modal-header">
+            <div className="softinsa-areas-modal-header d-flex align-items-center justify-content-between">
               <h2>{isEditMode ? "Editar Área" : "Adicionar Área"}</h2>
-              <button type="button" className="softinsa-areas-modal-close" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
+              <button type="button" className="softinsa-areas-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
             </div>
-            <form className="softinsa-areas-modal-form" onSubmit={handleSubmitArea}>
-              <div className="softinsa-areas-modal-field">
+            <form className="softinsa-areas-modal-form d-flex flex-column" onSubmit={handleSubmitArea}>
+              <div className="softinsa-areas-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-area-name">Nome:</label>
-                <input id="softinsa-area-name" type="text" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
+                <input id="softinsa-area-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
               </div>
-              <div className="softinsa-areas-modal-field">
+              <div className="softinsa-areas-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-area-description">Descrição:</label>
-                <textarea id="softinsa-area-description" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
+                <textarea id="softinsa-area-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-              <div className="softinsa-areas-modal-row-top">
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-learning-path" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+              <Row className="g-3 align-items-end">
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                        {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-service-line" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
-                      {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-service-line" className="w-100" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
+                        {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-status">Estado</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select id="softinsa-area-status" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-status">Estado</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="softinsa-areas-modal-row-bottom">
-                <div className="softinsa-areas-modal-field">
-                  <label>Icon</label>
-                  <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
-                  {formData.image ? (
-                    <img
-                      src={formData.image}
-                      alt="Pré-visualização"
-                      style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
-                    />
-                  ) : null}
-                </div>
-                <button type="submit" className="softinsa-areas-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+              </Row>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-areas-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

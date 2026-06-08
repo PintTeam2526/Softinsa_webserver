@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   HiOutlineCalendarDays,
@@ -7,7 +8,20 @@ import {
   HiOutlineXCircle,
   HiOutlineChevronRight,
 } from 'react-icons/hi2'
+import { Row, Col } from 'react-bootstrap'
 import './consultor-DashboardView.css'
+
+import { getDashboardConsultor } from '../../../controllers/dashboard.controller'
+
+
+const STATUS_MAP = {
+  'Expirado': { Icon: HiOutlineCalendarDays, statusClass: 'is-expired' },
+  'Devolvido': { Icon: HiOutlineDocumentText, statusClass: 'is-returned' },
+  'Em Análise': { Icon: HiOutlineClock, statusClass: 'is-analysis' },
+  'Aceite': { Icon: HiOutlineCheckCircle, statusClass: 'is-accepted' },
+  'Recusado': { Icon: HiOutlineXCircle, statusClass: 'is-refused' },
+}
+
 
 function IconAlertBell({ className }) {
   return (
@@ -40,107 +54,25 @@ function IconAlertSparkle({ className }) {
     </svg>
   )
 }
-import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
-import tm1 from '../../../assets/images/badges/tm_1.png'
-import devops2 from '../../../assets/images/badges/devops_2.png'
-import devops3 from '../../../assets/images/badges/devops_3.png'
-import devops4 from '../../../assets/images/badges/devops_4.png'
-
-
-const metricCards = [
-  { title: 'Área',          percent: 50, widthClass: 'is-area' },
-  { title: 'Service Line',  percent: 40, widthClass: 'is-service-line' },
-  { title: 'Learning Path', percent: 25, widthClass: 'is-learning-path' },
-]
 
 function openTopbarNotifications() {
   window.dispatchEvent(new CustomEvent('consultor:open-notifications'))
 }
 
-function slugify(value) {
-  return value
-    .toString()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function buildAlertCards(navigate) {
-  return [
-    {
-      type: 'is-message',
-      Icon: IconAlertBell,
-      title: 'Tem mensagens por ler',
-      subtitle: 'Acede agora às notificações, para ver mais',
-      onClick: openTopbarNotifications,
-    },
-    {
-      type: 'is-objective',
-      Icon: IconAlertTarget,
-      title: 'Objetivos Por Completar',
-      subtitleHighlight: '3 dias',
-      subtitle: 'até o próximo objetivo expirar',
-      onClick: () => navigate('/consultor/badges/objetivos'),
-    },
-    {
-      type: 'is-points',
-      Icon: IconAlertSparkle,
-      title: 'Pontuação total',
-      subtitle: 'Não pares por aqui, candidata-te a mais badges',
-      value: '550',
-    },
-  ]
-}
-
-const recommendedBadges = [
-  { image: outsystems1, name: 'Citizen Developer', subtitle: 'LowCode(Outsystems)' },
-  { image: tm1,         name: 'Team Lider Beginner', subtitle: 'Talent Management' },
-  { image: devops2,     name: 'DevOps Intermediate', subtitle: 'DevOps' },
-  { image: devops3,     name: 'DevOps Specialist',   subtitle: 'DevOps' },
-]
-
-const myBadges = [
-  {
-    image: outsystems1,
-    name: 'Citizen Developer',
-    status: 'Expirado',
-    Icon: HiOutlineCalendarDays,
-    statusClass: 'is-expired',
-  },
-  {
-    image: tm1,
-    name: 'Team Lider Beginner',
-    status: 'Devolvido',
-    Icon: HiOutlineDocumentText,
-    statusClass: 'is-returned',
-  },
-  {
-    image: devops2,
-    name: 'DevOps Intermediate',
-    status: 'Em Análise',
-    Icon: HiOutlineClock,
-    statusClass: 'is-analysis',
-  },
-  {
-    image: devops3,
-    name: 'DevOps Specialist',
-    status: 'Aceite',
-    Icon: HiOutlineCheckCircle,
-    statusClass: 'is-accepted',
-  },
-  {
-    image: devops4,
-    name: 'DevOps Expert',
-    status: 'Recusado',
-    Icon: HiOutlineXCircle,
-    statusClass: 'is-refused',
-  },
-]
-
 function DonutChart({ percent }) {
+  const centerX = 35
+  const centerY = 36
+  const radius = 34
+
+  // Calcular as coordenadas do arco baseado na percentagem
+  const angle = (percent / 100) * 360 - 90 // Começar no topo
+  const radians = (angle * Math.PI) / 180
+  const endX = centerX + radius * Math.cos(radians)
+  const endY = centerY + radius * Math.sin(radians)
+  const largeArcFlag = percent > 50 ? 1 : 0
+
+  const arcPath = `M ${centerX} ${centerY - radius} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -152,7 +84,7 @@ function DonutChart({ percent }) {
     >
       <circle cx="35" cy="36" r="34" stroke="#E9ECEF" strokeWidth="2" />
       <path
-        d="M35 2C43.3438 2 51.3962 5.06812 57.6245 10.6203C63.8529 16.1725 67.8221 23.8211 68.7767 32.1101C69.7313 40.399 67.6046 48.7497 62.8015 55.5723C57.9983 62.3949 45 70 35 70"
+        d={arcPath}
         stroke="#00B8E0"
         strokeWidth="4"
         strokeLinecap="round"
@@ -207,22 +139,24 @@ function AlertCard({ type, Icon, title, subtitle, subtitleHighlight, value, onCl
   )
 }
 
-function BadgeRow({ badge, isLarge = false, onClick }) {
+function BadgeRow({ badge, isLarge = false, onClick, navigate: propNavigate = null }) {
   const StatusIcon = badge.Icon
-  const isInteractive = typeof onClick === 'function'
+  const defaultNavigate = propNavigate || (() => {})
+  const handleClick = isLarge ? () => defaultNavigate('/consultor/badges/pedidos') : onClick
+  const isInteractive = typeof handleClick === 'function'
 
   function handleKeyDown(event) {
     if (!isInteractive) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      onClick()
+      handleClick()
     }
   }
 
   return (
     <div
       className={`consultor-dashboard-badge-row${isLarge ? ' is-my-badge' : ''}${isInteractive ? ' is-clickable' : ''}`}
-      onClick={isInteractive ? onClick : undefined}
+      onClick={isInteractive ? handleClick : undefined}
       onKeyDown={handleKeyDown}
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
@@ -252,30 +186,94 @@ function BadgeRow({ badge, isLarge = false, onClick }) {
   )
 }
 
+function resolveImagem(imagem_badge) {
+  if (!imagem_badge) return null
+  if (imagem_badge.startsWith('data:')) return imagem_badge
+  return `data:image/png;base64,${imagem_badge}`
+}
+
+
 function DashboardView() {
   const navigate = useNavigate()
-  const alertCards = buildAlertCards(navigate)
+
+  const [dados, setDados] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState(null)
+
+  useEffect(() => {
+    getDashboardConsultor()
+      .then(setDados)
+      .catch(() => setErro('Não foi possível carregar o dashboard.'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <p className="consultor-dashboard-loading">A carregar...</p>
+  if (erro) return <p className="consultor-dashboard-error">{erro}</p>
+
+  const metricCards = [
+    { title: 'Área', percent: Math.round(dados.progresso_area), widthClass: 'is-area' },
+    { title: 'Service Line', percent: Math.round(dados.progresso_service_line), widthClass: 'is-service-line' },
+    { title: 'Learning Path', percent: Math.round(dados.progresso_learning_path), widthClass: 'is-learning-path' },
+  ]
+
+  const diasLabel = dados.dias_proximo_objetivo < 0
+    ? `Expirado há ${Math.abs(dados.dias_proximo_objetivo)} dias`
+    : `${dados.dias_proximo_objetivo} ${dados.dias_proximo_objetivo === 1 ? 'dia' : 'dias'}`
+
+  const alertCards = [
+    {
+      type: 'is-message',
+      Icon: IconAlertBell,
+      title: 'Tem mensagens por ler',
+      subtitle: 'Acede agora às notificações, para ver mais',
+      onClick: openTopbarNotifications,
+    },
+    {
+      type: 'is-objective',
+      Icon: IconAlertTarget,
+      title: 'Objetivos Por Completar',
+      subtitleHighlight: diasLabel,
+      subtitle: dados.dias_proximo_objetivo < 0 ? '' : 'até o próximo objetivo expirar',
+      onClick: () => navigate('/consultor/badges/objetivos'),
+    },
+    {
+      type: 'is-points',
+      Icon: IconAlertSparkle,
+      title: 'Pontuação total',
+      subtitle: 'Não pares por aqui, candidata-te a mais badges',
+      value: String(dados.pontos_consultor),
+    },
+  ]
+
+  const myBadges = (dados.pedidos_badge ?? []).map(pedido => ({
+    image: resolveImagem(pedido.imagem_badge),
+    name: pedido.nome_badge,
+    status: pedido.estado_atual,
+    ...(STATUS_MAP[pedido.estado_atual] ?? { Icon: null, statusClass: '' }),
+  }))
 
   return (
     <section className="consultor-dashboard-page">
       <header className="consultor-dashboard-hero">
         <div className="consultor-dashboard-hero-copy">
-          <h1>Olá, António Portugal!</h1>
+          <h1>Olá, {dados.nome_consultor}!</h1>
           <p>Estamos aqui para te ajudar a melhorar o currículo</p>
         </div>
       </header>
 
-      <section className="consultor-dashboard-summary" aria-label="Métricas">
+      <Row as="section" className="g-4 justify-content-center mb-4" aria-label="Métricas">
         {metricCards.map((metric) => (
-          <article key={metric.title} className={`consultor-dashboard-summary-card ${metric.widthClass}`}>
-            <div className="consultor-dashboard-summary-copy">
-              <h2>{metric.title}</h2>
-              <p>{metric.percent}%</p>
-            </div>
-            <DonutChart percent={metric.percent} />
-          </article>
+          <Col xs={12} sm={6} lg={4} key={metric.title}>
+            <article className={`consultor-dashboard-summary-card w-100 ${metric.widthClass}`}>
+              <div className="consultor-dashboard-summary-copy">
+                <h2>{metric.title}</h2>
+                <p>{metric.percent}%</p>
+              </div>
+              <DonutChart percent={metric.percent} />
+            </article>
+          </Col>
         ))}
-      </section>
+      </Row>
 
       <section className="consultor-dashboard-alerts" aria-label="Alertas">
         {alertCards.map((alert) => (
@@ -283,25 +281,21 @@ function DashboardView() {
         ))}
       </section>
 
-      <section className="consultor-dashboard-bottom-grid is-single" aria-label="Badges">
-        <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
-          <button
-            type="button"
-            className="consultor-dashboard-card-header consultor-dashboard-card-header--with-action consultor-dashboard-card-header-btn"
-            onClick={() => navigate('/consultor/badges/pedidos')}
-            aria-label="Ver todos os meus badges em Pedidos"
-          >
-            <h2>Os meus badges</h2>
-            <HiOutlineChevronRight className="consultor-dashboard-card-chevron" aria-hidden="true" />
-          </button>
+      <Row as="section" className="justify-content-center mb-5" aria-label="Badges">
+        <Col xs={12} xl={8}>
+          <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
+            <div className="consultor-dashboard-card-header">
+              <h2>Os meus badges</h2>
+            </div>
 
-          <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
-            {myBadges.map((badge, i) => (
-              <BadgeRow key={i} badge={badge} isLarge />
-            ))}
-          </div>
-        </article>
-      </section>
+            <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
+              {myBadges.map((badge, i) => (
+                <BadgeRow key={i} badge={badge} isLarge navigate={navigate} />
+              ))}
+            </div>
+          </article>
+        </Col>
+      </Row>
     </section>
   )
 }

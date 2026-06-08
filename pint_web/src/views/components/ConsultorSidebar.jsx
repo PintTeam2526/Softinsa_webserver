@@ -1,7 +1,10 @@
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 import { HiOutlineChevronRight } from 'react-icons/hi2'
 import './softinsa-sidebar.css'
+
+import { getSideBarConsultor } from '../../controllers/sidebar.controller'
+
 
 const iconSvgProps = {
   xmlns: 'http://www.w3.org/2000/svg',
@@ -74,6 +77,22 @@ function IconOutrasAreas({ className }) {
   )
 }
 
+const ICON_MAP = {
+  IconDashboard,
+  IconArea,
+  IconPedidos,
+  IconListaBadges,
+  IconObjetivos,
+  IconConquistas,
+  IconOutrasAreas,
+}
+
+function DynamicIcon({ name, className }) {
+  const Icon = ICON_MAP[name]
+  if (!Icon) return null
+  return <Icon className={className} />
+}
+
 function SoftinsaLogo() {
   return (
     <svg
@@ -90,11 +109,7 @@ function SoftinsaLogo() {
         <path fillRule="evenodd" clipRule="evenodd" d="M53.7852 42.2503C54.6958 42.2558 55.5994 42.0899 56.449 41.7613C57.2811 41.4387 58.0293 40.9309 58.6373 40.2762C59.3009 39.5394 59.8002 38.6691 60.102 37.7235C60.4809 36.5294 60.6612 35.281 60.6358 34.0282C60.6358 31.1785 60.0521 29.0166 58.8847 27.5424C57.7173 26.0683 56.0176 25.3315 53.7857 25.3322C51.5524 25.3322 49.8398 26.069 48.6477 27.5424C47.4557 29.0159 46.8592 31.1773 46.8582 34.0266C46.8582 36.8763 47.4607 38.9594 48.6659 40.2762C49.8711 41.5929 51.5775 42.251 53.7852 42.2503ZM53.7852 46.5623C49.8779 46.5623 46.8776 45.4752 44.7843 43.3012C42.691 41.1271 41.6443 37.9994 41.6443 33.9182C41.6182 32.0626 41.8881 30.2149 42.4437 28.4448C42.923 26.9186 43.7281 25.5155 44.803 24.3329C45.8613 23.1981 47.1628 22.319 48.6093 21.762C50.2637 21.1428 52.0197 20.8421 53.7852 20.8758C55.544 20.8457 57.2929 21.1462 58.9413 21.762C60.3902 22.3127 61.6879 23.2004 62.7279 24.3522C63.7817 25.5578 64.5725 26.971 65.0497 28.5011C65.6058 30.2889 65.8755 32.154 65.8486 34.0266C65.8486 38.1808 64.8148 41.3085 62.7471 43.4096C60.6795 45.5107 57.6922 46.5616 53.7852 46.5623Z" fill="#39639C" />
         <path fillRule="evenodd" clipRule="evenodd" d="M97.0174 45.7298V25.8744H89.4053V21.6719H109.957L106.237 25.8744H102.308V45.7298H97.0174Z" fill="#00B8E0" />
         <path fillRule="evenodd" clipRule="evenodd" d="M110.059 45.7298V25.8754L113.78 21.6719H115.349V45.7298H110.059Z" fill="#00B8E0" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M110.059 45.7298V25.8754L113.78 21.6719H115.349V45.7298H110.059Z" fill="black" fillOpacity="0.2" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M110.059 45.7298V25.8754L113.78 21.6719H115.349V45.7298H110.059Z" fill="black" fillOpacity="0.2" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M110.059 45.7298V25.8754L113.78 21.6719H115.349V45.7298H110.059Z" fill="#00B8E0" />
         <path fillRule="evenodd" clipRule="evenodd" d="M134.699 45.7298L123.891 29.5703V45.7298H118.981V21.6719H124.575L134.623 37.1428V21.6719H139.569V45.7298H134.699Z" fill="#39639C" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M134.699 45.7298L123.891 29.5703V45.7298H118.981V21.6719H124.575L134.623 37.1428V21.6719H139.569V45.7298H134.699Z" fill="black" fillOpacity="0.2" />
         <path fillRule="evenodd" clipRule="evenodd" d="M157.496 28.7737C157.472 28.24 157.334 27.7177 157.091 27.2424C156.848 26.767 156.505 26.3499 156.087 26.0193C155.275 25.4163 154.057 25.1145 152.434 25.1138C149.441 25.1138 147.944 26.0921 147.943 28.0486C147.944 28.3957 148.029 28.7373 148.192 29.0437C148.354 29.3501 148.589 29.6119 148.876 29.8064C149.783 30.3954 150.799 30.796 151.863 30.9844C153.486 31.3462 154.894 31.6842 156.087 31.9983C157.202 32.2867 158.296 32.6498 159.362 33.0852C159.915 33.3005 160.444 33.5738 160.941 33.9005C161.432 34.2224 161.858 34.6341 162.197 35.114C162.561 35.6456 162.838 36.2328 163.015 36.853C163.233 37.6553 163.335 38.485 163.318 39.3165C163.339 40.3923 163.077 41.4547 162.559 42.3968C162.047 43.2937 161.345 44.0668 160.503 44.6612C159.578 45.3064 158.547 45.7846 157.458 46.0744C156.256 46.4047 155.014 46.569 153.768 46.5628C150.089 46.5628 147.324 45.8865 145.472 44.534C143.62 43.1814 142.642 41.1768 142.538 38.52H147.639C147.637 39.0997 147.78 39.6706 148.056 40.1801C148.332 40.6896 148.731 41.1215 149.216 41.436C150.363 42.1835 151.713 42.5571 153.08 42.5057C154.755 42.5057 156.024 42.2155 156.885 41.6352C157.288 41.3905 157.619 41.0442 157.846 40.6309C158.073 40.2176 158.188 39.7518 158.18 39.28C158.183 38.9185 158.132 38.5586 158.027 38.2125C157.914 37.8685 157.71 37.5614 157.438 37.3237C157.082 37.0209 156.676 36.7821 156.239 36.6179C155.597 36.3745 154.935 36.1865 154.261 36.0559C152.331 35.6705 150.663 35.2782 149.255 34.8789C148.027 34.5587 146.854 34.0579 145.773 33.3927C144.92 32.8674 144.224 32.1233 143.754 31.2373C143.289 30.2286 143.067 29.1239 143.108 28.0132C143.102 27.0533 143.296 26.1029 143.68 25.2233C144.073 24.338 144.673 23.5612 145.43 22.9589C146.298 22.2758 147.285 21.7597 148.341 21.4367C149.668 21.0374 151.048 20.8477 152.434 20.8743C153.824 20.8562 155.209 21.0456 156.543 21.4362C157.679 21.7692 158.744 22.3096 159.684 23.0303C160.542 23.6992 161.238 24.5547 161.719 25.5324C162.209 26.5454 162.481 27.6502 162.518 28.7753L157.496 28.7737Z" fill="#39639C" />
         <path fillRule="evenodd" clipRule="evenodd" d="M176.409 27.0707H176.373L173.138 36.6351H179.569L176.409 27.0707ZM182.69 45.7324L181.091 40.7683H171.768L169.98 45.7324H164.384L173.403 21.6719H179.53L188.436 45.7298L182.69 45.7324Z" fill="#39639C" />
         <path fillRule="evenodd" clipRule="evenodd" d="M74.2031 35.5842V45.7298H68.9133V31.3452H85.3158V35.5842H74.2031Z" fill="#39639C" />
@@ -116,100 +131,101 @@ function SoftinsaLogo() {
   )
 }
 
-const storageKey = 'softinsa-sidebar-collapsed'
+function buildSections(data) {
+  const areaSubItems = (data.badges ?? []).map((badge) => ({
+    text: badge.nome_badge,
+    to: `/consultor/badge/${badge.id}`,
+  }))
 
-const navigationSections = [
-  {
-    title: 'Home',
-    items: [{ text: 'Dashboard', icon: IconDashboard, to: '/consultor/dashboard', end: true }],
-  },
-  {
-    title: 'Área',
-    items: [
-      {
-        text: 'LowCode\n(Outsystems)',
-        icon: IconArea,
-        to: '/consultor/area/lowcode',
-        hasDropdown: true,
-        subItems: [
-          { text: 'Citizen Developer', to: '/consultor/area/lowcode/citizen-developer' },
-          { text: 'Low-Code Builder', to: '/consultor/area/lowcode/low-code-builder' },
-          { text: 'Application Creator', to: '/consultor/area/lowcode/application-creator' },
-          { text: 'Full-Stack Low-Code', to: '/consultor/area/lowcode/full-stack-low-code' },
-          { text: 'Elite OutSystems', to: '/consultor/area/lowcode/elite-outsystems' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Badges',
-    items: [
-      {
-        text: 'Pedidos',
-        icon: IconPedidos,
-        to: '/consultor/badges/pedidos',
-      },
-      {
-        text: 'Listas de Badges',
-        icon: IconListaBadges,
-        to: '/consultor/badges/listas-badges',
-      },
-      {
-        text: 'Objetivos',
-        icon: IconObjetivos,
-        to: '/consultor/badges/objetivos',
-      },
-      {
-        text: 'Conquistas',
-        icon: IconConquistas,
-        to: '/consultor/badges/conquistas',
-      },
-      {
-        text: 'Outras Áreas',
-        icon: IconOutrasAreas,
-        to: '/consultor/badges/outras-areas',
-      },
-    ],
-  },
-]
+  return [
+    {
+      title: 'Home',
+      items: [
+        {
+          text: 'Dashboard',
+          icon: 'IconDashboard',
+          to: '/consultor/dashboard',
+          end: true,
+        },
+      ],
+    },
+    {
+      title: 'Área Pessoal',
+      items: [
+        {
+          text: data.nome_area,
+          icon: 'IconArea',
+          to: '/consultor/area',
+          hasDropdown: areaSubItems.length > 0,
+          subItems: areaSubItems,
+        },
+      ],
+    },
+    {
+      title: 'Badges',
+      items: [
+        { text: 'Pedidos', icon: 'IconPedidos', to: '/consultor/badges/pedidos' },
+        { text: 'Listas de Badges', icon: 'IconListaBadges', to: '/consultor/badges/listas-badges' },
+        { text: 'Objetivos', icon: 'IconObjetivos', to: '/consultor/badges/objetivos' },
+        { text: 'Conquistas', icon: 'IconConquistas', to: '/consultor/badges/conquistas' },
+        { text: 'Outras Áreas', icon: 'IconOutrasAreas', to: '/consultor/badges/outras-areas' },
+      ],
+    },
+  ]
+}
+
+const STORAGE_KEY = 'softinsa-sidebar-collapsed'
 
 function SidebarItem({ item, collapsed, isOpen, onToggle }) {
-  const Icon = item.icon
+  if (item.subItems?.length) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`softinsa-sidebar-item${collapsed ? ' is-collapsed' : ''}`}
+        title={item.text.replace(/\n/g, ' ')}
+      >
+        <span className="softinsa-sidebar-item-icon-wrap">
+          <DynamicIcon name={item.icon} className="softinsa-sidebar-item-icon" />
+        </span>
 
-  const handleClick = () => {
-    if (item.subItems && onToggle) {
-      onToggle()
-    }
+        {!collapsed && (
+          <>
+            <span className="softinsa-sidebar-item-text">
+              {item.text.split('\n').map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+            <HiOutlineChevronRight
+              className={`softinsa-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
+              aria-hidden="true"
+            />
+          </>
+        )}
+      </button>
+    )
   }
 
   return (
     <NavLink
       to={item.to}
       end={item.end}
-      onClick={handleClick}
       className={({ isActive }) =>
         `softinsa-sidebar-item${isActive ? ' active' : ''}${collapsed ? ' is-collapsed' : ''}`
       }
       title={item.text.replace(/\n/g, ' ')}
     >
       <span className="softinsa-sidebar-item-icon-wrap">
-        <Icon className="softinsa-sidebar-item-icon" aria-hidden="true" />
+        <DynamicIcon name={item.icon} className="softinsa-sidebar-item-icon" />
       </span>
 
-      {!collapsed ? (
+      {!collapsed && (
         <span className="softinsa-sidebar-item-text">
           {item.text.split('\n').map((line) => (
             <span key={line}>{line}</span>
           ))}
         </span>
-      ) : null}
-
-      {!collapsed && item.hasDropdown ? (
-        <HiOutlineChevronRight
-          className={`softinsa-sidebar-item-chevron${isOpen ? ' is-open' : ''}`}
-          aria-hidden="true"
-        />
-      ) : null}
+      )}
     </NavLink>
   )
 }
@@ -234,31 +250,82 @@ function SidebarSubItems({ items }) {
   )
 }
 
+function SidebarSkeleton({ collapsed }) {
+  return (
+    <div className="softinsa-sidebar-skeleton" aria-busy="true" aria-label="A carregar navegação">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <div
+          key={n}
+          className={`softinsa-sidebar-skeleton-row${collapsed ? ' is-collapsed' : ''}`}
+        />
+      ))}
+    </div>
+  )
+}
+
+function SidebarError({ message, onRetry }) {
+  return (
+    <div className="softinsa-sidebar-error" role="alert">
+      <span className="softinsa-sidebar-error-message">{message}</span>
+      <button type="button" className="softinsa-sidebar-error-retry" onClick={onRetry}>
+        Tentar novamente
+      </button>
+    </div>
+  )
+}
+
 function ConsultorSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (typeof window === 'undefined') {
-      return false
-    }
-
-    return window.localStorage.getItem(storageKey) === 'true'
+    if (typeof window === 'undefined') return false
+    if (window.innerWidth < 768) return true
+    return window.localStorage.getItem(STORAGE_KEY) === 'true'
   })
 
   const [openDropdowns, setOpenDropdowns] = useState({})
+  const [navigationSections, setNavigationSections] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const toggleDropdown = (key) => {
-    setOpenDropdowns((previous) => ({ ...previous, [key]: !previous[key] }))
-  }
+  const toggleDropdown = useCallback((key) => {
+    setOpenDropdowns((prev) => ({ ...prev, [key]: !prev[key] }))
+  }, [])
+
+  const loadSidebar = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getSideBarConsultor()
+      setNavigationSections(buildSections(data))
+    } catch (err) {
+      console.error('Erro ao carregar sidebar', err)
+      setError('Não foi possível carregar a navegação.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, String(isCollapsed))
+    loadSidebar()
+  }, [loadSidebar])
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEY, String(isCollapsed))
   }, [isCollapsed])
+
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth < 768) setIsCollapsed(true)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   return (
     <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
       <button
         type="button"
         className="softinsa-sidebar-toggle"
-        onClick={() => setIsCollapsed((previousValue) => !previousValue)}
+        onClick={() => setIsCollapsed((v) => !v)}
         aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'}
         aria-expanded={!isCollapsed}
       >
@@ -288,15 +355,26 @@ function ConsultorSidebar() {
         <div className="softinsa-sidebar-top-line" />
 
         <div className="softinsa-sidebar-sections">
-          {navigationSections.map((section) => (
-            <section key={section.title} className="softinsa-sidebar-section" aria-label={section.title}>
-              {!isCollapsed ? <div className="softinsa-sidebar-title">{section.title}</div> : null}
+          {loading && <SidebarSkeleton collapsed={isCollapsed} />}
+
+          {!loading && error && (
+            <SidebarError message={error} onRetry={loadSidebar} />
+          )}
+
+          {!loading && !error && navigationSections.map((section) => (
+            <section
+              key={section.title}
+              className="softinsa-sidebar-section"
+              aria-label={section.title}
+            >
+              {!isCollapsed ? (
+                <div className="softinsa-sidebar-title">{section.title}</div>
+              ) : null}
 
               <div className="softinsa-sidebar-items">
                 {section.items.map((item) => {
                   const isOpen = Boolean(openDropdowns[item.to])
-                  const showSubItems =
-                    !isCollapsed && item.subItems && item.subItems.length > 0 && isOpen
+                  const showSubItems = !isCollapsed && item.subItems?.length > 0 && isOpen
 
                   return (
                     <div key={item.to} className="softinsa-sidebar-item-group">

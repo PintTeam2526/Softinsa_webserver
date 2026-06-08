@@ -4,12 +4,6 @@
 }
 
 .softinsa-pedidos-hero {
-  min-height: 155px;
-  border-radius: 0 0 1rem 1rem;
-  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   gap: 8px;
   padding: 35px 41px;
   margin: 0 -24px 18px;
@@ -33,9 +27,6 @@
 }
 
 .softinsa-pedidos-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   margin-bottom: 18px;
 }
 
@@ -45,15 +36,12 @@
   border-radius: 4px;
   background: #ffffff;
   padding: 8px 16px;
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
   flex: 1;
   min-width: 240px;
 }
 
 .softinsa-pedidos-search input {
-  width: 100%;
   border: 0;
   outline: 0;
   color: #8a92a6;
@@ -75,7 +63,6 @@
 
 .softinsa-pedidos-filter-wrap {
   position: relative;
-  display: inline-flex;
 }
 
 .softinsa-pedidos-filter-btn,
@@ -97,8 +84,6 @@
   line-height: 1.75;
   font-weight: 400;
   padding: 8px 24px;
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
   cursor: pointer;
 }
@@ -118,14 +103,10 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 24px;
   z-index: 70;
-  display: flex;
-  flex-direction: column;
   gap: 20px;
 }
 
 .softinsa-pedidos-filter-field {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
@@ -145,7 +126,6 @@
 }
 
 .softinsa-pedidos-select-wrap select {
-  width: 100%;
   height: 32px;
   border: 0;
   border-radius: 4px;
@@ -178,16 +158,10 @@
 }
 
 .softinsa-pedidos-filter-actions {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
 }
 
 .softinsa-pedidos-date-range-wrap {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
 }
 
@@ -240,14 +214,11 @@
 }
 
 .softinsa-pedidos-table-meta {
-  display: inline-flex;
-  align-items: center;
   gap: 12px;
   color: #8a92a6;
   font-size: 16px;
   line-height: 1.75;
   margin-bottom: 12px;
-  flex-wrap: wrap;
 }
 
 .softinsa-pedidos-entries-select-wrap {
@@ -303,7 +274,6 @@
 }
 
 .softinsa-pedidos-table-scroll {
-  width: 100%;
   overflow-x: auto;
 }
 
@@ -350,8 +320,6 @@
 }
 
 .softinsa-pedidos-name-cell {
-  display: inline-flex;
-  align-items: center;
   gap: 16px;
 }
 
@@ -360,7 +328,6 @@
   height: 45px;
   object-fit: cover;
   border-radius: 100px;
-  flex-shrink: 0;
 }
 
 .softinsa-pedidos-name {
@@ -383,9 +350,6 @@
 }
 
 .softinsa-pedidos-status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 999px;
   font-size: 13px;
   line-height: 1;
@@ -409,18 +373,12 @@
 }
 
 .softinsa-pedidos-actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   gap: 6px;
 }
 
 .softinsa-pedidos-action-btn {
   width: 18px;
   height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -437,26 +395,23 @@
 .softinsa-pedidos-table-footer {
   border-top: 1px solid #eeeeee;
   padding: 8px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
 .softinsa-pedidos-export-btn {
   border: 0;
   border-radius: 4px;
-  background: #3a57e8;
+  background: #39639c;
   color: #ffffff;
   font-size: 16px;
   line-height: 1.75;
   font-weight: 400;
-  padding: 3px 20px;
-  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
-  display: inline-flex;
-  align-items: center;
+  height: 42px;
+  padding: 0 20px;
+  box-shadow: 0 2px 6px rgba(57, 99, 156, 0.2);
   gap: 10px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .softinsa-pedidos-modal-backdrop {
@@ -464,9 +419,6 @@
   inset: 0;
   z-index: 120;
   background: rgba(35, 45, 66, 0.22);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
   padding: 76px 16px 24px;
 }
 
@@ -476,15 +428,7 @@
   background: #ffffff;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 24px;
-}
-
-.softinsa-pedidos-export-alert-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .softinsa-pedidos-export-alert-header h3 {
@@ -501,9 +445,6 @@
   width: 30px;
   height: 30px;
   color: #8a92a6;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   padding: 0;
 }
@@ -515,8 +456,6 @@
 }
 
 .softinsa-pedidos-export-alert-body {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
@@ -540,8 +479,6 @@
   border: 0;
   background: transparent;
   padding: 0;
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
   color: #8a92a6;
   font-size: 16px;
@@ -555,10 +492,6 @@
   width: 16px;
   height: 16px;
   border: 1px solid #3a57e8;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .softinsa-pedidos-export-radio::after {
@@ -575,9 +508,6 @@
 }
 
 .softinsa-pedidos-export-alert-actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 15px;
 }
 
@@ -607,11 +537,6 @@
   cursor: not-allowed;
 }
 
-.softinsa-pedidos-pagination {
-  display: inline-flex;
-  align-items: center;
-}
-
 .softinsa-pedidos-page-link {
   color: #3a57e8;
   font-size: 16px;
@@ -634,9 +559,6 @@
   font-size: 16px;
   line-height: 1.75;
   font-weight: 400;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -645,113 +567,3 @@
   color: #ffffff;
 }
 
-@media (max-width: 992px) {
-  .softinsa-pedidos-page {
-    padding: 0 16px 20px;
-  }
-
-  .softinsa-pedidos-hero {
-    margin: 0 -16px 16px;
-    padding: 24px 20px;
-  }
-
-  .softinsa-pedidos-toolbar {
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-
-  .softinsa-pedidos-search {
-    min-width: 100%;
-    order: 2;
-  }
-
-  .softinsa-pedidos-filter-btn {
-    order: 1;
-  }
-
-  .softinsa-pedidos-filter-panel {
-    right: auto;
-    left: 0;
-    width: min(360px, calc(100vw - 52px));
-  }
-
-  .softinsa-pedidos-date-range-wrap {
-    flex-wrap: wrap;
-  }
-
-  .softinsa-pedidos-date-input {
-    width: calc(50% - 17px);
-    min-width: 118px;
-  }
-
-  .softinsa-pedidos-table-footer {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .softinsa-pedidos-export-alert {
-    width: min(400px, calc(100vw - 24px));
-  }
-
-  .softinsa-pedidos-export-alert-header h3 {
-    font-size: 32px;
-  }
-}
-
-@media (max-width: 576px) {
-  .softinsa-pedidos-hero h1 {
-    font-size: 30px;
-  }
-
-  .softinsa-pedidos-hero p {
-    font-size: 16px;
-  }
-
-  .softinsa-pedidos-filter-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .softinsa-pedidos-table-meta {
-    font-size: 14px;
-  }
-
-  .softinsa-pedidos-pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .softinsa-pedidos-filter-panel {
-    left: 0;
-    width: min(360px, calc(100vw - 26px));
-    padding: 16px;
-  }
-
-  .softinsa-pedidos-date-input {
-    width: 100%;
-  }
-
-  .softinsa-pedidos-date-range-separator {
-    width: 100%;
-    text-align: center;
-  }
-
-  .softinsa-pedidos-filter-actions {
-    flex-direction: column;
-  }
-
-  .softinsa-pedidos-filter-clear,
-  .softinsa-pedidos-filter-submit {
-    width: 100%;
-  }
-
-  .softinsa-pedidos-export-alert-actions {
-    width: 100%;
-  }
-
-  .softinsa-pedidos-export-cancel,
-  .softinsa-pedidos-export-confirm {
-    width: 100%;
-  }
-}

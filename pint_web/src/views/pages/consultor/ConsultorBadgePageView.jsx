@@ -5,7 +5,11 @@ import {
   HiOutlineCurrencyEuro, HiOutlineStar, HiOutlinePaperClip,
   HiOutlineShare, HiOutlineXMark, HiStar,
   HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineArrowUturnLeft,
+  HiOutlineCalendarDays, HiOutlineArrowDownTray,
+  HiOutlineLink,
+  HiOutlineClipboard,
 } from 'react-icons/hi2'
+import { Row, Col } from 'react-bootstrap'
 import './ConsultorBadgePageView.css'
 
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
@@ -18,8 +22,6 @@ import { getRequisitosByBadge } from '../../../controllers/requisitosController'
 import { getPedidos, uploadDocumentacao, createPedido, getPedidoHistorico } from '../../../controllers/pedidosController'
 
 // ─── imagem ───────────────────────────────────────────────────────────────────
-// As imagens vêm da BD como base64 puro ou com prefixo data URL.
-// O outsystems1 é só fallback genérico para quando não há imagem.
 
 function resolveImage(raw) {
   if (!raw) return outsystems1
@@ -50,10 +52,13 @@ function normalizeBadge(raw, requisitosRaw = [], resolved = {}) {
     isSpecial: raw.especial ?? raw.isSpecial ?? false,
     isFavorite: raw.favorito ?? raw.isFavorite ?? false,
     image: resolveImage(raw.imagem_badge ?? raw.imagem ?? raw.image ?? null),
+    pago: raw.pago ?? null,
+    validade: raw.validade ?? null,
+    dataInsercao: raw.data_insercao ?? null,
     area: resolved.area ?? raw.Area?.nome_area ?? raw.area?.nome ?? raw.area ?? '—',
     serviceLine: resolved.serviceLine ?? raw.ServiceLine?.nome_service_line ?? raw.serviceLine?.nome ?? raw.serviceLine ?? '—',
     learningPath: resolved.learningPath ?? raw.LearningPath?.nome_learning_path ?? raw.learningPath?.nome ?? raw.learningPath ?? '—',
-    status: raw.status ?? 'Em Análise',
+    status: raw.status ?? 'Submetido',
     devolucao: {
       data: raw.devolucao?.data ?? '—',
       avaliador: raw.devolucao?.avaliador ?? '—',
@@ -61,9 +66,10 @@ function normalizeBadge(raw, requisitosRaw = [], resolved = {}) {
     },
     requisitos: requisitosRaw.length > 0
       ? requisitosRaw.map(normalizeRequisito)
-      : REQUISITOS_PLACEHOLDER,
+      : [],
   }
 }
+
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -83,6 +89,13 @@ function fileToBase64(file) {
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
+}
+
+function calcularDataExpiracao(dataBase, validadeDias) {
+  if (!dataBase || validadeDias == null) return null
+  const data = new Date(dataBase)
+  data.setDate(data.getDate() + Number(validadeDias))
+  return data.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 const PT_MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
@@ -106,7 +119,7 @@ function UploadRow({ id, accept, onFileChange }) {
     <div className="consultor-badge-upload-row">
       <label htmlFor={inputId} className="consultor-badge-upload-btn">
         <HiOutlinePaperClip aria-hidden="true" />
-        <span>Escolher ficheiro</span>
+        <span>Ficheiro</span>
       </label>
       <input id={inputId} type="file" accept={accept} onChange={handleChange} className="consultor-badge-upload-input" />
       <span className="consultor-badge-upload-name" title={file?.name ?? ''}>
@@ -133,14 +146,7 @@ function ShareModal({ badge, onClose }) {
     return () => { document.removeEventListener('mousedown', onOut); document.removeEventListener('keydown', onEsc) }
   }, [onClose])
 
-  const badgeUrl = window.location.href
-
-  function handleEmailExport() {
-    const s = encodeURIComponent(`Badge Softinsa: ${badge.name}`)
-    const b = encodeURIComponent(`Olá,\n\nQuero partilhar o meu badge "${badge.name}" — ${badge.level}.\n\n${badgeUrl}`)
-    window.location.href = `mailto:?subject=${s}&body=${b}`
-    onClose()
-  }
+  const badgeUrl = `${window.location.origin}/badges/${badge.id}`
 
   function handleLinkedInPublish() {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(badgeUrl)}`, '_blank', 'noopener,noreferrer')
@@ -182,6 +188,21 @@ function ShareModal({ badge, onClose }) {
     onClose()
   }
 
+  async function handleImageDownload() {
+    try {
+      const response = await fetch(badge.image)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `badge-${badge.name.toLowerCase().replace(/\s+/g, '-')}.png`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // fallback: abre em nova aba para o utilizador guardar manualmente
+      window.open(badge.image, '_blank', 'noopener,noreferrer')
+    }
+  }
 
   return (
     <div className="consultor-badge-share-backdrop" role="presentation">
@@ -199,9 +220,44 @@ function ShareModal({ badge, onClose }) {
 
         {activeTab === 'email' && (
           <div className="consultor-badge-share-body">
-            <div className="consultor-badge-share-field"><label>Imagem:</label><span className="consultor-badge-share-field-value">link para descarregar a imagem do badge</span></div>
-            <div className="consultor-badge-share-field"><label>Link do Badge:</label><span className="consultor-badge-share-field-value">{badgeUrl}</span></div>
-            <div className="consultor-badge-share-actions"><button type="button" className="consultor-badge-share-submit" onClick={handleEmailExport}>Exportar</button></div>
+
+            {/* Preview do badge */}
+            <div className="consultor-badge-share-email-preview">
+              <img src={badge.image} alt={badge.name} className="consultor-badge-share-email-preview-img" />
+              <div className="consultor-badge-share-email-preview-info">
+                <p className="consultor-badge-share-email-preview-name">{badge.name}</p>
+                <p className="consultor-badge-share-email-preview-meta">{badge.level} · {badge.area}</p>
+              </div>
+            </div>
+
+            {/* Imagem */}
+            <div className="consultor-badge-share-field">
+              <span className="consultor-badge-share-field-section-label">Imagem do badge</span>
+              <div className="consultor-badge-share-field-row">
+                <HiOutlinePaperClip className="consultor-badge-share-field-row-icon" aria-hidden="true" />
+                <span className="consultor-badge-share-field-value">
+                  badge-{badge.name.toLowerCase().replace(/\s+/g, '-')}.png
+                </span>
+                <button type="button" className="consultor-badge-share-download-btn" onClick={handleImageDownload}>
+                  <HiOutlineArrowDownTray aria-hidden="true" />
+                  Descarregar
+                </button>
+              </div>
+            </div>
+
+            {/* Link público */}
+            <div className="consultor-badge-share-field">
+              <span className="consultor-badge-share-field-section-label">Link público</span>
+              <div className="consultor-badge-share-field-row">
+                <HiOutlineLink className="consultor-badge-share-field-row-icon" aria-hidden="true" />
+                <span className="consultor-badge-share-field-value">{badgeUrl}</span>
+                <button type="button" className="consultor-badge-share-copy-btn"
+                  onClick={() => navigator.clipboard.writeText(badgeUrl)}>
+                  <HiOutlineClipboard aria-hidden="true" />
+                  Copiar
+                </button>
+              </div>
+            </div>
           </div>
         )}
         {activeTab === 'linkedin' && (
@@ -248,15 +304,7 @@ function IconBadgePoints({ className }) {
   )
 }
 
-function IconBadgeClock({ className }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 24" fill="none" className={className} aria-hidden="true">
-      <path d="M23.9524 19.6867L19.5635 11.5702C20.0112 10.554 20.2617 9.43085 20.2617 8.24922C20.2617 3.69522 16.5699 0.00372314 12.0162 0.00372314C7.46148 0.00372314 3.76998 3.6956 3.76998 8.24922C3.76998 9.45935 4.03286 10.6076 4.50086 11.6426L0.0923572 19.683C-0.0497913 19.9413 -0.0261663 20.2601 0.151584 20.496C0.329709 20.7311 0.630459 20.8417 0.917685 20.7742L4.68231 19.9106L5.97081 23.4994C6.07131 23.7784 6.32594 23.9719 6.62106 23.9936C6.64021 23.9951 6.65856 23.9959 6.67656 23.9959C6.81218 23.9958 6.94524 23.959 7.06159 23.8893C7.17795 23.8197 7.27323 23.7198 7.33731 23.6002L11.1739 16.4524C11.4537 16.4807 11.7346 16.4949 12.0158 16.4948C12.2764 16.4948 12.5337 16.4813 12.7879 16.4573L16.7078 23.6059C16.7771 23.7326 16.8817 23.8366 17.0087 23.9053C17.1358 23.974 17.28 24.0046 17.424 23.9932C17.7184 23.9696 17.9719 23.7765 18.0716 23.499L19.3601 19.9102L23.1248 20.7739C23.4135 20.8436 23.7113 20.7315 23.8894 20.4971C24.0683 20.2631 24.0923 19.9458 23.9524 19.6867H23.9524Z" fill="currentColor" />
-      <circle cx="12.0165" cy="8.2492" r="3.2" stroke="currentColor" strokeWidth="1" fill="none" />
-      <path d="M12.0165 6.2 L12.0165 8.2492 L13.6 9.4" stroke="currentColor" strokeWidth="1" strokeLinecap="round" fill="none" />
-    </svg>
-  )
-}
+
 
 // ─── configuração de estado / ícone ───────────────────────────────────────────
 
@@ -277,7 +325,7 @@ function IconStatus({ status, className }) {
 
 // ─── view principal ───────────────────────────────────────────────────────────
 
-function ConsultorBadgePageView() {
+function ConsultorBadgePageView({ isGuest = false }) {
   const { badgeId } = useParams()
 
   const [badge, setBadge] = useState(null)
@@ -300,15 +348,20 @@ function ConsultorBadgePageView() {
         setLoading(true)
         setError(null)
 
-        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData, favoritos] = await Promise.all([
+        const basePromises = [
           getBadgeById(badgeId),
           getRequisitosByBadge(badgeId),
           getAreas(),
           getServiceLines(),
           getLearningPaths(),
-          getPedidos(),
-          getFavoritos(),
-        ])
+        ]
+
+        const [badgeData, requisitosData, areasData, slData, lpData, pedidosData, favoritos] =
+          await Promise.all([
+            ...basePromises,
+            ...(!isGuest ? [getPedidos(), getFavoritos()] : [Promise.resolve([]), Promise.resolve([])]),
+          ])
+
 
         if (!cancelled) {
           const raw = badgeData?.badge ?? badgeData?.data ?? badgeData
@@ -316,7 +369,6 @@ function ConsultorBadgePageView() {
             ? requisitosData
             : (requisitosData?.requisitos ?? requisitosData?.data ?? [])
 
-          // ── cruzar IDs para obter nomes ──────────────────────────────
           const area = areasData.find((a) => a.id_area === raw.id_area)
           const sl = slData.find((s) => s.id_service_line === area?.id_service_line)
           const lp = lpData.find((l) => l.id_learning_path === sl?.id_learning_path)
@@ -347,21 +399,14 @@ function ConsultorBadgePageView() {
             if (estadosDevolvido.includes(pedidoDoBadge.estado_atual)) {
               try {
                 const historico = await getPedidoHistorico(pedidoDoBadge.id_pedido_badge)
-
                 const entrada = [...historico].reverse().find((h) =>
                   estadosDevolvido.includes(h.id_estado)
                 )
-
                 if (entrada) {
                   const cargo = entrada.id_estado === 3 ? 'Talent Manager' : 'Service Line Líder'
-
                   normalized.devolucao = {
-                    data: entrada.data
-                      ? new Date(entrada.data).toLocaleDateString('pt-PT')
-                      : '—',
-                    avaliador: entrada.nome_avaliador
-                      ? `${entrada.nome_avaliador} / ${cargo}`
-                      : cargo,
+                    data: entrada.data ? new Date(entrada.data).toLocaleDateString('pt-PT') : '—',
+                    avaliador: entrada.nome_avaliador ? `${entrada.nome_avaliador} / ${cargo}` : cargo,
                     motivo: entrada.motivo ?? entrada.estado_objetivo ?? '—',
                   }
                 }
@@ -369,12 +414,18 @@ function ConsultorBadgePageView() {
                 console.error('Erro ao buscar devolução', err)
               }
             }
+
+            normalized.dataExpiracao = pedidoDoBadge.estado_atual === 4
+              ? calcularDataExpiracao(pedidoDoBadge.updatedAt ?? pedidoDoBadge.createdAt, raw.validade)
+              : calcularDataExpiracao(raw.data_insercao, raw.validade)
+
+          } else {
+            normalized.dataExpiracao = calcularDataExpiracao(raw.data_insercao, raw.validade)
           }
 
           setBadge(normalized)
           const jaFavorito = Array.isArray(favoritos) && favoritos.some((f) => f.id_badge === normalized.id)
           setIsFavorite(jaFavorito)
-
         }
       } catch (err) {
         console.error('Erro ao carregar badge:', err)
@@ -392,7 +443,7 @@ function ConsultorBadgePageView() {
     }
 
     return () => { cancelled = true }
-  }, [badgeId])
+  }, [badgeId, isGuest])
 
   async function handleToggleFavorito() {
     if (!badge) return
@@ -486,6 +537,7 @@ function ConsultorBadgePageView() {
   // ── render ───────────────────────────────────────────────────────────────────
 
   return (
+
     <section className="consultor-badge-page">
       <header className="consultor-badge-hero">
         <div className="consultor-badge-hero-copy">
@@ -498,50 +550,79 @@ function ConsultorBadgePageView() {
         </div>
       </header>
 
-      <div className={`consultor-badge-top-grid${!badgeDevolvido ? ' is-single' : ''}`}>
+      <Row className="g-4 justify-content-center">
+        <Col xs={12} lg={badgeDevolvido ? 6 : 8}>
         <article className="consultor-badge-card" aria-label={`Detalhes do badge ${badge.name}`}>
           <header className="consultor-badge-info-header">
             <h2>{badge.name}</h2>
             <span className="consultor-badge-info-level">{badge.level}</span>
           </header>
-          <div className="consultor-badge-info-body">
-            <div className="consultor-badge-info-description">
-              <span className="consultor-badge-info-description-label">Descrição:</span>
-              <p className="consultor-badge-info-description-text">{badge.description}</p>
-            </div>
-            <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
-          </div>
+          <Row className="g-3 align-items-center">
+            <Col xs={12} md>
+              <div className="consultor-badge-info-description">
+                <span className="consultor-badge-info-description-label">Descrição:</span>
+                <p className="consultor-badge-info-description-text">{badge.description}</p>
+              </div>
+            </Col>
+            <Col xs={12} md="auto">
+              <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
+            </Col>
+          </Row>
           <div className="consultor-badge-info-status">
-            <span className="consultor-badge-info-status-row"><IconStatus status={badge.status} /><span>{badge.status}</span></span>
-            {badge.isSpecial && <span className="consultor-badge-info-status-row"><HiOutlineCurrencyEuro aria-hidden="true" /><span>Badge Especial</span></span>}
-            <span className="consultor-badge-info-status-row"><IconBadgePoints /><span>{badge.points} Pontos</span></span>
+            <span className="consultor-badge-info-status-row">
+              <IconStatus status={badge.status} />
+              <span>{badge.status}</span>
+            </span>
+            <span className="consultor-badge-info-status-row">
+              <HiOutlineCurrencyEuro aria-hidden="true" />
+              <span>{badge.pago === true ? 'Inclui documentação paga' : badge.pago === false ? 'Badge Gratuito' : '—'}</span>
+            </span>
+            <span className="consultor-badge-info-status-row">
+              <HiOutlineCalendarDays aria-hidden="true" />
+              <span>
+                {badge.dataExpiracao
+                  ? `Expira em ${badge.dataExpiracao}`
+                  : 'Sem data de expiração'}
+              </span>
+            </span>
+            <span className="consultor-badge-info-status-row">
+              <IconBadgePoints />
+              <span>{badge.points} Pontos</span>
+            </span>
+
           </div>
           <div className="consultor-badge-info-actions">
-            <button
-              type="button"
-              className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
-              onClick={handleToggleFavorito}
-              aria-pressed={isFavorite}
-            >
-              {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
-              <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
-            </button>
-            <button
-              type="button"
-              className="consultor-badge-info-action-btn"
-              onClick={() => setIsShareOpen(true)}
-              aria-haspopup="dialog"
-              aria-expanded={isShareOpen}
-              disabled={!badgeAceite}
-              title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
-            >
-              <HiOutlineShare aria-hidden="true" />
-              <span>Partilhar Badge</span>
-            </button>
+            {!isGuest && (
+              <button
+                type="button"
+                className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
+                onClick={handleToggleFavorito}
+                aria-pressed={isFavorite}
+              >
+                {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
+                <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
+              </button>
+            )}
+            {!isGuest && (
+              <button
+                type="button"
+                className="consultor-badge-info-action-btn"
+                onClick={() => setIsShareOpen(true)}
+                aria-haspopup="dialog"
+                aria-expanded={isShareOpen}
+                disabled={!badgeAceite}
+                title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
+              >
+                <HiOutlineShare aria-hidden="true" />
+                <span>Partilhar Badge</span>
+              </button>
+            )}
           </div>
         </article>
+        </Col>
 
         {badgeDevolvido && (
+          <Col xs={12} lg={6}>
           <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
             <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
             <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
@@ -555,8 +636,9 @@ function ConsultorBadgePageView() {
               <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
             </div>
           </article>
+          </Col>
         )}
-      </div>
+      </Row>
 
       <article className="consultor-badge-card" aria-label="Lista de Requisitos">
         <h2 className="consultor-badge-card-title">Lista de Requisitos</h2>
@@ -575,8 +657,12 @@ function ConsultorBadgePageView() {
                 <h3 className="consultor-badge-req-title">{req.title}</h3>
                 <span className="consultor-badge-req-section-label">Descrição:</span>
                 <p className="consultor-badge-req-text">{req.descricao}</p>
-                <span className="consultor-badge-req-section-label">Documentação:</span>
-                <UploadRow id={`req-upload-${req.id}`} onFileChange={(f) => handleFileChange(req.id, f)} />
+                {!isGuest && (
+                  <span className="consultor-badge-req-section-label">Documentação:</span>
+                )}
+                {!isGuest && (
+                  <UploadRow id={`req-upload-${req.id}`} onFileChange={(f) => handleFileChange(req.id, f)} />
+                )}
               </div>
             </div>
           ))}
@@ -586,9 +672,11 @@ function ConsultorBadgePageView() {
         {submitError && <p className="consultor-badge-submit-feedback is-error" role="alert">{submitError}</p>}
 
         <div className="consultor-badge-card-actions">
-          <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar} disabled={isSubmitting} aria-busy={isSubmitting}>
-            {isSubmitting ? 'A submeter…' : 'Candidatar ao Badge'}
-          </button>
+          {!isGuest && (
+            <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar} disabled={isSubmitting} aria-busy={isSubmitting}>
+              {isSubmitting ? 'A submeter…' : 'Candidatar ao Badge'}
+            </button>
+          )}
         </div>
       </article>
 

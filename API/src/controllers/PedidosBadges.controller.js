@@ -17,7 +17,10 @@ const Utilizador = require("../models/Utilizadores.models");
 const Objetivos = require('../models/Objetivos.models');
 const firebase = require('../services/firebase.service');
 
+const NotificacoesPedidos = require('../models/Notificacoes.models');
 const controllers = {};
+
+
 
 /* =====================================================
    FUNÇÕES AUXILIARES
@@ -276,6 +279,17 @@ controllers.createPedido = async (req, res) => {
           where: { sessao_id }, transaction,
         });
       }
+
+      await NotificacoesPedidos.create(
+        {
+          id_consultor,
+          notificacao: "Novo pedido criado",
+          descricao: "O pedido foi submetido e aguarda validação.",
+          remetente: "Sistema",
+          data_de_envio: new Date(),
+        },
+        { transaction },
+      );
 
       await transaction.commit();
 

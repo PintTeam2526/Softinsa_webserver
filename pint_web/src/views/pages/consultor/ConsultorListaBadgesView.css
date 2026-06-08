@@ -7,66 +7,12 @@
   gap: 24px;
 }
 
-/* ── HERO ──────────────────────────────────────────────── */
 .consultor-lista-hero {
   position: relative;
+  overflow: hidden;
   height: 160px;
   margin: 0 -24px;
-  overflow: hidden;
   border-radius: 0 0 20px 20px;
-  background: radial-gradient(ellipse at 30% 60%, #4d97ff 0%, #0048b3 100%);
-}
-
-.consultor-lista-hero-art {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.consultor-lista-hero-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: #ffffff;
-  opacity: 0.75;
-  mix-blend-mode: multiply;
-  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
-  transform: rotate(90deg);
-}
-
-.consultor-lista-hero-circle-5 {
-  width: 2156px;
-  height: 2112.615px;
-  left: -194px;
-  top: -233px;
-}
-
-.consultor-lista-hero-circle-4 {
-  width: 1670.328px;
-  height: 1635.378px;
-  left: -194px;
-  top: 5.62px;
-}
-
-.consultor-lista-hero-circle-3 {
-  width: 1418.453px;
-  height: 1389.529px;
-  left: -100px;
-  top: 206.88px;
-}
-
-.consultor-lista-hero-circle-2 {
-  width: 1041.243px;
-  height: 1041.243px;
-  left: -33.72px;
-  top: 334.62px;
-}
-
-.consultor-lista-hero-circle-1 {
-  width: 827.933px;
-  height: 827.933px;
-  left: 48.23px;
-  top: 380.42px;
 }
 
 .consultor-lista-hero-copy {
@@ -94,7 +40,6 @@
   color: rgba(255, 255, 255, 0.82);
 }
 
-/* ── FILTER CARD ───────────────────────────────────────── */
 .consultor-lista-filter {
   background: #ffffff;
   border-radius: 12px;
@@ -204,7 +149,6 @@
   opacity: 0.5;
 }
 
-/* ── LIST CARD ─────────────────────────────────────────── */
 .consultor-lista-card {
   background: #ffffff;
   border-radius: 12px;
@@ -266,9 +210,9 @@
   height: 16px;
 }
 
-/* ── TABLE ─────────────────────────────────────────────── */
 .consultor-lista-table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -427,7 +371,6 @@
   height: 18px;
 }
 
-/* ── ESTADOS VAZIOS ────────────────────────────────────── */
 .consultor-lista-empty {
   text-align: center;
   color: #adb5c7;
@@ -452,71 +395,3 @@
   border: 2px dashed #e4e7ef;
 }
 
-/* ── RESPONSIVO ────────────────────────────────────────── */
-@media (max-width: 992px) {
-  .consultor-lista-page {
-    padding-inline: 16px;
-  }
-
-  .consultor-lista-hero {
-    margin-inline: -16px;
-  }
-
-  .consultor-lista-filter,
-  .consultor-lista-card {
-    padding: 20px;
-  }
-
-  .consultor-lista-card-header h2 {
-    font-size: 19px;
-  }
-
-  .consultor-lista-table thead th,
-  .consultor-lista-table tbody td {
-    padding: 10px 8px;
-  }
-
-  .consultor-lista-col-name {
-    width: 45%;
-  }
-
-  .consultor-lista-col-level {
-    width: 22%;
-  }
-
-  .consultor-lista-col-points {
-    width: 20%;
-  }
-
-  .consultor-lista-col-action {
-    width: 13%;
-  }
-}
-
-@media (max-width: 768px) {
-  .consultor-lista-hero-copy {
-    left: 24px;
-    top: 28px;
-  }
-
-  .consultor-lista-thumb {
-    width: 36px;
-    height: 36px;
-  }
-
-  .consultor-lista-table thead th,
-  .consultor-lista-name-text,
-  .consultor-lista-level-cell,
-  .consultor-lista-points-cell {
-    font-size: 12px;
-  }
-
-  .consultor-lista-chip {
-    font-size: 13px;
-    height: 30px;
-  }
-
-  .consultor-lista-filter-search {
-    max-width: 100%;
-  }
-}

@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const Utilizadores = require('../models/Utilizadores.models');
 const criarUtilizadoresService = require('../services/criarUtilizadores.service');
 const { Op } = require('sequelize');
+const topbarService = require('../services/topbar.service');
 
 const controllers = {};
 
@@ -207,5 +208,20 @@ controllers.updateUtilizadorById = async (req, res) => {
         });
     }
 };
+
+// obter dados da topbar de um utilizador
+controllers.getDadosTopbar = async (req, res) => {
+
+    try {
+        const id_utilizador = req.user.id;
+        const resultado = await topbarService.getDadosTopbar(id_utilizador);
+        res.json(resultado);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({mensagem: 'Erro de servidor'});
+    }
+};
+
 
 module.exports = controllers;

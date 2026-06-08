@@ -1,5 +1,7 @@
 import api from '../services/api'
 
+
+// Listar Pedidos
 export const getPedidos = async () => {
     try {
         const response = await api.get('/pedidos/get')
@@ -10,6 +12,7 @@ export const getPedidos = async () => {
     }
 }
 
+// Listar de um Pedido
 export const getPedidoById = async (id) => {
     try {
         const response = await api.get(`/pedidos/${id}/get`)
@@ -20,6 +23,7 @@ export const getPedidoById = async (id) => {
     }
 }
 
+// Listar Historico de um Pedido
 export const getPedidoHistorico = async (id) => {
     try {
         const response = await api.get(`/pedidos/${id}/historico`)
@@ -30,6 +34,7 @@ export const getPedidoHistorico = async (id) => {
     }
 }
 
+// Criar um Pedido
 export const createPedido = async (payload) => {
     try {
         const response = await api.post('/pedidos/create', payload)
@@ -40,6 +45,7 @@ export const createPedido = async (payload) => {
     }
 }
 
+// Avaliar um Pedido (TM)
 export const tmReview = async (id, payload) => {
     try {
         const response = await api.post(`/pedidos/${id}/tm-review`, payload)
@@ -50,6 +56,7 @@ export const tmReview = async (id, payload) => {
     }
 }
 
+// Avaliar um Pedido (SLL)
 export const slReview = async (id, payload) => {
     try {
         const response = await api.post(`/pedidos/${id}/sl-review`, payload)
@@ -60,6 +67,7 @@ export const slReview = async (id, payload) => {
     }
 }
 
+// Obter Documentacao de um Pedido
 export const getDocumentacao = async () => {
     try {
         const response = await api.get('/candidaturas/documentacao')
@@ -70,6 +78,7 @@ export const getDocumentacao = async () => {
     }
 }
 
+// Enviar Documentacao de um Pedido
 export const uploadDocumentacao = async (payload) => {
     try {
         const response = await api.post('/candidaturas/documentacao', payload,)

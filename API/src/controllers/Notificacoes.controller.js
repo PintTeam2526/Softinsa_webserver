@@ -12,7 +12,7 @@ controllers.getNotificacoes = async (req, res) => {
     try {
         const role = req.user.role;
 
-        if (!['c', 't', 's'].includes(role)) {
+        if (!['a', 'c', 't', 's'].includes(role)) {
             return res.status(403).json({ mensagem: "Acesso negado." });
         }
 

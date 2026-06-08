@@ -1,5 +1,6 @@
 .sll-certificates-page {
-  min-height: 100%;
+  flex: 1;
+  min-width: 0;
   display: flex;
   background: #ffffff;
   color: #232d42;
@@ -22,8 +23,8 @@
 .sll-certificates-hero {
   position: relative;
   min-height: 155px;
-  height: 155px;
   overflow: hidden;
+  padding: 32px 50px;
   border-radius: 0 0 16px 16px;
   background: radial-gradient(circle at 52% 52%, #6f8fb8 0%, #587aa9 46%, #456996 76%, #39639c 100%);
   box-shadow: inset 24px 32px 184px rgba(6, 8, 89, 0.75);
@@ -85,16 +86,14 @@
 }
 
 .sll-certificates-hero-copy {
-  position: absolute;
-  left: 50px;
-  top: 35px;
   z-index: 1;
   color: #ffffff;
+  max-width: 820px;
 }
 
 .sll-certificates-hero-copy h1 {
   margin: 0 0 4px;
-  font-size: 40px;
+  font-size: clamp(30px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
   color: #ffffff;
@@ -102,19 +101,13 @@
 
 .sll-certificates-hero-copy p {
   margin: 0;
-  font-size: 23px;
+  font-size: clamp(18px, 2.5vw, 23px);
   line-height: 1.3;
   font-weight: 500;
-  width: 660px;
+  max-width: 660px;
   color: #ffffff;
 }
 
-.sll-certificates-layout {
-  display: grid;
-  grid-template-columns: 356px minmax(0, 1fr);
-  gap: 18px;
-  align-items: start;
-}
 
 .sll-certificates-form-card,
 .sll-certificates-preview-card {
@@ -126,6 +119,10 @@
 
 .sll-certificates-form-card {
   padding: 22px 18px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .sll-certificates-form-card h2,
@@ -135,6 +132,26 @@
   font-size: 20px;
   line-height: 1.4;
   font-weight: 700;
+}
+
+.sll-certificates-form-card h2 {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.sll-certificates-form-card .sll-certificates-field {
+  margin-bottom: 0;
+}
+
+.sll-certificates-form-card .sll-certificates-select-wrap {
+  width: 206px;
+}
+
+.sll-certificates-form-card .sll-certificates-visualize-btn,
+.sll-certificates-form-card .sll-certificates-download-btn {
+  width: auto;
+  height: 44px;
+  margin-top: 0;
 }
 
 .sll-certificates-field {
@@ -292,8 +309,8 @@
 .sll-certificates-certificate {
   position: relative;
   width: min(100%, 720px);
-  min-height: 440px;
-  margin: 22px;
+  min-height: clamp(420px, 50vw, 440px);
+  margin: clamp(14px, 2vw, 22px);
   border-radius: 10px;
   border: 8px solid #e0b62b;
   background: #ffffff;
@@ -310,7 +327,7 @@
 
 .sll-certificates-certificate-logo {
   color: #ffffff;
-  font-size: 40px;
+  font-size: clamp(32px, 4vw, 40px);
   line-height: 1;
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -321,7 +338,7 @@
 }
 
 .sll-certificates-certificate-body {
-  padding: 18px 48px 28px;
+  padding: clamp(16px, 3vw, 18px) clamp(20px, 5vw, 48px) clamp(24px, 4vw, 28px);
   text-align: center;
   color: #243f68;
 }
@@ -329,7 +346,7 @@
 .sll-certificates-certificate-body h3 {
   margin: 0;
   color: #25436d;
-  font-size: 30px;
+  font-size: clamp(24px, 3.5vw, 30px);
   line-height: 1.2;
   font-weight: 700;
 }
@@ -360,7 +377,7 @@
 .sll-certificates-certificate-name {
   margin: 10px 0 14px;
   color: #3f6aa7;
-  font-size: 28px;
+  font-size: clamp(22px, 3vw, 28px);
   line-height: 1.1;
   font-weight: 700;
 }
@@ -374,7 +391,7 @@
 .sll-certificates-certificate-badge {
   margin: 10px 0 18px;
   color: #25436d;
-  font-size: 22px;
+  font-size: clamp(18px, 2.5vw, 22px);
   line-height: 1.35;
   font-weight: 700;
 }
@@ -447,43 +464,3 @@
   display: block;
 }
 
-@media (max-width: 980px) {
-  .sll-certificates-content {
-    padding: 16px 18px 20px;
-  }
-}
-
-@media (max-width: 760px) {
-  .sll-certificates-hero-copy h1 {
-    font-size: 30px;
-  }
-
-  .sll-certificates-hero-copy p {
-    font-size: 18px;
-  }
-
-  .sll-certificates-certificate {
-    margin: 14px;
-    min-height: 420px;
-  }
-
-  .sll-certificates-certificate-body {
-    padding: 16px 20px 24px;
-  }
-
-  .sll-certificates-certificate-logo {
-    font-size: 32px;
-  }
-
-  .sll-certificates-certificate-body h3 {
-    font-size: 24px;
-  }
-
-  .sll-certificates-certificate-name {
-    font-size: 22px;
-  }
-
-  .sll-certificates-certificate-badge {
-    font-size: 18px;
-  }
-}

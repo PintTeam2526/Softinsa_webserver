@@ -1,14 +1,18 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+
+import { getDashboardTM } from '../../../controllers/dashboard.controller'
+
 
 function IconBadgeExpiryDate() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
       <g clipPath="url(#clip0_5003_3729)">
-        <path d="M15.75 8.72754C16.1016 8.96777 16.415 9.24023 16.6904 9.54492C16.9658 9.84961 17.2031 10.1836 17.4023 10.5469C17.6016 10.9102 17.748 11.2939 17.8418 11.6982C17.9355 12.1025 17.9883 12.5156 18 12.9375C18 13.6348 17.8682 14.291 17.6045 14.9062C17.3408 15.5215 16.9775 16.0576 16.5146 16.5146C16.0518 16.9717 15.5156 17.332 14.9062 17.5957C14.2969 17.8594 13.6406 17.9941 12.9375 18C12.4043 18 11.8887 17.9209 11.3906 17.7627C10.8926 17.6045 10.4355 17.376 10.0195 17.0771C9.60352 16.7783 9.23438 16.4209 8.91211 16.0049C8.58984 15.5889 8.34082 15.1289 8.16504 14.625H1.125V1.125H3.375V0H4.5V1.125H12.375V0H13.5V1.125H15.75V8.72754ZM2.25 2.25V4.5H14.625V2.25H13.5V3.375H12.375V2.25H4.5V3.375H3.375V2.25H2.25ZM7.90137 13.5C7.88379 13.3184 7.875 13.1309 7.875 12.9375C7.875 12.4336 7.94531 11.9443 8.08594 11.4697C8.22656 10.9951 8.44043 10.5469 8.72754 10.125H7.875V9H9V9.75586C9.24023 9.45703 9.50684 9.19336 9.7998 8.96484C10.0928 8.73633 10.4092 8.54004 10.749 8.37598C11.0889 8.21191 11.4434 8.08887 11.8125 8.00684C12.1816 7.9248 12.5566 7.88086 12.9375 7.875C13.5234 7.875 14.0859 7.97168 14.625 8.16504V5.625H2.25V13.5H7.90137ZM12.9375 16.875C13.4824 16.875 13.9922 16.7725 14.4668 16.5674C14.9414 16.3623 15.3574 16.0811 15.7148 15.7236C16.0723 15.3662 16.3535 14.9502 16.5586 14.4756C16.7637 14.001 16.8691 13.4883 16.875 12.9375C16.875 12.3926 16.7725 11.8828 16.5674 11.4082C16.3623 10.9336 16.0811 10.5176 15.7236 10.1602C15.3662 9.80273 14.9502 9.52148 14.4756 9.31641C14.001 9.11133 13.4883 9.00586 12.9375 9C12.3926 9 11.8828 9.10254 11.4082 9.30762C10.9336 9.5127 10.5176 9.79395 10.1602 10.1514C9.80273 10.5088 9.52148 10.9248 9.31641 11.3994C9.11133 11.874 9.00586 12.3867 9 12.9375C9 13.4824 9.10254 13.9922 9.30762 14.4668C9.5127 14.9414 9.79395 15.3574 10.1514 15.7148C10.5088 16.0723 10.9248 16.3535 11.3994 16.5586C11.874 16.7637 12.3867 16.8691 12.9375 16.875ZM13.5 12.375H15.1875V13.5H12.375V10.125H13.5V12.375ZM3.375 9H4.5V10.125H3.375V9ZM5.625 9H6.75V10.125H5.625V9ZM5.625 6.75H6.75V7.875H5.625V6.75ZM3.375 11.25H4.5V12.375H3.375V11.25ZM5.625 11.25H6.75V12.375H5.625V11.25ZM9 7.875H7.875V6.75H9V7.875ZM11.25 7.875H10.125V6.75H11.25V7.875ZM13.5 7.875H12.375V6.75H13.5V7.875Z" fill="#8A92A6"/>
+        <path d="M15.75 8.72754C16.1016 8.96777 16.415 9.24023 16.6904 9.54492C16.9658 9.84961 17.2031 10.1836 17.4023 10.5469C17.6016 10.9102 17.748 11.2939 17.8418 11.6982C17.9355 12.1025 17.9883 12.5156 18 12.9375C18 13.6348 17.8682 14.291 17.6045 14.9062C17.3408 15.5215 16.9775 16.0576 16.5146 16.5146C16.0518 16.9717 15.5156 17.332 14.9062 17.5957C14.2969 17.8594 13.6406 17.9941 12.9375 18C12.4043 18 11.8887 17.9209 11.3906 17.7627C10.8926 17.6045 10.4355 17.376 10.0195 17.0771C9.60352 16.7783 9.23438 16.4209 8.91211 16.0049C8.58984 15.5889 8.34082 15.1289 8.16504 14.625H1.125V1.125H3.375V0H4.5V1.125H12.375V0H13.5V1.125H15.75V8.72754ZM2.25 2.25V4.5H14.625V2.25H13.5V3.375H12.375V2.25H4.5V3.375H3.375V2.25H2.25ZM7.90137 13.5C7.88379 13.3184 7.875 13.1309 7.875 12.9375C7.875 12.4336 7.94531 11.9443 8.08594 11.4697C8.22656 10.9951 8.44043 10.5469 8.72754 10.125H7.875V9H9V9.75586C9.24023 9.45703 9.50684 9.19336 9.7998 8.96484C10.0928 8.73633 10.4092 8.54004 10.749 8.37598C11.0889 8.21191 11.4434 8.08887 11.8125 8.00684C12.1816 7.9248 12.5566 7.88086 12.9375 7.875C13.5234 7.875 14.0859 7.97168 14.625 8.16504V5.625H2.25V13.5H7.90137ZM12.9375 16.875C13.4824 16.875 13.9922 16.7725 14.4668 16.5674C14.9414 16.3623 15.3574 16.0811 15.7148 15.7236C16.0723 15.3662 16.3535 14.9502 16.5586 14.4756C16.7637 14.001 16.8691 13.4883 16.875 12.9375C16.875 12.3926 16.7725 11.8828 16.5674 11.4082C16.3623 10.9336 16.0811 10.5176 15.7236 10.1602C15.3662 9.80273 14.9502 9.52148 14.4756 9.31641C14.001 9.11133 13.4883 9.00586 12.9375 9C12.3926 9 11.8828 9.10254 11.4082 9.30762C10.9336 9.5127 10.5176 9.79395 10.1602 10.1514C9.80273 10.5088 9.52148 10.9248 9.31641 11.3994C9.11133 11.874 9.00586 12.3867 9 12.9375C9 13.4824 9.10254 13.9922 9.30762 14.4668C9.5127 14.9414 9.79395 15.3574 10.1514 15.7148C10.5088 16.0723 10.9248 16.3535 11.3994 16.5586C11.874 16.7637 12.3867 16.8691 12.9375 16.875ZM13.5 12.375H15.1875V13.5H12.375V10.125H13.5V12.375ZM3.375 9H4.5V10.125H3.375V9ZM5.625 9H6.75V10.125H5.625V9ZM5.625 6.75H6.75V7.875H5.625V6.75ZM3.375 11.25H4.5V12.375H3.375V11.25ZM5.625 11.25H6.75V12.375H5.625V11.25ZM9 7.875H7.875V6.75H9V7.875ZM11.25 7.875H10.125V6.75H11.25V7.875ZM13.5 7.875H12.375V6.75H13.5V7.875Z" fill="#8A92A6" />
       </g>
       <defs>
         <clipPath id="clip0_5003_3729">
-          <rect width="18" height="18" fill="white"/>
+          <rect width="18" height="18" fill="white" />
         </clipPath>
       </defs>
     </svg>
@@ -51,35 +55,6 @@ function IconPedidosPendentes() {
     </svg>
   )
 }
-
-import badgeJunior from '../../../assets/images/badges/tm_1.png'
-import badgeIntermedio from '../../../assets/images/badges/tm_2.png'
-import badgeSenior from '../../../assets/images/badges/tm_3.png'
-import badge4 from '../../../assets/images/badges/tm_4.png'
-import badge5 from '../../../assets/images/badges/tm_5.png'
-import badge6 from '../../../assets/images/badges/tm_special.png'
-import badge7 from '../../../assets/images/badges/outsystems_special.png'
-
-
-const pendingImage1 = 'https://www.figma.com/api/mcp/asset/351dcc52-b438-4039-8032-2145a7543488'
-const pendingImage2 = 'https://www.figma.com/api/mcp/asset/cc1850d2-ede7-4d3f-b410-76c7191d8812'
-const pendingImage3 = 'https://www.figma.com/api/mcp/asset/fdcac280-e852-47a8-a018-ef47d87ca4b6'
-
-const pendingRequests = [
-  { title: 'Cloud Architecture - Intermédio', consultant: 'João Silva', deadline: 'Tempo limite de resposta termina em 3 dias', image: pendingImage1, tone: 'urgent' },
-  { title: 'Data Analytics - Sénior', consultant: 'Maria Santos', deadline: 'Tempo limite de resposta termina em 5 dias', image: pendingImage2, tone: 'urgent' },
-  { title: 'Agile Leadership - Júnior', consultant: 'Pedro Costa', deadline: 'Tempo limite de resposta termina em 10 dias', image: pendingImage3, tone: 'calm' },
-]
-
-const badgeExpiring = [
-  { name: 'Citizen Developer', consultant: 'João Silva', date: '18/05/2026', image: badgeJunior, tone: 'red' },
-  { name: 'Low-Code Builder', consultant: 'Antonio Cardoso', date: '18/05/2026', image: badgeIntermedio, tone: 'red' },
-  { name: 'Application Creator', consultant: 'Guilherme Pinto', date: '18/05/2026', image: badgeSenior, tone: 'red' },
-  { name: 'DevOps Intermediate', consultant: 'Vasco Oliveira', date: '18/05/2026', image: badge4, tone: 'blue' },
-  { name: 'Team Lider Beginner', consultant: 'Rodrigo Almeida', date: '18/05/2026', image: badge5, tone: 'green' },
-  { name: 'Team Lider Beginner', consultant: 'Pedro Alexandre', date: '18/05/2026', image: badge6, tone: 'green' },
-  { name: 'DevOps Intermediate', consultant: 'Francisco Francisco', date: '18/05/2026', image: badge7, tone: 'blue' },
-]
 
 function PendingCard({ item }) {
   return (
@@ -125,12 +100,79 @@ function BadgeRow({ badge }) {
   )
 }
 
+function resolveImagem(imagem_badge) {
+  if (!imagem_badge) return null
+  if (imagem_badge.startsWith('data:')) return imagem_badge
+  return `data:image/png;base64,${imagem_badge}`
+}
+
+// Pedidos pendentes baseado nos dias restantes de resposta
+function calcularTonePedido(diasRestantes) {
+  return diasRestantes <= 5 ? 'urgent' : 'calm'
+}
+
+// Badges a expirar baseado nos dias restantes
+function calcularToneBadge(diasRestantes) {
+  if (diasRestantes <= 7) return 'red'
+  if (diasRestantes <= 20) return 'blue'
+  return 'green'
+}
+
+// Converter dias restantes numa data legível
+function diasParaData(diasRestantes) {
+  const data = new Date()
+  data.setDate(data.getDate() + diasRestantes)
+  return data.toLocaleDateString('pt-PT')
+}
+
+// Texto do deadline para os pedidos pendentes
+function textoDeadline(diasRestantes) {
+  if (diasRestantes < 0)
+    return `Tempo limite de resposta expirado há ${Math.abs(diasRestantes)} dias`
+  if (diasRestantes === 0)
+    return 'Tempo limite de resposta termina hoje'
+  return `Tempo limite de resposta termina em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}`
+}
+
+
 function TalentManagerDashboardView() {
+  const [dados, setDados] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState(null)
+
+  useEffect(() => {
+    getDashboardTM()
+      .then(setDados)
+      .catch(() => setErro('Não foi possível carregar o dashboard.'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <p className="tm-loading">A carregar...</p>
+  if (erro) return <p className="tm-error">{erro}</p>
+
+  // Mapear pedidos pendentes
+  const pendingRequests = (dados.proximos_pedidos_expirar ?? []).map(pedido => ({
+    title: `${pedido.nome_badge} - ${pedido.nivel_badge}`,
+    consultant: pedido.nome_consultor,
+    deadline: textoDeadline(pedido.tempo_resposta_dias),
+    image: resolveImagem(pedido.imagem_badge),
+    tone: calcularTonePedido(pedido.tempo_resposta_dias),
+  }))
+
+  // Mapear badges a expirar
+  const badgeExpiring = (dados.proximos_badges_expirar ?? []).map(badge => ({
+    name: badge.nome_badge,
+    consultant: badge.nome_consultor,
+    date: diasParaData(badge.dias_para_expirar),
+    image: resolveImagem(badge.imagem_badge),
+    tone: calcularToneBadge(badge.dias_para_expirar),
+  }))
+
   return (
     <>
       <section className="tm-hero" aria-label="Dashboard Talent Manager">
         <div className="tm-hero-copy">
-          <h1>Olá, Austin Robertson!</h1>
+          <h1>Olá, {dados.nome_talent_manager}!</h1>
         </div>
       </section>
 
@@ -138,14 +180,14 @@ function TalentManagerDashboardView() {
         type="button"
         className="tm-notification-callout"
         onClick={() => window.dispatchEvent(new CustomEvent('softinsa:open-notifications'))}
-        aria-label="Abrir notificações: tem 5 notificações por ler"
+        aria-label="Abrir notificações: tem notificações por ler"
       >
         <div className="tm-notification-icon">
           <IconAlertBell />
         </div>
 
         <div>
-          <h2>Tem 5 notificações por ler</h2>
+          <h2>Tem notificações por ler</h2>
           <p>Aceda agora às notificações</p>
         </div>
       </button>
