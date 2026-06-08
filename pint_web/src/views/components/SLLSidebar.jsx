@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import {
-  FaAward,
-  FaClipboardList,
-  FaFileAlt,
-  FaHistory,
-  FaThLarge,
-  FaUsers,
-} from 'react-icons/fa'
-import './SLLSidebar.css'
+import { FaFileAlt } from 'react-icons/fa'
+import './softinsa-sidebar.css'
 
 function DashboardSquareIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <path opacity="0.4" d="M16.0755 2H19.4615C20.8637 2 22 3.14585 22 4.55996V7.97452C22 9.38864 20.8637 10.5345 19.4615 10.5345H16.0755C14.6732 10.5345 13.537 9.38864 13.537 7.97452V4.55996C13.537 3.14585 14.6732 2 16.0755 2Z" fill="currentColor" />
       <path d="M7.9248 13.4658C9.3269 13.466 10.4628 14.6114 10.4629 16.0254V19.4404C10.4627 20.8533 9.3268 21.9998 7.9248 22H4.53809C3.13615 21.9998 2.00021 20.8533 2 19.4404V16.0254C2.00005 14.6115 3.13605 13.4661 4.53809 13.4658H7.9248ZM19.4619 13.4658C20.864 13.4661 22 14.6115 22 16.0254V19.4404C21.9998 20.8533 20.8639 21.9998 19.4619 22H16.0752C14.6732 21.9998 13.5373 20.8533 13.5371 19.4404V16.0254C13.5372 14.6114 14.6731 13.466 16.0752 13.4658H19.4619ZM7.9248 2C9.3268 2.00017 10.4627 3.14575 10.4629 4.55957V7.97461C10.4628 9.38858 9.3269 10.534 7.9248 10.5342H4.53809C3.13605 10.5339 2.00005 9.38853 2 7.97461V4.55957C2.00021 3.14579 3.13615 2.00024 4.53809 2H7.9248Z" fill="currentColor" />
     </svg>
@@ -21,7 +14,7 @@ function DashboardSquareIcon(props) {
 
 function PendingDocIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <path d="M5.25 1.5C5.05109 1.5 4.86032 1.57902 4.71967 1.71967C4.57902 1.86032 4.5 2.05109 4.5 2.25V21.75C4.5 21.9489 4.57902 22.1397 4.71967 22.2803C4.86032 22.421 5.05109 22.5 5.25 22.5H9.75V21H6V3H18V10.5H19.5V2.25C19.5 2.05109 19.421 1.86032 19.2803 1.71967C19.1397 1.57902 18.9489 1.5 18.75 1.5H5.25Z" fill="currentColor" />
       <path opacity="0.4" d="M7.5 7.5H16.5V6H7.5V7.5ZM7.5 10.5H13.5V9H7.5V10.5Z" fill="currentColor" />
       <path opacity="0.4" fillRule="evenodd" clipRule="evenodd" d="M15.75 12C14.3576 12 13.0223 12.5531 12.0377 13.5377C11.0531 14.5223 10.5 15.8576 10.5 17.25C10.5 18.6424 11.0531 19.9777 12.0377 20.9623C13.0223 21.9469 14.3576 22.5 15.75 22.5C17.1424 22.5 18.4777 21.9469 19.4623 20.9623C20.4469 19.9777 21 18.6424 21 17.25C21 15.8576 20.4469 14.5223 19.4623 13.5377C18.4777 12.5531 17.1424 12 15.75 12ZM15 14.25V17.25C14.9998 17.3486 15.0191 17.4462 15.0567 17.5373C15.0942 17.6284 15.1494 17.7112 15.219 17.781L17.469 20.031L18.531 18.969L16.5 16.9395V14.25H15Z" fill="currentColor" />
@@ -31,7 +24,7 @@ function PendingDocIcon(props) {
 
 function BriefcaseIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <path d="M21 3H3C2.44772 3 2 3.44772 2 4V7C2 7.55228 2.44772 8 3 8H21C21.5523 8 22 7.55228 22 7V4C22 3.44772 21.5523 3 21 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M4 8V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V8M10 12H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -40,7 +33,7 @@ function BriefcaseIcon(props) {
 
 function TeamUsersIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <path d="M11.949 14.5399C8.49904 14.5399 5.58809 15.1037 5.58809 17.2794C5.58809 19.4561 8.51785 20 11.949 20C15.399 20 18.31 19.4362 18.31 17.2605C18.31 15.0839 15.3802 14.5399 11.949 14.5399Z" fill="currentColor" />
       <path opacity="0.4" d="M11.949 12.467C14.2851 12.467 16.1583 10.5831 16.1583 8.23351C16.1583 5.88306 14.2851 4 11.949 4C9.61292 4 7.73974 5.88306 7.73974 8.23351C7.73974 10.5831 9.61292 12.467 11.949 12.467Z" fill="currentColor" />
       <path opacity="0.4" d="M21.088 9.21926C21.6924 6.84179 19.9204 4.70657 17.6639 4.70657C17.4186 4.70657 17.184 4.73359 16.9548 4.77952C16.9243 4.78672 16.8903 4.80203 16.8724 4.82905C16.8518 4.86327 16.867 4.9092 16.8894 4.93892C17.5672 5.89531 17.9567 7.05973 17.9567 8.3097C17.9567 9.50744 17.5995 10.6241 16.9727 11.5508C16.9082 11.6463 16.9655 11.775 17.0792 11.7949C17.2368 11.8228 17.398 11.8372 17.5628 11.8417C19.2058 11.8849 20.6806 10.8213 21.088 9.21926Z" fill="currentColor" />
@@ -53,7 +46,7 @@ function TeamUsersIcon(props) {
 
 function BadgeCircleIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <g clipPath="url(#clip0_4790_653)">
         <path d="M20.4909 9.3977C20.4909 11.651 19.5957 13.812 18.0024 15.4053C16.4091 16.9986 14.2481 17.8937 11.9949 17.8937C9.74158 17.8937 7.58059 16.9986 5.98728 15.4053C4.39397 13.812 3.49886 11.651 3.49886 9.3977C3.49886 7.14442 4.39397 4.98343 5.98728 3.39012C7.58059 1.79681 9.74158 0.901703 11.9949 0.901703C14.2481 0.901703 16.4091 1.79681 18.0024 3.39012C19.5957 4.98343 20.4909 7.14442 20.4909 9.3977Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M4.63543 13.5651L0.85714 20.1103L4.93885 19.0166L6.03428 23.0983L9.312 17.4206M19.3646 13.5651L23.1429 20.1103L19.0594 19.0166L17.9657 23.0983L14.688 17.4206M12.3429 4.78456L13.5137 7.13999C13.5391 7.19983 13.5803 7.25167 13.6328 7.29001C13.6853 7.32834 13.7473 7.35173 13.812 7.3577L16.4126 7.75199C16.487 7.7615 16.5571 7.79205 16.6148 7.84005C16.6725 7.88805 16.7152 7.9515 16.7381 8.02296C16.761 8.09442 16.763 8.17091 16.7439 8.24347C16.7248 8.31602 16.6854 8.38162 16.6303 8.43256L14.7086 10.2566C14.6797 10.311 14.6647 10.3716 14.6647 10.4331C14.6647 10.4947 14.6797 10.5553 14.7086 10.6097L15.0771 13.1948C15.0931 13.2698 15.087 13.3477 15.0594 13.4192C15.0318 13.4906 14.984 13.5525 14.9218 13.5973C14.8596 13.642 14.7857 13.6676 14.7092 13.6711C14.6327 13.6745 14.5568 13.6556 14.4909 13.6166L12.1766 12.3926C12.1168 12.3656 12.0519 12.3516 11.9863 12.3516C11.9207 12.3516 11.8558 12.3656 11.796 12.3926L9.48171 13.6166C9.41583 13.6545 9.34039 13.6726 9.26447 13.6686C9.18856 13.6647 9.1154 13.6389 9.0538 13.5943C8.99221 13.5498 8.94482 13.4884 8.91733 13.4175C8.88984 13.3466 8.88342 13.2693 8.89885 13.1948L9.33428 10.6097C9.35317 10.5498 9.35679 10.4861 9.34482 10.4244C9.33284 10.3628 9.30565 10.3051 9.26571 10.2566L7.34742 8.41713C7.29587 8.36557 7.25963 8.30073 7.24271 8.22981C7.2258 8.15889 7.22888 8.08467 7.25162 8.01539C7.27436 7.94612 7.31586 7.88451 7.3715 7.8374C7.42715 7.7903 7.49478 7.75954 7.56685 7.74856L10.1657 7.37142C10.2305 7.36545 10.2924 7.34205 10.3449 7.30372C10.3974 7.26539 10.4386 7.21355 10.464 7.1537L11.6349 4.79827C11.666 4.73142 11.7153 4.67465 11.7771 4.63441C11.839 4.59418 11.9108 4.57209 11.9846 4.57066C12.0583 4.56923 12.131 4.58852 12.1943 4.62633C12.2577 4.66414 12.3091 4.71896 12.3429 4.78456Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
@@ -69,7 +62,7 @@ function BadgeCircleIcon(props) {
 
 function ReportClipboardIcon(props) {
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`sll-sidebar-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className={`softinsa-sidebar-item-icon${props.className ? ` ${props.className}` : ''}`} aria-hidden="true">
       <path opacity="0.4" d="M7.5 13.5H13.5V15H7.5V13.5ZM7.5 9.75H16.5V11.25H7.5V9.75ZM7.5 17.25H11.25V18.75H7.5V17.25Z" fill="currentColor" />
       <path d="M18.75 3.75H16.5V3C16.5 2.60218 16.342 2.22064 16.0607 1.93934C15.7794 1.65804 15.3978 1.5 15 1.5H9C8.60218 1.5 8.22064 1.65804 7.93934 1.93934C7.65804 2.22064 7.5 2.60218 7.5 3V3.75H5.25C4.85218 3.75 4.47064 3.90804 4.18934 4.18934C3.90804 4.47064 3.75 4.85218 3.75 5.25V21C3.75 21.3978 3.90804 21.7794 4.18934 22.0607C4.47064 22.342 4.85218 22.5 5.25 22.5H18.75C19.1478 22.5 19.5294 22.342 19.8107 22.0607C20.092 21.7794 20.25 21.3978 20.25 21V5.25C20.25 4.85218 20.092 4.47064 19.8107 4.18934C19.5294 3.90804 19.1478 3.75 18.75 3.75ZM9 3H15V6H9V3ZM18.75 21H5.25V5.25H7.5V7.5H16.5V5.25H18.75V21Z" fill="currentColor" />
     </svg>
@@ -85,42 +78,42 @@ const sidebarSections = [
     title: 'Pedidos',
     items: [
       { text: 'Pendentes', icon: PendingDocIcon, to: '/sll/pendentes', link: true },
-      { text: 'Historico', icon: BriefcaseIcon, to: '/sll/historico', link: true },
+      { text: 'Histórico', icon: BriefcaseIcon, to: '/sll/historico', link: true },
     ],
   },
   {
-    title: 'Gestao',
+    title: 'Gestão',
     items: [
       { text: 'A minha equipa', icon: TeamUsersIcon, to: '/sll/equipa', link: true },
       { text: 'Badges', icon: BadgeCircleIcon, to: '/sll/badges', link: true },
       { text: 'Certificados', icon: ReportClipboardIcon, to: '/sll/certificados', link: true },
-      { text: 'Relatorios', icon: FaFileAlt, to: '/sll/relatorios', link: true },
+      { text: 'Relatórios', icon: FaFileAlt, to: '/sll/relatorios', link: true },
     ],
   },
 ]
 
 function MenuTitle({ text }) {
   return (
-    <div className="sll-sidebar-title">
+    <div className="softinsa-sidebar-title">
       <span>{text}</span>
     </div>
   )
 }
 
 function SidebarIcon({ Icon, color }) {
-  return <Icon className="sll-sidebar-icon" style={{ color }} aria-hidden="true" />
+  return <Icon className="softinsa-sidebar-item-icon" style={{ color }} aria-hidden="true" />
 }
 
 function MenuItem({ text, icon, active = false, to, end = false, link = false }) {
   if (link) {
     return (
-      <NavLink to={to} end={end} className={({ isActive }) => `sll-sidebar-item${isActive ? ' active' : ''}`}>
+      <NavLink to={to} end={end} className={({ isActive }) => `softinsa-sidebar-item${isActive ? ' active' : ''}`}>
         {({ isActive }) => (
           <>
-            <span className="sll-sidebar-icon-wrap">
+            <span className="softinsa-sidebar-item-icon-wrap">
               <SidebarIcon Icon={icon} color={isActive ? '#ffffff' : '#8a92a6'} />
             </span>
-            <span className="sll-sidebar-item-text">{text}</span>
+            <span className="softinsa-sidebar-item-text">{text}</span>
           </>
         )}
       </NavLink>
@@ -128,38 +121,54 @@ function MenuItem({ text, icon, active = false, to, end = false, link = false })
   }
 
   return (
-    <button type="button" className={`sll-sidebar-item${active ? ' active' : ''}`}>
-      <span className="sll-sidebar-icon-wrap">
+    <button type="button" className={`softinsa-sidebar-item${active ? ' active' : ''}`}>
+      <span className="softinsa-sidebar-item-icon-wrap">
         <SidebarIcon Icon={icon} color="#8a92a6" />
       </span>
-      <span className="sll-sidebar-item-text">{text}</span>
+      <span className="softinsa-sidebar-item-text">{text}</span>
     </button>
   )
 }
 
 function SectionDivider() {
-  return <div className="sll-sidebar-divider" />
+  return <div className="softinsa-sidebar-divider" />
 }
 
 function SLLSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    return localStorage.getItem('sll-sidebar-collapsed') === 'true'
+    if (window.innerWidth < 768) return true
+    return localStorage.getItem('softinsa-sidebar-collapsed') === 'true'
   })
 
   useEffect(() => {
-    localStorage.setItem('sll-sidebar-collapsed', String(isCollapsed))
+    localStorage.setItem('softinsa-sidebar-collapsed', String(isCollapsed))
   }, [isCollapsed])
+
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth < 768) setIsCollapsed(true)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   function toggleSidebar() {
     setIsCollapsed((previousValue) => !previousValue)
   }
 
   return (
-    <aside className={`sll-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
-      <div className="sll-sidebar-panel">
-        <div className="sll-sidebar-header">
-          <div className="sll-sidebar-logo-pill" aria-label="Softinsa">
-            <span className="sll-sidebar-logo-text">
+    <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
+      <button className="softinsa-sidebar-toggle" type="button" onClick={toggleSidebar} aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'} aria-expanded={!isCollapsed}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" className="softinsa-sidebar-toggle-arrow" aria-hidden="true">
+          <path d="M3.18752 9.20553L14.4375 9.20553" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7.72496 13.724L3.18746 9.20595L7.72496 4.6872" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <div className="softinsa-sidebar-panel">
+        <div className="softinsa-sidebar-header">
+          <div className="softinsa-sidebar-logo-pill" aria-label="Softinsa">
+            <span className="softinsa-sidebar-logo-text">
               <svg xmlns="http://www.w3.org/2000/svg" width="204" height="69" viewBox="0 0 204 69" fill="none">
                 <g filter="url(#filter0_d_3792_2491)">
                   <rect x="10" y="10" width="184" height="49" rx="24.5" fill="white"/>
@@ -192,20 +201,13 @@ function SLLSidebar() {
               </svg>
             </span>
           </div>
-
-          <button className="sll-sidebar-toggle" type="button" onClick={toggleSidebar} aria-label={isCollapsed ? 'Abrir sidebar' : 'Fechar sidebar'} aria-expanded={!isCollapsed}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" className="sll-sidebar-toggle-arrow" aria-hidden="true">
-              <path d="M3.18752 9.20553L14.4375 9.20553" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M7.72496 13.724L3.18746 9.20595L7.72496 4.6872" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
         </div>
 
-        <div className="sll-sidebar-top-line" />
+        <div className="softinsa-sidebar-top-line" />
 
-        <div className="sll-sidebar-sections">
+        <div className="softinsa-sidebar-sections">
           {sidebarSections.map((section) => (
-            <div className="sll-sidebar-section" key={section.title}>
+            <div className="softinsa-sidebar-section" key={section.title}>
               <MenuTitle text={section.title} />
 
               {section.items.map((item) => (

@@ -1,0 +1,212 @@
+.consultor-conquistas-page {
+  padding: 0 24px 24px;
+  font-family: Inter, sans-serif;
+  color: #232d42;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.consultor-conquistas-hero {
+  position: relative;
+  min-height: 155px;
+  margin: 0 -24px;
+  overflow: hidden;
+  background: linear-gradient(130deg, #2f6fd8, #24489a);
+  padding: clamp(20px, 4vw, 35px) clamp(20px, 4vw, 50px);
+  display: flex;
+  align-items: center;
+}
+
+.consultor-conquistas-hero-copy {
+  position: static;
+  max-width: 100%;
+}
+
+.consultor-conquistas-hero-copy h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.consultor-conquistas-hero-copy p {
+  margin: 0;
+  font-size: clamp(14px, 2vw, 23px);
+  font-weight: 500;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.consultor-conquistas-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.consultor-conquistas-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.consultor-conquistas-card-header-icon {
+  width: 28px;
+  height: 28px;
+  color: #232d42;
+  flex-shrink: 0;
+}
+
+.consultor-conquistas-card-header h2 {
+  margin: 0;
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-conquistas-table-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #adb5bd transparent;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar {
+  height: 8px;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.consultor-conquistas-table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.consultor-conquistas-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.consultor-conquistas-table thead th {
+  background: #f5f6fa;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.75;
+  color: #8a92a6;
+  text-align: left;
+  padding: 12px 24px;
+  letter-spacing: 0.02em;
+}
+
+.consultor-conquistas-table thead th:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.consultor-conquistas-table thead th:last-child  { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+
+.consultor-conquistas-table tbody tr {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.consultor-conquistas-table tbody tr:nth-child(even) {
+  background: #f5f6fa;
+}
+
+.consultor-conquistas-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.consultor-conquistas-table tbody td {
+  padding: 14px 24px;
+  vertical-align: middle;
+}
+
+.consultor-conquistas-col-description { min-width: 260px; }
+.consultor-conquistas-col-points      { min-width: 120px; }
+.consultor-conquistas-col-progress    { min-width: 200px; }
+
+.consultor-conquistas-description-cell {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.consultor-conquistas-thumb {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.consultor-conquistas-description-text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #232d42;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.consultor-conquistas-points-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #232d42;
+}
+
+.consultor-conquistas-points-icon {
+  width: 14px;
+  height: 14px;
+  color: #232d42;
+  flex-shrink: 0;
+}
+
+.consultor-conquistas-progress {
+  position: relative;
+  height: 16px;
+  border-radius: 8px;
+  background: #e9ecef;
+  overflow: hidden;
+  width: 100%;
+}
+
+.consultor-conquistas-progress-bar {
+  height: 100%;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  color: #ffffff;
+  transition: width 0.25s ease;
+  min-width: 28px;
+}
+
+.consultor-conquistas-progress-bar.is-tier-0 { background: rgba(57, 99, 156, 0.75); }
+.consultor-conquistas-progress-bar.is-tier-1 { background: #369bff; }
+.consultor-conquistas-progress-bar.is-tier-2 { background: #05666c; }
+.consultor-conquistas-progress-bar.is-tier-3 { background: #1aa053; }
+.consultor-conquistas-progress-bar.is-tier-4 { background: #409900; }
+

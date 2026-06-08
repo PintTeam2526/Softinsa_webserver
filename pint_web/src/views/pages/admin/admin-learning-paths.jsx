@@ -1,14 +1,11 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-learning-paths.css";
 
-import {
-  getLearningPaths,
-  //createLearningPath,
-  //updateLearningPath,
-} from "../../../controllers/learningPathsController";
-
-import { mapLearningPath } from "../../../models/learningPathModel";
-
+import { getLearningPaths, createLearningPath, updateLearningPath } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
 const statusOptions = ["Ativo", "Inativo"];
 
@@ -21,7 +18,7 @@ const getDefaultLearningPathForm = () => ({
   description: "",
   status: "",
   iconFileName: "",
-  iconFile: null,
+  iconFile: "",
 });
 
 const normalizeSearchValue = (value) =>
@@ -31,14 +28,28 @@ const normalizeSearchValue = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+const formatLPImage = (img) => {
+  if (!img) return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
+
+const mapLearningPath = (row) => ({
+  id: row.id_learning_path,
+  name: row.nome_learning_path,
+  description: row.descricao_learning_path ?? "",
+  status: row.estado_a_i ? "Ativo" : "Inativo",
+  serviceLines: row.service_lines ?? 0,
+  areas: row.areas ?? 0,
+  badges: row.badges ?? 0,
+  iconFileName: row.imagem_learning_path ?? "",
+  image: formatLPImage(row.imagem_learning_path),
+});
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="softinsa-learning-paths-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
+      <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="1.8" />
       <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
@@ -46,13 +57,8 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-learning-paths-icon" aria-hidden="true">
-      <path
-        d="M4 5H20L13 13V19L11 20V13L4 5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-learning-paths-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
@@ -68,39 +74,18 @@ function PlusIcon() {
 
 function PencilIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      className="softinsa-learning-paths-pencil-icon"
-      aria-hidden="true"
-    >
-      <path
-        d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z"
-        fill="#00B8E0"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="softinsa-learning-paths-pencil-icon" aria-hidden="true">
+      <path d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z" fill="#00B8E0" />
     </svg>
   );
 }
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-learning-paths-icon" aria-hidden="true">
-      <path
-        d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-learning-paths-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -124,19 +109,17 @@ function CloseIcon() {
 
 function FileSelector({ fileName, onChange, ariaLabel }) {
   return (
-    <label className="softinsa-learning-paths-file-field">
+    <label className="softinsa-learning-paths-file-field d-inline-flex w-100">
       <input
         type="file"
         accept="image/*"
         className="softinsa-learning-paths-file-input"
         onChange={onChange}
-        onClick={(event) => {
-          event.target.value = null;
-        }}
+        onClick={(event) => { event.target.value = null; }}
         aria-label={ariaLabel}
       />
-      <span className="softinsa-learning-paths-file-choose">Choose File</span>
-      <span className="softinsa-learning-paths-file-name">{fileName || "No file chosen"}</span>
+      <span className="softinsa-learning-paths-file-choose d-inline-flex align-items-center">Choose File</span>
+      <span className="softinsa-learning-paths-file-name d-inline-flex align-items-center">{fileName || "No file chosen"}</span>
     </label>
   );
 }
@@ -157,20 +140,60 @@ const SoftinsaLearningPaths = memo(() => {
   const filterWrapRef = useRef(null);
 
   useEffect(() => {
-    const fetchLearningPaths = async () => {
-      try {
-        const data = await getLearningPaths();
-
-        const mappedData = data.map(mapLearningPath);
-
-        setLearningPaths(mappedData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLearningPaths();
+    loadLearningPaths();
   }, []);
+
+  function loadLearningPaths() {
+    Promise.all([
+      getLearningPaths(),
+      getServiceLines(),
+      getAreas(),
+      getBadges(),
+    ])
+      .then(([lpData, slData, areasData, badgesData]) => {
+
+        const slToLP = {};
+        slData.forEach((sl) => { slToLP[sl.id_service_line] = sl.id_learning_path; });
+
+        const areaToLP = {};
+        areasData.forEach((a) => {
+          const lpId = slToLP[a.id_service_line];
+          if (lpId !== undefined) areaToLP[a.id_area] = lpId;
+        });
+
+        const slCountByLP = {};
+        const areaCountByLP = {};
+        const badgeCountByLP = {};
+
+        slData.forEach((sl) => {
+          slCountByLP[sl.id_learning_path] = (slCountByLP[sl.id_learning_path] ?? 0) + 1;
+        });
+
+        areasData.forEach((a) => {
+          const lpId = slToLP[a.id_service_line];
+          if (lpId !== undefined)
+            areaCountByLP[lpId] = (areaCountByLP[lpId] ?? 0) + 1;
+        });
+
+        badgesData.forEach((b) => {
+          const lpId = areaToLP[b.id_area];
+          if (lpId !== undefined)
+            badgeCountByLP[lpId] = (badgeCountByLP[lpId] ?? 0) + 1;
+        });
+
+        setLearningPaths(
+          lpData.map((row) => ({
+            ...mapLearningPath(row),
+            serviceLines: slCountByLP[row.id_learning_path] ?? 0,
+            areas: areaCountByLP[row.id_learning_path] ?? 0,
+            badges: badgeCountByLP[row.id_learning_path] ?? 0,
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
@@ -179,8 +202,7 @@ const SoftinsaLearningPaths = memo(() => {
 
   const filteredLearningPaths = learningPaths.filter((learningPathItem) => {
     const matchesStatus = !activeFilters.status || learningPathItem.status === activeFilters.status;
-    const searchableLearningPath = normalizeSearchValue(learningPathItem.name);
-    const matchesSearch = !normalizedSearchTerm || searchableLearningPath.includes(normalizedSearchTerm);
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(learningPathItem.name).includes(normalizedSearchTerm);
     return matchesStatus && matchesSearch;
   });
 
@@ -197,9 +219,6 @@ const SoftinsaLearningPaths = memo(() => {
         setIsFilterOpen(false);
       }
     };
-
-
-
     const handleEscape = (event) => {
       if (event.key === "Escape") {
         setIsFilterOpen(false);
@@ -208,10 +227,8 @@ const SoftinsaLearningPaths = memo(() => {
         setEditingLearningPathId(null);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
@@ -219,22 +236,27 @@ const SoftinsaLearningPaths = memo(() => {
   }, [isFilterOpen]);
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
+    if (currentPage > totalPages) setCurrentPage(totalPages);
   }, [currentPage, totalPages]);
 
-  const handleFieldChange = (field, value) => {
-    setFormData((previousData) => ({ ...previousData, [field]: value }));
-  };
+  const handleFieldChange = (field, value) =>
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
   const handleIconFileChange = (event) => {
-    const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
-    setFormData((previousData) => ({
-      ...previousData,
-      iconFile: file,
-      iconFileName: file ? file.name : "",
-    }));
+    const file = event.target.files?.[0] ?? null;
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddLearningPath = () => {
@@ -252,6 +274,7 @@ const SoftinsaLearningPaths = memo(() => {
       status: learningPathItem.status || "Ativo",
       iconFileName: learningPathItem.iconFileName || "",
       iconFile: null,
+      image: learningPathItem.image || "",
     });
     setEditingLearningPathId(learningPathItem.id);
     setIsFilterOpen(false);
@@ -266,61 +289,59 @@ const SoftinsaLearningPaths = memo(() => {
 
   const handleSubmitLearningPath = async (event) => {
     event.preventDefault();
-
     const sanitizedName = formData.name.trim();
-    const sanitizedDescription = formData.description.trim();
+    if (!sanitizedName) return;
 
-    if (!sanitizedName) {
-      return;
-    }
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : "";
 
     const payload = {
-      name: sanitizedName,
-      description: sanitizedDescription,
-      status: formData.status || "Ativo",
-      iconFileName: formData.iconFileName,
+      nome_learning_path: sanitizedName,
+      descricao_learning_path: formData.description.trim(),
+      estado_a_i: formData.status === "Ativo",
+      imagem_learning_path: rawBase64 || null,
     };
 
     try {
       if (isEditMode && editingLearningPathId !== null) {
-        const updatedLearningPath = await updateLearningPath(
-          editingLearningPathId,
-          payload
-        );
+        const response = await updateLearningPath(editingLearningPathId, payload);
+        const updated = response.dados;
 
-        setLearningPaths((previousLearningPaths) =>
-          previousLearningPaths.map((item) =>
-            item.id === editingLearningPathId
-              ? mapLearningPath(updatedLearningPath)
-              : item
-          )
+        setLearningPaths((prev) =>
+          prev.map((item) => {
+            if (item.id !== editingLearningPathId) return item;
+            return {
+              ...item,
+              name: updated.nome_learning_path,
+              description: updated.descricao_learning_path ?? "",
+              status: updated.estado_a_i ? "Ativo" : "Inativo",
+              iconFileName: updated.imagem_learning_path ?? "",
+              image: formatLPImage(updated.imagem_learning_path),
+            };
+          })
         );
       } else {
-        const createdLearningPath = await createLearningPath(payload);
-
-        setLearningPaths((previousLearningPaths) => [
-          mapLearningPath(createdLearningPath),
-          ...previousLearningPaths,
-        ]);
-
+        await createLearningPath({ ...payload, data_insercao: new Date().toISOString() });
+        loadLearningPaths();
         setCurrentPage(1);
       }
 
       handleCloseModal();
     } catch (error) {
       console.error(error);
+      alert(error?.response?.data?.message || "Ocorreu um erro ao guardar a Learning Path.");
     }
   };
 
   const handleToggleFilter = () => {
     setFilterDraft(activeFilters);
     setIsExportAlertOpen(false);
-    setIsFilterOpen((previous) => !previous);
+    setIsFilterOpen((prev) => !prev);
   };
 
-  const handleFilterDraftChange = (field, value) => {
-    setFilterDraft((previousData) => ({ ...previousData, [field]: value }));
-  };
+  const handleFilterDraftChange = (field, value) =>
+    setFilterDraft((prev) => ({ ...prev, [field]: value }));
 
   const handleApplyFilters = () => {
     setActiveFilters(filterDraft);
@@ -329,9 +350,9 @@ const SoftinsaLearningPaths = memo(() => {
   };
 
   const handleClearFilters = () => {
-    const clearedFilters = getDefaultFilterDraft();
-    setFilterDraft(clearedFilters);
-    setActiveFilters(clearedFilters);
+    const cleared = getDefaultFilterDraft();
+    setFilterDraft(cleared);
+    setActiveFilters(cleared);
     setCurrentPage(1);
     setIsFilterOpen(false);
   };
@@ -346,17 +367,9 @@ const SoftinsaLearningPaths = memo(() => {
     setCurrentPage(1);
   };
 
-  const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(previousPage - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(previousPage + 1, totalPages));
-  };
-
-  const handlePageSelect = (page) => {
-    setCurrentPage(page);
-  };
+  const handlePreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
 
   const handleOpenExportAlert = () => {
     setIsFilterOpen(false);
@@ -370,16 +383,14 @@ const SoftinsaLearningPaths = memo(() => {
   };
 
   const handleConfirmExport = async () => {
-    if (!exportFormat) {
-      return;
-    }
+    if (!exportFormat) return;
 
-    const rowsToExport = filteredLearningPaths.map((learningPathItem) => ({
-      Nome: learningPathItem.name,
-      "Service Lines": learningPathItem.serviceLines,
-      Áreas: learningPathItem.areas,
-      Badges: learningPathItem.badges,
-      Estado: learningPathItem.status,
+    const rowsToExport = filteredLearningPaths.map((item) => ({
+      Nome: item.name,
+      "Service Lines": item.serviceLines,
+      Áreas: item.areas,
+      Badges: item.badges,
+      Estado: item.status,
     }));
 
     const timestamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
@@ -389,7 +400,6 @@ const SoftinsaLearningPaths = memo(() => {
         const XLSX = await import("xlsx");
         const workbook = XLSX.utils.book_new();
         const worksheet = XLSX.utils.json_to_sheet(rowsToExport);
-
         XLSX.utils.book_append_sheet(workbook, worksheet, "Learning Paths");
         XLSX.writeFile(workbook, `learning-paths-${timestamp}.xlsx`);
       }
@@ -399,58 +409,52 @@ const SoftinsaLearningPaths = memo(() => {
           import("jspdf"),
           import("jspdf-autotable"),
         ]);
-
         const doc = new jsPDF({ orientation: "landscape" });
         doc.setFontSize(14);
         doc.text("Listagem de Learning Paths", 14, 14);
-
         autoTable(doc, {
           startY: 20,
           head: [["Nome", "Service Lines", "Áreas", "Badges", "Estado"]],
           body: rowsToExport.map((row) => [
-            row.Nome,
-            String(row["Service Lines"]),
-            String(row.Áreas),
-            String(row.Badges),
-            row.Estado,
+            row.Nome, String(row["Service Lines"]), String(row.Áreas), String(row.Badges), row.Estado,
           ]),
           styles: { fontSize: 9, cellPadding: 2.4 },
           headStyles: { fillColor: [58, 87, 232] },
         });
-
         doc.save(`learning-paths-${timestamp}.pdf`);
       }
 
       setIsExportAlertOpen(false);
       setExportFormat("");
     } catch (error) {
-      // Keep behavior simple in this iteration; replace with toast/notification when global feedback is available.
       console.error("Falha ao exportar learning paths", error);
     }
   };
 
   return (
     <section className="softinsa-learning-paths-page" data-node-id="3899:14482">
-      <div className="softinsa-learning-paths-hero" data-node-id="3899:14488">
+      <div className="softinsa-learning-paths-hero d-flex flex-column justify-content-center" data-node-id="3899:14488">
         <h1>Learning Paths</h1>
         <p>Criar e gerir as jornadas de formação da empresa</p>
       </div>
 
-      <div className="softinsa-learning-paths-toolbar">
-        <label className="softinsa-learning-paths-search" aria-label="Pesquisar learning paths">
+      <div className="softinsa-learning-paths-toolbar d-flex align-items-center flex-wrap gap-3">
+        <label className="softinsa-learning-paths-search d-inline-flex align-items-center" aria-label="Pesquisar learning paths">
           <SearchIcon />
           <input
             type="text"
+            className="w-100"
             placeholder="Pesquisar Learning Path..."
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </label>
 
-        <div className="softinsa-learning-paths-filter-wrap" ref={filterWrapRef}>
+        <div className="softinsa-learning-paths-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
+        <div className="softinsa-learning-paths-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button
             type="button"
-            className="softinsa-learning-paths-filter-btn"
+            className="softinsa-learning-paths-filter-btn d-inline-flex align-items-center"
             aria-label="Abrir filtro"
             aria-expanded={isFilterOpen}
             onClick={handleToggleFilter}
@@ -460,33 +464,26 @@ const SoftinsaLearningPaths = memo(() => {
           </button>
 
           {isFilterOpen ? (
-            <div
-              className="softinsa-learning-paths-filter-panel"
-              role="dialog"
-              aria-label="Filtro de learning paths"
-              data-node-id="4729:3275"
-            >
-              <div className="softinsa-learning-paths-filter-field">
+            <div className="softinsa-learning-paths-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de learning paths" data-node-id="4729:3275">
+              <div className="softinsa-learning-paths-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-learning-paths-filter-status">Estado</label>
                 <div className="softinsa-learning-paths-select-wrap">
                   <select
                     id="softinsa-learning-paths-filter-status"
+                    className="w-100"
                     value={filterDraft.status}
                     onChange={(event) => handleFilterDraftChange("status", event.target.value)}
                   >
                     <option value="">Selecione o estado</option>
                     {statusOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
+                      <option key={option} value={option}>{option}</option>
                     ))}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-learning-paths-filter-actions">
-                <button type="button" className="softinsa-learning-paths-filter-submit" onClick={handleApplyFilters}>
+              <div className="softinsa-learning-paths-filter-actions w-100 d-inline-flex align-items-center">
+                <button type="button" className="softinsa-learning-paths-filter-submit w-100" onClick={handleApplyFilters}>
                   Filtrar
                 </button>
               </div>
@@ -494,10 +491,16 @@ const SoftinsaLearningPaths = memo(() => {
           ) : null}
         </div>
 
-        <button type="button" className="softinsa-learning-paths-add-btn" onClick={handleOpenAddLearningPath}>
-          <PlusIcon />
-          <span>Adicionar Learning Path</span>
+        <button type="button" className="softinsa-learning-paths-export-btn d-inline-flex align-items-center" onClick={handleOpenExportAlert}>
+          <ExportIcon />
+          <span>Exportar</span>
         </button>
+
+        <button type="button" className="softinsa-learning-paths-add-btn d-inline-flex align-items-center" onClick={handleOpenAddLearningPath}>
+          <PlusIcon />
+          <span>Adicionar</span>
+        </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
@@ -506,7 +509,7 @@ const SoftinsaLearningPaths = memo(() => {
         </button>
       ) : null}
 
-      <div className="softinsa-learning-paths-table-meta">
+      <div className="softinsa-learning-paths-table-meta d-inline-flex align-items-center flex-wrap">
         <span>Mostrar</span>
         <div className="softinsa-learning-paths-entries-select-wrap">
           <select
@@ -516,9 +519,7 @@ const SoftinsaLearningPaths = memo(() => {
             onChange={handleEntriesChange}
           >
             {[10, 50, 100].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
+              <option key={option} value={option}>{option}</option>
             ))}
           </select>
           <span className="softinsa-learning-paths-entries-arrow">▼</span>
@@ -527,7 +528,7 @@ const SoftinsaLearningPaths = memo(() => {
       </div>
 
       <div className="softinsa-learning-paths-table-card">
-        <div className="softinsa-learning-paths-table-scroll">
+        <div className="softinsa-learning-paths-table-scroll w-100">
           <table className="softinsa-learning-paths-table" aria-label="Tabela de learning paths">
             <thead>
               <tr>
@@ -542,16 +543,16 @@ const SoftinsaLearningPaths = memo(() => {
             <tbody>
               {paginatedLearningPaths.length > 0 ? (
                 paginatedLearningPaths.map((learningPathItem) => (
-                  <tr key={learningPathItem.id_learning_path}>
-                    <td>{learningPathItem.nome_learning_path}</td>
+                  <tr key={learningPathItem.id}>
+                    <td>{learningPathItem.name}</td>
                     <td>{learningPathItem.serviceLines}</td>
                     <td>{learningPathItem.areas}</td>
                     <td>{learningPathItem.badges}</td>
-                    <td>{learningPathItem.estado_a_i ? "Ativo" : "Inativo"}</td>
+                    <td>{learningPathItem.status}</td>
                     <td>
                       <button
                         type="button"
-                        className="softinsa-learning-paths-edit-btn"
+                        className="softinsa-learning-paths-edit-btn d-inline-flex align-items-center justify-content-center"
                         aria-label={`Editar ${learningPathItem.name}`}
                         onClick={() => handleOpenEditLearningPath(learningPathItem)}
                       >
@@ -569,13 +570,8 @@ const SoftinsaLearningPaths = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-learning-paths-table-footer">
-          <button type="button" className="softinsa-learning-paths-export-btn" onClick={handleOpenExportAlert}>
-            <ExportIcon />
-            <span>Exportar</span>
-          </button>
-
-          <div className="softinsa-learning-paths-pagination" aria-label="Paginação">
+        <div className="softinsa-learning-paths-table-footer d-flex align-items-center justify-content-end">
+          <div className="softinsa-learning-paths-pagination d-inline-flex align-items-center" aria-label="Paginação">
             <button
               type="button"
               className={`softinsa-learning-paths-page-link${currentPage === 1 ? " is-disabled" : ""}`}
@@ -584,18 +580,16 @@ const SoftinsaLearningPaths = memo(() => {
             >
               Anterior
             </button>
-
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}
                 type="button"
-                className={`softinsa-learning-paths-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
+                className={`softinsa-learning-paths-page-btn d-inline-flex align-items-center justify-content-center${currentPage === pageNumber ? " is-active" : ""}`}
                 onClick={() => handlePageSelect(pageNumber)}
               >
                 {pageNumber}
               </button>
             ))}
-
             <button
               type="button"
               className={`softinsa-learning-paths-page-link${currentPage === totalPages ? " is-disabled" : ""}`}
@@ -609,68 +603,29 @@ const SoftinsaLearningPaths = memo(() => {
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-learning-paths-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
-          <div
-            className="softinsa-learning-paths-export-alert"
-            role="dialog"
-            aria-label="Exportar learning paths"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-learning-paths-export-alert-header">
+        <div className="softinsa-learning-paths-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
+          <div className="softinsa-learning-paths-export-alert d-flex flex-column" role="dialog" aria-label="Exportar learning paths" onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-learning-paths-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Exportar</h3>
-              <button
-                type="button"
-                className="softinsa-learning-paths-modal-close"
-                aria-label="Fechar exportação"
-                onClick={handleCloseExportAlert}
-              >
+              <button type="button" className="softinsa-learning-paths-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar exportação" onClick={handleCloseExportAlert}>
                 <CloseIcon />
               </button>
             </div>
-
-            <div className="softinsa-learning-paths-export-alert-body">
+            <div className="softinsa-learning-paths-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
-
-              <button
-                type="button"
-                className="softinsa-learning-paths-export-option"
-                aria-pressed={exportFormat === "xlsx"}
-                onClick={() => setExportFormat("xlsx")}
-              >
-                <span
-                  className={`softinsa-learning-paths-export-radio${exportFormat === "xlsx" ? " is-active" : ""}`}
-                ></span>
+              <button type="button" className="softinsa-learning-paths-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
+                <span className={`softinsa-learning-paths-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "xlsx" ? " is-active" : ""}`}></span>
                 <span>Excel (.xlsx)</span>
               </button>
-
-              <button
-                type="button"
-                className="softinsa-learning-paths-export-option"
-                aria-pressed={exportFormat === "pdf"}
-                onClick={() => setExportFormat("pdf")}
-              >
-                <span
-                  className={`softinsa-learning-paths-export-radio${exportFormat === "pdf" ? " is-active" : ""}`}
-                ></span>
+              <button type="button" className="softinsa-learning-paths-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "pdf"} onClick={() => setExportFormat("pdf")}>
+                <span className={`softinsa-learning-paths-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "pdf" ? " is-active" : ""}`}></span>
                 <span>PDF (.pdf)</span>
               </button>
             </div>
-
-            <div className="softinsa-learning-paths-export-alert-actions">
-              <button
-                type="button"
-                className="softinsa-learning-paths-export-cancel"
-                onClick={handleCloseExportAlert}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={`softinsa-learning-paths-export-confirm${!exportFormat ? " is-disabled" : ""}`}
-                onClick={handleConfirmExport}
-                disabled={!exportFormat}
-              >
+            <div className="softinsa-learning-paths-export-alert-actions d-inline-flex align-items-center justify-content-end">
+              <button type="button" className="softinsa-learning-paths-export-cancel" onClick={handleCloseExportAlert}>Cancelar</button>
+              <button type="button" className={`softinsa-learning-paths-export-confirm${!exportFormat ? " is-disabled" : ""}`} onClick={handleConfirmExport} disabled={!exportFormat}>
                 Exportar
               </button>
             </div>
@@ -679,82 +634,75 @@ const SoftinsaLearningPaths = memo(() => {
       ) : null}
 
       {isModalOpen ? (
-        <div className="softinsa-learning-paths-modal-backdrop" role="presentation" onClick={handleCloseModal}>
-          <div
-            className="softinsa-learning-paths-modal"
-            data-node-id="3986:5193"
-            role="dialog"
-            aria-label={isEditMode ? "Editar Learning Path" : "Adicionar Learning Path"}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-learning-paths-modal-header">
+        <div className="softinsa-learning-paths-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseModal}>
+          <div className="softinsa-learning-paths-modal" data-node-id="3986:5193" role="dialog" aria-label={isEditMode ? "Editar Learning Path" : "Adicionar Learning Path"} onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-learning-paths-modal-header d-flex align-items-center justify-content-between">
               <h2>{isEditMode ? "Editar Learning Path" : "Adicionar Learning Path"}</h2>
-              <button
-                type="button"
-                className="softinsa-learning-paths-modal-close"
-                aria-label="Fechar modal"
-                onClick={handleCloseModal}
-              >
+              <button type="button" className="softinsa-learning-paths-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal" onClick={handleCloseModal}>
                 <CloseIcon />
               </button>
             </div>
-
-            <form className="softinsa-learning-paths-modal-form" onSubmit={handleSubmitLearningPath}>
-              <div className="softinsa-learning-paths-modal-field">
+            <form className="softinsa-learning-paths-modal-form d-flex flex-column" onSubmit={handleSubmitLearningPath}>
+              <div className="softinsa-learning-paths-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-learning-path-name">Nome:</label>
-                <input
-                  id="softinsa-learning-path-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(event) => handleFieldChange("name", event.target.value)}
-                  required
-                />
+                <input id="softinsa-learning-path-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
               </div>
-
-              <div className="softinsa-learning-paths-modal-field">
+              <div className="softinsa-learning-paths-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-learning-path-description">Descrição:</label>
-                <textarea
-                  id="softinsa-learning-path-description"
-                  value={formData.description}
-                  onChange={(event) => handleFieldChange("description", event.target.value)}
-                ></textarea>
+                <textarea id="softinsa-learning-path-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md={3}>
+                  <div className="softinsa-learning-paths-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-learning-path-status">Estado</label>
+                    <div className="softinsa-learning-paths-select-wrap">
+                      <select id="softinsa-learning-path-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((option) => {
 
-              <div className="softinsa-learning-paths-modal-row-bottom">
-                <div className="softinsa-learning-paths-modal-field">
-                  <label htmlFor="softinsa-learning-path-status">Estado</label>
-                  <div className="softinsa-learning-paths-select-wrap">
-                    <select
-                      id="softinsa-learning-path-status"
-                      value={formData.status}
-                      onChange={(event) => handleFieldChange("status", event.target.value)}
-                    >
-                      <option value="" disabled>
-                        Ativo/Inativo
-                      </option>
-                      {statusOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+                          const cannotDeactivate =
+                            option === "Inativo" &&
+                            isEditMode &&
+                            (
+                              formData.serviceLines > 0 ||
+                              formData.areas > 0 ||
+                              formData.badges > 0
+                            );
+
+                          return (
+                            <option
+                              key={option}
+                              value={option}
+                              disabled={cannotDeactivate}
+                            >
+                              {option}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-
-                <div className="softinsa-learning-paths-modal-field">
-                  <label>Icon</label>
-                  <FileSelector
-                    fileName={formData.iconFileName}
-                    onChange={handleIconFileChange}
-                    ariaLabel="Selecionar icon da learning path"
-                  />
-                </div>
-
-                <button type="submit" className="softinsa-learning-paths-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+                <Col xs={12} md>
+                  <div className="softinsa-learning-paths-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da learning path" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{ marginTop: 8, maxHeight: 64, objectFit: "contain" }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-learning-paths-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

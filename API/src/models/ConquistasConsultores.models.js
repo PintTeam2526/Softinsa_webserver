@@ -26,16 +26,12 @@ var ConquistasConsultores = sequelize.define('ConquistasConsultores',
             model: Conquista,
             key: 'id_conquista'
         },
-    },
-    progresso: {
-        type: Sequelize.INTEGER,
-        allowNull: false
     }
 },
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 ConquistasConsultores.belongsTo(Consultor, { foreignKey: 'id_consultor' });

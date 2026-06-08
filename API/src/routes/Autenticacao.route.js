@@ -14,13 +14,12 @@ router.post('/register', controllerAutenticacao.register);
 router.post('/login', controllerAutenticacao.login);
 router.post('/mobile/login', controllerAutenticacao.loginMobile);
 
-// Obter utilizador autenticado
-router.get('/get-me', controllerAutenticacao.getAutenticacao);
-
 // Editar utilizador autenticado
-router.put('/update-me', authVerification,controllerAutenticacao.updateUser);
+router.put('/update-me', authVerification,controllerAutenticacao.updatePerfil);
 
 // Eliminar utilizador autenticado
 router.delete('/delete-me', authVerification,controllerAutenticacao.deleteUser);
+
+
 
 module.exports = router;

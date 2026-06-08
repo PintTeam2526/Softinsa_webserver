@@ -1,8 +1,12 @@
 .softinsa-rgpd-page {
   padding: 0 24px 24px;
   font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
+/* ── HERO ──────────────────────────────────────────────── */
 .softinsa-rgpd-hero {
   min-height: 155px;
   border-radius: 0 0 1rem 1rem;
@@ -12,7 +16,7 @@
   justify-content: center;
   gap: 8px;
   padding: 35px 41px;
-  margin: 0 -24px 18px;
+  margin: 0 -24px 0;
 }
 
 .softinsa-rgpd-hero h1 {
@@ -32,448 +36,96 @@
   max-width: 900px;
 }
 
-.softinsa-rgpd-consent-card {
-  border-radius: 12px;
-  border: 1px solid #dde7ff;
-  background: linear-gradient(90deg, #f4f7ff 0%, #f8fbff 100%);
-  padding: 16px;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.softinsa-rgpd-consent-card.is-pending {
-  border-color: #ffc107;
-  background: linear-gradient(90deg, #fff8e4 0%, #fffdf5 100%);
-}
-
-.softinsa-rgpd-consent-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.softinsa-rgpd-consent-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: #e9efff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #3a57e8;
-  flex-shrink: 0;
-}
-
-.softinsa-rgpd-consent-card.is-pending .softinsa-rgpd-consent-icon {
-  background: #fff3cd;
-  color: #997100;
-}
-
-.softinsa-rgpd-status-icon {
-  width: 22px;
-  height: 22px;
-  display: block;
-}
-
-.softinsa-rgpd-consent-content h3 {
-  margin: 0;
-  color: #232d42;
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 600;
-}
-
-.softinsa-rgpd-consent-content p {
-  margin: 4px 0 0;
-  color: #8a92a6;
-  font-size: 13px;
-  line-height: 1.5;
-  font-weight: 500;
-}
-
-.softinsa-rgpd-consent-action {
-  border: 0;
+/* ── EDITOR CARD ───────────────────────────────────────── */
+.softinsa-rgpd-editor-card {
+  background: #ffffff;
   border-radius: 8px;
-  background: #39639c;
-  color: #ffffff;
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 600;
-  padding: 10px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.softinsa-rgpd-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.softinsa-rgpd-search {
-  height: 42px;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  background: #ffffff;
-  padding: 8px 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 220px;
-}
-
-.softinsa-rgpd-search input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: #8a92a6;
-  font-size: 14px;
-  line-height: 1.4;
-  background: transparent;
-}
-
-.softinsa-rgpd-search input::placeholder {
-  color: #adb5bd;
-}
-
-.softinsa-rgpd-icon {
-  width: 20px;
-  height: 20px;
-  display: block;
-  color: currentColor;
-}
-
-.softinsa-rgpd-add-btn,
-.softinsa-rgpd-edit-btn,
-.softinsa-rgpd-page-btn,
-.softinsa-rgpd-page-link,
-.softinsa-rgpd-modal-close,
-.softinsa-rgpd-form-cancel,
-.softinsa-rgpd-form-submit,
-.softinsa-rgpd-consent-reject,
-.softinsa-rgpd-consent-accept {
-  border: 0;
-  background: transparent;
-  padding: 0;
-}
-
-.softinsa-rgpd-add-btn {
-  height: 42px;
-  border-radius: 4px;
-  background: #3a57e8;
-  color: #ffffff;
-  font-size: 16px;
-  line-height: 1.75;
-  font-weight: 400;
-  padding: 8px 20px;
-  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.softinsa-rgpd-table-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: #8a92a6;
-  font-size: 16px;
-  line-height: 1.75;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.softinsa-rgpd-entries-select-wrap {
-  position: relative;
-  border-radius: 4px;
-  background: #ffffff;
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
-  overflow: hidden;
-}
-
-.softinsa-rgpd-entries-select {
-  height: 42px;
-  min-width: 80px;
-  border: 0;
-  background: transparent;
-  color: #8a92a6;
-  font-size: 16px;
-  line-height: 1;
-  font-weight: 400;
-  appearance: none;
-  padding: 10px 30px 10px 16px;
-  cursor: pointer;
-}
-
-.softinsa-rgpd-entries-select:focus,
-.softinsa-rgpd-field input:focus,
-.softinsa-rgpd-field textarea:focus {
-  outline: none;
-}
-
-.softinsa-rgpd-entries-arrow {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.softinsa-rgpd-table-card {
-  border-radius: 8px;
-  border: 1px solid #eeeeee;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.softinsa-rgpd-table-scroll {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.softinsa-rgpd-table {
-  width: 100%;
-  min-width: 980px;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.softinsa-rgpd-table thead tr {
-  background: #f5f6fa;
-}
-
-.softinsa-rgpd-table th {
-  padding: 12px 10px;
-  color: #8a92a6;
-  text-align: center;
-  font-size: 13px;
-  line-height: 1.75;
-  font-weight: 500;
-}
-
-.softinsa-rgpd-table tbody tr {
-  border-top: 1px solid #eeeeee;
-}
-
-.softinsa-rgpd-table td {
-  padding: 8px 10px;
-  color: #8a92a6;
-  text-align: center;
-  font-size: 13px;
-  line-height: 1.75;
-  font-weight: 500;
-}
-
-.softinsa-rgpd-empty-row td {
-  color: #8a92a6;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.75;
-  font-weight: 400;
-  padding: 20px 12px;
-}
-
-.softinsa-rgpd-edit-btn {
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.softinsa-rgpd-pencil-icon {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.softinsa-rgpd-table-footer {
-  border-top: 1px solid #eeeeee;
-  padding: 6px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.softinsa-rgpd-total {
-  color: #8a92a6;
-  font-size: 14px;
-  line-height: 1.5;
-  font-weight: 500;
-}
-
-.softinsa-rgpd-pagination {
-  display: inline-flex;
-  align-items: center;
-}
-
-.softinsa-rgpd-page-link {
-  color: #3a57e8;
-  font-size: 16px;
-  line-height: 1.75;
-  font-weight: 400;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.softinsa-rgpd-page-link.is-disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.softinsa-rgpd-page-btn {
-  width: 35px;
-  height: 38px;
-  border: 1px solid #dee2e6;
-  color: #3a57e8;
-  font-size: 16px;
-  line-height: 1.75;
-  font-weight: 400;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.softinsa-rgpd-page-btn.is-active {
-  background: #3a57e8;
-  color: #ffffff;
-}
-
-.softinsa-rgpd-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  background: rgba(35, 45, 66, 0.22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 24px;
-}
-
-.softinsa-rgpd-form-modal {
-  width: min(560px, 100%);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 20px 60px rgba(17, 38, 146, 0.18);
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
-.softinsa-rgpd-form-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  border-bottom: 1px solid #edf1f7;
-  padding: 20px 24px;
-}
-
-.softinsa-rgpd-form-modal-header h2 {
-  margin: 0;
-  color: #232d42;
-  font-size: 22px;
-  line-height: 1.25;
-  font-weight: 700;
-}
-
-.softinsa-rgpd-modal-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(58, 87, 232, 0.12);
-  color: #2d42b2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.softinsa-rgpd-close-icon {
-  width: 16px;
-  height: 16px;
+.softinsa-rgpd-editor-label {
   display: block;
-}
-
-.softinsa-rgpd-form-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px 24px 24px;
-}
-
-.softinsa-rgpd-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.softinsa-rgpd-field label {
-  color: #495057;
   font-size: 14px;
-  line-height: 1.4;
-  font-weight: 600;
-}
-
-.softinsa-rgpd-field input,
-.softinsa-rgpd-field textarea {
-  width: 100%;
-  border: 1px solid #dce1ef;
-  border-radius: 8px;
-  background: #ffffff;
+  font-weight: 500;
+  line-height: 1.75;
   color: #232d42;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 10px 12px;
 }
 
-.softinsa-rgpd-field textarea {
-  min-height: 120px;
+.softinsa-rgpd-editor-textarea {
+  width: 100%;
+  min-height: 480px;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #8a92a6;
   resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.softinsa-rgpd-form-actions {
+.softinsa-rgpd-editor-textarea:focus {
+  border-color: #39639c;
+  color: #232d42;
+}
+
+.softinsa-rgpd-editor-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 4px;
 }
 
-.softinsa-rgpd-form-cancel,
-.softinsa-rgpd-form-submit {
-  border-radius: 8px;
-  font-size: 15px;
-  line-height: 1.4;
-  font-weight: 600;
-  padding: 10px 20px;
-  cursor: pointer;
+.softinsa-rgpd-editor-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1aa053;
 }
 
-.softinsa-rgpd-form-cancel {
-  color: #2d42b2;
-  background: rgba(58, 87, 232, 0.16);
-}
-
-.softinsa-rgpd-form-submit {
-  color: #ffffff;
+.softinsa-rgpd-editor-save {
+  height: 44px;
+  min-width: 109px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 4px;
   background: #3a57e8;
-  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.35);
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.softinsa-rgpd-consent-backdrop {
+.softinsa-rgpd-editor-save:hover:not(:disabled) {
+  background: #2d42b2;
+}
+
+.softinsa-rgpd-editor-save:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+}
+
+/* ── CONSENT MODAL ─────────────────────────────────────── */
+.softinsa-rgpd-modal-backdrop {
+  position: fixed;
+  inset: 0;
   z-index: 130;
   background: rgba(17, 24, 39, 0.48);
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
 .softinsa-rgpd-consent-modal {
@@ -503,164 +155,96 @@
   font-weight: 500;
 }
 
-.softinsa-rgpd-consent-list {
+.softinsa-rgpd-consent-policy {
+  max-height: 280px;
+  overflow-y: auto;
   border: 1px solid #e8edf7;
   border-radius: 12px;
   background: #f9fbff;
-  padding: 14px;
-  max-height: 260px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #495057;
+  white-space: pre-wrap;
 }
 
 .softinsa-rgpd-consent-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  border-radius: 8px;
-  padding: 10px;
-  background: #ffffff;
-  border: 1px solid #edf1f7;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #232d42;
+  cursor: pointer;
 }
 
 .softinsa-rgpd-consent-item input {
   width: 18px;
   height: 18px;
-  margin-top: 1px;
   accent-color: #3a57e8;
+  flex-shrink: 0;
   cursor: pointer;
 }
 
-.softinsa-rgpd-consent-item span {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.softinsa-rgpd-consent-item strong {
-  color: #232d42;
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 700;
-}
-
-.softinsa-rgpd-consent-item small {
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.45;
-  font-weight: 500;
-}
-
 .softinsa-rgpd-consent-error {
-  color: #b42333;
+  margin: 0;
+  color: #c03221;
   font-size: 13px;
-  line-height: 1.45;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .softinsa-rgpd-consent-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 6px;
 }
 
 .softinsa-rgpd-consent-reject,
 .softinsa-rgpd-consent-accept {
-  border-radius: 10px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: "Inter", sans-serif;
   font-size: 15px;
   line-height: 1.4;
   font-weight: 600;
-  padding: 10px 18px;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
 .softinsa-rgpd-consent-reject {
-  background: rgba(220, 53, 69, 0.14);
-  color: #b42333;
+  background: rgba(192, 50, 33, 0.12);
+  color: #c03221;
+}
+
+.softinsa-rgpd-consent-reject:hover {
+  background: rgba(192, 50, 33, 0.2);
 }
 
 .softinsa-rgpd-consent-accept {
-  background: #39639c;
+  background: #3a57e8;
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.35);
 }
 
-.softinsa-rgpd-consent-accept.is-disabled {
-  opacity: 0.45;
+.softinsa-rgpd-consent-accept:hover:not(.is-disabled):not(:disabled) {
+  background: #2d42b2;
+}
+
+.softinsa-rgpd-consent-accept.is-disabled,
+.softinsa-rgpd-consent-accept:disabled {
+  background: #adb5bd;
+  color: #ffffff;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-@media (max-width: 991px) {
-  .softinsa-rgpd-page {
-    padding: 0 16px 20px;
-  }
-
-  .softinsa-rgpd-hero {
-    margin: 0 -16px 14px;
-    padding: 28px 24px;
-  }
-
-  .softinsa-rgpd-consent-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .softinsa-rgpd-toolbar {
-    flex-wrap: wrap;
-  }
-
-  .softinsa-rgpd-add-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .softinsa-rgpd-table-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .softinsa-rgpd-pagination {
-    width: 100%;
-    overflow-x: auto;
-  }
-
-  .softinsa-rgpd-consent-modal {
-    padding: 22px 18px;
-  }
+.softinsa-rgpd-close-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
-@media (max-width: 640px) {
-  .softinsa-rgpd-search {
-    min-width: 100%;
-  }
-
-  .softinsa-rgpd-consent-main {
-    align-items: flex-start;
-  }
-
-  .softinsa-rgpd-consent-icon {
-    width: 38px;
-    height: 38px;
-  }
-
-  .softinsa-rgpd-consent-action,
-  .softinsa-rgpd-consent-reject,
-  .softinsa-rgpd-consent-accept {
-    width: 100%;
-    justify-content: center;
-    display: inline-flex;
-  }
-
-  .softinsa-rgpd-consent-actions,
-  .softinsa-rgpd-form-actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .softinsa-rgpd-form-cancel,
-  .softinsa-rgpd-form-submit {
-    width: 100%;
-  }
-}

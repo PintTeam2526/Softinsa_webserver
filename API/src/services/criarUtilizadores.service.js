@@ -1,8 +1,11 @@
+const bcrypt = require('bcrypt');
 const sequelize = require('../../database');
 const Utilizadores = require('../models/Utilizadores.models');
 const Consultores = require('../models/Consultores.models');
+const Conquistas = require('../models/Conquistas.models');
 const TalentManagers = require('../models/TalentManagers.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
+const conquistasService = require('../services/conquistas.service');
 
 async function criarUtilizador({
     nome_utilizador,
@@ -34,7 +37,7 @@ async function criarUtilizador({
         const novoUtilizador = await Utilizadores.create({
             nome_utilizador,
             email_utilizador,
-            password_utilizador,
+            password_utilizador: await bcrypt.hash(password_utilizador, 10),
             username_utilizador,
             tipo_utilizador,
             imagem_utilizador,
@@ -47,22 +50,29 @@ async function criarUtilizador({
                 throw new Error('O id_area é obrigatório para consultores');
             }
 
-            await Consultores.create({
+            const consultor = await Consultores.create({
                 id_utilizador: novoUtilizador.id_utilizador,
                 total_pontos: 0,
                 id_area
             }, { transaction });
+
+            //criar as conquistas do consultor
+            const conquistas = await Conquistas.findAll();
+
+            conquistas.forEach(conquista => {
+                conquistasService.criarConquista(consultor.id_consultor, conquista.id_conquista);
+            });
         }
 
         // TALENT MANAGER
-        else if (tipo_utilizador === 'tm') {
+        else if (tipo_utilizador === 't') {
             await TalentManagers.create({
                 id_utilizador: novoUtilizador.id_utilizador
             }, { transaction });
         }
 
         // SERVICE LINE LIDER
-        else if (tipo_utilizador === 'sl') {
+        else if (tipo_utilizador === 's') {
             if (!id_service_line) {
                 throw new Error('O id_service_line é obrigatório para service line liders');
             }

@@ -40,7 +40,7 @@ var ServiceLines = sequelize.define('ServiceLines',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 

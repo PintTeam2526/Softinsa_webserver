@@ -2,13 +2,14 @@ const Areas = require('../models/Areas.models');
 const ServiceLine = require('../models/ServiceLines.models')
 const Badges = require('../models/Badges.models')
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const controllers = {};
 
 // Mostrar todas as áreas
 controllers.getAllAreas = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const whereClause = isAdmin ? {} : { estado_a_i: true };
 
         const resultado = await Areas.findAll({
@@ -54,7 +55,7 @@ controllers.getAllAreas = async (req, res) => {
 // Mostrar área por ID
 controllers.getAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
         const id = req.params.id;
 
         const resultado = await Areas.findByPk(id,
@@ -106,7 +107,7 @@ controllers.getAreaByID = async (req, res) => {
 // Criar área
 controllers.createArea = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -115,17 +116,35 @@ controllers.createArea = async (req, res) => {
         }
 
         const {
-            id_area,
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
             estado_a_i
         } = req.body;
 
+        if (!id_service_line) {
+            return res.status(400).json({
+                mensagem: "O id_service_line é obrigatório"
+            });
+        }
+
+        if (estado_a_i !== false) {
+            const sl = await ServiceLine.findByPk(id_service_line);
+            if (!sl) {
+                return res.status(400).json({
+                    mensagem: "A Service Line especificada não existe"
+                });
+            }
+            if (sl.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível criar uma Área ativa numa Service Line inativa"
+                });
+            }
+        }
+
         await Areas.create({
-            id_area,
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
@@ -150,7 +169,7 @@ controllers.createArea = async (req, res) => {
 // Eliminar área
 controllers.deleteAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -163,6 +182,8 @@ controllers.deleteAreaByID = async (req, res) => {
 
         resultado.estado_a_i = false;
         await resultado.save();
+
+        await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
 
         return res.status(200).json({
             message: 'Área eliminada'
@@ -181,7 +202,7 @@ controllers.deleteAreaByID = async (req, res) => {
 // Atualizar área
 controllers.updateAreaByID = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -199,14 +220,28 @@ controllers.updateAreaByID = async (req, res) => {
         }
 
         const {
-            id_serviceline,
+            id_service_line,
             nome_area,
             descricao_area,
             imagem_area,
             estado_a_i
         } = req.body;
 
-        area.id_serviceline = id_serviceline ?? area.id_serviceline;
+        if (id_service_line !== undefined && id_service_line !== area.id_service_line) {
+            const sl = await ServiceLine.findByPk(id_service_line);
+            if (!sl) {
+                return res.status(400).json({
+                    mensagem: "A Service Line especificada não existe"
+                });
+            }
+            if (sl.estado_a_i === false) {
+                return res.status(400).json({
+                    mensagem: "Não é possível associar a uma Service Line inativa"
+                });
+            }
+        }
+
+        area.id_service_line = id_service_line ?? area.id_service_line;
         area.nome_area = nome_area ?? area.nome_area;
         area.descricao_area = descricao_area ?? area.descricao_area;
         area.imagem_area = imagem_area ?? area.imagem_area;
@@ -216,8 +251,13 @@ controllers.updateAreaByID = async (req, res) => {
 
         await area.save();
 
+        if (estado_a_i === false) {
+            await Badges.update({ estado_a_i: false }, { where: { id_area: id } });
+        }
+
         return res.status(200).json({
-            mensagem: "Área atualizada com sucesso"
+            mensagem: "Área atualizada com sucesso",
+            dados: area
         });
 
     } catch (error) {

@@ -7,7 +7,7 @@ const TalentManagers = require('../models/TalentManagers.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const HistoricoPedidos = require('../models/HistoricoPedidos.models');
 const Documentacoes = require('../models/Documentacoes.models');
-const NotificacoesPedidos = require('../models/NotificacoesPedidos.models');
+const NotificacoesPedidos = require('../models/Notificacoes.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 
 async function submeterCandidatura({
@@ -133,28 +133,30 @@ async function submeterCandidatura({
         }
 
         // Criar histórico
-        const historico =
-            await HistoricoPedidos.create(
-                {
-                    id_estado: 1,
-                    id_utilizador_avaliador: 1,
-                    id_pedido_badge: pedido.id_pedido_badge,
-                    data: new Date(),
-                    estado_objetivo: 'Submetido'
-                },
-                {
-                    transaction
-                }
-            );
+        // Criar histórico
+        const historico = await HistoricoPedidos.create(
+            {
+                id_estado: 1,
+                id_pedido_badge: pedido.id_pedido_badge,
+                data: new Date()
+            },
+            {
+                transaction
+            }
+        );
 
         // Guardar documentos
-        for (const documento of documentos) {
+        for (const doc of documentos) {
+            if (!doc.id_requisito) {
+                throw new Error('Cada documento precisa de um id_requisito');
+            }
+
             await Documentacoes.create(
                 {
-                    id_pedido_badge: pedido.id_pedido_badge,
+                    id_historico: historico.id_historico,
                     id_consultor,
-                    documentacao: documento,
-                    validado: null
+                    id_requisito: doc.id_requisito,
+                    documentacao: doc.documento
                 },
                 {
                     transaction

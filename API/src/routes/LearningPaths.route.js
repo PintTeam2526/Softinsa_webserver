@@ -13,9 +13,16 @@ router.get('/:id/get', controllerLearningPaths.getLearningPathById);
 router.post('/create',authVerification, controllerLearningPaths.createLearningPath);
 
 // Atualizar Learning Path
-router.put('/:id/update', controllerLearningPaths.updateLearningPathById);
+router.put('/:id/update', authVerification, controllerLearningPaths.updateLearningPathById);
 
 // Apagar Learning Path
-router.delete('/:id/delete', controllerLearningPaths.deleteLearningPathById);
+router.delete('/:id/delete', authVerification, controllerLearningPaths.deleteLearningPathById);
+
+// Mostrar todas as Learning Paths MOBILE
+router.get('/get/mobile', controllerLearningPaths.getAllLearningPathsMobile);
+router.get('/get/mobile/:id', controllerLearningPaths.getLearningPathByIdMobile);
+
+
+
 
 module.exports = router;

@@ -1,20 +1,9 @@
-import { memo } from 'react'
-import { topbarProfile } from '../../models/topbar.model'
-import { useTopbarController } from '../../controllers/topbar.controller'
-import './AdminTopbar.css'
+import { memo, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import './softinsa-topbar.css'
 
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-shell-topbar-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
+import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
+
 
 function NotificationIcon() {
   return (
@@ -151,9 +140,7 @@ function NotificationRepository({
                 </button>
 
                 {isExpanded ? (
-                  <div
-                    className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}
-                  >
+                  <div className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}>
                     {item.message}
                   </div>
                 ) : null}
@@ -166,63 +153,61 @@ function NotificationRepository({
   )
 }
 
-function ProfileLanguageDropdown({ languages, selectedLanguage, onLanguageChange }) {
+function ProfileSkeleton() {
   return (
-    <div className="softinsa-shell-profile-panel" role="dialog" aria-label="Perfil">
-      <div className="softinsa-shell-profile-panel-title">Perfil</div>
-
-      <label className="softinsa-shell-profile-language-label" htmlFor="softinsa-shell-language-select">
-        Idioma:
-      </label>
-
-      <div className="softinsa-shell-profile-language-select-wrap">
-        <select
-          id="softinsa-shell-language-select"
-          className="softinsa-shell-profile-language-select"
-          value={selectedLanguage}
-          onChange={(event) => onLanguageChange(event.target.value)}
-        >
-          {languages.map((language) => (
-            <option key={language.value || 'placeholder'} value={language.value} disabled={language.disabled}>
-              {language.label}
-            </option>
-          ))}
-        </select>
+    <div className="softinsa-shell-profile-skeleton" aria-busy="true" aria-label="A carregar perfil">
+      <div className="softinsa-shell-profile-skeleton-avatar" />
+      <div className="softinsa-shell-profile-skeleton-meta">
+        <div className="softinsa-shell-profile-skeleton-name" />
+        <div className="softinsa-shell-profile-skeleton-role" />
       </div>
     </div>
   )
 }
 
 const AdminTopbar = memo(() => {
+  const navigate = useNavigate()
   const {
     notificationWrapRef,
-    profileWrapRef,
     isNotificationsOpen,
     isNotificationComposerOpen,
-    isProfileMenuOpen,
     expandedNotificationId,
     notificationBroadcastMessage,
     notificationItems,
-    selectedLanguage,
-    availableLanguages,
     toggleNotifications,
     closeNotifications,
     toggleNotificationMessage,
     toggleComposer,
     showRepository,
-    toggleProfileMenu,
     sendBroadcast,
     setNotificationBroadcastMessage,
-    setSelectedLanguage,
   } = useTopbarController()
+
+  const [profile, setProfile] = useState(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+
+  const loadProfile = useCallback(async () => {
+    setProfileLoading(true)
+    try {
+      const data = await getTopbarUtilizador()
+      setProfile(data)
+    } catch (err) {
+      console.error('Erro ao carregar topbar', err)
+    } finally {
+      setProfileLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
+
+  const imageSrc = profile?.imagem_utilizador?.startsWith('data:')
+    ? profile.imagem_utilizador
+    : `data:image/jpeg;base64,${profile?.imagem_utilizador}`
 
   return (
     <div className="softinsa-shell-topbar">
-      <label className="softinsa-shell-topbar-search" aria-label="Search">
-        <SearchIcon />
-        <input type="text" placeholder="Search..." />
-      </label>
-
       <div className="softinsa-shell-topbar-actions">
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button
@@ -251,27 +236,26 @@ const AdminTopbar = memo(() => {
           ) : null}
         </div>
 
-        <div className="softinsa-shell-profile-wrap" ref={profileWrapRef}>
-          <button
-            type="button"
-            className="softinsa-shell-profile-btn"
-            aria-label="Perfil de utilizador"
-            aria-expanded={isProfileMenuOpen}
-            onClick={toggleProfileMenu}
-          >
-            <img src={topbarProfile.avatar} alt={topbarProfile.name} className="softinsa-shell-profile-avatar" />
-            <span className="softinsa-shell-profile-meta">
-              <span className="softinsa-shell-profile-name">{topbarProfile.name}</span>
-              <span className="softinsa-shell-profile-role">{topbarProfile.role}</span>
-            </span>
-          </button>
-
-          {isProfileMenuOpen ? (
-            <ProfileLanguageDropdown
-              languages={availableLanguages}
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-            />
+        <div className="softinsa-shell-profile-wrap">
+          {profileLoading ? (
+            <ProfileSkeleton />
+          ) : profile ? (
+            <div
+              className="softinsa-shell-profile-btn"
+              aria-label="Perfil de utilizador"
+              onClick={() => navigate('/softinsa/definicoes')}
+              style={{ cursor: 'pointer' }}
+            >
+              <img
+                src={imageSrc}
+                alt={profile.nome_utilizador}
+                className="softinsa-shell-profile-avatar"
+              />
+              <span className="softinsa-shell-profile-meta">
+                <span className="softinsa-shell-profile-name">{profile.nome_utilizador}</span>
+                <span className="softinsa-shell-profile-role">{profile.cargo}</span>
+              </span>
+            </div>
           ) : null}
         </div>
       </div>

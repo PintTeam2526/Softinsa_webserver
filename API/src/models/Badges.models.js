@@ -36,7 +36,7 @@ var Badges = sequelize.define('Badges',
         allowNull: false
     },
     nivel_badge: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(25),
         allowNull: false
     },
     imagem_badge: {
@@ -49,7 +49,7 @@ var Badges = sequelize.define('Badges',
     },
     validade: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     estado_a_i: {
         type: Sequelize.BOOLEAN,
@@ -63,7 +63,7 @@ var Badges = sequelize.define('Badges',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 

@@ -12,7 +12,13 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
-    logging: true, // podes pôr true se quiseres ver queries no console
+    logging: false,
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: parseInt(process.env.DB_POOL_ACQUIRE || '10000'),
+      idle: parseInt(process.env.DB_POOL_IDLE || '3000'),
+    },
   }
 );
 
@@ -27,18 +33,5 @@ async function connectDB() {
 }
 
 connectDB();
-
-async function setup() {
-  try {
-    // Criar tabela (se não existir)
-    await sequelize.sync({alter: true}); 
-    console.log('Tabela criada!');
-
-  } catch (error) {
-    console.error('Erro:', error);
-  }
-}
-
-setup();
 
 module.exports = sequelize;

@@ -7,37 +7,27 @@ var authVerification = require('../middleware/requireAuth.middleware')
 router.get('/get', authVerification,controllerUtilizador.getAllUtilizadores);
 
 //Mostrar um utilizador com um determinado id
-router.get('/:id/get', controllerUtilizador.getUtilizadorById);
+router.get('/:id/get', authVerification, controllerUtilizador.getUtilizadorById);
 
 //Adicionar um utilizador
 router.post('/create', authVerification,controllerUtilizador.createUtilizador);
 
 //Atualizar um utilizador com um determinado id
-router.put('/:id/update', controllerUtilizador.updateUtilizadorById);
+router.put('/:id/update', authVerification, controllerUtilizador.updateUtilizadorById);
 
 //Mostrar os badges de um utilizador
 //router.get('/:id/badges', controllerUtilizador.getAllUsersBadges);
 //ENDPOINT NÃO IMPLEMENTADO
 
 //Eliminar um utilizador com um determinado id
-router.delete('/:id/delete', controllerUtilizador.deleteUtilizadorById);
+router.delete('/:id/delete', authVerification, controllerUtilizador.deleteUtilizadorById);
 
-//Adicionar um objetivo do consultor
-router.post('/:id/objetivo/create', controllerUtilizador.createObjetivo)
-
-//Apagar um objetivo do consultor
-router.delete('/:id/objetivo/delete', controllerUtilizador.deleteObjetivoById);
-
-// Listar notificações
-router.get('/:idUtilizador/notificacoes', authVerification,controllerUtilizador.getAllNotificacoes);
-
-// Enviar uma notificação
-router.post('/:idUtilizador/notificacoes/create', authVerification,controllerUtilizador.createNotificacao);
+//Obter dados para a topbar de um utilizador
+router.get('/topbar', authVerification, controllerUtilizador.getDadosTopbar);
 
 
-// Mostrar dados da dashboard
-//router.get('/:id/dashboard', controllerUtilizador.getDashboard );
-//ENDPOINT NÃO IMPLEMENTADO
+
+
 
 
 module.exports = router;

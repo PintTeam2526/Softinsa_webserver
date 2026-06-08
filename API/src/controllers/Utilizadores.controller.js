@@ -1,24 +1,39 @@
+const bcrypt = require('bcrypt');
 const Utilizadores = require('../models/Utilizadores.models');
-const Objetivos = require('../models/Objetivos.models');
-const Notificacoes = require('../models/NotificacoesPedidos.models');
 const criarUtilizadoresService = require('../services/criarUtilizadores.service');
+const { Op } = require('sequelize');
+const topbarService = require('../services/topbar.service');
 
 const controllers = {};
 
 // Mostrar todos os utilizadores
 controllers.getAllUtilizadores = async (req, res) => {
     try {
-        const isConsultor = req.user?.role === "CO";
+        const isAdmin = req.user?.role === "a";
+        const isConsultor = req.user?.role === "c";
 
         if (isConsultor) {
             const resultado = await Utilizadores.findByPk(req.user.id);
 
+            if (!resultado) {
+                return res.status(404).json({
+                    mensagem: "Utilizador não existe"
+                });
+            }
+
             return res.status(200).json([resultado]);
         }
 
-        const resultado = await Utilizadores.findAll();
+        const whereClause = isAdmin
+            ? { id_utilizador: { [Op.ne]: req.user.id } }
+            : {
+                estado_a_i: true,
+                tipo_utilizador: { [Op.ne]: 'a' }
+            };
 
-        if (!resultado) {
+        const resultado = await Utilizadores.findAll({ where: whereClause });
+
+        if (!resultado || resultado.length === 0) {
             return res.status(404).json({
                 mensagem: "Não existem utilizadores"
             });
@@ -40,7 +55,8 @@ controllers.getAllUtilizadores = async (req, res) => {
 controllers.getUtilizadorById = async (req, res) => {
     try {
         const id = req.params.id;
-        const isConsultor = req.user?.role === "CO";
+        const isAdmin = req.user?.role === "a";
+        const isConsultor = req.user?.role === "c";
 
         if (isConsultor && req.user.id != id) {
             return res.status(401).json({
@@ -54,6 +70,14 @@ controllers.getUtilizadorById = async (req, res) => {
             return res.status(404).json({
                 mensagem: "Utilizador não existe"
             });
+        }
+
+        if (!isAdmin && !isConsultor) {
+            if (resultado.tipo_utilizador === 'a' || resultado.estado_a_i === false) {
+                return res.status(404).json({
+                    mensagem: "Utilizador não existe"
+                });
+            }
         }
 
         return res.status(200).json(resultado);
@@ -83,7 +107,7 @@ controllers.createUtilizador = async (req, res) => {
 // Eliminar utilizador
 controllers.deleteUtilizadorById = async (req, res) => {
     try {
-        const isAdmin = req.user?.role === "A";
+        const isAdmin = req.user?.role === "a";
 
         if (!isAdmin) {
             return res.status(401).json({
@@ -100,9 +124,8 @@ controllers.deleteUtilizadorById = async (req, res) => {
             });
         }
 
-        await Utilizadores.destroy({
-            where: { id_utilizador: id }
-        });
+        utilizador.estado_a_i = false;
+        await utilizador.save();
 
         return res.status(200).json({
             mensagem: "Utilizador eliminado"
@@ -123,8 +146,8 @@ controllers.updateUtilizadorById = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const isAdmin = req.user?.role === "A";
-        const isConsultor = req.user?.role === "CO";
+        const isAdmin = req.user?.role === "a";
+        const isConsultor = req.user?.role === "c";
 
         if (isConsultor && req.user.id != id) {
             return res.status(401).json({
@@ -159,7 +182,9 @@ controllers.updateUtilizadorById = async (req, res) => {
 
         utilizador.nome_utilizador = nome_utilizador ?? utilizador.nome_utilizador;
         utilizador.email_utilizador = email_utilizador ?? utilizador.email_utilizador;
-        utilizador.password_utilizador = password_utilizador ?? utilizador.password_utilizador;
+        utilizador.password_utilizador = password_utilizador
+            ? await bcrypt.hash(password_utilizador, 10)
+            : utilizador.password_utilizador;
         utilizador.username_utilizador = username_utilizador ?? utilizador.username_utilizador;
         utilizador.imagem_utilizador = imagem_utilizador ?? utilizador.imagem_utilizador;
         utilizador.estado_a_i = estado_a_i ?? utilizador.estado_a_i;
@@ -184,46 +209,19 @@ controllers.updateUtilizadorById = async (req, res) => {
     }
 };
 
-//Adicionar um objetivo do consultor
-controllers.createObjetivo = async (req, res) => {
-    const idUtilizador = req.params.id;
-    const resultado = await Objetivos.create({
-        ...req.body, //... serve para copiar tudo o que está dentro do objeto
-        id_utilizador: idUtilizador
-    });
-    res.json(resultado);
+// obter dados da topbar de um utilizador
+controllers.getDadosTopbar = async (req, res) => {
+
+    try {
+        const id_utilizador = req.user.id;
+        const resultado = await topbarService.getDadosTopbar(id_utilizador);
+        res.json(resultado);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({mensagem: 'Erro de servidor'});
+    }
 };
 
-//Apagar um objetivo do consultor
-controllers.deleteObjetivoById = async (req, res) => {
-    const id = req.params.id;
-    const idUtilizador = req.params.id;
-    await Objetivos.destroy({
-        where: {
-            id_objetivo: id,
-            id_utilizador: idUtilizador}});
-    res.json({ message: 'Objetivo eliminado' });
-};
-
-// Listar notificações de um utilizador
-controllers.getAllNotificacoes = async (req, res) => {
-    const idUtilizador = req.params.id;
-    const resultado = await Notificacoes.findAll({
-        where: {
-            id_utilizador: idUtilizador
-        }
-    });
-    res.json(resultado);
-};
-
-// Enviar uma notificação
-controllers.createNotificacao = async (req, res) => {
-    const idUtilizador = req.params.id;
-    const resultado = await Notificacoes.create({
-        ...req.body, //... serve para copiar tudo o que está dentro do objeto
-        id_utilizador: idUtilizador
-    });
-    res.json(resultado);
-};
 
 module.exports = controllers;

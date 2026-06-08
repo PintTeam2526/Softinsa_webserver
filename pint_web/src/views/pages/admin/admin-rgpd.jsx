@@ -1,114 +1,9 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import "./admin-rgpd.css";
 
+import { getRGPD, updateRGPD } from '../../../controllers/gestaoController'
+
 const ACCEPTANCE_STORAGE_KEY = "softinsa.rgpd.acceptance";
-
-// TODO: Replace static terms with API data when backend endpoints are available.
-const initialTerms = [
-  {
-    id: 1,
-    name: "Privacidade",
-    description: "Tratamento geral de dados",
-    mandatory: true,
-    updatedAt: "2025-01-15T09:10:00.000Z",
-  },
-  {
-    id: 2,
-    name: "Privacidade",
-    description: "Consentimento para perfis publicos e partilha no LinkedIn.",
-    mandatory: true,
-    updatedAt: "2025-01-18T10:45:00.000Z",
-  },
-  {
-    id: 3,
-    name: "Privacidade",
-    description: "Regras de conduta e utilizacao do portal web e mobile.",
-    mandatory: true,
-    updatedAt: "2025-01-22T14:30:00.000Z",
-  },
-];
-
-const getDefaultTermForm = () => ({
-  name: "",
-  description: "",
-});
-
-const normalizeSearchValue = (value) =>
-  String(value)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-
-const formatDateLabel = (value) => {
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("pt-PT", { dateStyle: "short" }).format(parsedDate);
-};
-
-const formatDateTimeLabel = (value) => {
-  const parsedDate = new Date(value);
-  if (Number.isNaN(parsedDate.getTime())) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("pt-PT", { dateStyle: "medium", timeStyle: "short" }).format(parsedDate);
-};
-
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-rgpd-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-rgpd-icon" aria-hidden="true">
-      <path d="M12 5V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function PencilIcon() {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      className="softinsa-rgpd-pencil-icon"
-      aria-hidden="true"
-    >
-      <path
-        d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z"
-        fill="#00B8E0"
-      />
-    </svg>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-rgpd-status-icon" aria-hidden="true">
-      <path
-        d="M12 3L19 6V11.3C19 16 15.8 20.4 12 21C8.2 20.4 5 16 5 11.3V6L12 3Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <path d="M9 12.2L11.2 14.4L15 10.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function CloseIcon() {
   return (
@@ -120,443 +15,171 @@ function CloseIcon() {
 }
 
 const SoftinsaRgpd = memo(() => {
-  const [terms, setTerms] = useState(initialTerms);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [entriesPerPage, setEntriesPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [modalMode, setModalMode] = useState(null);
-  const [editingTermId, setEditingTermId] = useState(null);
-  const [formData, setFormData] = useState(getDefaultTermForm());
+  const [policyText, setPolicyText] = useState("");
+  const [savedPolicyText, setSavedPolicyText] = useState("");
+  const [saveStatus, setSaveStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [acceptance, setAcceptance] = useState(() => {
     try {
-      const storedAcceptance = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
-      if (!storedAcceptance) {
-        return null;
-      }
-
-      const parsedAcceptance = JSON.parse(storedAcceptance);
-      return parsedAcceptance && typeof parsedAcceptance === "object" ? parsedAcceptance : null;
-    } catch (error) {
-      console.error("Nao foi possivel carregar estado de aceitação RGPD:", error);
+      const stored = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
       localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
       return null;
     }
   });
-  const [consentChecks, setConsentChecks] = useState({});
+  const [consentChecked, setConsentChecked] = useState(false);
   const [consentError, setConsentError] = useState("");
 
-  const isTermModalOpen = modalMode !== null;
-  const isEditMode = modalMode === "edit";
-  const normalizedSearchTerm = normalizeSearchValue(searchTerm);
-
-  const mandatoryTerms = useMemo(() => terms.filter((term) => term.mandatory), [terms]);
-
-  const consentVersion = useMemo(() => {
-    if (mandatoryTerms.length === 0) {
-      return "";
-    }
-
-    return mandatoryTerms
-      .map((term) => `${term.id}|${term.updatedAt}|${term.name}|${term.description}`)
-      .join("::");
-  }, [mandatoryTerms]);
+  const isDirty = policyText !== savedPolicyText;
 
   const hasAcceptedCurrentVersion = useMemo(() => {
-    if (mandatoryTerms.length === 0) {
-      return true;
-    }
+    if (!savedPolicyText.trim()) return true;
+    return Boolean(acceptance && acceptance.version === savedPolicyText);
+  }, [acceptance, savedPolicyText]);
 
-    return Boolean(acceptance && acceptance.version === consentVersion);
-  }, [acceptance, consentVersion, mandatoryTerms.length]);
+  const isConsentModalOpen = !isLoading && !hasAcceptedCurrentVersion;
 
-  const isConsentModalOpen = mandatoryTerms.length > 0 && !hasAcceptedCurrentVersion;
-
-  const normalizedConsentChecks = useMemo(() => {
-    const nextChecks = {};
-
-    mandatoryTerms.forEach((term) => {
-      nextChecks[term.id] = Boolean(consentChecks[term.id]);
-    });
-
-    return nextChecks;
-  }, [consentChecks, mandatoryTerms]);
-
-  const filteredTerms = terms.filter((term) => {
-    const searchableTerm = normalizeSearchValue(`${term.name} ${term.description}`);
-    return !normalizedSearchTerm || searchableTerm.includes(normalizedSearchTerm);
-  });
-
-  const totalPages = Math.max(1, Math.ceil(filteredTerms.length / entriesPerPage));
-  const currentPageClamped = Math.min(currentPage, totalPages);
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-  const paginatedTerms = filteredTerms.slice(
-    (currentPageClamped - 1) * entriesPerPage,
-    currentPageClamped * entriesPerPage
-  );
-
-  const allMandatoryChecked = mandatoryTerms.every((term) => Boolean(normalizedConsentChecks[term.id]));
-
-  const acceptedAtLabel = acceptance && acceptance.acceptedAt ? formatDateTimeLabel(acceptance.acceptedAt) : "";
-
-  const handleOpenAddTerm = () => {
-    setFormData(getDefaultTermForm());
-    setEditingTermId(null);
-    setModalMode("add");
-  };
-
-  const handleOpenEditTerm = (term) => {
-    setFormData({
-      name: term.name,
-      description: term.description,
-    });
-    setEditingTermId(term.id);
-    setModalMode("edit");
-  };
-
-  const handleCloseTermModal = () => {
-    setModalMode(null);
-    setEditingTermId(null);
-  };
-
-  const handleFieldChange = (field, value) => {
-    setFormData((previousData) => ({ ...previousData, [field]: value }));
-  };
-
-  const handleSubmitTerm = (event) => {
-    event.preventDefault();
-
-    const sanitizedName = formData.name.trim();
-    const sanitizedDescription = formData.description.trim();
-
-    if (!sanitizedName || !sanitizedDescription) {
-      return;
-    }
-
-    const timestamp = new Date().toISOString();
-    const payload = {
-      name: sanitizedName,
-      description: sanitizedDescription,
-      mandatory: true,
-      updatedAt: timestamp,
+  // Carrega a política da API
+  useEffect(() => {
+    const fetchPolicy = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getRGPD();
+        const text = data?.politica ?? "";
+        setPolicyText(text);
+        setSavedPolicyText(text);
+      } catch {
+        setSaveStatus("Não foi possível carregar a política.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    if (isEditMode && editingTermId !== null) {
-      setTerms((previousTerms) =>
-        previousTerms.map((term) => (term.id === editingTermId ? { ...term, ...payload } : term))
-      );
-    } else {
-      setTerms((previousTerms) => {
-        const nextId = previousTerms.reduce((maxId, term) => Math.max(maxId, Number(term.id) || 0), 0) + 1;
-        return [{ id: nextId, ...payload }, ...previousTerms];
-      });
-      setCurrentPage(1);
-    }
+    fetchPolicy();
+  }, []);
 
-    handleCloseTermModal();
-  };
+  // Limpa a mensagem de estado após 3 s
+  useEffect(() => {
+    if (!saveStatus) return;
+    const id = window.setTimeout(() => setSaveStatus(""), 3000);
+    return () => window.clearTimeout(id);
+  }, [saveStatus]);
 
-  const handleEntriesChange = (event) => {
-    setEntriesPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
+  const handleSavePolicy = async () => {
+    const trimmed = policyText.trim();
+    if (!trimmed) return;
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setCurrentPage(1);
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(Math.min(previousPage, totalPages) - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(Math.min(previousPage, totalPages) + 1, totalPages));
-  };
-
-  const handlePageSelect = (page) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
-
-  const handleConsentCheckChange = (termId, checked) => {
-    setConsentChecks((previousChecks) => ({
-      ...previousChecks,
-      [termId]: checked,
-    }));
-
-    if (consentError) {
-      setConsentError("");
+    setIsSaving(true);
+    try {
+      await updateRGPD({ politica: policyText });
+      setSavedPolicyText(policyText);
+      setSaveStatus("Política guardada com sucesso.");
+    } catch {
+      setSaveStatus("Não foi possível guardar a política.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleAcceptTerms = () => {
-    if (!allMandatoryChecked) {
-      setConsentError("Para continuar, aceite todos os termos.");
+  const handleAcceptPolicy = () => {
+    if (!consentChecked) {
+      setConsentError("Para continuar, aceite a política.");
       return;
     }
 
     const nextAcceptance = {
-      version: consentVersion,
+      version: savedPolicyText,
       acceptedAt: new Date().toISOString(),
     };
 
-    // TODO: Persist acceptance per user through API instead of localStorage.
     localStorage.setItem(ACCEPTANCE_STORAGE_KEY, JSON.stringify(nextAcceptance));
     setAcceptance(nextAcceptance);
+    setConsentChecked(false);
     setConsentError("");
   };
 
-  const handleRejectTerms = () => {
-    const nextChecks = {};
-
-    mandatoryTerms.forEach((term) => {
-      nextChecks[term.id] = false;
-    });
-
-    setConsentChecks(nextChecks);
-    setConsentError("Sem aceitação nao e possivel concluir o primeiro acesso.");
-  };
-
-  const handleSimulateFirstAccess = () => {
-    localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
-    setAcceptance(null);
-    setConsentError("");
+  const handleRejectPolicy = () => {
+    setConsentChecked(false);
+    setConsentError("Sem aceitação não é possível concluir o primeiro acesso.");
   };
 
   return (
-    <section className="softinsa-rgpd-page" data-node-id="3895:4291">
-      <div className="softinsa-rgpd-hero" data-node-id="3895:4301">
+    <section className="softinsa-rgpd-page">
+      <div className="softinsa-rgpd-hero">
         <h1>RGPD</h1>
-        <p>Configuracao de politicas de privacidade e gestao de termos de aceitação</p>
+        <p>Configuração de políticas de privacidade e gestão de termos de aceitação</p>
       </div>
 
-      <div className={`softinsa-rgpd-consent-card${hasAcceptedCurrentVersion ? " is-accepted" : " is-pending"}`}>
-        <div className="softinsa-rgpd-consent-main">
-          <span className="softinsa-rgpd-consent-icon" aria-hidden="true">
-            <ShieldIcon />
-          </span>
-          <div className="softinsa-rgpd-consent-content">
-            <h3>Fluxo de primeiro acesso</h3>
-            <p>
-              {hasAcceptedCurrentVersion
-                ? `Termos aceites na versao atual em ${acceptedAtLabel}.`
-                : "Os utilizadores devem aceitar os termos no primeiro acesso."}
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="softinsa-rgpd-consent-action"
-          onClick={handleSimulateFirstAccess}
-          aria-label="Simular primeiro acesso"
-        >
-          Simular primeiro acesso
-        </button>
-      </div>
-
-      <div className="softinsa-rgpd-toolbar" data-node-id="3942:5626">
-        <label className="softinsa-rgpd-search" aria-label="Pesquisar termo RGPD">
-          <SearchIcon />
-          <input
-            type="text"
-            placeholder="Pesquisar por nome ou descricao..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+      <div className="softinsa-rgpd-editor-card">
+        <label className="softinsa-rgpd-editor-label" htmlFor="softinsa-rgpd-policy">
+          Políticas RGPD:
         </label>
 
-        <button type="button" className="softinsa-rgpd-add-btn" onClick={handleOpenAddTerm}>
-          <PlusIcon />
-          <span>Adicionar RGPD</span>
-        </button>
-      </div>
+        <textarea
+          id="softinsa-rgpd-policy"
+          className="softinsa-rgpd-editor-textarea"
+          value={isLoading ? "" : policyText}
+          onChange={(e) => setPolicyText(e.target.value)}
+          rows={16}
+          placeholder={isLoading ? "A carregar política..." : ""}
+          aria-label="Texto das políticas RGPD"
+          disabled={isLoading || isSaving}
+        />
 
-      <div className="softinsa-rgpd-table-meta">
-        <span>Mostrar</span>
-        <div className="softinsa-rgpd-entries-select-wrap">
-          <select
-            className="softinsa-rgpd-entries-select"
-            value={entriesPerPage}
-            onChange={handleEntriesChange}
-            aria-label="Quantidade de entradas por pagina"
+        <div className="softinsa-rgpd-editor-actions">
+          {saveStatus ? (
+            <span className="softinsa-rgpd-editor-status" role="status">
+              {saveStatus}
+            </span>
+          ) : null}
+
+          <button
+            type="button"
+            className="softinsa-rgpd-editor-save"
+            onClick={handleSavePolicy}
+            disabled={isLoading || isSaving || !isDirty || !policyText.trim()}
           >
-            <option value={10}>10</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <span className="softinsa-rgpd-entries-arrow" aria-hidden="true">
-            ▾
-          </span>
-        </div>
-        <span>Entradas</span>
-      </div>
-
-      <div className="softinsa-rgpd-table-card" data-node-id="3959:6262">
-        <div className="softinsa-rgpd-table-scroll">
-          <table className="softinsa-rgpd-table" role="table" aria-label="Tabela de termos RGPD">
-            <thead>
-              <tr>
-                <th>NOME</th>
-                <th>DESCRICAO</th>
-                <th>ULTIMA ATUALIZACAO</th>
-                <th>EDITAR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedTerms.length > 0 ? (
-                paginatedTerms.map((term) => (
-                  <tr key={term.id}>
-                    <td>{term.name}</td>
-                    <td>{term.description}</td>
-                    <td>{formatDateLabel(term.updatedAt)}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="softinsa-rgpd-edit-btn"
-                        aria-label={`Editar termo ${term.name}`}
-                        onClick={() => handleOpenEditTerm(term)}
-                      >
-                        <PencilIcon />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr className="softinsa-rgpd-empty-row">
-                  <td colSpan={4}>Sem resultados para a pesquisa atual.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="softinsa-rgpd-table-footer">
-          <div className="softinsa-rgpd-total">{filteredTerms.length} termos</div>
-
-          <div className="softinsa-rgpd-pagination" aria-label="Paginacao">
-            <button
-              type="button"
-              className={`softinsa-rgpd-page-link${currentPageClamped === 1 ? " is-disabled" : ""}`}
-              onClick={handlePreviousPage}
-              disabled={currentPageClamped === 1}
-            >
-              Anterior
-            </button>
-
-            {pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`softinsa-rgpd-page-btn${currentPageClamped === pageNumber ? " is-active" : ""}`}
-                onClick={() => handlePageSelect(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              className={`softinsa-rgpd-page-link${currentPageClamped === totalPages ? " is-disabled" : ""}`}
-              onClick={handleNextPage}
-              disabled={currentPageClamped === totalPages}
-            >
-              Proximo
-            </button>
-          </div>
+            {isSaving ? "A guardar..." : "Guardar"}
+          </button>
         </div>
       </div>
-
-      {isTermModalOpen ? (
-        <div className="softinsa-rgpd-modal-backdrop" role="presentation" onClick={handleCloseTermModal}>
-          <div
-            className="softinsa-rgpd-form-modal"
-            role="dialog"
-            aria-label={isEditMode ? "Editar termo RGPD" : "Adicionar termo RGPD"}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-rgpd-form-modal-header">
-              <h2>{isEditMode ? "Editar RGPD" : "Adicionar RGPD"}</h2>
-              <button
-                type="button"
-                className="softinsa-rgpd-modal-close"
-                aria-label="Fechar modal"
-                onClick={handleCloseTermModal}
-              >
-                <CloseIcon />
-              </button>
-            </div>
-
-            <form className="softinsa-rgpd-form-modal-body" onSubmit={handleSubmitTerm}>
-              <div className="softinsa-rgpd-field">
-                <label htmlFor="softinsa-rgpd-name">Nome</label>
-                <input
-                  id="softinsa-rgpd-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(event) => handleFieldChange("name", event.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="softinsa-rgpd-field">
-                <label htmlFor="softinsa-rgpd-description">Descricao</label>
-                <textarea
-                  id="softinsa-rgpd-description"
-                  value={formData.description}
-                  onChange={(event) => handleFieldChange("description", event.target.value)}
-                  required
-                ></textarea>
-              </div>
-
-              <div className="softinsa-rgpd-form-actions">
-                <button type="button" className="softinsa-rgpd-form-cancel" onClick={handleCloseTermModal}>
-                  Cancelar
-                </button>
-                <button type="submit" className="softinsa-rgpd-form-submit">
-                  Confirmar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
 
       {isConsentModalOpen ? (
         <div className="softinsa-rgpd-modal-backdrop softinsa-rgpd-consent-backdrop" role="presentation">
           <div className="softinsa-rgpd-consent-modal" role="dialog" aria-label="Aceitação de termos RGPD">
-            <h2>Aceitacao de termos</h2>
-            <p>
-              Primeiro acesso detetado. Para continuar no portal, confirme os termos abaixo.
-            </p>
+            <h2>Teste de Aceitação de Termos</h2>
+            <p>Formulário apresentado no Registo da aplicação.</p>
 
-            <div className="softinsa-rgpd-consent-list">
-              {mandatoryTerms.map((term) => (
-                <label className="softinsa-rgpd-consent-item" key={term.id}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(normalizedConsentChecks[term.id])}
-                    onChange={(event) => handleConsentCheckChange(term.id, event.target.checked)}
-                  />
-                  <span>
-                    <strong>{term.name}</strong>
-                    <small>{term.description}</small>
-                  </span>
-                </label>
-              ))}
-            </div>
+            <div className="softinsa-rgpd-consent-policy">{savedPolicyText}</div>
+
+            <label className="softinsa-rgpd-consent-item">
+              <input
+                type="checkbox"
+                checked={consentChecked}
+                onChange={(e) => {
+                  setConsentChecked(e.target.checked);
+                  if (consentError) setConsentError("");
+                }}
+              />
+              <span>Li e aceito as políticas RGPD.</span>
+            </label>
 
             {consentError ? <p className="softinsa-rgpd-consent-error">{consentError}</p> : null}
 
             <div className="softinsa-rgpd-consent-actions">
-              <button type="button" className="softinsa-rgpd-consent-reject" onClick={handleRejectTerms}>
+              <button type="button" className="softinsa-rgpd-consent-reject" onClick={handleRejectPolicy}>
                 Recusar
               </button>
               <button
                 type="button"
-                className={`softinsa-rgpd-consent-accept${!allMandatoryChecked ? " is-disabled" : ""}`}
-                onClick={handleAcceptTerms}
-                disabled={!allMandatoryChecked}
+                className={`softinsa-rgpd-consent-accept${!consentChecked ? " is-disabled" : ""}`}
+                onClick={handleAcceptPolicy}
+                disabled={!consentChecked}
               >
                 Aceitar e continuar
               </button>

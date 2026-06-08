@@ -1,0 +1,350 @@
+/*
+ * Sidebar base partilhado por todos os perfis (Consultor, Talent Manager,
+ * SLL, Admin). Cada perfil usa as mesmas classes; o que muda entre eles são
+ * apenas os items de navegação (texto, ícones, rotas) e o logo.
+ *
+ * Convenções:
+ *   - prefixo: `softinsa-sidebar-`
+ *   - shell: `.softinsa-sidebar-shell`
+ *   - estado activo: classe `.active` (compatível com NavLink default)
+ *   - estado colapsado: classe `.is-collapsed` na shell raíz
+ *
+ * Estrutura esperada:
+ *   <aside class="softinsa-sidebar-shell">
+ *     <button class="softinsa-sidebar-toggle">…</button>
+ *     <div class="softinsa-sidebar-panel">
+ *       <div class="softinsa-sidebar-header">…logo…</div>
+ *       <div class="softinsa-sidebar-top-line" />
+ *       <div class="softinsa-sidebar-sections">
+ *         <section class="softinsa-sidebar-section">
+ *           <div class="softinsa-sidebar-title">…</div>
+ *           <NavLink class="softinsa-sidebar-item active">
+ *             <span class="softinsa-sidebar-item-icon-wrap">
+ *               <svg class="softinsa-sidebar-item-icon" />
+ *             </span>
+ *             <span class="softinsa-sidebar-item-text">…</span>
+ *           </NavLink>
+ *           <div class="softinsa-sidebar-divider" />
+ *         </section>
+ *       </div>
+ *     </div>
+ *   </aside>
+ *
+ * Para overrides específicos de um perfil, usa uma classe modificadora na
+ * shell (ex.: `.softinsa-sidebar-shell.is-consultor`) num ficheiro próprio.
+ */
+
+/* ── SHELL ─────────────────────────────────────────────── */
+.softinsa-sidebar-shell {
+  --softinsa-sidebar-open-width: clamp(13.5rem, 22vw, 17.3125rem);
+  --softinsa-sidebar-collapsed-width: clamp(4.5rem, 6vw, 5.25rem);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: var(--softinsa-sidebar-open-width);
+  height: 100vh;
+  height: 100dvh;
+  flex-shrink: 0;
+  align-self: flex-start;
+  overflow: visible;
+  transition: width 0.25s ease;
+}
+
+.softinsa-sidebar-shell.is-collapsed {
+  width: var(--softinsa-sidebar-collapsed-width);
+}
+
+.softinsa-sidebar-panel {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(17, 38, 146, 0.05);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── HEADER ────────────────────────────────────────────── */
+.softinsa-sidebar-header {
+  height: 76px;
+  padding: 14px clamp(12px, 2.2vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.softinsa-sidebar-logo-pill {
+  width: min(204px, 100%);
+  height: auto;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.softinsa-sidebar-logo-image {
+  width: 100%;
+  max-width: 204px;
+  height: auto;
+  display: block;
+}
+
+.softinsa-sidebar-top-line {
+  width: 100%;
+  height: 1px;
+  background: #e9ecef;
+}
+
+/* ── SECTIONS / TITLES ─────────────────────────────────── */
+.softinsa-sidebar-sections {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.softinsa-sidebar-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.softinsa-sidebar-title {
+  width: 100%;
+  padding: 8px 4px 8px 16px;
+  color: #adb5bd;
+  font-family: Inter, sans-serif;
+  font-size: clamp(14px, 0.95vw, 16px);
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+/* ── ITEMS ─────────────────────────────────────────────── */
+/* wrapper opcional (usado pelo Consultor) */
+.softinsa-sidebar-items {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.softinsa-sidebar-item {
+  width: 100%;
+  min-height: 40px;
+  border: 0;
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #8a92a6;
+  background: transparent;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+  text-align: left;
+}
+
+.softinsa-sidebar-item:hover {
+  background: #f6f7f9;
+}
+
+.softinsa-sidebar-item.active {
+  background: #39639c;
+  color: #ffffff;
+}
+
+.softinsa-sidebar-item-icon-wrap {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.softinsa-sidebar-item-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+  color: currentColor;
+}
+
+.softinsa-sidebar-item-text {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+  font-family: Inter, sans-serif;
+  font-size: clamp(14px, 0.95vw, 16px);
+  font-weight: 400;
+  line-height: 1.25;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.softinsa-sidebar-item-text > span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.softinsa-sidebar-item.active .softinsa-sidebar-item-text {
+  color: #ffffff;
+}
+
+/* ── DROPDOWN / SUB-ITEMS ──────────────────────────────── */
+.softinsa-sidebar-item-chevron {
+  margin-left: auto;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.softinsa-sidebar-item-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.softinsa-sidebar-subitems {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.softinsa-sidebar-subitem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px 8px 38px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #8a92a6;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.softinsa-sidebar-subitem:hover {
+  color: #232d42;
+}
+
+.softinsa-sidebar-subitem.active {
+  color: #232d42;
+  font-weight: 500;
+}
+
+.softinsa-sidebar-subitem-bullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #adb5bd;
+  flex-shrink: 0;
+}
+
+.softinsa-sidebar-subitem.active .softinsa-sidebar-subitem-bullet {
+  background: #39639c;
+}
+
+.softinsa-sidebar-subitem-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── DIVIDER ──────────────────────────────────────────── */
+.softinsa-sidebar-divider {
+  width: calc(100% - 16px);
+  height: 1px;
+  background: #e9ecef;
+  margin: 8px auto 0;
+}
+
+/* ── COLLAPSED STATE ──────────────────────────────────── */
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-header {
+  height: auto;
+  padding: 16px 0 8px;
+  justify-content: center;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-logo-pill,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-title,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-item-text,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-item-chevron,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-subitems,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-divider,
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-top-line {
+  display: none;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-sections {
+  padding-top: 12px;
+  gap: 12px;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-section {
+  padding: 0;
+  align-items: center;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-items {
+  padding: 0;
+  align-items: center;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-item {
+  width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  gap: 0;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* ── TOGGLE BUTTON ────────────────────────────────────── */
+.softinsa-sidebar-toggle {
+  position: absolute;
+  top: 22px;
+  right: -15px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: #39639c;
+  box-shadow: 0 2px 4px rgba(138, 146, 166, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 50;
+  color: #ffffff;
+}
+
+.softinsa-sidebar-toggle-arrow {
+  width: 18px;
+  height: 18px;
+  display: block;
+  transform-origin: center;
+  transform: rotate(0deg);
+  transition: transform 0.25s ease;
+}
+
+.softinsa-sidebar-shell.is-collapsed .softinsa-sidebar-toggle-arrow {
+  transform: rotate(180deg);
+}
+

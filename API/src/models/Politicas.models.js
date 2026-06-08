@@ -1,7 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 
-
 var Politicas = sequelize.define('Politicas',
 {
     id_politica: {
@@ -9,14 +8,6 @@ var Politicas = sequelize.define('Politicas',
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
-    },
-    id_administrador: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Administradores,
-            key: 'id_administrador'
-        },
     },
     politica: {
         type: Sequelize.TEXT,
@@ -26,6 +17,5 @@ var Politicas = sequelize.define('Politicas',
 {
     timestamps: true
 });
-
 
 module.exports = Politicas;

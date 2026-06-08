@@ -32,7 +32,7 @@ var LearningPaths = sequelize.define('LearningPaths',
     }
 },
 {
-    timestamps: false
+    timestamps: true
 });
 
 module.exports = LearningPaths;

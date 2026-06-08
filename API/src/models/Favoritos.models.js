@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../../database');
 var Consultor = require('./Consultores.models');
-var Badge = require('./Badges.models');
+var Badges = require('./Badges.models');
 
 var Favoritos = sequelize.define('Favoritos',
 {
@@ -19,7 +19,7 @@ var Favoritos = sequelize.define('Favoritos',
         primaryKey: true,
         allowNull: false,
         references: {
-            model: Badge,
+            model: Badges,
             key: 'id_badge'
         },
     }
@@ -27,10 +27,10 @@ var Favoritos = sequelize.define('Favoritos',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 Favoritos.belongsTo(Consultor, { foreignKey: 'id_consultor' });
-Favoritos.belongsTo(Badge, { foreignKey: 'id_badge' });
+Favoritos.belongsTo(Badges, { foreignKey: 'id_badge' });
 
 module.exports = Favoritos;

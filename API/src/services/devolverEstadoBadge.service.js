@@ -4,13 +4,13 @@ const PedidosBadges = require('../models/PedidosBadges.models');
 
 async function devolverEstadoBadge(id_badge, id_consultor) {
     
-    // Buscar badge
+    // Buscar badge para verificar validade
     const badge = await Badges.findByPk(id_badge);
     if (!badge) {
         throw new Error('Badge não encontrado');
     }
 
-    // Verificar badge concluído
+    // 1 & 2. Verificar se o badge está concluído ou expirado
     const badgeConcluido = await BadgesConcluidos.findOne({
             where: {
                 id_badge,
@@ -18,10 +18,8 @@ async function devolverEstadoBadge(id_badge, id_consultor) {
             }
         });
 
-    // CONCLUIDO / EXPIRADO
     if (badgeConcluido) {
-
-        // Se não tiver validade
+        // Se não tiver validade definida, está concluído
         if (badge.validade == null) {
             return 'Concluido';
         }
@@ -30,16 +28,16 @@ async function devolverEstadoBadge(id_badge, id_consultor) {
         const dataConclusao = new Date(badgeConcluido.data_conclusao_badge);
         const diferencaDias = Math.floor((hoje - dataConclusao) / (1000 * 60 * 60 * 24));
 
-        // Ainda válido
+        // Verifica se ainda está dentro da validade
         if (diferencaDias <= badge.validade) {
             return 'Concluido';
         }
 
-        // Expirado
+        // Caso contrário, está expirado
         return 'Expirado';
     }
 
-    // Verificar pedidos existentes
+    // 3 & 4. Verificar se existem pedidos (Em análise ou Rejeitado)
     const pedido = await PedidosBadges.findOne({
             where: {
                 id_consultor,
@@ -47,22 +45,25 @@ async function devolverEstadoBadge(id_badge, id_consultor) {
             }
         });
 
-    // Em análise
-    if ( pedido && [1, 2].includes(pedido.estado_atual)) {
-        return 'Em análise';
+    if (pedido) {
+        // Estado 1 ou 2: Em análise
+        if ([1, 2].includes(pedido.estado_atual)) {
+            return 'Em análise';
+        }
+
+        // Estado 3, 5 ou 6: Rejeitado (ou Cancelado/Reprovado conforme o SQL)
+        if ([3, 5, 6].includes(pedido.estado_atual)) {
+            return 'Rejeitado';
+        }
+
+        // Estado 4: Concluido (redundância de segurança)
+        if (pedido.estado_atual === 4) {
+            return 'Concluido';
+        }
     }
 
-    // Por obter
-    if (pedido &&[3, 5, 6].includes(pedido.estado_atual)) {
-        return 'Por Obter';
-    }
-
-    // Concluido
-    if (pedido && pedido.estado_atual === 4) {
-        return 'Concluido';
-    }
-
-    return 'Erro no script!';
+    // 5. Caso não exista registo ou não se enquadre nas anteriores (Equivalente ao DECLARE @estadoBadge = 'Por Obter')
+    return 'Por Obter';
 }
 
 module.exports = {devolverEstadoBadge};

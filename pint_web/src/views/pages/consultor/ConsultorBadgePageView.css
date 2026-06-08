@@ -1,0 +1,953 @@
+.consultor-badge-page {
+  padding: 0 24px 24px;
+  font-family: Inter, sans-serif;
+  color: #232d42;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.consultor-badge-page-feedback {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.consultor-badge-page-feedback.is-error {
+  color: var(--color-danger, #ef4444);
+}
+
+/* ── HERO ──────────────────────────────────────────────── */
+.consultor-badge-hero {
+  position: relative;
+  min-height: 155px;
+  margin: 0 -24px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: radial-gradient(ellipse at center, #3b8aff 0%, #0048b3 100%);
+  display: flex;
+  align-items: center;
+}
+
+.consultor-badge-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.consultor-badge-hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.75;
+  mix-blend-mode: multiply;
+  box-shadow: inset 24px 32px 184px 24px rgba(6, 8, 89, 0.75);
+  transform: rotate(90deg);
+}
+
+.consultor-badge-hero-circle-5 {
+  width: 2156px;
+  height: 2112.615px;
+  left: -194px;
+  top: -233px;
+}
+
+.consultor-badge-hero-circle-4 {
+  width: 1670.328px;
+  height: 1635.378px;
+  left: -194px;
+  top: 5.62px;
+}
+
+.consultor-badge-hero-circle-3 {
+  width: 1418.453px;
+  height: 1389.529px;
+  left: -100px;
+  top: 206.88px;
+}
+
+.consultor-badge-hero-circle-2 {
+  width: 1041.243px;
+  height: 1041.243px;
+  left: -33.72px;
+  top: 334.62px;
+}
+
+.consultor-badge-hero-circle-1 {
+  width: 827.933px;
+  height: 827.933px;
+  left: 48.23px;
+  top: 380.42px;
+}
+
+.consultor-badge-hero-copy {
+  position: relative;
+  z-index: 1;
+  padding: 20px clamp(20px, 5vw, 50px);
+}
+
+.consultor-badge-hero-copy h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.consultor-badge-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: clamp(14px, 1.3vw, 19px);
+  font-weight: 500;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.consultor-badge-hero-meta span {
+  white-space: nowrap;
+}
+
+/* ── TOP ROW ───────────────────────────────────────────── */
+
+/* ── CARDS BASE ────────────────────────────────────────── */
+.consultor-badge-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consultor-badge-card-title {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+/* ── BADGE INFO CARD ───────────────────────────────────── */
+.consultor-badge-info-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consultor-badge-info-header h2 {
+  margin: 0;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-badge-info-level {
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+
+.consultor-badge-info-description {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consultor-badge-info-description-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-badge-info-description-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8a92a6;
+}
+
+.consultor-badge-info-image {
+  width: clamp(140px, 18vw, 196px);
+  height: clamp(140px, 18vw, 196px);
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.consultor-badge-info-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 32px;
+  margin-top: 4px;
+}
+
+.consultor-badge-info-status-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+.consultor-badge-info-status-row svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: rgba(57, 99, 156, 0.75);
+}
+
+.consultor-badge-info-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.consultor-badge-info-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 2vw, 8px);
+  flex: 1 1 140px;
+  min-height: 36px;
+  padding: 6px clamp(10px, 3vw, 24px);
+  border-radius: 20px;
+  border: 0;
+  background: #39639c;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: clamp(13px, 3.5vw, 16px);
+  font-weight: 400;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.consultor-badge-info-action-btn:hover {
+  background: #2c4f80;
+}
+
+.consultor-badge-info-action-btn.is-active {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.consultor-badge-info-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.consultor-badge-info-action-btn.is-active:hover {
+  background: #d97706;
+}
+
+.consultor-badge-info-action-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── SHARE MODAL ───────────────────────────────────────── */
+.consultor-badge-share-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.consultor-badge-share-modal {
+  position: relative;
+  width: min(570px, 100%);
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 25px 50px rgba(17, 38, 146, 0.18);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.consultor-badge-share-modal.is-pdf {
+  width: min(576px, 100%);
+}
+
+.consultor-badge-share-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #8a92a6;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.consultor-badge-share-close:hover {
+  background: #f5f6fa;
+  color: #232d42;
+}
+
+.consultor-badge-share-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.consultor-badge-share-title {
+  margin: 0;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #001f4d;
+}
+
+.consultor-badge-share-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.consultor-badge-share-tab {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #8a92a6;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.consultor-badge-share-tab.is-active {
+  color: #001f4d;
+  font-weight: 700;
+}
+
+.consultor-badge-share-tab:hover {
+  color: #39639c;
+}
+
+.consultor-badge-share-tab-sep {
+  width: 1px;
+  height: 24px;
+  background: #adb5bd;
+  display: inline-block;
+}
+
+.consultor-badge-share-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consultor-badge-share-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consultor-badge-share-field label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.consultor-badge-share-field-value {
+  font-size: 12px;
+  color: #8a92a6;
+  word-break: break-all;
+}
+
+.consultor-badge-share-field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.consultor-badge-share-field-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consultor-badge-share-field-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8a92a6;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.consultor-badge-share-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.consultor-badge-share-field-row-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #8a92a6;
+}
+
+.consultor-badge-share-field-value {
+  flex: 1;
+  font-size: 12px;
+  color: #8a92a6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: unset;
+}
+
+.consultor-badge-share-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: contain;
+  border: 1px solid #e9ecef;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.consultor-badge-share-download-btn,
+.consultor-badge-share-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-family: Inter, sans-serif;
+  border-radius: 20px;
+  border: 1px solid #39639c;
+  color: #39639c;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.consultor-badge-share-download-btn:hover,
+.consultor-badge-share-copy-btn:hover {
+  background: #39639c;
+  color: #ffffff;
+}
+
+.consultor-badge-share-download-btn svg,
+.consultor-badge-share-copy-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.consultor-badge-share-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.consultor-badge-share-download-btn,
+.consultor-badge-share-copy-btn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--primary, #39639c);
+  color: var(--primary, #39639c);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.consultor-badge-share-download-btn:hover,
+.consultor-badge-share-copy-btn:hover {
+  background: var(--primary, #39639c);
+  color: #fff;
+}
+
+.consultor-badge-share-input {
+  height: 36px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 0 12px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  color: #232d42;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.consultor-badge-share-input:focus {
+  border-color: #39639c;
+}
+
+.consultor-badge-share-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.consultor-badge-share-submit {
+  height: 38px;
+  padding: 0 24px;
+  border-radius: 20px;
+  border: 0;
+  background: #39639c;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.consultor-badge-share-submit:hover {
+  background: #2c4f80;
+}
+
+/* ── SHARE → CERTIFICATE (PDF tab) ─────────────────────── */
+.consultor-badge-share-cert {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #f1f3f5;
+}
+
+.consultor-badge-share-cert-header {
+  height: 72px;
+  background: #39639c;
+  display: grid;
+  place-items: center;
+}
+
+.consultor-badge-share-cert-logo {
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.consultor-badge-share-cert-logo span {
+  color: #00b8e0;
+}
+
+.consultor-badge-share-cert-body {
+  padding: 24px 32px 28px;
+  text-align: center;
+  color: #1e3a5f;
+}
+
+.consultor-badge-share-cert-body h3 {
+  margin: 0;
+  color: #1e3a5f;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.consultor-badge-share-cert-rule {
+  display: block;
+  width: 200px;
+  height: 2px;
+  margin: 16px auto 20px;
+  background: linear-gradient(90deg, transparent 0%, #92aed7 20%, #92aed7 80%, transparent 100%);
+}
+
+.consultor-badge-share-cert-kicker,
+.consultor-badge-share-cert-copy,
+.consultor-badge-share-cert-meta,
+.consultor-badge-share-cert-date,
+.consultor-badge-share-cert-signature,
+.consultor-badge-share-cert-company {
+  margin: 0;
+}
+
+.consultor-badge-share-cert-kicker,
+.consultor-badge-share-cert-copy {
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.consultor-badge-share-cert-name {
+  margin: 8px 0 14px;
+  color: #39639c;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.consultor-badge-share-cert-badge {
+  margin: 8px 0 16px;
+  color: #1e3a5f;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.consultor-badge-share-cert-meta {
+  color: #495057;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.consultor-badge-share-cert-date {
+  margin-top: 20px;
+  color: #6c757d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.consultor-badge-share-cert-sig-rule {
+  display: block;
+  width: 240px;
+  height: 1px;
+  margin: 32px auto 8px;
+  background: #6c757d;
+}
+
+.consultor-badge-share-cert-signature {
+  color: #6c757d;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.consultor-badge-share-cert-company {
+  margin-top: 4px;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.consultor-badge-share-badge-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--color-bg-secondary, #f8fafc);
+  border-radius: 8px;
+  padding: 14px 18px;
+  border: 1px solid #e9ecef;
+}
+
+.consultor-badge-share-preview-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 1px solid #e9ecef;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.consultor-badge-share-preview-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.consultor-badge-share-preview-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #232d42;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultor-badge-share-preview-meta {
+  margin: 0;
+  font-size: 12px;
+  color: #8a92a6;
+}
+
+.consultor-badge-share-email-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f8fafc;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.consultor-badge-share-email-preview-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.consultor-badge-share-email-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.consultor-badge-share-email-preview-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #232d42;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultor-badge-share-email-preview-meta {
+  margin: 0;
+  font-size: 12px;
+  color: #8a92a6;
+}
+
+/* ── DEVOLUCOES CARD ───────────────────────────────────── */
+.consultor-badge-devolucoes-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.consultor-badge-devolucoes-field label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.consultor-badge-devolucoes-field-value {
+  min-height: 21px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #495057;
+}
+
+.consultor-badge-devolucoes-field-value.is-motivo {
+  font-size: 12px;
+  color: #8a92a6;
+  line-height: 1.6;
+}
+
+.consultor-badge-devolucoes-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.consultor-badge-devolucoes-upload-label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+
+.consultor-badge-upload-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 30px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.consultor-badge-upload-btn {
+  flex-shrink: 0;
+  width: 121px;
+  border: 0;
+  background: #ffffff;
+  color: #232d42;
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-right: 1px solid #e9ecef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.consultor-badge-upload-btn:hover {
+  background: #f5f6fa;
+}
+
+.consultor-badge-upload-btn:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-badge-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.consultor-badge-upload-name {
+  flex: 1 1 auto;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #8a92a6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consultor-badge-submit-feedback {
+  margin: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.consultor-badge-submit-feedback.is-success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.consultor-badge-submit-feedback.is-error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.consultor-badge-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.consultor-badge-primary-btn {
+  min-height: 38px;
+  padding: 8px clamp(12px, 3.5vw, 24px);
+  border-radius: 20px;
+  border: 0;
+  background: #39639c;
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: clamp(13px, 3.5vw, 16px);
+  font-weight: 400;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.consultor-badge-primary-btn:hover {
+  background: #2c4f80;
+}
+
+/* ── REQUISITOS CARD ───────────────────────────────────── */
+.consultor-badge-req-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.consultor-badge-req-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.consultor-badge-req-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #39639c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.consultor-badge-req-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.consultor-badge-req-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #232d42;
+}
+
+.consultor-badge-req-section-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.75;
+  color: #8a92a6;
+}
+
+.consultor-badge-req-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #8a92a6;
+}
+
+.consultor-badge-req-number img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}

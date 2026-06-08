@@ -1,26 +1,9 @@
-import { memo } from 'react'
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useTopbarController } from '../../controllers/topbar.controller'
-import './SLLTopbar.css'
+import './softinsa-topbar.css'
 
-const sllTopbarProfile = {
-  name: 'Austin Robertson',
-  role: 'Service Line Lider',
-  avatar: 'https://www.figma.com/api/mcp/asset/791e05ae-1993-432d-aa0a-a906a2c30856',
-}
+import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
 
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-shell-topbar-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 function NotificationIcon() {
   return (
@@ -54,43 +37,12 @@ function NotificationRepositoryArrowIcon({ isOpen }) {
   )
 }
 
-function NotificationRepository({
-  items,
-  expandedId,
-  isComposerOpen,
-  composeMessage,
-  onComposeMessageChange,
-  onToggleItem,
-  onClose,
-  onToggleComposer,
-  onShowRepository,
-  onSendBroadcast,
-}) {
-  const isSendDisabled = composeMessage.trim().length === 0
-
+function NotificationRepository({ items, expandedId, onToggleItem, onClose }) {
   return (
     <div className="softinsa-shell-notification-panel" role="dialog" aria-label="Repositorio de notificacoes">
       <div className="softinsa-shell-notification-panel-header">
         <div className="softinsa-shell-notification-panel-title-wrap">
-          <button
-            type="button"
-            className={`softinsa-shell-notification-panel-title-btn${isComposerOpen ? '' : ' is-active'}`}
-            onClick={onShowRepository}
-            aria-label="Ver lista de notificacoes"
-          >
-            <span className="softinsa-shell-notification-panel-title">Notificacoes</span>
-          </button>
-
-          <span className="softinsa-shell-notification-panel-separator" aria-hidden="true" />
-
-          <button
-            type="button"
-            className={`softinsa-shell-notification-panel-add${isComposerOpen ? ' is-active' : ''}`}
-            aria-label="Criar notificacao global"
-            onClick={onToggleComposer}
-          >
-            +
-          </button>
+          <span className="softinsa-shell-notification-panel-title">Notificacoes</span>
         </div>
 
         <button
@@ -105,98 +57,115 @@ function NotificationRepository({
 
       <div className="softinsa-shell-notification-panel-divider" />
 
-      {isComposerOpen ? (
-        <div className="softinsa-shell-notification-compose">
-          <label
-            className="softinsa-shell-notification-compose-label"
-            htmlFor="softinsa-shell-notification-compose-message"
-          >
-            Mensagem para todos os utilizadores:
-          </label>
+      <div className="softinsa-shell-notification-list">
+        {items.map((item) => {
+          const isExpanded = expandedId === item.id
 
-          <textarea
-            id="softinsa-shell-notification-compose-message"
-            className="softinsa-shell-notification-compose-textarea"
-            value={composeMessage}
-            onChange={(event) => onComposeMessageChange(event.target.value)}
-            placeholder="Escreva aqui a mensagem global..."
-          />
+          return (
+            <div key={item.id} className="softinsa-shell-notification-item-group">
+              <button
+                type="button"
+                className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
+                onClick={() => onToggleItem(item.id)}
+                aria-expanded={isExpanded}
+              >
+                <span className="softinsa-shell-notification-item-left">
+                  <span className="softinsa-shell-notification-item-title">{item.title}</span>
+                </span>
 
-          <div className="softinsa-shell-notification-compose-actions">
-            <button
-              type="button"
-              className="softinsa-shell-notification-send-btn"
-              onClick={onSendBroadcast}
-              disabled={isSendDisabled}
-            >
-              Enviar
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="softinsa-shell-notification-list">
-          {items.map((item) => {
-            const isExpanded = expandedId === item.id
+                <span className="softinsa-shell-notification-item-right">
+                  <span className="softinsa-shell-notification-item-source">{item.source}</span>
+                  <NotificationRepositoryArrowIcon isOpen={isExpanded} />
+                </span>
+              </button>
 
-            return (
-              <div key={item.id} className="softinsa-shell-notification-item-group">
-                <button
-                  type="button"
-                  className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
-                  onClick={() => onToggleItem(item.id)}
-                  aria-expanded={isExpanded}
-                >
-                  <span className="softinsa-shell-notification-item-left">
-                    <span className="softinsa-shell-notification-item-title">{item.title}</span>
-                  </span>
-
-                  <span className="softinsa-shell-notification-item-right">
-                    <span className="softinsa-shell-notification-item-source">{item.source}</span>
-                    <NotificationRepositoryArrowIcon isOpen={isExpanded} />
-                  </span>
-                </button>
-
-                {isExpanded ? (
-                  <div
-                    className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}
-                  >
-                    {item.message}
-                  </div>
-                ) : null}
-              </div>
-            )
-          })}
-        </div>
-      )}
+              {isExpanded ? (
+                <div className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}>
+                  {item.message}
+                </div>
+              ) : null}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-const SLLTopbar = memo(() => {
+function ProfileSkeleton() {
+  return (
+    <div className="softinsa-shell-profile-skeleton" aria-busy="true" aria-label="A carregar perfil">
+      <div className="softinsa-shell-profile-skeleton-avatar" />
+      <div className="softinsa-shell-profile-skeleton-meta">
+        <div className="softinsa-shell-profile-skeleton-name" />
+        <div className="softinsa-shell-profile-skeleton-role" />
+      </div>
+    </div>
+  )
+}
+
+function ProfileButton({ profile }) {
+  const imageSrc = profile.imagem_utilizador?.startsWith('data:')
+    ? profile.imagem_utilizador
+    : `data:image/jpeg;base64,${profile.imagem_utilizador}`
+
+  return (
+    <Link to="/sll/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
+      <div className="softinsa-shell-profile-wrap">
+        <img
+          src={imageSrc}
+          alt={profile.nome_utilizador}
+          className="softinsa-shell-profile-avatar"
+        />
+        <span className="softinsa-shell-profile-meta">
+          <span className="softinsa-shell-profile-name">{profile.nome_utilizador}</span>
+          <span className="softinsa-shell-profile-role">{profile.cargo}</span>
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+const SLLTopbar = memo(forwardRef(function SLLTopbar(_, ref) {
   const {
     notificationWrapRef,
     isNotificationsOpen,
-    isNotificationComposerOpen,
     expandedNotificationId,
-    notificationBroadcastMessage,
     notificationItems,
     toggleNotifications,
     closeNotifications,
     toggleNotificationMessage,
-    toggleComposer,
-    showRepository,
-    sendBroadcast,
-    setNotificationBroadcastMessage,
   } = useTopbarController()
+
+  const [profile, setProfile] = useState(null)
+  const [profileLoading, setProfileLoading] = useState(true)
+
+  const loadProfile = useCallback(async () => {
+    setProfileLoading(true)
+    try {
+      const data = await getTopbarUtilizador()
+      setProfile(data)
+    } catch (err) {
+      console.error('Erro ao carregar topbar', err)
+    } finally {
+      setProfileLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
+
+  useImperativeHandle(ref, () => ({
+    openNotifications() {
+      if (!isNotificationsOpen) toggleNotifications()
+    },
+  }), [isNotificationsOpen, toggleNotifications])
 
   return (
     <div className="softinsa-shell-topbar">
-      <label className="softinsa-shell-topbar-search" aria-label="Search">
-        <SearchIcon />
-        <input type="text" placeholder="Search..." />
-      </label>
-
       <div className="softinsa-shell-topbar-actions">
+        {/* Notifications */}
         <div className="softinsa-shell-notification-wrap" ref={notificationWrapRef}>
           <button
             type="button"
@@ -212,34 +181,21 @@ const SLLTopbar = memo(() => {
             <NotificationRepository
               items={notificationItems}
               expandedId={expandedNotificationId}
-              isComposerOpen={isNotificationComposerOpen}
-              composeMessage={notificationBroadcastMessage}
-              onComposeMessageChange={setNotificationBroadcastMessage}
               onToggleItem={toggleNotificationMessage}
               onClose={closeNotifications}
-              onToggleComposer={toggleComposer}
-              onShowRepository={showRepository}
-              onSendBroadcast={sendBroadcast}
             />
           ) : null}
         </div>
 
-        <Link to="/sll/perfil-publico" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
-          <div className="softinsa-shell-profile-wrap">
-            <img
-              src={sllTopbarProfile.avatar}
-              alt={sllTopbarProfile.name}
-              className="softinsa-shell-profile-avatar"
-            />
-            <span className="softinsa-shell-profile-meta">
-              <span className="softinsa-shell-profile-name">{sllTopbarProfile.name}</span>
-              <span className="softinsa-shell-profile-role">{sllTopbarProfile.role}</span>
-            </span>
-          </div>
-        </Link>
+        {/* Profile */}
+        {profileLoading ? (
+          <ProfileSkeleton />
+        ) : profile ? (
+          <ProfileButton profile={profile} />
+        ) : null}
       </div>
     </div>
   )
-})
+}))
 
 export default SLLTopbar

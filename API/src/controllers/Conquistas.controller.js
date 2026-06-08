@@ -1,46 +1,38 @@
-//VER SE VAMOS USAR PORQUE NÃO EXISTE TABELA CONQUISTAS NA BD
-/*
 const Conquistas = require('../models/Conquistas.models');
+const Utilizadores = require('../models/Utilizadores.models');
+const Consultores = require('../models/Consultores.models');
+
+const conquistasService = require("../services/conquistas.service");
 
 const controllers = {};
 
-//Mostrar todas as conquistas
-controllers.getAllConquistas = async (req, res) => {
-    const resultado = await Conquistas.findAll(); 
-    res.json(resultado);
-};
+//Mostrar todas as conquistas de um consultor
+controllers.getConquistaByIdConsultor = async (req, res) => {
+    try {
+        const isConsultor = req.user?.role === "c";
 
-// Mostrar uma conquista com determinado id
-controllers.getConquistaById = async (req, res) => {
-    const id = req.params.id;
-    const resultado = await Conquistas.findByPk(id);
-    res.json(resultado);
-};
+        if (isConsultor) {
+            const resultado = await Consultores.findByPk(req.user.id_consultor)
 
-//Criar uma conquista
-controllers.createConquista = async (req, res) => {
-    const resultado = await Conquistas.create(req.body);
-    res.json(resultado);
-};
+            if (!resultado) {
+                return res.status(404).json({ mensagem: "Consultor não existe" })
+            }
 
-//Apagar uma conquista com determinado id
-controllers.deleteConquistaById = async (req, res) => {
-    const id = req.params.id;
-    await Conquistas.destroy({
-        where: { id_conquista: id }
-    });
-    res.json({ message: 'Conquista eliminada' });
-};
+            const conquistasConsultor = await conquistasService.findByIdConsultor(resultado.id_consultor)
+            return res.json(conquistasConsultor)
+        }
 
-//Atualizar uma conquista com determinado id 
-controllers.updateConquistaById = async (req, res) => {
-    const id = req.params.id;
-    await Conquistas.update(req.body, {
-        where: { id_conquista: id }
-    });
-    res.json({ message: 'Conquista atualizada' });
+        return res.status(403).json({ mensagem: "Utilizador sem permissões" })
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao buscar conquistas",
+            erro: error.message
+        });
+    }
 };
 
 
 module.exports = controllers;
-*/

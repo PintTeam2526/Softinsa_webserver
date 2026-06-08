@@ -31,7 +31,7 @@ var ServiceLineLiders = sequelize.define('ServiceLineLiders',
 
 
 {
-    timestamps: false
+    timestamps: true
 });
 
 

@@ -3,31 +3,21 @@ var router = express.Router();
 var controllerGestao = require('../controllers/Gestao.controller');
 var authVerification = require('../middleware/requireAuth.middleware')
 
-
-//AINDA NÃO ESTÃO IMPLEMENTADOS---------------------------------------------------------------------
-
-// Buscar todas as SLA
-router.get('/sla/get', controllerGestao.getSLA);
-
-// Criar uma SLA
-router.post('/sla/create', controllerGestao.createSLA);
-
-// Atualizar uma SLA
-router.put('/sla/:id/update', controllerGestao.updateSLA);
-
-// Apagar uma SLA
-router.delete('/rgpd/:id/delete', controllerGestao.deleteSLA);
-
-// Buscar todas as RGPD
+// Buscar o RGPD
 router.get('/rgpd/get', controllerGestao.getRGPD);
 
-// Criar uma RGPD
-router.post('/rgpd/create', controllerGestao.createRGPD);
+// Atualizar o RGPD
+router.put('/rgpd/update', authVerification, controllerGestao.updateRGPD);
 
-// Atualizar uma RGPD
-router.put('/rgpd/:id/update', controllerGestao.updateRGPD);
+// Buscar consultores e badges obtidos para certificado
+router.get('/certificado', authVerification, controllerGestao.badgesConsultores)
 
-// Apagar uma RGPD
-router.delete('/rgpd/:id/delete', controllerGestao.deleteRGPD);
+// Rank de consultores por progresso
+router.get('/rank', authVerification, controllerGestao.rankConsultores)
+
+// Rota para dados de relatorio
+router.post("/relatorio", authVerification, controllerGestao.relatorio);
+
+
 
 module.exports = router;

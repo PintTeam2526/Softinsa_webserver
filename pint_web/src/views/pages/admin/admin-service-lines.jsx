@@ -1,51 +1,12 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-service-lines.css";
 
-// TODO: Replace all mock data and local options with API data (service lines, learning paths, badges, and statuses).
-const serviceLinesRows = [
-  {
-    id: 1,
-    name: "Hybrid Cloud",
-    description: "",
-    learningPath: "Jornada Técnica",
-    areas: 3,
-    badges: 15,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 2,
-    name: "Application Operations",
-    description: "",
-    learningPath: "Jornada Técnica",
-    areas: 3,
-    badges: 15,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 3,
-    name: "Sourcing & Talent Management",
-    description: "",
-    learningPath: "Jornada Técnica",
-    areas: 3,
-    badges: 15,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 4,
-    name: "Cybersecurity & Compliance",
-    description: "",
-    learningPath: "Jornada Técnica",
-    areas: 3,
-    badges: 15,
-    status: "Ativo",
-    iconFileName: "",
-  },
-];
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines, createServiceLine, updateServiceLine } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
-const learningPathOptions = ["Jornada Técnica", "Power Skills"];
 const statusOptions = ["Ativo", "Inativo"];
 
 const getDefaultFilterDraft = () => ({
@@ -56,10 +17,11 @@ const getDefaultFilterDraft = () => ({
 const getDefaultServiceLineForm = () => ({
   name: "",
   description: "",
-  learningPath: "Jornada Técnica",
+  learningPath: "",
   status: "",
   iconFileName: "",
   iconFile: null,
+  image: "",
 });
 
 const normalizeSearchValue = (value) =>
@@ -69,14 +31,29 @@ const normalizeSearchValue = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+const formatSLImage = (img) => {
+  if (!img) return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
+
+const mapServiceLine = (row, learningPathsMap) => ({
+  id: row.id_service_line,
+  name: row.nome_service_line,
+  description: row.descricao_service_line ?? "",
+  iconFileName: row.imagem_service_line ?? "",
+  image: formatSLImage(row.imagem_service_line),
+  status: row.estado_a_i ? "Ativo" : "Inativo",
+  learningPathId: row.id_learning_path,
+  learningPath: learningPathsMap[row.id_learning_path] ?? `ID ${row.id_learning_path}`,
+  areas: 0,
+  badges: 0,
+});
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="softinsa-service-lines-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
+      <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="1.8" />
       <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
@@ -84,13 +61,8 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-service-lines-icon" aria-hidden="true">
-      <path
-        d="M4 5H20L13 13V19L11 20V13L4 5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-service-lines-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
@@ -106,39 +78,18 @@ function PlusIcon() {
 
 function PencilIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      className="softinsa-service-lines-pencil-icon"
-      aria-hidden="true"
-    >
-      <path
-        d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z"
-        fill="#00B8E0"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="softinsa-service-lines-pencil-icon" aria-hidden="true">
+      <path d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z" fill="#00B8E0" />
     </svg>
   );
 }
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-service-lines-icon" aria-hidden="true">
-      <path
-        d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-service-lines-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -162,25 +113,17 @@ function CloseIcon() {
 
 function FileSelector({ fileName, onChange, ariaLabel }) {
   return (
-    <label className="softinsa-service-lines-file-field">
-      <input
-        type="file"
-        accept="image/*"
-        className="softinsa-service-lines-file-input"
-        onChange={onChange}
-        onClick={(event) => {
-          event.target.value = null;
-        }}
-        aria-label={ariaLabel}
-      />
-      <span className="softinsa-service-lines-file-choose">Choose File</span>
-      <span className="softinsa-service-lines-file-name">{fileName || "No file chosen"}</span>
+    <label className="softinsa-service-lines-file-field d-inline-flex w-100">
+      <input type="file" accept="image/*" className="softinsa-service-lines-file-input" onChange={onChange} onClick={(e) => { e.target.value = null; }} aria-label={ariaLabel} />
+      <span className="softinsa-service-lines-file-choose d-inline-flex align-items-center">Choose File</span>
+      <span className="softinsa-service-lines-file-name d-inline-flex align-items-center">{fileName || "No file chosen"}</span>
     </label>
   );
 }
 
 const SoftinsaServiceLines = memo(() => {
-  const [serviceLines, setServiceLines] = useState(serviceLinesRows);
+  const [serviceLines, setServiceLines] = useState([]);
+  const [learningPathOptions, setLearningPathOptions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -194,362 +137,270 @@ const SoftinsaServiceLines = memo(() => {
   const [formData, setFormData] = useState(getDefaultServiceLineForm());
   const filterWrapRef = useRef(null);
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const [lpData, slData, areasData, badgesData] = await Promise.all([
+        getLearningPaths(),
+        getServiceLines(),
+        getAreas(),
+        getBadges(),
+      ]);
+
+      const lpMap = {};
+      lpData.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
+
+      const areaToSL = {};
+      areasData.forEach((a) => { areaToSL[a.id_area] = a.id_service_line; });
+
+      const areaCountBySL = {};
+      const badgeCountBySL = {};
+
+      areasData.forEach((a) => {
+        areaCountBySL[a.id_service_line] = (areaCountBySL[a.id_service_line] ?? 0) + 1;
+      });
+
+      badgesData.forEach((b) => {
+        const slId = areaToSL[b.id_area];
+        if (slId !== undefined)
+          badgeCountBySL[slId] = (badgeCountBySL[slId] ?? 0) + 1;
+      });
+
+      setLearningPathOptions(lpData.filter((lp) => lp.estado_a_i));
+
+      setServiceLines(
+        slData.map((row) => ({
+          ...mapServiceLine(row, lpMap),
+          areas: areaCountBySL[row.id_service_line] ?? 0,
+          badges: badgeCountBySL[row.id_service_line] ?? 0,
+        }))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.learningPath || activeFilters.status);
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
-  const filteredServiceLines = serviceLines.filter((serviceLineItem) => {
-    const matchesLearningPath =
-      !activeFilters.learningPath || serviceLineItem.learningPath === activeFilters.learningPath;
-    const matchesStatus = !activeFilters.status || serviceLineItem.status === activeFilters.status;
-    const searchableServiceLine = normalizeSearchValue(`${serviceLineItem.name} ${serviceLineItem.learningPath}`);
-    const matchesSearch = !normalizedSearchTerm || searchableServiceLine.includes(normalizedSearchTerm);
-    return matchesLearningPath && matchesStatus && matchesSearch;
+  const filteredServiceLines = serviceLines.filter((item) => {
+    const matchesLP = !activeFilters.learningPath || item.learningPath === activeFilters.learningPath;
+    const matchesStatus = !activeFilters.status || item.status === activeFilters.status;
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(`${item.name} ${item.learningPath}`).includes(normalizedSearchTerm);
+    return matchesLP && matchesStatus && matchesSearch;
   });
 
   const totalPages = Math.max(1, Math.ceil(filteredServiceLines.length / entriesPerPage));
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedServiceLines = filteredServiceLines.slice(
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(e.target))
         setIsFilterOpen(false);
-      }
     };
-
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setIsFilterOpen(false);
-        setIsExportAlertOpen(false);
-        setModalMode(null);
-        setEditingServiceLineId(null);
-      }
+    const handleEscape = (e) => {
+      if (e.key === "Escape") { setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode(null); setEditingServiceLineId(null); }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
+    return () => { document.removeEventListener("mousedown", handleClickOutside); document.removeEventListener("keydown", handleEscape); };
   }, [isFilterOpen]);
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
+  useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
+
+  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+
+  const handleIconFileChange = (e) => {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
     }
-  }, [currentPage, totalPages]);
-
-  const handleFieldChange = (field, value) => {
-    setFormData((previousData) => ({ ...previousData, [field]: value }));
-  };
-
-  const handleIconFileChange = (event) => {
-    const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
-    setFormData((previousData) => ({
-      ...previousData,
-      iconFile: file,
-      iconFileName: file ? file.name : "",
-    }));
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddServiceLine = () => {
-    setFormData(getDefaultServiceLineForm());
+    setFormData({ ...getDefaultServiceLineForm(), learningPath: learningPathOptions[0]?.id_learning_path ?? "", });
     setEditingServiceLineId(null);
     setIsFilterOpen(false);
     setIsExportAlertOpen(false);
     setModalMode("add");
   };
 
-  const handleOpenEditServiceLine = (serviceLineItem) => {
+  const handleOpenEditServiceLine = (item) => {
     setFormData({
-      name: serviceLineItem.name || "",
-      description: serviceLineItem.description || "",
-      learningPath: serviceLineItem.learningPath || "Jornada Técnica",
-      status: serviceLineItem.status || "Ativo",
-      iconFileName: serviceLineItem.iconFileName || "",
+      name: item.name || "",
+      description: item.description || "",
+      learningPath: String(item.learningPathId),
+      status: item.status || "Ativo",
+      iconFileName: item.iconFileName || "",
       iconFile: null,
+      image: item.image || "",
     });
-    setEditingServiceLineId(serviceLineItem.id);
-    setIsFilterOpen(false);
-    setIsExportAlertOpen(false);
+    setEditingServiceLineId(item.id);
     setModalMode("edit");
   };
 
-  const handleCloseModal = () => {
-    setModalMode(null);
-    setEditingServiceLineId(null);
-  };
+  const handleCloseModal = () => { setModalMode(null); setEditingServiceLineId(null); };
 
-  const handleSubmitServiceLine = (event) => {
-    event.preventDefault();
+  const handleSubmitServiceLine = async (e) => {
+    e.preventDefault();
 
     const sanitizedName = formData.name.trim();
-    const sanitizedDescription = formData.description.trim();
+    if (!sanitizedName) return;
 
-    if (!sanitizedName) {
-      return;
-    }
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : null;
 
     const payload = {
-      name: sanitizedName,
-      description: sanitizedDescription,
-      learningPath: formData.learningPath,
-      status: formData.status || "Ativo",
-      iconFileName: formData.iconFileName,
+      nome_service_line: sanitizedName,
+      descricao_service_line: formData.description.trim(),
+      id_learning_path: Number(formData.learningPath),
+      estado_a_i: formData.status === "Ativo",
+      imagem_service_line: rawBase64 || null,
     };
 
-    if (isEditMode && editingServiceLineId !== null) {
-      setServiceLines((previousServiceLines) =>
-        previousServiceLines.map((item) =>
-          item.id === editingServiceLineId
-            ? {
-                ...item,
-                ...payload,
-              }
-            : item
-        )
-      );
-    } else {
-      setServiceLines((previousServiceLines) => {
-        const nextId =
-          previousServiceLines.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), 0) + 1;
-        return [{ id: nextId, areas: 0, badges: 0, ...payload }, ...previousServiceLines];
-      });
-      setCurrentPage(1);
+    try {
+      if (isEditMode && editingServiceLineId !== null) {
+        await updateServiceLine(editingServiceLineId, payload);
+      } else {
+        await createServiceLine(payload);
+      }
+
+      await loadData();
+      handleCloseModal();
+    } catch (err) {
+      console.error("Erro ao guardar service line", err);
     }
-
-    handleCloseModal();
   };
 
-  const handleToggleFilter = () => {
-    setFilterDraft(activeFilters);
-    setIsExportAlertOpen(false);
-    setIsFilterOpen((previous) => !previous);
-  };
-
-  const handleFilterDraftChange = (field, value) => {
-    setFilterDraft((previousData) => ({ ...previousData, [field]: value }));
-  };
-
-  const handleApplyFilters = () => {
-    setActiveFilters(filterDraft);
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
-
-  const handleClearFilters = () => {
-    const clearedFilters = getDefaultFilterDraft();
-    setFilterDraft(clearedFilters);
-    setActiveFilters(clearedFilters);
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
-
-  const handleEntriesChange = (event) => {
-    setEntriesPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setCurrentPage(1);
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(previousPage - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(previousPage + 1, totalPages));
-  };
-
-  const handlePageSelect = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleOpenExportAlert = () => {
-    setIsFilterOpen(false);
-    setExportFormat("");
-    setIsExportAlertOpen(true);
-  };
-
-  const handleCloseExportAlert = () => {
-    setIsExportAlertOpen(false);
-    setExportFormat("");
-  };
+  const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((prev) => !prev); };
+  const handleFilterDraftChange = (field, value) => setFilterDraft((prev) => ({ ...prev, [field]: value }));
+  const handleApplyFilters = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleEntriesChange = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
+  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
+  const handleOpenExportAlert = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
+  const handleCloseExportAlert = () => { setIsExportAlertOpen(false); setExportFormat(""); };
 
   const handleConfirmExport = async () => {
-    if (!exportFormat) {
-      return;
-    }
-
-    const rowsToExport = filteredServiceLines.map((serviceLineItem) => ({
-      Nome: serviceLineItem.name,
-      "Learning Path": serviceLineItem.learningPath,
-      Áreas: serviceLineItem.areas,
-      Badges: serviceLineItem.badges,
-      Estado: serviceLineItem.status,
-    }));
-
+    if (!exportFormat) return;
+    const rowsToExport = filteredServiceLines.map((item) => ({ Nome: item.name, "Learning Path": item.learningPath, Áreas: item.areas, Badges: item.badges, Estado: item.status }));
     const timestamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
-
     try {
       if (exportFormat === "xlsx") {
         const XLSX = await import("xlsx");
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(rowsToExport);
-
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Service Lines");
-        XLSX.writeFile(workbook, `service-lines-${timestamp}.xlsx`);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsToExport), "Service Lines");
+        XLSX.writeFile(wb, `service-lines-${timestamp}.xlsx`);
       }
-
       if (exportFormat === "pdf") {
-        const [{ jsPDF }, { default: autoTable }] = await Promise.all([
-          import("jspdf"),
-          import("jspdf-autotable"),
-        ]);
-
+        const [{ jsPDF }, { default: autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
         const doc = new jsPDF({ orientation: "landscape" });
         doc.setFontSize(14);
         doc.text("Listagem de Service Lines", 14, 14);
-
-        autoTable(doc, {
-          startY: 20,
-          head: [["Nome", "Learning Path", "Áreas", "Badges", "Estado"]],
-          body: rowsToExport.map((row) => [
-            row.Nome,
-            row["Learning Path"],
-            String(row.Áreas),
-            String(row.Badges),
-            row.Estado,
-          ]),
-          styles: { fontSize: 9, cellPadding: 2.4 },
-          headStyles: { fillColor: [58, 87, 232] },
-        });
-
+        autoTable(doc, { startY: 20, head: [["Nome", "Learning Path", "Áreas", "Badges", "Estado"]], body: rowsToExport.map((r) => [r.Nome, r["Learning Path"], String(r.Áreas), String(r.Badges), r.Estado]), styles: { fontSize: 9, cellPadding: 2.4 }, headStyles: { fillColor: [58, 87, 232] } });
         doc.save(`service-lines-${timestamp}.pdf`);
       }
-
       setIsExportAlertOpen(false);
       setExportFormat("");
     } catch (error) {
-      // Keep behavior simple in this iteration; replace with toast/notification when global feedback is available.
       console.error("Falha ao exportar service lines", error);
     }
   };
 
   return (
     <section className="softinsa-service-lines-page" data-node-id="3899:14449">
-      <div className="softinsa-service-lines-hero" data-node-id="3899:14450">
+      <div className="softinsa-service-lines-hero d-flex flex-column justify-content-center" data-node-id="3899:14450">
         <h1>Service Lines</h1>
         <p>Configuração das Service Lines de cada Learning Path</p>
       </div>
 
-      <div className="softinsa-service-lines-toolbar">
-        <label className="softinsa-service-lines-search" aria-label="Pesquisar service lines">
+      <div className="softinsa-service-lines-toolbar d-flex align-items-center flex-wrap gap-3">
+        <label className="softinsa-service-lines-search d-inline-flex align-items-center" aria-label="Pesquisar service lines">
           <SearchIcon />
-          <input
-            type="text"
-            placeholder="Pesquisar por Service Line..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+          <input type="text" className="w-100" placeholder="Pesquisar por Service Line..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
-        <div className="softinsa-service-lines-filter-wrap" ref={filterWrapRef}>
-          <button
-            type="button"
-            className="softinsa-service-lines-filter-btn"
-            aria-label="Abrir filtro"
-            aria-expanded={isFilterOpen}
-            onClick={handleToggleFilter}
-          >
-            <FilterIcon />
-            <span>Filtro</span>
+        <div className="softinsa-service-lines-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
+        <div className="softinsa-service-lines-filter-wrap d-inline-flex" ref={filterWrapRef}>
+          <button type="button" className="softinsa-service-lines-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
+            <FilterIcon /><span>Filtro</span>
           </button>
 
           {isFilterOpen ? (
-            <div className="softinsa-service-lines-filter-panel" role="dialog" aria-label="Filtro de service lines">
-              <div className="softinsa-service-lines-filter-field">
+            <div className="softinsa-service-lines-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de service lines">
+              <div className="softinsa-service-lines-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-service-lines-filter-learning-path">Learning Path</label>
                 <div className="softinsa-service-lines-select-wrap">
-                  <select
-                    id="softinsa-service-lines-filter-learning-path"
-                    value={filterDraft.learningPath}
-                    onChange={(event) => handleFilterDraftChange("learningPath", event.target.value)}
-                  >
+                  <select id="softinsa-service-lines-filter-learning-path" className="w-100" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
                     <option value="">Selecione a Learning Path</option>
-                    {learningPathOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                    {learningPathOptions.map((lp) => (
+                      <option key={lp.id_learning_path} value={lp.nome_learning_path}>
+                        {lp.nome_learning_path}
                       </option>
                     ))}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-service-lines-filter-field">
+              <div className="softinsa-service-lines-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-service-lines-filter-status">Estado</label>
                 <div className="softinsa-service-lines-select-wrap">
-                  <select
-                    id="softinsa-service-lines-filter-status"
-                    value={filterDraft.status}
-                    onChange={(event) => handleFilterDraftChange("status", event.target.value)}
-                  >
+                  <select id="softinsa-service-lines-filter-status" className="w-100" value={filterDraft.status} onChange={(e) => handleFilterDraftChange("status", e.target.value)}>
                     <option value="">Selecione o estado</option>
-                    {statusOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                    {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-service-lines-filter-actions">
-                <button type="button" className="softinsa-service-lines-filter-submit" onClick={handleApplyFilters}>
-                  Filtrar
-                </button>
+              <div className="softinsa-service-lines-filter-actions w-100 d-inline-flex align-items-center">
+                <button type="button" className="softinsa-service-lines-filter-submit w-100" onClick={handleApplyFilters}>Filtrar</button>
               </div>
             </div>
           ) : null}
         </div>
 
-        <button type="button" className="softinsa-service-lines-add-btn" onClick={handleOpenAddServiceLine}>
-          <PlusIcon />
-          <span>Adicionar Service Line</span>
+        <button type="button" className="softinsa-service-lines-export-btn d-inline-flex align-items-center" onClick={handleOpenExportAlert}>
+          <ExportIcon /><span>Exportar</span>
         </button>
+
+        <button type="button" className="softinsa-service-lines-add-btn d-inline-flex align-items-center" onClick={handleOpenAddServiceLine}>
+          <PlusIcon /><span>Adicionar</span>
+        </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
-        <button type="button" className="softinsa-service-lines-clear-filter-inline" onClick={handleClearFilters}>
-          Remover filtros
-        </button>
+        <button type="button" className="softinsa-service-lines-clear-filter-inline" onClick={handleClearFilters}>Remover filtros</button>
       ) : null}
 
-      <div className="softinsa-service-lines-table-meta">
+      <div className="softinsa-service-lines-table-meta d-inline-flex align-items-center flex-wrap">
         <span>Mostrar</span>
         <div className="softinsa-service-lines-entries-select-wrap">
-          <select
-            className="softinsa-service-lines-entries-select"
-            aria-label="Entradas por página"
-            value={entriesPerPage}
-            onChange={handleEntriesChange}
-          >
-            {[10, 50, 100].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+          <select className="softinsa-service-lines-entries-select" aria-label="Entradas por página" value={entriesPerPage} onChange={handleEntriesChange}>
+            {[10, 50, 100].map((opt) => <option key={opt} value={opt}>{opt}</option>)}
           </select>
           <span className="softinsa-service-lines-entries-arrow">▼</span>
         </div>
@@ -557,34 +408,24 @@ const SoftinsaServiceLines = memo(() => {
       </div>
 
       <div className="softinsa-service-lines-table-card">
-        <div className="softinsa-service-lines-table-scroll">
+        <div className="softinsa-service-lines-table-scroll w-100">
           <table className="softinsa-service-lines-table" aria-label="Tabela de service lines">
             <thead>
               <tr>
-                <th>NOME</th>
-                <th>LEARNING PATH</th>
-                <th>ÁREAS</th>
-                <th>BADGES</th>
-                <th>ESTADO</th>
-                <th aria-label="Ações"></th>
+                <th>NOME</th><th>LEARNING PATH</th><th>ÁREAS</th><th>BADGES</th><th>ESTADO</th><th aria-label="Ações"></th>
               </tr>
             </thead>
             <tbody>
               {paginatedServiceLines.length > 0 ? (
-                paginatedServiceLines.map((serviceLineItem) => (
-                  <tr key={serviceLineItem.id}>
-                    <td>{serviceLineItem.name}</td>
-                    <td>{serviceLineItem.learningPath}</td>
-                    <td>{serviceLineItem.areas}</td>
-                    <td>{serviceLineItem.badges}</td>
-                    <td>{serviceLineItem.status}</td>
+                paginatedServiceLines.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>{item.learningPath}</td>
+                    <td>{item.areas}</td>
+                    <td>{item.badges}</td>
+                    <td>{item.status}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="softinsa-service-lines-edit-btn"
-                        aria-label={`Editar ${serviceLineItem.name}`}
-                        onClick={() => handleOpenEditServiceLine(serviceLineItem)}
-                      >
+                      <button type="button" className="softinsa-service-lines-edit-btn d-inline-flex align-items-center justify-content-center" aria-label={`Editar ${item.name}`} onClick={() => handleOpenEditServiceLine(item)}>
                         <PencilIcon />
                       </button>
                     </td>
@@ -599,212 +440,116 @@ const SoftinsaServiceLines = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-service-lines-table-footer">
-          <button type="button" className="softinsa-service-lines-export-btn" onClick={handleOpenExportAlert}>
-            <ExportIcon />
-            <span>Exportar</span>
-          </button>
-
-          <div className="softinsa-service-lines-pagination" aria-label="Paginação">
-            <button
-              type="button"
-              className={`softinsa-service-lines-page-link${currentPage === 1 ? " is-disabled" : ""}`}
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-
-            {pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`softinsa-service-lines-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
-                onClick={() => handlePageSelect(pageNumber)}
-              >
-                {pageNumber}
-              </button>
+        <div className="softinsa-service-lines-table-footer d-flex align-items-center justify-content-end">
+          <div className="softinsa-service-lines-pagination d-inline-flex align-items-center" aria-label="Paginação">
+            <button type="button" className={`softinsa-service-lines-page-link${currentPage === 1 ? " is-disabled" : ""}`} onClick={handlePreviousPage} disabled={currentPage === 1}>Anterior</button>
+            {pageNumbers.map((n) => (
+              <button key={n} type="button" className={`softinsa-service-lines-page-btn d-inline-flex align-items-center justify-content-center${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>
             ))}
-
-            <button
-              type="button"
-              className={`softinsa-service-lines-page-link${currentPage === totalPages ? " is-disabled" : ""}`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Próximo
-            </button>
+            <button type="button" className={`softinsa-service-lines-page-link${currentPage === totalPages ? " is-disabled" : ""}`} onClick={handleNextPage} disabled={currentPage === totalPages}>Próximo</button>
           </div>
         </div>
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-service-lines-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
-          <div
-            className="softinsa-service-lines-export-alert"
-            role="dialog"
-            aria-label="Exportar service lines"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-service-lines-export-alert-header">
+        <div className="softinsa-service-lines-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
+          <div className="softinsa-service-lines-export-alert d-flex flex-column" role="dialog" aria-label="Exportar service lines" onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-service-lines-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Exportar</h3>
-              <button
-                type="button"
-                className="softinsa-service-lines-modal-close"
-                aria-label="Fechar exportação"
-                onClick={handleCloseExportAlert}
-              >
-                <CloseIcon />
-              </button>
+              <button type="button" className="softinsa-service-lines-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar exportação" onClick={handleCloseExportAlert}><CloseIcon /></button>
             </div>
-
-            <div className="softinsa-service-lines-export-alert-body">
+            <div className="softinsa-service-lines-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
-
-              <button
-                type="button"
-                className="softinsa-service-lines-export-option"
-                aria-pressed={exportFormat === "xlsx"}
-                onClick={() => setExportFormat("xlsx")}
-              >
-                <span
-                  className={`softinsa-service-lines-export-radio${exportFormat === "xlsx" ? " is-active" : ""}`}
-                ></span>
-                <span>Excel (.xlsx)</span>
+              <button type="button" className="softinsa-service-lines-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
+                <span className={`softinsa-service-lines-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "xlsx" ? " is-active" : ""}`}></span><span>Excel (.xlsx)</span>
               </button>
-
-              <button
-                type="button"
-                className="softinsa-service-lines-export-option"
-                aria-pressed={exportFormat === "pdf"}
-                onClick={() => setExportFormat("pdf")}
-              >
-                <span
-                  className={`softinsa-service-lines-export-radio${exportFormat === "pdf" ? " is-active" : ""}`}
-                ></span>
-                <span>PDF (.pdf)</span>
+              <button type="button" className="softinsa-service-lines-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "pdf"} onClick={() => setExportFormat("pdf")}>
+                <span className={`softinsa-service-lines-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "pdf" ? " is-active" : ""}`}></span><span>PDF (.pdf)</span>
               </button>
             </div>
-
-            <div className="softinsa-service-lines-export-alert-actions">
-              <button
-                type="button"
-                className="softinsa-service-lines-export-cancel"
-                onClick={handleCloseExportAlert}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={`softinsa-service-lines-export-confirm${!exportFormat ? " is-disabled" : ""}`}
-                onClick={handleConfirmExport}
-                disabled={!exportFormat}
-              >
-                Exportar
-              </button>
+            <div className="softinsa-service-lines-export-alert-actions d-inline-flex align-items-center justify-content-end">
+              <button type="button" className="softinsa-service-lines-export-cancel" onClick={handleCloseExportAlert}>Cancelar</button>
+              <button type="button" className={`softinsa-service-lines-export-confirm${!exportFormat ? " is-disabled" : ""}`} onClick={handleConfirmExport} disabled={!exportFormat}>Exportar</button>
             </div>
           </div>
         </div>
       ) : null}
 
       {isModalOpen ? (
-        <div className="softinsa-service-lines-modal-backdrop" role="presentation" onClick={handleCloseModal}>
-          <div
-            className="softinsa-service-lines-modal"
-            data-node-id="3986:16526"
-            role="dialog"
-            aria-label={isEditMode ? "Editar Service Line" : "Adicionar Service Line"}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-service-lines-modal-header">
+        <div className="softinsa-service-lines-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseModal}>
+          <div className="softinsa-service-lines-modal" data-node-id="3986:16526" role="dialog" aria-label={isEditMode ? "Editar Service Line" : "Adicionar Service Line"} onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-service-lines-modal-header d-flex align-items-center justify-content-between">
               <h2>{isEditMode ? "Editar Service Line" : "Adicionar Service Line"}</h2>
-              <button
-                type="button"
-                className="softinsa-service-lines-modal-close"
-                aria-label="Fechar modal"
-                onClick={handleCloseModal}
-              >
-                <CloseIcon />
-              </button>
+              <button type="button" className="softinsa-service-lines-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
             </div>
-
-            <form className="softinsa-service-lines-modal-form" onSubmit={handleSubmitServiceLine}>
-              <div className="softinsa-service-lines-modal-field">
+            <form className="softinsa-service-lines-modal-form d-flex flex-column" onSubmit={handleSubmitServiceLine}>
+              <div className="softinsa-service-lines-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-service-line-name">Nome:</label>
-                <input
-                  id="softinsa-service-line-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(event) => handleFieldChange("name", event.target.value)}
-                  required
-                />
+                <input id="softinsa-service-line-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
               </div>
-
-              <div className="softinsa-service-lines-modal-field">
+              <div className="softinsa-service-lines-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-service-line-description">Descrição:</label>
-                <textarea
-                  id="softinsa-service-line-description"
-                  value={formData.description}
-                  onChange={(event) => handleFieldChange("description", event.target.value)}
-                ></textarea>
+                <textarea id="softinsa-service-line-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-
-              <div className="softinsa-service-lines-modal-row-top">
-                <div className="softinsa-service-lines-modal-field">
-                  <label htmlFor="softinsa-service-line-learning-path">Learning Path Associada</label>
-                  <div className="softinsa-service-lines-select-wrap">
-                    <select
-                      id="softinsa-service-line-learning-path"
-                      value={formData.learningPath}
-                      onChange={(event) => handleFieldChange("learningPath", event.target.value)}
-                    >
-                      {learningPathOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+              <Row className="g-3 align-items-end">
+                <Col xs={12} md={6}>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-service-line-learning-path">Learning Path Associada</label>
+                    <div className="softinsa-service-lines-select-wrap">
+                      <select id="softinsa-service-line-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                        {learningPathOptions.map((lp) => (
+                          <option
+                            key={lp.id_learning_path}
+                            value={lp.id_learning_path}
+                          >
+                            {lp.nome_learning_path}
+                          </option>
+                        ))}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-
-                <div className="softinsa-service-lines-modal-field">
-                  <label htmlFor="softinsa-service-line-status">Estado</label>
-                  <div className="softinsa-service-lines-select-wrap">
-                    <select
-                      id="softinsa-service-line-status"
-                      value={formData.status}
-                      onChange={(event) => handleFieldChange("status", event.target.value)}
-                    >
-                      <option value="" disabled>
-                        Ativo/Inativo
-                      </option>
-                      {statusOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={6}>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-service-line-status">Estado</label>
+                    <div className="softinsa-service-lines-select-wrap">
+                      <select id="softinsa-service-line-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="softinsa-service-lines-modal-row-bottom">
-                <div className="softinsa-service-lines-modal-field">
-                  <label>Icon</label>
-                  <FileSelector
-                    fileName={formData.iconFileName}
-                    onChange={handleIconFileChange}
-                    ariaLabel="Selecionar icon da service line"
-                  />
-                </div>
-
-                <button type="submit" className="softinsa-service-lines-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+              </Row>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md>
+                  <div className="softinsa-service-lines-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da service line" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{
+                          display: "block",
+                          marginTop: 8,
+                          maxHeight: 64,
+                          maxWidth: 64,
+                          objectFit: "contain",
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-service-lines-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

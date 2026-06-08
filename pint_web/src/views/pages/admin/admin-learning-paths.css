@@ -4,12 +4,6 @@
 }
 
 .softinsa-learning-paths-hero {
-  min-height: 155px;
-  border-radius: 0 0 1rem 1rem;
-  background: radial-gradient(36.28% 150.93% at 50% 50%, #3b8aff 0%, #0048b2 100%);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   gap: 8px;
   padding: 35px 41px;
   margin: 0 -24px 18px;
@@ -33,8 +27,6 @@
 }
 
 .softinsa-learning-paths-toolbar {
-  display: flex;
-  align-items: center;
   gap: 14px;
   margin-bottom: 14px;
 }
@@ -45,15 +37,12 @@
   border-radius: 4px;
   background: #ffffff;
   padding: 8px 16px;
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
   flex: 1;
   min-width: 220px;
 }
 
 .softinsa-learning-paths-search input {
-  width: 100%;
   border: 0;
   outline: 0;
   color: #8a92a6;
@@ -75,7 +64,6 @@
 
 .softinsa-learning-paths-filter-wrap {
   position: relative;
-  display: inline-flex;
 }
 
 .softinsa-learning-paths-filter-btn,
@@ -99,8 +87,6 @@
   line-height: 1.75;
   font-weight: 400;
   padding: 8px 24px;
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
   cursor: pointer;
 }
@@ -120,8 +106,6 @@
   font-weight: 400;
   padding: 8px 20px;
   box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
-  display: inline-flex;
-  align-items: center;
   gap: 5px;
   cursor: pointer;
   white-space: nowrap;
@@ -137,14 +121,10 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 24px;
   z-index: 70;
-  display: flex;
-  flex-direction: column;
   gap: 20px;
 }
 
 .softinsa-learning-paths-filter-field {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
@@ -164,7 +144,6 @@
 }
 
 .softinsa-learning-paths-select-wrap select {
-  width: 100%;
   height: 44px;
   border: 0;
   border-radius: 4px;
@@ -200,14 +179,10 @@
 }
 
 .softinsa-learning-paths-filter-actions {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
 }
 
 .softinsa-learning-paths-filter-submit {
-  width: 100%;
   border: 0;
   border-radius: 8px;
   font-size: 16px;
@@ -233,14 +208,11 @@
 }
 
 .softinsa-learning-paths-table-meta {
-  display: inline-flex;
-  align-items: center;
   gap: 12px;
   color: #8a92a6;
   font-size: 16px;
   line-height: 1.75;
   margin-bottom: 12px;
-  flex-wrap: wrap;
 }
 
 .softinsa-learning-paths-entries-select-wrap {
@@ -284,7 +256,6 @@
 }
 
 .softinsa-learning-paths-table-scroll {
-  width: 100%;
   overflow-x: auto;
 }
 
@@ -333,9 +304,6 @@
 .softinsa-learning-paths-edit-btn {
   width: 20px;
   height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -348,30 +316,22 @@
 .softinsa-learning-paths-table-footer {
   border-top: 1px solid #eeeeee;
   padding: 6px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
 .softinsa-learning-paths-export-btn {
   border-radius: 4px;
-  background: #3a57e8;
+  background: #39639c;
   color: #ffffff;
   font-size: 16px;
   line-height: 1.75;
   font-weight: 400;
-  padding: 3px 20px;
-  box-shadow: 0 2px 4px rgba(58, 87, 232, 0.3);
-  display: inline-flex;
-  align-items: center;
+  height: 42px;
+  padding: 0 20px;
+  box-shadow: 0 2px 6px rgba(57, 99, 156, 0.2);
   gap: 10px;
   cursor: pointer;
-}
-
-.softinsa-learning-paths-pagination {
-  display: inline-flex;
-  align-items: center;
+  transition: all 0.2s ease;
 }
 
 .softinsa-learning-paths-page-link {
@@ -396,9 +356,6 @@
   font-size: 16px;
   line-height: 1.75;
   font-weight: 400;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -412,9 +369,6 @@
   inset: 0;
   z-index: 120;
   background: rgba(35, 45, 66, 0.22);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
   padding: 76px 16px 24px;
 }
 
@@ -433,16 +387,7 @@
   background: #ffffff;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 24px;
-}
-
-.softinsa-learning-paths-modal-header,
-.softinsa-learning-paths-export-alert-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .softinsa-learning-paths-modal-header {
@@ -471,9 +416,6 @@
   width: 30px;
   height: 30px;
   color: #8a92a6;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   padding: 0;
 }
@@ -485,13 +427,10 @@
 }
 
 .softinsa-learning-paths-modal-form {
-  display: flex;
-  flex-direction: column;
   gap: 20px;
 }
 
 .softinsa-learning-paths-modal-row-bottom {
-  width: 100%;
   display: grid;
   grid-template-columns: minmax(220px, 222px) minmax(320px, 1fr) auto;
   align-items: end;
@@ -499,8 +438,6 @@
 }
 
 .softinsa-learning-paths-modal-field {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 
@@ -513,7 +450,6 @@
 
 .softinsa-learning-paths-modal-field input,
 .softinsa-learning-paths-modal-field textarea {
-  width: 100%;
   border: 0.8px solid #e9ecef;
   border-radius: 4px;
   background: #ffffff;
@@ -534,9 +470,7 @@
 }
 
 .softinsa-learning-paths-file-field {
-  display: inline-flex;
   align-items: stretch;
-  width: 100%;
   cursor: pointer;
 }
 
@@ -551,8 +485,6 @@
 .softinsa-learning-paths-file-choose,
 .softinsa-learning-paths-file-name {
   height: 44px;
-  display: inline-flex;
-  align-items: center;
   padding: 0 16px;
   border: 1px solid #eeeeee;
   color: #8a92a6;
@@ -592,8 +524,6 @@
 }
 
 .softinsa-learning-paths-export-alert-body {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
@@ -617,8 +547,6 @@
   border: 0;
   background: transparent;
   padding: 0;
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
   color: #8a92a6;
   font-size: 16px;
@@ -632,10 +560,6 @@
   width: 16px;
   height: 16px;
   border: 1px solid #3a57e8;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .softinsa-learning-paths-export-radio::after {
@@ -652,9 +576,6 @@
 }
 
 .softinsa-learning-paths-export-alert-actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 15px;
 }
 
@@ -684,86 +605,3 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 1100px) {
-  .softinsa-learning-paths-modal-row-bottom {
-    grid-template-columns: 1fr;
-  }
-
-  .softinsa-learning-paths-modal-submit {
-    width: 100%;
-  }
-}
-
-@media (max-width: 991px) {
-  .softinsa-learning-paths-page {
-    padding: 0 16px 20px;
-  }
-
-  .softinsa-learning-paths-hero {
-    margin: 0 -16px 14px;
-    padding: 28px 24px;
-  }
-
-  .softinsa-learning-paths-toolbar {
-    flex-wrap: wrap;
-  }
-
-  .softinsa-learning-paths-add-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .softinsa-learning-paths-table-footer {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .softinsa-learning-paths-export-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .softinsa-learning-paths-pagination {
-    width: 100%;
-    overflow-x: auto;
-  }
-
-  .softinsa-learning-paths-modal,
-  .softinsa-learning-paths-export-alert {
-    width: min(1100px, calc(100vw - 20px));
-  }
-}
-
-@media (max-width: 640px) {
-  .softinsa-learning-paths-search {
-    min-width: 100%;
-  }
-
-  .softinsa-learning-paths-modal {
-    padding: 18px;
-  }
-
-  .softinsa-learning-paths-modal-header h2 {
-    font-size: 24px;
-  }
-
-  .softinsa-learning-paths-export-alert-header h3 {
-    font-size: 30px;
-  }
-
-  .softinsa-learning-paths-file-choose,
-  .softinsa-learning-paths-file-name {
-    font-size: 14px;
-    padding: 0 12px;
-  }
-
-  .softinsa-learning-paths-export-alert-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .softinsa-learning-paths-export-cancel,
-  .softinsa-learning-paths-export-confirm {
-    width: 100%;
-  }
-}

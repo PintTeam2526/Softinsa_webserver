@@ -1,101 +1,50 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./admin-areas.css";
 
-// TODO: Replace all mock data and local options with API data (areas, service lines, learning paths, and statuses).
-const areasRows = [
-  {
-    id: 1,
-    name: "DevOps (OutSystems)",
-    description: "",
-    serviceLine: "Hybrid Cloud",
-    learningPath: "Jornada Técnica",
-    badges: 5,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 2,
-    name: "LowCode",
-    description: "",
-    serviceLine: "Applications Operations",
-    learningPath: "Jornada Técnica",
-    badges: 4,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 3,
-    name: "Talent Management",
-    description: "",
-    serviceLine: "Sourcing & Talent Management",
-    learningPath: "Jornada Técnica",
-    badges: 3,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 4,
-    name: "Cloud Architecture",
-    description: "",
-    serviceLine: "Hybrid Cloud",
-    learningPath: "Jornada Técnica",
-    badges: 2,
-    status: "Ativo",
-    iconFileName: "",
-  },
-  {
-    id: 5,
-    name: "Data Engineering",
-    description: "",
-    serviceLine: "Applications Operations",
-    learningPath: "Jornada Técnica",
-    badges: 1,
-    status: "Ativo",
-    iconFileName: "",
-  },
-];
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas, createArea, updateArea } from '../../../controllers/areasController'
+import { getBadges } from '../../../controllers/badgesController'
 
-const learningPathOptions = ["Jornada Técnica", "Power Skills"];
-const serviceLineOptions = [
-  "Hybrid Cloud",
-  "Applications Operations",
-  "Sourcing & Talent Management",
-  "Data & AI",
-  "Security",
-];
 const statusOptions = ["Ativo", "Inativo"];
 
-const getDefaultFilterDraft = () => ({
-  serviceLine: "",
-  learningPath: "",
-  status: "",
-});
+const getDefaultFilterDraft = () => ({ serviceLine: "", learningPath: "", status: "" });
 
 const getDefaultAreaForm = () => ({
-  name: "",
-  description: "",
-  learningPath: "Jornada Técnica",
-  serviceLine: "Hybrid Cloud",
-  status: "",
-  iconFileName: "",
-  iconFile: null,
+  name: "", description: "", learningPath: "", serviceLine: "",
+  status: "", iconFileName: "", iconFile: null, image: "",
 });
 
 const normalizeSearchValue = (value) =>
-  String(value)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
+  String(value).toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").trim();
+
+const formatAreaImage = (img) => {
+  if (!img || typeof img !== "string" || img.trim() === "") return "";
+  if (img.startsWith("data:")) return img;
+  return `data:image/png;base64,${img}`;
+};
+
+const mapArea = (row, slMap, lpMap) => {
+  const sl = slMap[row.id_service_line];
+  return {
+    id: row.id_area,
+    name: row.nome_area,
+    description: row.descricao_area ?? "",
+    iconFileName: row.imagem_area ?? "",
+    image: formatAreaImage(row.imagem_area),
+    status: row.estado_a_i ? "Ativo" : "Inativo",
+    serviceLineId: row.id_service_line,
+    serviceLine: sl?.name ?? `ID ${row.id_service_line}`,
+    learningPath: lpMap[sl?.id_learning_path] ?? "",
+    badges: 0,
+  };
+};
 
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
-      <path
-        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
+      <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="1.8" />
       <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
@@ -103,13 +52,8 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
-      <path
-        d="M4 5H20L13 13V19L11 20V13L4 5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-areas-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
@@ -125,39 +69,18 @@ function PlusIcon() {
 
 function PencilIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      className="softinsa-areas-pencil-icon"
-      aria-hidden="true"
-    >
-      <path
-        d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z"
-        fill="#00B8E0"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="softinsa-areas-pencil-icon" aria-hidden="true">
+      <path d="M0 20V15.2778L14.6667 0.638889C14.8889 0.435185 15.1344 0.277778 15.4033 0.166667C15.6722 0.0555557 15.9544 0 16.25 0C16.5455 0 16.8326 0.0555557 17.1111 0.166667C17.3896 0.277778 17.6304 0.444444 17.8333 0.666667L19.3611 2.22222C19.5833 2.42593 19.7455 2.66667 19.8478 2.94444C19.95 3.22222 20.0007 3.5 20 3.77778C20 4.07407 19.9493 4.35667 19.8478 4.62556C19.7463 4.89444 19.5841 5.13963 19.3611 5.36111L4.72222 20H0ZM16.2222 5.33333L17.7778 3.77778L16.2222 2.22222L14.6667 3.77778L16.2222 5.33333Z" fill="#00B8E0" />
     </svg>
   );
 }
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-areas-icon" aria-hidden="true">
-      <path
-        d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-areas-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -181,25 +104,18 @@ function CloseIcon() {
 
 function FileSelector({ fileName, onChange, ariaLabel }) {
   return (
-    <label className="softinsa-areas-file-field">
-      <input
-        type="file"
-        accept="image/*"
-        className="softinsa-areas-file-input"
-        onChange={onChange}
-        onClick={(event) => {
-          event.target.value = null;
-        }}
-        aria-label={ariaLabel}
-      />
-      <span className="softinsa-areas-file-choose">Choose File</span>
-      <span className="softinsa-areas-file-name">{fileName || "No file chosen"}</span>
+    <label className="softinsa-areas-file-field d-inline-flex w-100">
+      <input type="file" accept="image/*" className="softinsa-areas-file-input" onChange={onChange} onClick={(e) => { e.target.value = null; }} aria-label={ariaLabel} />
+      <span className="softinsa-areas-file-choose d-inline-flex align-items-center">Choose File</span>
+      <span className="softinsa-areas-file-name d-inline-flex align-items-center">{fileName || "No file chosen"}</span>
     </label>
   );
 }
 
 const SoftinsaAreas = memo(() => {
-  const [areas, setAreas] = useState(areasRows);
+  const [areas, setAreas] = useState([]);
+  const [learningPathOptions, setLearningPathOptions] = useState([]);
+  const [serviceLineOptions, setServiceLineOptions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -211,7 +127,46 @@ const SoftinsaAreas = memo(() => {
   const [modalMode, setModalMode] = useState(null);
   const [editingAreaId, setEditingAreaId] = useState(null);
   const [formData, setFormData] = useState(getDefaultAreaForm());
+  const [slRaw, setSlRaw] = useState([]);
   const filterWrapRef = useRef(null);
+
+  useEffect(() => { loadData(); }, []);
+
+  async function loadData() {
+    try {
+      const [areasData, slData, lpData, badgesData] = await Promise.all([
+        getAreas(),
+        getServiceLines(),
+        getLearningPaths(),
+        getBadges(),
+      ]);
+
+      const lpMap = {};
+      lpData.forEach((lp) => { lpMap[lp.id_learning_path] = lp.nome_learning_path; });
+
+      const slMap = {};
+      slData.forEach((sl) => { slMap[sl.id_service_line] = { name: sl.nome_service_line, id_learning_path: sl.id_learning_path }; });
+
+      setSlRaw(slData);
+
+      const badgeCountByArea = {};
+      badgesData.forEach((b) => {
+        badgeCountByArea[b.id_area] = (badgeCountByArea[b.id_area] ?? 0) + 1;
+      });
+
+      setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
+      setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
+
+      setAreas(
+        areasData.map((row) => ({
+          ...mapArea(row, slMap, lpMap),
+          badges: badgeCountByArea[row.id_area] ?? 0,
+        }))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
@@ -219,64 +174,57 @@ const SoftinsaAreas = memo(() => {
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
   const filteredAreas = areas.filter((area) => {
-    const matchesServiceLine = !activeFilters.serviceLine || area.serviceLine === activeFilters.serviceLine;
-    const matchesLearningPath = !activeFilters.learningPath || area.learningPath === activeFilters.learningPath;
+    const matchesSL = !activeFilters.serviceLine || area.serviceLine === activeFilters.serviceLine;
+    const matchesLP = !activeFilters.learningPath || area.learningPath === activeFilters.learningPath;
     const matchesStatus = !activeFilters.status || area.status === activeFilters.status;
-    const searchableArea = normalizeSearchValue(`${area.name} ${area.serviceLine} ${area.learningPath}`);
-    const matchesSearch = !normalizedSearchTerm || searchableArea.includes(normalizedSearchTerm);
-    return matchesServiceLine && matchesLearningPath && matchesStatus && matchesSearch;
+    const matchesSearch = !normalizedSearchTerm || normalizeSearchValue(`${area.name} ${area.serviceLine} ${area.learningPath}`).includes(normalizedSearchTerm);
+    return matchesSL && matchesLP && matchesStatus && matchesSearch;
   });
 
   const totalPages = Math.max(1, Math.ceil(filteredAreas.length / entriesPerPage));
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedAreas = filteredAreas.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(event.target)) {
-        setIsFilterOpen(false);
-      }
+    const handleClickOutside = (e) => {
+      if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(e.target)) setIsFilterOpen(false);
     };
-
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setIsFilterOpen(false);
-        setIsExportAlertOpen(false);
-        setModalMode(null);
-        setEditingAreaId(null);
-      }
+    const handleEscape = (e) => {
+      if (e.key === "Escape") { setIsFilterOpen(false); setIsExportAlertOpen(false); setModalMode(null); setEditingAreaId(null); }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
+    return () => { document.removeEventListener("mousedown", handleClickOutside); document.removeEventListener("keydown", handleEscape); };
   }, [isFilterOpen]);
 
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
+  useEffect(() => { if (currentPage > totalPages) setCurrentPage(totalPages); }, [currentPage, totalPages]);
+
+  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+
+  const handleIconFileChange = (e) => {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) {
+      setFormData((prev) => ({ ...prev, iconFile: null, iconFileName: "", image: "" }));
+      return;
     }
-  }, [currentPage, totalPages]);
-
-  const handleFieldChange = (field, value) => {
-    setFormData((previousData) => ({ ...previousData, [field]: value }));
-  };
-
-  const handleIconFileChange = (event) => {
-    const file = event.target.files && event.target.files[0] ? event.target.files[0] : null;
-    setFormData((previousData) => ({
-      ...previousData,
-      iconFile: file,
-      iconFileName: file ? file.name : "",
-    }));
+    const reader = new FileReader();
+    reader.onload = () =>
+      setFormData((prev) => ({
+        ...prev,
+        iconFile: file,
+        iconFileName: file.name,
+        image: typeof reader.result === "string" ? reader.result : prev.image,
+      }));
+    reader.readAsDataURL(file);
   };
 
   const handleOpenAddArea = () => {
-    setFormData(getDefaultAreaForm());
+    setFormData({
+      ...getDefaultAreaForm(),
+      learningPath: learningPathOptions[0] ?? "",
+      serviceLine: serviceLineOptions[0] ?? "",
+      status: "Ativo",
+    });
     setEditingAreaId(null);
     setIsFilterOpen(false);
     setIsExportAlertOpen(false);
@@ -287,11 +235,13 @@ const SoftinsaAreas = memo(() => {
     setFormData({
       name: area.name || "",
       description: area.description || "",
-      learningPath: area.learningPath || "Jornada Técnica",
-      serviceLine: area.serviceLine || "Hybrid Cloud",
+      learningPath: area.learningPath || learningPathOptions[0] || "",
+      serviceLine: area.serviceLine || serviceLineOptions[0] || "",
+      serviceLineId: area.serviceLineId,
       status: area.status || "Ativo",
       iconFileName: area.iconFileName || "",
       iconFile: null,
+      image: area.image || "",
     });
     setEditingAreaId(area.id);
     setIsFilterOpen(false);
@@ -299,286 +249,162 @@ const SoftinsaAreas = memo(() => {
     setModalMode("edit");
   };
 
-  const handleCloseModal = () => {
-    setModalMode(null);
-    setEditingAreaId(null);
-  };
+  const handleCloseModal = () => { setModalMode(null); setEditingAreaId(null); };
 
-  const handleSubmitArea = (event) => {
-    event.preventDefault();
-
+  const handleSubmitArea = async (e) => {
+    e.preventDefault();
     const sanitizedName = formData.name.trim();
-    const sanitizedDescription = formData.description.trim();
+    if (!sanitizedName) return;
 
-    if (!sanitizedName) {
+    const resolvedSlId = formData.serviceLineId
+      ? Number(formData.serviceLineId)
+      : slRaw.find((sl) => sl.nome_service_line === formData.serviceLine)?.id_service_line ?? null;
+
+    if (!resolvedSlId) {
+      console.error("Service Line não encontrada");
       return;
     }
+
+    const rawBase64 = formData.image
+      ? formData.image.replace(/^data:image\/[a-z+]+;base64,/, "")
+      : null;
 
     const payload = {
-      name: sanitizedName,
-      description: sanitizedDescription,
-      learningPath: formData.learningPath,
-      serviceLine: formData.serviceLine,
-      status: formData.status || "Ativo",
-      iconFileName: formData.iconFileName,
+      nome_area: sanitizedName,
+      descricao_area: formData.description.trim(),
+      id_service_line: resolvedSlId,
+      estado_a_i: formData.status === "Ativo",
+      imagem_area: rawBase64 || null,
     };
 
-    if (isEditMode && editingAreaId !== null) {
-      setAreas((previousAreas) =>
-        previousAreas.map((item) => (item.id === editingAreaId ? { ...item, ...payload } : item))
-      );
-    } else {
-      setAreas((previousAreas) => {
-        const nextId = previousAreas.reduce((maxId, item) => Math.max(maxId, Number(item.id) || 0), 0) + 1;
-        return [{ id: nextId, badges: 0, ...payload }, ...previousAreas];
-      });
-      setCurrentPage(1);
+    try {
+      if (isEditMode && editingAreaId !== null) {
+        await updateArea(editingAreaId, payload);
+      } else {
+        await createArea(payload);
+      }
+      await loadData();
+      handleCloseModal();
+    } catch (err) {
+      console.error("Erro ao guardar área", err);
     }
-
-    handleCloseModal();
   };
 
-  const handleToggleFilter = () => {
-    setFilterDraft(activeFilters);
-    setIsExportAlertOpen(false);
-    setIsFilterOpen((previous) => !previous);
-  };
-
-  const handleFilterDraftChange = (field, value) => {
-    setFilterDraft((previousData) => ({ ...previousData, [field]: value }));
-  };
-
-  const handleApplyFilters = () => {
-    setActiveFilters(filterDraft);
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
-
-  const handleClearFilters = () => {
-    const clearedFilters = getDefaultFilterDraft();
-    setFilterDraft(clearedFilters);
-    setActiveFilters(clearedFilters);
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
-
-  const handleEntriesChange = (event) => {
-    setEntriesPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setCurrentPage(1);
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((previousPage) => Math.max(previousPage - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((previousPage) => Math.min(previousPage + 1, totalPages));
-  };
-
-  const handlePageSelect = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleOpenExportAlert = () => {
-    setIsFilterOpen(false);
-    setExportFormat("");
-    setIsExportAlertOpen(true);
-  };
-
-  const handleCloseExportAlert = () => {
-    setIsExportAlertOpen(false);
-    setExportFormat("");
-  };
+  const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsExportAlertOpen(false); setIsFilterOpen((p) => !p); };
+  const handleFilterDraftChange = (field, value) => setFilterDraft((prev) => ({ ...prev, [field]: value }));
+  const handleApplyFilters = () => { setActiveFilters(filterDraft); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleClearFilters = () => { const c = getDefaultFilterDraft(); setFilterDraft(c); setActiveFilters(c); setCurrentPage(1); setIsFilterOpen(false); };
+  const handleEntriesChange = (e) => { setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); };
+  const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
+  const handlePreviousPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const handleNextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const handlePageSelect = (page) => setCurrentPage(page);
+  const handleOpenExportAlert = () => { setIsFilterOpen(false); setExportFormat(""); setIsExportAlertOpen(true); };
+  const handleCloseExportAlert = () => { setIsExportAlertOpen(false); setExportFormat(""); };
 
   const handleConfirmExport = async () => {
-    if (!exportFormat) {
-      return;
-    }
-
-    const rowsToExport = filteredAreas.map((area) => ({
-      Nome: area.name,
-      "Service Line": area.serviceLine,
-      "Learning Path": area.learningPath,
-      Badges: area.badges,
-      Estado: area.status,
-    }));
-
+    if (!exportFormat) return;
+    const rowsToExport = filteredAreas.map((area) => ({ Nome: area.name, "Service Line": area.serviceLine, "Learning Path": area.learningPath, Badges: area.badges, Estado: area.status }));
     const timestamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
-
     try {
       if (exportFormat === "xlsx") {
         const XLSX = await import("xlsx");
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(rowsToExport);
-
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Áreas");
-        XLSX.writeFile(workbook, `areas-${timestamp}.xlsx`);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsToExport), "Áreas");
+        XLSX.writeFile(wb, `areas-${timestamp}.xlsx`);
       }
-
       if (exportFormat === "pdf") {
-        const [{ jsPDF }, { default: autoTable }] = await Promise.all([
-          import("jspdf"),
-          import("jspdf-autotable"),
-        ]);
-
+        const [{ jsPDF }, { default: autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
         const doc = new jsPDF({ orientation: "landscape" });
         doc.setFontSize(14);
         doc.text("Listagem de Áreas", 14, 14);
-
-        autoTable(doc, {
-          startY: 20,
-          head: [["Nome", "Service Line", "Learning Path", "Badges", "Estado"]],
-          body: rowsToExport.map((row) => [
-            row.Nome,
-            row["Service Line"],
-            row["Learning Path"],
-            String(row.Badges),
-            row.Estado,
-          ]),
-          styles: { fontSize: 9, cellPadding: 2.4 },
-          headStyles: { fillColor: [58, 87, 232] },
-        });
-
+        autoTable(doc, { startY: 20, head: [["Nome", "Service Line", "Learning Path", "Badges", "Estado"]], body: rowsToExport.map((r) => [r.Nome, r["Service Line"], r["Learning Path"], String(r.Badges), r.Estado]), styles: { fontSize: 9, cellPadding: 2.4 }, headStyles: { fillColor: [58, 87, 232] } });
         doc.save(`areas-${timestamp}.pdf`);
       }
-
       setIsExportAlertOpen(false);
       setExportFormat("");
     } catch (error) {
-      // Keep behavior simple in this iteration; replace with toast/notification when global feedback is available.
       console.error("Falha ao exportar áreas", error);
     }
   };
 
   return (
     <section className="softinsa-areas-page" data-node-id="3899:9615">
-      <div className="softinsa-areas-hero" data-node-id="3899:9621">
+      <div className="softinsa-areas-hero d-flex flex-column justify-content-center" data-node-id="3899:9621">
         <h1>Áreas</h1>
         <p>Configuração das áreas de cada Service Line</p>
       </div>
 
-      <div className="softinsa-areas-toolbar">
-        <label className="softinsa-areas-search" aria-label="Pesquisar áreas">
+      <div className="softinsa-areas-toolbar d-flex align-items-center flex-wrap gap-3">
+        <label className="softinsa-areas-search d-inline-flex align-items-center" aria-label="Pesquisar áreas">
           <SearchIcon />
-          <input
-            type="text"
-            placeholder="Pesquisar por area, Service Line..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+          <input type="text" className="w-100" placeholder="Pesquisar por area, Service Line..." value={searchTerm} onChange={handleSearchChange} />
         </label>
 
-        <div className="softinsa-areas-filter-wrap" ref={filterWrapRef}>
-          <button
-            type="button"
-            className="softinsa-areas-filter-btn"
-            aria-label="Abrir filtro"
-            aria-expanded={isFilterOpen}
-            onClick={handleToggleFilter}
-          >
-            <FilterIcon />
-            <span>Filtro</span>
+        <div className="softinsa-areas-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
+        <div className="softinsa-areas-filter-wrap d-inline-flex" ref={filterWrapRef}>
+          <button type="button" className="softinsa-areas-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
+            <FilterIcon /><span>Filtro</span>
           </button>
 
           {isFilterOpen ? (
-            <div className="softinsa-areas-filter-panel" role="dialog" aria-label="Filtro de áreas">
-              <div className="softinsa-areas-filter-field">
+            <div className="softinsa-areas-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de áreas">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-learning-path">Learning Path</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select
-                    id="softinsa-areas-filter-learning-path"
-                    value={filterDraft.learningPath}
-                    onChange={(event) => handleFilterDraftChange("learningPath", event.target.value)}
-                  >
+                  <select id="softinsa-areas-filter-learning-path" className="w-100" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
                     <option value="">Selecione a Learning Path</option>
-                    {learningPathOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                    {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-areas-filter-field">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-service-line">Service Line</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select
-                    id="softinsa-areas-filter-service-line"
-                    value={filterDraft.serviceLine}
-                    onChange={(event) => handleFilterDraftChange("serviceLine", event.target.value)}
-                  >
+                  <select id="softinsa-areas-filter-service-line" className="w-100" value={filterDraft.serviceLine} onChange={(e) => handleFilterDraftChange("serviceLine", e.target.value)}>
                     <option value="">Selecione a Service Line</option>
-                    {serviceLineOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                    {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-areas-filter-field">
+              <div className="softinsa-areas-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-areas-filter-status">Estado</label>
                 <div className="softinsa-areas-select-wrap">
-                  <select
-                    id="softinsa-areas-filter-status"
-                    value={filterDraft.status}
-                    onChange={(event) => handleFilterDraftChange("status", event.target.value)}
-                  >
+                  <select id="softinsa-areas-filter-status" className="w-100" value={filterDraft.status} onChange={(e) => handleFilterDraftChange("status", e.target.value)}>
                     <option value="">Selecione o estado</option>
-                    {statusOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
+                    {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                   <SelectArrowIcon />
                 </div>
               </div>
-
-              <div className="softinsa-areas-filter-actions">
-                <button type="button" className="softinsa-areas-filter-submit" onClick={handleApplyFilters}>
-                  Filtrar
-                </button>
+              <div className="softinsa-areas-filter-actions w-100 d-inline-flex align-items-center">
+                <button type="button" className="softinsa-areas-filter-submit" onClick={handleApplyFilters}>Filtrar</button>
               </div>
             </div>
           ) : null}
         </div>
 
-        <button type="button" className="softinsa-areas-add-btn" onClick={handleOpenAddArea}>
-          <PlusIcon />
-          <span>Adicionar Área</span>
+        <button type="button" className="softinsa-areas-export-btn d-inline-flex align-items-center" onClick={handleOpenExportAlert}>
+          <ExportIcon /><span>Exportar</span>
         </button>
+
+        <button type="button" className="softinsa-areas-add-btn d-inline-flex align-items-center" onClick={handleOpenAddArea}>
+          <PlusIcon /><span>Adicionar</span>
+        </button>
+        </div>
       </div>
 
       {hasActiveFilters ? (
-        <button type="button" className="softinsa-areas-clear-filter-inline" onClick={handleClearFilters}>
-          Remover filtros
-        </button>
+        <button type="button" className="softinsa-areas-clear-filter-inline" onClick={handleClearFilters}>Remover filtros</button>
       ) : null}
 
-      <div className="softinsa-areas-table-meta">
+      <div className="softinsa-areas-table-meta d-inline-flex align-items-center flex-wrap">
         <span>Mostrar</span>
         <div className="softinsa-areas-entries-select-wrap">
-          <select
-            className="softinsa-areas-entries-select"
-            aria-label="Entradas por página"
-            value={entriesPerPage}
-            onChange={handleEntriesChange}
-          >
-            {[10, 50, 100].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+          <select className="softinsa-areas-entries-select" aria-label="Entradas por página" value={entriesPerPage} onChange={handleEntriesChange}>
+            {[10, 50, 100].map((opt) => <option key={opt} value={opt}>{opt}</option>)}
           </select>
           <span className="softinsa-areas-entries-arrow">▼</span>
         </div>
@@ -586,16 +412,11 @@ const SoftinsaAreas = memo(() => {
       </div>
 
       <div className="softinsa-areas-table-card">
-        <div className="softinsa-areas-table-scroll">
+        <div className="softinsa-areas-table-scroll w-100">
           <table className="softinsa-areas-table" aria-label="Tabela de áreas">
             <thead>
               <tr>
-                <th>NOME</th>
-                <th>SERVICE LINE</th>
-                <th>LEARNING PATH</th>
-                <th>BADGES</th>
-                <th>ESTADO</th>
-                <th aria-label="Ações"></th>
+                <th>NOME</th><th>LEARNING PATH</th><th>SERVICE LINE</th><th>BADGES</th><th>ESTADO</th><th aria-label="Ações"></th>
               </tr>
             </thead>
             <tbody>
@@ -603,17 +424,12 @@ const SoftinsaAreas = memo(() => {
                 paginatedAreas.map((area) => (
                   <tr key={area.id}>
                     <td>{area.name}</td>
-                    <td>{area.serviceLine}</td>
                     <td>{area.learningPath}</td>
+                    <td>{area.serviceLine}</td>
                     <td>{area.badges}</td>
                     <td>{area.status}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="softinsa-areas-edit-btn"
-                        aria-label={`Editar ${area.name}`}
-                        onClick={() => handleOpenEditArea(area)}
-                      >
+                      <button type="button" className="softinsa-areas-edit-btn d-inline-flex align-items-center justify-content-center" aria-label={`Editar ${area.name}`} onClick={() => handleOpenEditArea(area)}>
                         <PencilIcon />
                       </button>
                     </td>
@@ -628,222 +444,114 @@ const SoftinsaAreas = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-areas-table-footer">
-          <button type="button" className="softinsa-areas-export-btn" onClick={handleOpenExportAlert}>
-            <ExportIcon />
-            <span>Exportar</span>
-          </button>
-
-          <div className="softinsa-areas-pagination" aria-label="Paginação">
-            <button
-              type="button"
-              className={`softinsa-areas-page-link${currentPage === 1 ? " is-disabled" : ""}`}
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-
-            {pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`softinsa-areas-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
-                onClick={() => handlePageSelect(pageNumber)}
-              >
-                {pageNumber}
-              </button>
+        <div className="softinsa-areas-table-footer d-flex align-items-center justify-content-end">
+          <div className="softinsa-areas-pagination d-inline-flex align-items-center" aria-label="Paginação">
+            <button type="button" className={`softinsa-areas-page-link${currentPage === 1 ? " is-disabled" : ""}`} onClick={handlePreviousPage} disabled={currentPage === 1}>Anterior</button>
+            {pageNumbers.map((n) => (
+              <button key={n} type="button" className={`softinsa-areas-page-btn d-inline-flex align-items-center justify-content-center${currentPage === n ? " is-active" : ""}`} onClick={() => handlePageSelect(n)}>{n}</button>
             ))}
-
-            <button
-              type="button"
-              className={`softinsa-areas-page-link${currentPage === totalPages ? " is-disabled" : ""}`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Próximo
-            </button>
+            <button type="button" className={`softinsa-areas-page-link${currentPage === totalPages ? " is-disabled" : ""}`} onClick={handleNextPage} disabled={currentPage === totalPages}>Próximo</button>
           </div>
         </div>
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-areas-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
-          <div
-            className="softinsa-areas-export-alert"
-            role="dialog"
-            aria-label="Exportar áreas"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-areas-export-alert-header">
+        <div className="softinsa-areas-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
+          <div className="softinsa-areas-export-alert d-flex flex-column" role="dialog" aria-label="Exportar áreas" onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-areas-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Exportar</h3>
-              <button
-                type="button"
-                className="softinsa-areas-modal-close"
-                aria-label="Fechar exportação"
-                onClick={handleCloseExportAlert}
-              >
-                <CloseIcon />
-              </button>
+              <button type="button" className="softinsa-areas-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar exportação" onClick={handleCloseExportAlert}><CloseIcon /></button>
             </div>
-
-            <div className="softinsa-areas-export-alert-body">
+            <div className="softinsa-areas-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
-
-              <button
-                type="button"
-                className="softinsa-areas-export-option"
-                aria-pressed={exportFormat === "xlsx"}
-                onClick={() => setExportFormat("xlsx")}
-              >
-                <span className={`softinsa-areas-export-radio${exportFormat === "xlsx" ? " is-active" : ""}`}></span>
-                <span>Excel (.xlsx)</span>
+              <button type="button" className="softinsa-areas-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "xlsx"} onClick={() => setExportFormat("xlsx")}>
+                <span className={`softinsa-areas-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "xlsx" ? " is-active" : ""}`}></span><span>Excel (.xlsx)</span>
               </button>
-
-              <button
-                type="button"
-                className="softinsa-areas-export-option"
-                aria-pressed={exportFormat === "pdf"}
-                onClick={() => setExportFormat("pdf")}
-              >
-                <span className={`softinsa-areas-export-radio${exportFormat === "pdf" ? " is-active" : ""}`}></span>
-                <span>PDF (.pdf)</span>
+              <button type="button" className="softinsa-areas-export-option d-inline-flex align-items-center" aria-pressed={exportFormat === "pdf"} onClick={() => setExportFormat("pdf")}>
+                <span className={`softinsa-areas-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "pdf" ? " is-active" : ""}`}></span><span>PDF (.pdf)</span>
               </button>
             </div>
-
-            <div className="softinsa-areas-export-alert-actions">
-              <button type="button" className="softinsa-areas-export-cancel" onClick={handleCloseExportAlert}>
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className={`softinsa-areas-export-confirm${!exportFormat ? " is-disabled" : ""}`}
-                onClick={handleConfirmExport}
-                disabled={!exportFormat}
-              >
-                Exportar
-              </button>
+            <div className="softinsa-areas-export-alert-actions d-inline-flex align-items-center justify-content-end">
+              <button type="button" className="softinsa-areas-export-cancel" onClick={handleCloseExportAlert}>Cancelar</button>
+              <button type="button" className={`softinsa-areas-export-confirm${!exportFormat ? " is-disabled" : ""}`} onClick={handleConfirmExport} disabled={!exportFormat}>Exportar</button>
             </div>
           </div>
         </div>
       ) : null}
 
       {isModalOpen ? (
-        <div className="softinsa-areas-modal-backdrop" role="presentation" onClick={handleCloseModal}>
-          <div
-            className="softinsa-areas-modal"
-            data-node-id="3983:4909"
-            role="dialog"
-            aria-label={isEditMode ? "Editar Área" : "Adicionar Área"}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="softinsa-areas-modal-header">
+        <div className="softinsa-areas-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseModal}>
+          <div className="softinsa-areas-modal" data-node-id="3983:4909" role="dialog" aria-label={isEditMode ? "Editar Área" : "Adicionar Área"} onClick={(e) => e.stopPropagation()}>
+            <div className="softinsa-areas-modal-header d-flex align-items-center justify-content-between">
               <h2>{isEditMode ? "Editar Área" : "Adicionar Área"}</h2>
-              <button
-                type="button"
-                className="softinsa-areas-modal-close"
-                aria-label="Fechar modal"
-                onClick={handleCloseModal}
-              >
-                <CloseIcon />
-              </button>
+              <button type="button" className="softinsa-areas-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
             </div>
-
-            <form className="softinsa-areas-modal-form" onSubmit={handleSubmitArea}>
-              <div className="softinsa-areas-modal-field">
+            <form className="softinsa-areas-modal-form d-flex flex-column" onSubmit={handleSubmitArea}>
+              <div className="softinsa-areas-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-area-name">Nome:</label>
-                <input
-                  id="softinsa-area-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(event) => handleFieldChange("name", event.target.value)}
-                  required
-                />
+                <input id="softinsa-area-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
               </div>
-
-              <div className="softinsa-areas-modal-field">
+              <div className="softinsa-areas-modal-field d-flex flex-column">
                 <label htmlFor="softinsa-area-description">Descrição:</label>
-                <textarea
-                  id="softinsa-area-description"
-                  value={formData.description}
-                  onChange={(event) => handleFieldChange("description", event.target.value)}
-                ></textarea>
+                <textarea id="softinsa-area-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
               </div>
-
-              <div className="softinsa-areas-modal-row-top">
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select
-                      id="softinsa-area-learning-path"
-                      value={formData.learningPath}
-                      onChange={(event) => handleFieldChange("learningPath", event.target.value)}
-                    >
-                      {learningPathOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+              <Row className="g-3 align-items-end">
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-learning-path">Learning Path Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                        {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select
-                      id="softinsa-area-service-line"
-                      value={formData.serviceLine}
-                      onChange={(event) => handleFieldChange("serviceLine", event.target.value)}
-                    >
-                      {serviceLineOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-service-line">Service Line Associada</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-service-line" className="w-100" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
+                        {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-
-                <div className="softinsa-areas-modal-field">
-                  <label htmlFor="softinsa-area-status">Estado</label>
-                  <div className="softinsa-areas-select-wrap">
-                    <select
-                      id="softinsa-area-status"
-                      value={formData.status}
-                      onChange={(event) => handleFieldChange("status", event.target.value)}
-                    >
-                      <option value="" disabled>
-                        Ativo/Inativo
-                      </option>
-                      {statusOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <SelectArrowIcon />
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-area-status">Estado</label>
+                    <div className="softinsa-areas-select-wrap">
+                      <select id="softinsa-area-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                        <option value="" disabled>Ativo/Inativo</option>
+                        {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                      <SelectArrowIcon />
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="softinsa-areas-modal-row-bottom">
-                <div className="softinsa-areas-modal-field">
-                  <label>Icon</label>
-                  <FileSelector
-                    fileName={formData.iconFileName}
-                    onChange={handleIconFileChange}
-                    ariaLabel="Selecionar icon da área"
-                  />
-                </div>
-
-                <button type="submit" className="softinsa-areas-modal-submit">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
+                </Col>
+              </Row>
+              <Row className="g-3 align-items-end w-100">
+                <Col xs={12} md>
+                  <div className="softinsa-areas-modal-field d-flex flex-column">
+                    <label>Icon</label>
+                    <FileSelector fileName={formData.iconFileName} onChange={handleIconFileChange} ariaLabel="Selecionar icon da área" />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Pré-visualização"
+                        style={{ display: "block", marginTop: 8, maxHeight: 64, maxWidth: 64, objectFit: "contain" }}
+                      />
+                    ) : null}
+                  </div>
+                </Col>
+                <Col xs={12} md="auto">
+                  <button type="submit" className="softinsa-areas-modal-submit">
+                    {isEditMode ? "Editar" : "Adicionar"}
+                  </button>
+                </Col>
+              </Row>
             </form>
           </div>
         </div>

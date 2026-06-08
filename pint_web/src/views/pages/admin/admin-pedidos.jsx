@@ -1,56 +1,44 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import "./admin-pedidos.css";
 
-const avatarSandra = "https://www.figma.com/api/mcp/asset/eef19c31-db00-4d74-85dc-d085428605e0";
-const avatarRoberto = "https://www.figma.com/api/mcp/asset/00c16de0-285c-4465-9b98-b4ca975f24ef";
-const avatarMarco = "https://www.figma.com/api/mcp/asset/41c01127-a083-4369-963c-807d918aaa51";
+import { getPedidos, slReview } from '../../../controllers/pedidosController'
 
-const badgeBlue = "https://www.figma.com/api/mcp/asset/5904283b-c214-48c9-8034-90e4a0f40d66";
-const badgeRed = "https://www.figma.com/api/mcp/asset/a7a7aafa-380d-4401-888c-1ea03a8b56a6";
-const badgeGreen = "https://www.figma.com/api/mcp/asset/191cb264-3009-4c1a-a1dc-11f6b438a224";
 
-// TODO: Replace all mock data and filter options with API data (pedidos, badges, and statuses).
-const pedidosRows = [
-  {
-    id: 1,
-    consultor: "Sandra Mendes",
-    badgeName: "Blue Skill Badge",
-    badgeImage: badgeBlue,
-    dataAquisicao: "03/11/2026",
-    estado: "Aprovado",
-    avatar: avatarSandra,
-  },
-  {
-    id: 2,
-    consultor: "Roberto Junior",
-    badgeName: "Blue Skill Badge",
-    badgeImage: badgeBlue,
-    dataAquisicao: "-- / -- / --",
-    estado: "Rejeitado",
-    avatar: avatarRoberto,
-  },
-  {
-    id: 3,
-    consultor: "Roberto Junior",
-    badgeName: "Red Expert Badge",
-    badgeImage: badgeRed,
-    dataAquisicao: "04/11/2026",
-    estado: "Aprovado",
-    avatar: avatarRoberto,
-  },
-  {
-    id: 4,
-    consultor: "Marco Alves",
-    badgeName: "Green Impact Badge",
-    badgeImage: badgeGreen,
-    dataAquisicao: "-- / -- / --",
-    estado: "Pendente",
-    avatar: avatarMarco,
-  },
-];
+const ESTADO_LABEL = {
+  1: 'Pendente', 2: 'Pendente',
+  3: 'Devolvido', 4: 'Aprovado',
+  5: 'Rejeitado', 6: 'Devolvido',
+}
 
-const statusOptions = ["Pendente", "Aprovado", "Rejeitado"];
-const badgeOptions = ["Blue Skill Badge", "Red Expert Badge", "Green Impact Badge"];
+function resolveImage(raw) {
+  if (!raw) return null
+  if (raw.startsWith('data:') || raw.startsWith('http')) return raw
+  return `data:image/png;base64,${raw}`
+}
+
+function formatDisplayDate(dateStr) {
+  if (!dateStr) return '-- / -- / --'
+  const d = new Date(dateStr)
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+}
+
+function normalizePedidoAdmin(row) {
+  const estado = row.estado_atual ?? 1
+  const badge = row.Badge ?? {}
+  const utilizador = row.Consultore?.Utilizadore ?? {}
+  return {
+    id: row.id_pedido_badge,
+    consultor: utilizador.nome_utilizador ?? `Consultor ${row.id_consultor}`,
+    badgeName: badge.nome_badge ?? `Badge ${row.id_badge}`,
+    badgeImage: resolveImage(badge.imagem_badge),
+    dataAquisicao: estado === 4 ? formatDisplayDate(row.updatedAt) : '-- / -- / --',
+    estado: ESTADO_LABEL[estado] ?? 'Pendente',
+    avatar: resolveImage(utilizador.imagem_utilizador),
+    estado_atual: estado,
+  }
+}
+
+
 
 const getDefaultFilterDraft = () => ({
   estado: "",
@@ -119,33 +107,18 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-pedidos-icon" aria-hidden="true">
-      <path
-        d="M4 5H20L13 13V19L11 20V13L4 5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 512 512" fill="currentColor" className="softinsa-pedidos-icon" aria-hidden="true">
+      <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
     </svg>
   );
 }
 
 function ExportIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="softinsa-pedidos-icon" aria-hidden="true">
-      <path
-        d="M12 15V5M12 5L8.5 8.5M12 5L15.5 8.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 14V17C5 18.1046 5.89543 19 7 19H17C18.1046 19 19 18.1046 19 17V14"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="softinsa-pedidos-icon" aria-hidden="true">
+      <path d="M19 14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-5" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="17 10 12 5 7 10" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="12" y1="5" x2="12" y2="16" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -186,7 +159,10 @@ function RejectIcon() {
 }
 
 const SoftinsaPedidos = memo(() => {
-  const [pedidos, setPedidos] = useState(pedidosRows);
+  const [pedidos, setPedidos] = useState([])
+  const [, setIsLoading] = useState(true)
+  const [pendingReject, setPendingReject] = useState(null)
+  const [rejectMotivo, setRejectMotivo] = useState('')
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
@@ -199,9 +175,9 @@ const SoftinsaPedidos = memo(() => {
 
   const hasActiveFilters = Boolean(
     activeFilters.estado ||
-      activeFilters.badge ||
-      activeFilters.dataAquisicaoInicio ||
-      activeFilters.dataAquisicaoFim
+    activeFilters.badge ||
+    activeFilters.dataAquisicaoInicio ||
+    activeFilters.dataAquisicaoFim
   );
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
@@ -222,6 +198,26 @@ const SoftinsaPedidos = memo(() => {
   const totalPages = Math.max(1, Math.ceil(filteredPedidos.length / entriesPerPage));
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
   const paginatedPedidos = filteredPedidos.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
+
+  const statusOptions = useMemo(() => [...new Set(pedidos.map(p => p.estado))], [pedidos])
+  const badgeOptions = useMemo(() => [...new Set(pedidos.map(p => p.badgeName))], [pedidos])
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const data = await getPedidos()
+        const rows = Array.isArray(data) ? data : []
+        setPedidos(rows.map(normalizePedidoAdmin))
+      } catch (err) {
+        console.error('Erro ao carregar pedidos admin', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -361,46 +357,47 @@ const SoftinsaPedidos = memo(() => {
     setCurrentPage(page);
   };
 
-  const handleDecision = (id, nextStatus) => {
-    setPedidos((previousPedidos) =>
-      previousPedidos.map((pedido) => {
-        if (pedido.id !== id) {
-          return pedido;
-        }
-
-        const shouldSetTodayDate = pedido.dataAquisicao === "-- / -- / --" && nextStatus === "Aprovado";
-
+  async function handleDecision(id, nextStatus, motivo) {
+    const acao = nextStatus === 'Aprovado' ? 'aprovar' : 'rejeitar'
+    try {
+      await slReview(id, { acao, ...(motivo ? { motivo } : {}) })
+      setPedidos(prev => prev.map(p => {
+        if (p.id !== id) return p
         return {
-          ...pedido,
+          ...p,
           estado: nextStatus,
-          dataAquisicao: shouldSetTodayDate ? getTodayDate() : pedido.dataAquisicao,
-        };
-      })
-    );
-  };
+          dataAquisicao: nextStatus === 'Aprovado' ? getTodayDate() : p.dataAquisicao,
+        }
+      }))
+    } catch (err) {
+      console.error('Erro ao processar pedido', err)
+    }
+  }
 
   return (
     <section className="softinsa-pedidos-page" data-node-id="3969:6401">
-      <div className="softinsa-pedidos-hero" data-node-id="3969:6407">
+      <div className="softinsa-pedidos-hero d-flex flex-column justify-content-center" data-node-id="3969:6407">
         <h1>Pedidos de Badges</h1>
         <p>Visão global do estado de todos os pedidos de badges.</p>
       </div>
 
-      <div className="softinsa-pedidos-toolbar" data-node-id="4104:9711">
-        <label className="softinsa-pedidos-search" aria-label="Pesquisar pedidos">
+      <div className="softinsa-pedidos-toolbar d-flex align-items-center gap-3 flex-wrap" data-node-id="4104:9711">
+        <label className="softinsa-pedidos-search d-inline-flex align-items-center" aria-label="Pesquisar pedidos">
           <SearchIcon />
           <input
             type="text"
+            className="w-100"
             placeholder="Pesquisar por nome do consultor ,badge..."
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </label>
 
-        <div className="softinsa-pedidos-filter-wrap" ref={filterWrapRef}>
+        <div className="softinsa-pedidos-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
+        <div className="softinsa-pedidos-filter-wrap d-inline-flex" ref={filterWrapRef}>
           <button
             type="button"
-            className="softinsa-pedidos-filter-btn"
+            className="softinsa-pedidos-filter-btn d-inline-flex align-items-center"
             aria-label="Abrir filtro"
             aria-expanded={isFilterOpen}
             onClick={handleToggleFilter}
@@ -410,12 +407,13 @@ const SoftinsaPedidos = memo(() => {
           </button>
 
           {isFilterOpen ? (
-            <div className="softinsa-pedidos-filter-panel" role="dialog" aria-label="Filtro de pedidos">
-              <div className="softinsa-pedidos-filter-field">
+            <div className="softinsa-pedidos-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de pedidos">
+              <div className="softinsa-pedidos-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-pedidos-filter-status">Estado</label>
                 <div className="softinsa-pedidos-select-wrap softinsa-pedidos-filter-select-wrap">
                   <select
                     id="softinsa-pedidos-filter-status"
+                    className="w-100"
                     value={filterDraft.estado}
                     onChange={(event) => handleFilterDraftChange("estado", event.target.value)}
                   >
@@ -430,11 +428,12 @@ const SoftinsaPedidos = memo(() => {
                 </div>
               </div>
 
-              <div className="softinsa-pedidos-filter-field">
+              <div className="softinsa-pedidos-filter-field d-flex flex-column">
                 <label htmlFor="softinsa-pedidos-filter-badge">Badge</label>
                 <div className="softinsa-pedidos-select-wrap softinsa-pedidos-filter-select-wrap">
                   <select
                     id="softinsa-pedidos-filter-badge"
+                    className="w-100"
                     value={filterDraft.badge}
                     onChange={(event) => handleFilterDraftChange("badge", event.target.value)}
                   >
@@ -449,9 +448,9 @@ const SoftinsaPedidos = memo(() => {
                 </div>
               </div>
 
-              <div className="softinsa-pedidos-filter-field">
+              <div className="softinsa-pedidos-filter-field d-flex flex-column">
                 <label>Data Aquisição</label>
-                <div className="softinsa-pedidos-date-range-wrap" data-node-id="4438:3212">
+                <div className="softinsa-pedidos-date-range-wrap w-100 d-inline-flex align-items-center" data-node-id="4438:3212">
                   <input
                     type="date"
                     className="softinsa-pedidos-date-input"
@@ -470,7 +469,7 @@ const SoftinsaPedidos = memo(() => {
                 </div>
               </div>
 
-              <div className="softinsa-pedidos-filter-actions">
+              <div className="softinsa-pedidos-filter-actions w-100 d-inline-flex align-items-center">
                 <button type="button" className="softinsa-pedidos-filter-clear" onClick={handleClearFilters}>
                   Limpar
                 </button>
@@ -481,9 +480,14 @@ const SoftinsaPedidos = memo(() => {
             </div>
           ) : null}
         </div>
+
+        <button type="button" className="softinsa-pedidos-export-btn d-inline-flex align-items-center" aria-label="Exportar pedidos" onClick={handleOpenExportAlert}>
+          <ExportIcon /><span>Exportar</span>
+        </button>
+        </div>
       </div>
 
-      <div className="softinsa-pedidos-table-meta" data-node-id="4123:15751">
+      <div className="softinsa-pedidos-table-meta d-inline-flex align-items-center flex-wrap" data-node-id="4123:15751">
         <span>Mostrar</span>
         <div className="softinsa-pedidos-entries-select-wrap">
           <select
@@ -509,7 +513,7 @@ const SoftinsaPedidos = memo(() => {
       </div>
 
       <div className="softinsa-pedidos-table-card" data-node-id="4433:4647">
-        <div className="softinsa-pedidos-table-scroll">
+        <div className="softinsa-pedidos-table-scroll w-100">
           <table className="softinsa-pedidos-table" role="table" aria-label="Tabela de pedidos de badges">
             <thead>
               <tr>
@@ -525,37 +529,38 @@ const SoftinsaPedidos = memo(() => {
                 paginatedPedidos.map((pedido) => (
                   <tr key={pedido.id}>
                     <td>
-                      <div className="softinsa-pedidos-name-cell">
-                        <img src={pedido.avatar} alt={pedido.consultor} className="softinsa-pedidos-avatar" />
+                      <div className="softinsa-pedidos-name-cell d-inline-flex align-items-center">
+                        <img
+                          src={pedido.avatar ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(pedido.consultor)}&size=32`}
+                          alt={pedido.consultor}
+                          className="softinsa-pedidos-avatar flex-shrink-0"
+                        />
                         <span className="softinsa-pedidos-name">{pedido.consultor}</span>
                       </div>
                     </td>
                     <td>
-                      <img src={pedido.badgeImage} alt={pedido.badgeName} className="softinsa-pedidos-badge" />
+                      {pedido.badgeImage
+                        ? <img src={pedido.badgeImage} alt={pedido.badgeName} className="softinsa-pedidos-badge" />
+                        : <span>{pedido.badgeName}</span>
+                      }
                     </td>
                     <td className="softinsa-pedidos-date">{pedido.dataAquisicao}</td>
                     <td>
-                      <span className={`softinsa-pedidos-status softinsa-pedidos-status-${pedido.estado.toLowerCase()}`}>
+                      <span className={`softinsa-pedidos-status d-inline-flex align-items-center justify-content-center softinsa-pedidos-status-${pedido.estado.toLowerCase()}`}>
                         {pedido.estado}
                       </span>
                     </td>
                     <td>
-                      {pedido.estado === "Pendente" ? (
-                        <div className="softinsa-pedidos-actions">
-                          <button
-                            type="button"
-                            className="softinsa-pedidos-action-btn is-approve"
+                      {pedido.estado !== 'Aprovado' && pedido.estado !== 'Rejeitado' ? (
+                        <div className="softinsa-pedidos-actions d-inline-flex align-items-center justify-content-center">
+                          <button type="button" className="softinsa-pedidos-action-btn d-inline-flex align-items-center justify-content-center is-approve"
                             aria-label={`Aprovar pedido de ${pedido.consultor}`}
-                            onClick={() => handleDecision(pedido.id, "Aprovado")}
-                          >
+                            onClick={() => handleDecision(pedido.id, 'Aprovado', null)}>
                             <ApproveIcon />
                           </button>
-                          <button
-                            type="button"
-                            className="softinsa-pedidos-action-btn is-reject"
+                          <button type="button" className="softinsa-pedidos-action-btn d-inline-flex align-items-center justify-content-center is-reject"
                             aria-label={`Rejeitar pedido de ${pedido.consultor}`}
-                            onClick={() => handleDecision(pedido.id, "Rejeitado")}
-                          >
+                            onClick={() => setPendingReject({ id: pedido.id })}>
                             <RejectIcon />
                           </button>
                         </div>
@@ -574,19 +579,56 @@ const SoftinsaPedidos = memo(() => {
           </table>
         </div>
 
-        <div className="softinsa-pedidos-table-footer">
-          <button
-            type="button"
-            className="softinsa-pedidos-export-btn"
-            aria-label="Exportar pedidos"
-            onClick={handleOpenExportAlert}
-          >
-            <ExportIcon />
-            <span>Exportar</span>
-          </button>
+        {pendingReject ? (
+          <div className="softinsa-pedidos-modal-backdrop d-flex align-items-start justify-content-center" role="presentation"
+            onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+            <div className="softinsa-pedidos-export-alert d-flex flex-column" role="dialog"
+              aria-label="Rejeitar pedido"
+              onClick={e => e.stopPropagation()}>
+              <div className="softinsa-pedidos-export-alert-header d-flex align-items-center justify-content-between">
+                <h3>Rejeitar Pedido</h3>
+                <button type="button" className="softinsa-pedidos-modal-close d-inline-flex align-items-center justify-content-center"
+                  aria-label="Fechar"
+                  onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+                  <CloseIcon />
+                </button>
+              </div>
+              <div className="softinsa-pedidos-export-alert-body d-flex flex-column">
+                <h4>Indicar motivo</h4>
+                <p>O motivo é obrigatório para rejeitar um pedido.</p>
+                <textarea
+                  style={{
+                    width: '100%', minHeight: 80, marginTop: 12, padding: '8px 12px',
+                    borderRadius: 6, border: '1px solid #dee2e6', fontSize: 14, resize: 'vertical'
+                  }}
+                  placeholder="Insira o motivo da rejeição..."
+                  value={rejectMotivo}
+                  onChange={e => setRejectMotivo(e.target.value)}
+                />
+              </div>
+              <div className="softinsa-pedidos-export-alert-actions d-inline-flex align-items-center justify-content-end">
+                <button type="button" className="softinsa-pedidos-export-cancel"
+                  onClick={() => { setPendingReject(null); setRejectMotivo('') }}>
+                  Cancelar
+                </button>
+                <button type="button"
+                  className={`softinsa-pedidos-export-confirm${!rejectMotivo.trim() ? ' is-disabled' : ''}`}
+                  disabled={!rejectMotivo.trim()}
+                  onClick={async () => {
+                    await handleDecision(pendingReject.id, 'Rejeitado', rejectMotivo.trim())
+                    setPendingReject(null)
+                    setRejectMotivo('')
+                  }}>
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
+        <div className="softinsa-pedidos-table-footer d-flex align-items-center justify-content-end">
           {totalPages > 1 ? (
-            <div className="softinsa-pedidos-pagination" aria-label="Paginação">
+            <div className="softinsa-pedidos-pagination d-inline-flex align-items-center" aria-label="Paginação">
               <button
                 type="button"
                 className={`softinsa-pedidos-page-link${currentPage === 1 ? " is-disabled" : ""}`}
@@ -599,7 +641,7 @@ const SoftinsaPedidos = memo(() => {
                 <button
                   key={pageNumber}
                   type="button"
-                  className={`softinsa-pedidos-page-btn${currentPage === pageNumber ? " is-active" : ""}`}
+                  className={`softinsa-pedidos-page-btn d-inline-flex align-items-center justify-content-center${currentPage === pageNumber ? " is-active" : ""}`}
                   onClick={() => handlePageSelect(pageNumber)}
                 >
                   {pageNumber}
@@ -619,18 +661,18 @@ const SoftinsaPedidos = memo(() => {
       </div>
 
       {isExportAlertOpen ? (
-        <div className="softinsa-pedidos-modal-backdrop" role="presentation" onClick={handleCloseExportAlert}>
+        <div className="softinsa-pedidos-modal-backdrop d-flex align-items-start justify-content-center" role="presentation" onClick={handleCloseExportAlert}>
           <div
-            className="softinsa-pedidos-export-alert"
+            className="softinsa-pedidos-export-alert d-flex flex-column"
             role="dialog"
             aria-label="Alerta Exportar"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="softinsa-pedidos-export-alert-header">
+            <div className="softinsa-pedidos-export-alert-header d-flex align-items-center justify-content-between">
               <h3>Alerta</h3>
               <button
                 type="button"
-                className="softinsa-pedidos-modal-close"
+                className="softinsa-pedidos-modal-close d-inline-flex align-items-center justify-content-center"
                 aria-label="Fechar alerta"
                 onClick={handleCloseExportAlert}
               >
@@ -638,32 +680,32 @@ const SoftinsaPedidos = memo(() => {
               </button>
             </div>
 
-            <div className="softinsa-pedidos-export-alert-body">
+            <div className="softinsa-pedidos-export-alert-body d-flex flex-column">
               <h4>Exportar Listagem</h4>
               <p>Qual é o Formato que pretende Exportar?</p>
 
               <button
                 type="button"
-                className="softinsa-pedidos-export-option"
+                className="softinsa-pedidos-export-option d-inline-flex align-items-center"
                 aria-pressed={exportFormat === "xlsx"}
                 onClick={() => setExportFormat("xlsx")}
               >
-                <span className={`softinsa-pedidos-export-radio${exportFormat === "xlsx" ? " is-active" : ""}`}></span>
+                <span className={`softinsa-pedidos-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "xlsx" ? " is-active" : ""}`}></span>
                 <span>Excel (.xlsx)</span>
               </button>
 
               <button
                 type="button"
-                className="softinsa-pedidos-export-option"
+                className="softinsa-pedidos-export-option d-inline-flex align-items-center"
                 aria-pressed={exportFormat === "pdf"}
                 onClick={() => setExportFormat("pdf")}
               >
-                <span className={`softinsa-pedidos-export-radio${exportFormat === "pdf" ? " is-active" : ""}`}></span>
+                <span className={`softinsa-pedidos-export-radio d-inline-flex align-items-center justify-content-center rounded-circle${exportFormat === "pdf" ? " is-active" : ""}`}></span>
                 <span>PDF (.pdf)</span>
               </button>
             </div>
 
-            <div className="softinsa-pedidos-export-alert-actions">
+            <div className="softinsa-pedidos-export-alert-actions d-inline-flex align-items-center justify-content-end">
               <button type="button" className="softinsa-pedidos-export-cancel" onClick={handleCloseExportAlert}>
                 Cancelar
               </button>
