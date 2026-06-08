@@ -12,7 +12,6 @@
   flex-shrink: 0;
   flex-wrap: nowrap;
   box-sizing: border-box;
-  z-index: 20;
 }
 
 .softinsa-shell-topbar-search {
@@ -90,10 +89,12 @@
 }
 
 .softinsa-shell-notification-panel {
-  position: absolute;
-  top: calc(100% + 12px);
-  right: 0;
-  width: min(598px, calc(100vw - 32px));
+  position: fixed;
+  top: 88px;
+  right: 12px;
+  left: auto;
+  width: calc(100vw - 24px);
+  max-width: 598px;
   max-height: min(70vh, 560px);
   overflow-y: auto;
   background: #ffffff;
@@ -101,7 +102,8 @@
   border-radius: 8px;
   box-shadow: 0 10px 13px rgba(17, 38, 146, 0.05);
   padding: 20px 24px;
-  z-index: 60;
+  z-index: 99999;
+  box-sizing: border-box;
 }
 
 .softinsa-shell-notification-panel-header {
@@ -468,13 +470,7 @@
     display: none;
   }
 
-  .softinsa-shell-notification-panel {
-    width: min(598px, calc(100vw - 20px));
-    padding: 16px;
-    right: -4px;
-  }
-
-  .softinsa-shell-profile-panel {
+.softinsa-shell-profile-panel {
     width: min(263px, calc(100vw - 20px));
     padding: 16px;
     right: -4px;
