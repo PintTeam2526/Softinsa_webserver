@@ -54,6 +54,22 @@ function WelcomeView() {
             Iniciar sessão
           </a>
         </div>
+
+        <a
+          href="https://softinsa.pt/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="welcome-btn-softinsa"
+          aria-label="Visitar o site da Softinsa"
+        >
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="welcome-btn-softinsa-ext">
+            <path d="M6.5 9.5a4.243 4.243 0 0 0 6 0l2-2a4.243 4.243 0 0 0-6-6L7.5 2.5M9.5 6.5a4.243 4.243 0 0 0-6 0l-2 2a4.243 4.243 0 0 0 6 6l1-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>softinsa.pt</span>
+          <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" className="welcome-btn-softinsa-ext">
+            <path d="M2 10L10 2M10 2H5M10 2v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </a>
       </div>
 
     </div>
