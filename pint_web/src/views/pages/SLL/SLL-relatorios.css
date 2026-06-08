@@ -293,6 +293,9 @@
   cursor: pointer;
   box-shadow: 0 2px 2px rgba(58, 87, 232, 0.3);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 

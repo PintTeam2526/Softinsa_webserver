@@ -301,56 +301,60 @@ function DashboardView() {
       </div>
 
       <Card className="softinsa-chart-card mb-4">
-        <Card.Header className="softinsa-chart-card-header softinsa-primary-chart-header">
+        <Card.Header className="softinsa-chart-card-header d-flex justify-content-between align-items-center gap-3 flex-wrap flex-lg-nowrap">
           <h5 className="mb-0">Badges Obtidos</h5>
-          <Dropdown className="softinsa-primary-chart-year-dropdown">
-            <Dropdown.Toggle variant="link" id="softinsa-badges-year-dropdown" className="softinsa-badges-dropdown-toggle">
-              {selectedPrimaryYear}
-            </Dropdown.Toggle>
-            <Dropdown.Menu align="end" className="softinsa-primary-chart-year-dropdown-menu">
-              {badgesChartYearOptions.map((year) => (
-                <Dropdown.Item
-                  key={year}
-                  active={year === selectedPrimaryYear}
-                  onClick={() => setSelectedPrimaryYear(year)}
-                >
-                  {year}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
+
+          <div className="softinsa-primary-chart-controls d-flex align-items-center gap-2 flex-wrap justify-content-end">
+            <div className="softinsa-primary-chart-periods d-flex align-items-center gap-2 flex-wrap" aria-label="Periodo do gráfico">
+              <Dropdown className="softinsa-primary-chart-period-dropdown d-inline-flex flex-shrink-0">
+                <Dropdown.Toggle variant="link" id="softinsa-primary-chart-period-start" className={`softinsa-primary-chart-period-box softinsa-primary-chart-period-toggle${selectedMonthStart ? '' : ' softinsa-primary-chart-period-placeholder'}`}>
+                  {selectedMonthStart ?? 'Mês Inicial'}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="softinsa-primary-chart-period-menu">
+                  {badgesChartMonthOptions.map((month) => (
+                    <Dropdown.Item key={month} active={month === selectedMonthStart} onClick={() => setSelectedMonthStart(month)}>
+                      {month}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+              <div className="softinsa-primary-chart-period-label d-flex align-items-center flex-shrink-0">até</div>
+              <Dropdown className="softinsa-primary-chart-period-dropdown d-inline-flex flex-shrink-0">
+                <Dropdown.Toggle variant="link" id="softinsa-primary-chart-period-end" className={`softinsa-primary-chart-period-box softinsa-primary-chart-period-toggle${selectedMonthEnd ? '' : ' softinsa-primary-chart-period-placeholder'}`}>
+                  {selectedMonthEnd ?? 'Mês Final'}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="softinsa-primary-chart-period-menu">
+                  {badgesChartMonthOptions.map((month) => (
+                    <Dropdown.Item key={month} active={month === selectedMonthEnd} onClick={() => setSelectedMonthEnd(month)}>
+                      {month}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+
+            <Dropdown className="softinsa-primary-chart-year-dropdown d-inline-flex flex-shrink-0">
+              <Dropdown.Toggle variant="link" id="softinsa-primary-chart-year-dropdown" className="softinsa-primary-chart-year-dropdown-toggle">
+                {selectedPrimaryYear}
+              </Dropdown.Toggle>
+              <Dropdown.Menu align="end" className="softinsa-primary-chart-year-dropdown-menu">
+                {badgesChartYearOptions.map((year) => (
+                  <Dropdown.Item
+                    key={year}
+                    active={year === selectedPrimaryYear}
+                    onClick={() => setSelectedPrimaryYear(year)}
+                  >
+                    {year}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
         </Card.Header>
 
         <Card.Body className="softinsa-primary-chart-body">
           <div className="softinsa-primary-chart-chart-wrap">
             <Chart options={filteredPrimaryChartOptions} series={filteredPrimaryChartSeries} type="area" height={300} />
-          </div>
-          <div className="softinsa-primary-chart-periods" aria-label="Periodo do gráfico">
-            <Dropdown className="softinsa-primary-chart-period-dropdown">
-              <Dropdown.Toggle variant="link" id="softinsa-primary-chart-period-start" className={`softinsa-primary-chart-period-box softinsa-primary-chart-period-toggle${selectedMonthStart ? '' : ' softinsa-primary-chart-period-placeholder'}`}>
-                {selectedMonthStart ?? 'Mês Inicial'}
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="softinsa-primary-chart-period-menu">
-                {badgesChartMonthOptions.map((month) => (
-                  <Dropdown.Item key={month} active={month === selectedMonthStart} onClick={() => setSelectedMonthStart(month)}>
-                    {month}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            <div className="softinsa-primary-chart-period-label">até</div>
-            <Dropdown className="softinsa-primary-chart-period-dropdown">
-              <Dropdown.Toggle variant="link" id="softinsa-primary-chart-period-end" className={`softinsa-primary-chart-period-box softinsa-primary-chart-period-toggle${selectedMonthEnd ? '' : ' softinsa-primary-chart-period-placeholder'}`}>
-                {selectedMonthEnd ?? 'Mês Final'}
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="softinsa-primary-chart-period-menu">
-                {badgesChartMonthOptions.map((month) => (
-                  <Dropdown.Item key={month} active={month === selectedMonthEnd} onClick={() => setSelectedMonthEnd(month)}>
-                    {month}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
           </div>
         </Card.Body>
       </Card>

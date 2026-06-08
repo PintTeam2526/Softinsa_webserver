@@ -197,8 +197,8 @@ function SLLCertificadosView() {
             </div>
           </section>
 
-          <Row as="section" className="g-4" aria-label="Configuração do certificado">
-            <Col xs={12} lg={4}>
+          <Row as="section" className="g-3 align-items-start" aria-label="Configuração do certificado">
+            <Col xs={12}>
             <article className="sll-certificates-form-card">
               <h2>Selecionar Dados</h2>
 
@@ -251,7 +251,7 @@ function SLLCertificadosView() {
             </article>
             </Col>
 
-            <Col xs={12} lg={8}>
+            <Col xs={12}>
             <article className="sll-certificates-preview-card">
               <h2>Pre-visualização</h2>
 

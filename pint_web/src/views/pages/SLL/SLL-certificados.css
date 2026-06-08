@@ -119,6 +119,10 @@
 
 .sll-certificates-form-card {
   padding: 22px 18px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .sll-certificates-form-card h2,
@@ -128,6 +132,26 @@
   font-size: 20px;
   line-height: 1.4;
   font-weight: 700;
+}
+
+.sll-certificates-form-card h2 {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.sll-certificates-form-card .sll-certificates-field {
+  margin-bottom: 0;
+}
+
+.sll-certificates-form-card .sll-certificates-select-wrap {
+  width: 206px;
+}
+
+.sll-certificates-form-card .sll-certificates-visualize-btn,
+.sll-certificates-form-card .sll-certificates-download-btn {
+  width: auto;
+  height: 44px;
+  margin-top: 0;
 }
 
 .sll-certificates-field {
