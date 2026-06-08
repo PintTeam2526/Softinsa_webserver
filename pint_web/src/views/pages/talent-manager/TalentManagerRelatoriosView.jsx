@@ -8,8 +8,6 @@ import { getAreas } from '../../../controllers/areasController'
 import { getRelatorio } from '../../../controllers/gestaoController'
 
 
-const calendarIcon = 'https://www.figma.com/api/mcp/asset/3d4c9dd9-6d87-4575-baf8-e93232ba25fd'
-const selectArrow = 'https://www.figma.com/api/mcp/asset/3ccd3cf8-7fc5-47f6-9509-a387af5d81f7'
 
 
 function InfoIcon() {
@@ -46,18 +44,6 @@ const summaryCards = [
   { label: 'Badges Aprovados', key: 'approved' },
   { label: 'Badges Rejeitados', key: 'rejected' },
   { label: 'Taxa de Aprovação', key: 'approvalRate' },
-]
-
-const areaChartLabels = [
-  { tone: 'is-dark', className: 'is-top-right' },
-  { tone: 'is-medium', className: 'is-left' },
-  { tone: 'is-light', className: 'is-bottom-right' },
-]
-
-const levelChartLabels = [
-  { tone: 'is-dark', className: 'is-top-right' },
-  { tone: 'is-medium', className: 'is-left' },
-  { tone: 'is-light', className: 'is-bottom-right' },
 ]
 
 const PIE_COLORS = ['#1E3A5F', '#39639C', '#7A9CCD', '#5B8DB8', '#A8C4E0']
@@ -322,20 +308,6 @@ function TalentManagerRelatoriosView() {
     rejected: reportData?.resumo?.badges_rejeitados ?? 0,
     approvalRate: `${reportData?.resumo?.taxa_aprovacao ?? 0}%`,
   }
-
-  const areaLabels =
-    reportData?.distribuicao_por_area?.map((item, i) => ({
-      text: `${item.nome} ${item.percentagem}%`,
-      tone: areaChartLabels[i % areaChartLabels.length].tone,
-      className: areaChartLabels[i % areaChartLabels.length].className,
-    })) ?? []
-
-  const levelLabels =
-    reportData?.distribuicao_por_nivel?.map((item, i) => ({
-      text: `${item.nome} ${item.percentagem}%`,
-      tone: levelChartLabels[i % levelChartLabels.length].tone,
-      className: levelChartLabels[i % levelChartLabels.length].className,
-    })) ?? []
 
   const reportRows = reportData?.detalhes ?? []
 

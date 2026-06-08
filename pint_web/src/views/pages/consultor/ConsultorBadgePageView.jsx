@@ -66,7 +66,7 @@ function normalizeBadge(raw, requisitosRaw = [], resolved = {}) {
     },
     requisitos: requisitosRaw.length > 0
       ? requisitosRaw.map(normalizeRequisito)
-      : REQUISITOS_PLACEHOLDER,
+      : [],
   }
 }
 
@@ -147,13 +147,6 @@ function ShareModal({ badge, onClose }) {
   }, [onClose])
 
   const badgeUrl = `${window.location.origin}/badges/${badge.id}`
-
-  function handleEmailExport() {
-    const s = encodeURIComponent(`Badge Softinsa: ${badge.name}`)
-    const b = encodeURIComponent(`Olá,\n\nQuero partilhar o meu badge "${badge.name}" — ${badge.level}.\n\n${badgeUrl}`)
-    window.location.href = `mailto:?subject=${s}&body=${b}`
-    onClose()
-  }
 
   function handleLinkedInPublish() {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(badgeUrl)}`, '_blank', 'noopener,noreferrer')

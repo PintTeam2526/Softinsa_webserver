@@ -141,7 +141,7 @@ function ConsultorObjetivosView() {
   const [objetivos, setObjetivos] = useState([])
   const [badges, setBadges] = useState([])
   const [loadingObjetivos, setLoadingObjetivos] = useState(true)
-  const [loadingBadges, setLoadingBadges] = useState(true)
+  const [, setLoadingBadges] = useState(true)
 
   // ── formulário ──
   const [searchTerm, setSearchTerm] = useState('')

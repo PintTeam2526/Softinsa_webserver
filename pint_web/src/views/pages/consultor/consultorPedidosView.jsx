@@ -307,7 +307,7 @@ function ConsultorPedidosView() {
     return filtered.slice(0, 3)
   }, [searchTerm, sugestoes])
 
-  function goToBadge(id, name) {
+  function goToBadge(id) {
     navigate(`/consultor/badge/${id}`)
   }
 

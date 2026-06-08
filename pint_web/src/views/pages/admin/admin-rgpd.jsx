@@ -53,7 +53,7 @@ const SoftinsaRgpd = memo(() => {
         const text = data?.politica ?? "";
         setPolicyText(text);
         setSavedPolicyText(text);
-      } catch (error) {
+      } catch {
         setSaveStatus("Não foi possível carregar a política.");
       } finally {
         setIsLoading(false);

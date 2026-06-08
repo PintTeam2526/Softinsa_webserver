@@ -213,7 +213,7 @@ function ConsultorDefinicoesView() {
         setAreaDraft(consultorData?.id_area ?? '')
         setAvatarDraft(consultorData?.foto ?? '')
         setRgpdPolitica(rgpdData?.politica ?? '')
-      } catch (err) {
+      } catch {
         flashFeedback('Erro ao carregar os dados do perfil.', 'error')
       } finally {
         setIsLoading(false)

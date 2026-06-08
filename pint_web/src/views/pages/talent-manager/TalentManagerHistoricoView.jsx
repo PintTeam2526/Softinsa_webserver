@@ -234,7 +234,7 @@ function mapPedido(row, areaMap, slMap, lpMap) {
 
 // ── sub-componentes (sem alterações) ─────────────────────────────────────────
 
-function HistoryBadge({ status, approvedAt, approvedDate }) {
+function HistoryBadge({ status, approvedAt }) {
   const dateText = approvedAt || ''
 
   return (
@@ -251,7 +251,7 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
     <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
       <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
         <div className="sll-history-card-avatar" aria-hidden="true">
-          <img src={request.image || requestAvatar} alt={request.title} />
+          <img src={request.image} alt={request.title} />
           <span className="sll-history-card-avatar-ring" />
         </div>
         <div className="sll-history-card-copy">

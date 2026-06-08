@@ -42,7 +42,7 @@ import TalentManagerRelatoriosView from './views/pages/talent-manager/TalentMana
 import TalentManagerDefinicoesView from './views/pages/talent-manager/TalentManagerDefinicoesView'
 
 import ConsultorDashboardView from './views/pages/consultor/consultorDashboardView'
-import ConsultorPedidosView from './views/pages/consultor/ConsultorPedidosView'
+import ConsultorPedidosView from './views/pages/consultor/consultorPedidosView'
 import ConsultorObjetivosView from './views/pages/consultor/ConsultorObjetivosView'
 import ConsultorConquistasView from './views/pages/consultor/ConsultorConquistasView'
 import ConsultorOutrasAreasView from './views/pages/consultor/ConsultorOutrasAreasView'

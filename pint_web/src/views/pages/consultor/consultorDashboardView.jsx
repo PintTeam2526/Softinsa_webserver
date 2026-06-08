@@ -59,33 +59,6 @@ function openTopbarNotifications() {
   window.dispatchEvent(new CustomEvent('consultor:open-notifications'))
 }
 
-function buildAlertCards(navigate) {
-  return [
-    {
-      type: 'is-message',
-      Icon: IconAlertBell,
-      title: 'Tem mensagens por ler',
-      subtitle: 'Acede agora às notificações, para ver mais',
-      onClick: openTopbarNotifications,
-    },
-    {
-      type: 'is-objective',
-      Icon: IconAlertTarget,
-      title: 'Objetivos Por Completar',
-      subtitleHighlight: '3 dias',
-      subtitle: 'até o próximo objetivo expirar',
-      onClick: () => navigate('/consultor/badges/objetivos'),
-    },
-    {
-      type: 'is-points',
-      Icon: IconAlertSparkle,
-      title: 'Pontuação total',
-      subtitle: 'Não pares por aqui, candidata-te a mais badges',
-      value: '550',
-    },
-  ]
-}
-
 function DonutChart({ percent }) {
   const centerX = 35
   const centerY = 36
