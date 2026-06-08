@@ -9,6 +9,7 @@ const HistoricoPedidos = require('../models/HistoricoPedidos.models');
 const Documentacoes = require('../models/Documentacoes.models');
 const NotificacoesPedidos = require('../models/Notificacoes.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
+const firebase = require('../services/firebase.service');
 
 const controllers = {};
 
@@ -148,12 +149,13 @@ controllers.candidatarBadge = async (req, res) => {
         // 6. Criar notificação
         await NotificacoesPedidos.create({
             id_consultor: idConsultor,
-            id_pedido_badge: pedido.id_pedido_badge,
-            justificacao: 'Candidatura submetida via mobile. Aguarda validação.',
-            data_envio_notificacao: new Date()
+            notificacao: 'Candidatura Submetida',
+            descricao: 'A tua candidatura ao badge foi submetida e aguarda validação.',
+            remetente: 'Sistema de Badges',
+            data_de_envio: new Date()
         }, { transaction });
-
         await transaction.commit();
+        firebase.notificarSync('pedidosBadge');
         res.status(200).json({ success: true, message: "Candidatura submetida com sucesso" });
 
     } catch (err) {

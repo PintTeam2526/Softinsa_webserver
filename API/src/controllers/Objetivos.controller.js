@@ -4,6 +4,7 @@ const Objetivos = require('../models/Objetivos.models');
 const Badges = require('../models/Badges.models');
 const Areas = require('../models/Areas.models');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
+const firebase = require('../services/firebase.service');
 
 const controllers = {};
 
@@ -122,7 +123,7 @@ controllers.criarObjetivoConsultorMobile = async (req, res) => {
       data_conclusao_objetivo: null, // Definido como null como no SQL original
       estado_objetivo: 'Por Concluir' // Campo obrigatório no seu modelo Sequelize
     });
-
+    await firebase.notificarSync('objetivos'); //tabela que esta na bd local
     return res.status(200).json({
       success: true,
       message: 'Objetivo adicionado com sucesso.'
@@ -261,7 +262,7 @@ controllers.criarObjetivoConsultor = async (req, res) => {
       data_conclusao_objetivo: null,
       estado_objetivo: 'Por Concluir'
     });
-
+    await firebase.notificarSync('objetivos'); //tabela que esta na bd local
     return res.status(201).json({ mensagem: 'Objetivo criado com sucesso.' });
 
   } catch (err) {

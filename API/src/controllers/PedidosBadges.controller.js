@@ -3,6 +3,7 @@ const sequelize = require("../../database");
 const Pedidos = require("../models/PedidosBadges.models");
 const HistoricoPedidos = require("../models/HistoricoPedidos.models");
 const BadgesConcluidos = require("../models/BadgesConcluidos.models");
+const Notificacoes = require("../models/Notificacoes.models");
 const TalentManager = require("../models/TalentManagers.models");
 const Badges = require("../models/Badges.models");
 const Area = require("../models/Areas.models");
@@ -14,6 +15,8 @@ const DocumentacaoTemporaria = require("../models/DocumentacaoTemporaria.models"
 const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
 const Objetivos = require('../models/Objetivos.models');
+const firebase = require('../services/firebase.service');
+
 const NotificacoesPedidos = require('../models/Notificacoes.models');
 const controllers = {};
 
@@ -54,19 +57,14 @@ async function criarHistorico(
   });
 }
 
-async function criarNotificacao(
-  idConsultor,
-  notificacao,
-  descricao = null,
-  remetente = "Sistema"
-) {
-  await NotificacoesPedidos.create({
-    id_consultor: idConsultor,
-    notificacao,
-    descricao,
-    remetente,
-    data_de_envio: new Date(),
-  });
+async function criarNotificacao(idConsultor, texto, descricao, remetente) {
+    await Notificacoes.create({
+        id_consultor: idConsultor,
+        notificacao: texto,
+        descricao: descricao || null,
+        remetente: remetente,
+        data_de_envio: new Date()
+    });
 }
 
 async function escolherTalentManager() {
@@ -356,7 +354,7 @@ controllers.tmReview = async (req, res) => {
       }
       estado = 3;
       mensagemHistorico = "Devolvido pelo Talent Manager";
-      mensagemNotificacao = "Pedido devolvido pelo Talent Manager.";
+      mensagemNotificacao = motivo;
       mensagemResposta = "Pedido devolvido";
     } else {
       return res.status(400).json({
@@ -373,14 +371,15 @@ controllers.tmReview = async (req, res) => {
       req.user.id,
       acao !== "aprovar" ? motivo : null,
     );
-
     await criarNotificacao(
-      pedido.id_consultor,
-      mensagemNotificacao,
-      `Pedido #${pedido.id_pedido_badge}`,
-      "Talent Manager"
-    );
+    pedido.id_consultor,
+    mensagemNotificacao,
+    acao === "devolver" ? motivo : "O teu pedido foi aprovado pelo Talent Manager e segue para avaliação final.",
+    "Talent Manager"
+);
 
+    //basta dar sync a tabela dos pedidos no mobile
+    firebase.notificarSync('pedidosBadge');
     return res.status(200).json({
       mensagem: mensagemResposta,
     });
@@ -450,13 +449,13 @@ controllers.slReview = async (req, res) => {
       devolver: {
         estado: 6,
         historico: "Devolvido pelo Service Line Líder",
-        notificacao: "Pedido devolvido pelo Service Line Líder.",
+        notificacao: motivo,
         resposta: "Pedido devolvido",
       },
       rejeitar: {
         estado: 5,
         historico: "Pedido rejeitado",
-        notificacao: "Pedido rejeitado.",
+        notificacao: motivo,
         resposta: "Pedido rejeitado",
       },
     };
@@ -513,9 +512,15 @@ controllers.slReview = async (req, res) => {
     await criarNotificacao(
       pedido.id_consultor,
       config.notificacao,
-      `Pedido #${pedido.id_pedido_badge}`,
-      "Service Line Leader"
+      acao !== "aprovar" ? motivo : "O teu pedido foi aprovado e o badge foi atribuído com sucesso.",
+      "Service Line Líder"
     );
+
+    firebase.notificarSync('historicoPedidos', pedido.id_consultor);
+    firebase.notificarSync('badgesConcluidos', pedido.id_consultor);
+    firebase.notificarSync('pedidosBadge', pedido.id_consultor);
+    firebase.notificarSync('objetivos', pedido.id_consultor);
+    //firebase sync notificacoes
 
     return res.status(200).json({
       mensagem: config.resposta,

@@ -4,6 +4,8 @@ const Areas = require('../models/Areas.models');
 const Badges = require('../models/Badges.models');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const firebase = require('../services/firebase.service');
+const { notificarEstado } = require('../services/notificacoes.service');
 
 const controllers = {};
 
@@ -110,6 +112,9 @@ controllers.createServiceLine = async (req, res) => {
             data_insercao: new Date().toISOString().split('T')[0] // DATA ATUAL
         });
 
+        // Depois de gravar com sucesso
+        await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
+
         return res.status(201).json({
             mensagem: "Service Line criada com sucesso"
         });
@@ -148,6 +153,7 @@ controllers.deleteServiceLineById = async (req, res) => {
         resultado.estado_a_i = false;
 
         await resultado.save();
+        await notificarEstado(resultado.nome_service_line, "Service Line", false);
 
         const areas = await Areas.findAll({ where: { id_service_line: id } });
         const areaIds = areas.map(a => a.id_area);
@@ -157,6 +163,7 @@ controllers.deleteServiceLineById = async (req, res) => {
             await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
         }
 
+        await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Service Line eliminada com sucesso"
         });
@@ -223,6 +230,9 @@ controllers.updateServiceLineById = async (req, res) => {
         serviceLine.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 
         await serviceLine.save();
+        if (estado_a_i !== undefined && estado_a_i !== serviceLine.estado_a_i) {
+            await notificarEstado(serviceLine.nome_service_line, "Service Line", estado_a_i);
+        }
 
         if (estado_a_i === false) {
             const areas = await Areas.findAll({ where: { id_service_line: id } });
@@ -233,7 +243,7 @@ controllers.updateServiceLineById = async (req, res) => {
                 await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
             }
         }
-
+        await firebase.notificarSync('serviceLines'); //tabela que esta na bd local
         return res.status(200).json({
             mensagem: "Service Line atualizada com sucesso",
             dados: serviceLine
@@ -251,81 +261,80 @@ controllers.updateServiceLineById = async (req, res) => {
 
 
 controllers.getAllServiceLinesMobile = async (req, res) => {
-  try { 
-    const resultado = await ServiceLines.findAll({
-      include: [
-        {
-          model: LearningPaths,
-          attributes: [
-            'id_learning_path',
-            'nome_learning_path'
-          ]
-        }
-      ]
-    });
-    console.log(JSON.stringify(resultado, null, 2));
-    
-    const resposta = resultado.map(item => ({
-      ID_SERVICELINE: item.id_service_line,
-      ID_LEARNINGPATH: item.LearningPath.id_learning_path,
-      NOME_SERVICELINE: item.nome_service_line,
-      DESCRICAO_SERVICELINE: item.descricao_service_line,
-      IMAGEM_SERVICE_LINE: item.imagem_service_line,
-      ESTADO_A_I_: item.estado_a_i,
-      NOME_LP_PAI: item.LearningPath.nome_learning_path,
-      DATA_INSERCAO: item.data_insercao
-    }));
+    try {
+        const resultado = await ServiceLines.findAll({
+            include: [
+                {
+                    model: LearningPaths,
+                    attributes: [
+                        'id_learning_path',
+                        'nome_learning_path'
+                    ]
+                }
+            ]
+        });
+        console.log(JSON.stringify(resultado, null, 2));
 
-    res.json(resposta);
+        const resposta = resultado.map(item => ({
+            ID_SERVICELINE: item.id_service_line,
+            ID_LEARNINGPATH: item.LearningPath.id_learning_path,
+            NOME_SERVICELINE: item.nome_service_line,
+            DESCRICAO_SERVICELINE: item.descricao_service_line,
+            IMAGEM_SERVICE_LINE: item.imagem_service_line,
+            ESTADO_A_I_: item.estado_a_i,
+            NOME_LP_PAI: item.LearningPath.nome_learning_path,
+            DATA_INSERCAO: item.data_insercao
+        }));
 
-  } catch (error) {
-    return res.status(500).json({
-        mensagem: "Erro ao ir buscar todas as SL",
-        erro: error.message
-    });
-  }
+        res.json(resposta);
+
+    } catch (error) {
+        return res.status(500).json({
+            mensagem: "Erro ao ir buscar todas as SL",
+            erro: error.message
+        });
+    }
 }
 
 controllers.getServiceLineByIdMobile = async (req, res) => {
-  const { id } = req.params;
-  if (!id)
-  {
-    return res.status(500).send("Tens de enviar o id da Service Line pelo url");
-  }
-
-  try { 
-    const response = await ServiceLines.findOne({
-      where: { id_service_line: id },
-      include: [
-        {
-          model: LearningPaths,
-          attributes: [
-            'id_learning_path',
-            'nome_learning_path'
-          ]
-        }
-      ]
-    });
-
-    const result = {
-      ID_SERVICELINE: response.id_service_line,
-      ID_LEARNINGPATH: response.LearningPath.id_learning_path,
-      NOME_SERVICELINE: response.nome_service_line,
-      DESCRICAO_SERVICELINE: response.descricao_service_line,
-      IMAGEM_SERVICE_LINE: response.imagem_service_line,
-      ESTADO_A_I_: response.estado_a_i,
-      NOME_LP_PAI: response.LearningPath.nome_learning_path,
-      DATA_INSERCAO: response.data_insercao
+    const { id } = req.params;
+    if (!id) {
+        return res.status(500).send("Tens de enviar o id da Service Line pelo url");
     }
-    
-    return res.json([result]);
-    
-  } catch {
-    return res.status(500).json({
-        mensagem: "Erro ao ir buscar a SL",
-        erro: error.message
-    });
-  }
+
+    try {
+        const response = await ServiceLines.findOne({
+            where: { id_service_line: id },
+            include: [
+                {
+                    model: LearningPaths,
+                    attributes: [
+                        'id_learning_path',
+                        'nome_learning_path'
+                    ]
+                }
+            ]
+        });
+
+        const result = {
+            ID_SERVICELINE: response.id_service_line,
+            ID_LEARNINGPATH: response.LearningPath.id_learning_path,
+            NOME_SERVICELINE: response.nome_service_line,
+            DESCRICAO_SERVICELINE: response.descricao_service_line,
+            IMAGEM_SERVICE_LINE: response.imagem_service_line,
+            ESTADO_A_I_: response.estado_a_i,
+            NOME_LP_PAI: response.LearningPath.nome_learning_path,
+            DATA_INSERCAO: response.data_insercao
+        }
+
+        return res.json([result]);
+
+    } catch {
+        return res.status(500).json({
+            mensagem: "Erro ao ir buscar a SL",
+            erro: error.message
+        });
+    }
 }
 
 

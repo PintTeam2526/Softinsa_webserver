@@ -3,6 +3,8 @@ const ServiceLines = require('../models/ServiceLines.models');
 const Areas = require('../models/Areas.models');
 const Badges = require('../models/Badges.models');
 const Sequelize = require('sequelize');
+const firebase = require('../services/firebase.service');
+const { notificarEstado } = require('../services/notificacoes.service');
 const Op = Sequelize.Op;
 
 const controllers = {};
@@ -87,6 +89,8 @@ controllers.createLearningPath = async (req, res) => {
             data_insercao: new Date().toISOString().split('T')[0] // YYYY-MM-DD
         });
 
+        firebase.notificarSync('learningPaths');
+
         return res.status(201).json({
             mensagem: "Learning Path criada com sucesso"
         });
@@ -125,6 +129,7 @@ controllers.deleteLearningPathById = async (req, res) => {
         resultado.estado_a_i = false;
 
         await resultado.save();
+        await notificarEstado(resultado.nome_learning_path, "Learning Path", false);
 
         const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
         const slIds = serviceLines.map(sl => sl.id_service_line);
@@ -139,7 +144,7 @@ controllers.deleteLearningPathById = async (req, res) => {
                 await Badges.update({ estado_a_i: false }, { where: { id_area: { [Op.in]: areaIds } } });
             }
         }
-
+        firebase.notificarSync('learningPaths'); //tabela que esta na BD local do mobile
         return res.status(200).json({
             mensagem: "Learning Path eliminada com sucesso"
         });
@@ -190,6 +195,9 @@ controllers.updateLearningPathById = async (req, res) => {
         learningPath.data_insercao = new Date().toISOString().split('T')[0]; // DATA ATUAL
 
         await learningPath.save();
+        if (estado_a_i !== undefined && estado_a_i !== learningPath.estado_a_i) {
+            await notificarEstado(learningPath.nome_learning_path, "Learning Path", estado_a_i);
+        }
 
         if (estado_a_i === false) {
             const serviceLines = await ServiceLines.findAll({ where: { id_learning_path: id } });
@@ -206,7 +214,7 @@ controllers.updateLearningPathById = async (req, res) => {
                 }
             }
         }
-
+        firebase.notificarSync('learningPaths'); //tabela que esta na BD local do mobile
         return res.status(200).json({
             mensagem: "Learning Path atualizada com sucesso",
             dados: learningPath
@@ -223,59 +231,59 @@ controllers.updateLearningPathById = async (req, res) => {
 };
 
 controllers.getAllLearningPathsMobile = async (req, res) => {
-  try {
-    const resultado = await LearningPaths.findAll();
-    //como devolve varios tenho de fazer o map
-    const data = resultado.map(item => ({
-      ID_LEARNINGPATH: item.id_learning_path,
-      NOME_LEARNINGPATH: item.nome_learning_path,
-      DESCRICAO_LEARNINGPATH: item.descricao_learning_path,
-      IMAGEM_LEARNING_PATH: item.imagem_learning_path,
-      ESTADO_A_I_: item.estado_a_i,
-      DATA_INSERCAO: item.data_insercao
-    }));
+    try {
+        const resultado = await LearningPaths.findAll();
+        //como devolve varios tenho de fazer o map
+        const data = resultado.map(item => ({
+            ID_LEARNINGPATH: item.id_learning_path,
+            NOME_LEARNINGPATH: item.nome_learning_path,
+            DESCRICAO_LEARNINGPATH: item.descricao_learning_path,
+            IMAGEM_LEARNING_PATH: item.imagem_learning_path,
+            ESTADO_A_I_: item.estado_a_i,
+            DATA_INSERCAO: item.data_insercao
+        }));
 
-    res.json(data);
+        res.json(data);
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro interno no servidor" });
-  }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro interno no servidor" });
+    }
 }
 
 
 controllers.getLearningPathByIdMobile = async (req, res) => {
-  const { id } = req.params;
-  
-  if (!id) {
-    res.status(500).send("Tens de enviar o id do LP pelo url!");
-  }
-  
-  try { 
-    const resultado = await LearningPaths.findOne({
-      where: {id_learning_path: id}
-    });
+    const { id } = req.params;
 
-    if (!resultado) {
-      return res.status(404).json({ error: "LearningPath não encontrado" });
+    if (!id) {
+        res.status(500).send("Tens de enviar o id do LP pelo url!");
     }
 
-    const resposta = {
-      ID_LEARNINGPATH: resultado.id_learning_path,
-      NOME_LEARNINGPATH: resultado.nome_learning_path,
-      DESCRICAO_LEARNINGPATH: resultado.descricao_learning_path,
-      IMAGEM_LEARNING_PATH: resultado.imagem_learning_path,
-      ESTADO_A_I_: resultado.estado_a_i,
-      DATA_INSERCAO: resultado.data_insercao
-    }
-  
-    res.json([resposta]);
+    try {
+        const resultado = await LearningPaths.findOne({
+            where: { id_learning_path: id }
+        });
 
-    
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erro interno no servidor" });
-  }
+        if (!resultado) {
+            return res.status(404).json({ error: "LearningPath não encontrado" });
+        }
+
+        const resposta = {
+            ID_LEARNINGPATH: resultado.id_learning_path,
+            NOME_LEARNINGPATH: resultado.nome_learning_path,
+            DESCRICAO_LEARNINGPATH: resultado.descricao_learning_path,
+            IMAGEM_LEARNING_PATH: resultado.imagem_learning_path,
+            ESTADO_A_I_: resultado.estado_a_i,
+            DATA_INSERCAO: resultado.data_insercao
+        }
+
+        res.json([resposta]);
+
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro interno no servidor" });
+    }
 }
 
 module.exports = controllers;
