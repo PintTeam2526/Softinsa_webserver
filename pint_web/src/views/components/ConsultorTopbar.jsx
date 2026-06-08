@@ -1,6 +1,6 @@
 import { memo, useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import './ConsultorTopbar.css'
+import './softinsa-topbar.css'
 
 import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
 

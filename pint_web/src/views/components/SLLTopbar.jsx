@@ -1,6 +1,6 @@
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { Link } from 'react-router-dom'
-import './SLLTopbar.css'
+import './softinsa-topbar.css'
 
 import { useTopbarController, getTopbarUtilizador } from '../../controllers/topbar.controller'
 

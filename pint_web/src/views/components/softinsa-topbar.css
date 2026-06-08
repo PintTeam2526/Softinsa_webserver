@@ -1,14 +1,18 @@
 .softinsa-shell-topbar {
   padding: 16px 32px;
-  min-height: 76px;
   background: #ffffff;
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  position: static;
+  height: 76px;
+  min-height: 76px;
+  max-height: 76px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+  z-index: 20;
 }
 
 .softinsa-shell-topbar-search {
@@ -345,6 +349,8 @@
   text-align: left;
   cursor: pointer;
   min-width: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 .softinsa-shell-profile-avatar {
@@ -358,7 +364,7 @@
 .softinsa-shell-profile-meta {
   display: inline-flex;
   flex-direction: column;
-  margin-left: 5px; 
+  margin-left: 5px;
   line-height: 1.2;
   min-width: 0;
 }
@@ -441,21 +447,19 @@
 
 @media (max-width: 992px) {
   .softinsa-shell-topbar {
-    padding: 14px 16px;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-wrap: nowrap;
   }
 
   .softinsa-shell-topbar-search {
-    min-width: 100%;
+    min-width: 0;
     max-width: none;
-    order: 2;
+    flex: 1 1 auto;
+    order: 0;
   }
 
   .softinsa-shell-topbar-actions {
-    order: 1;
-    width: 100%;
-    justify-content: flex-end;
+    width: auto;
+    order: 0;
   }
 }
 
