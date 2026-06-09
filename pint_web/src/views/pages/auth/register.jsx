@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './register.css'
+import { getAreas } from '../../../controllers/areasController'
+import { registarConsultor } from '../../../controllers/registoController'
 
 function CheckIcon() {
   return (
@@ -18,14 +20,34 @@ function CheckIcon() {
 
 function RegisterView() {
   const navigate = useNavigate()
+  const fileInputRef = useRef(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    username: '',
     password: '',
     confirmPassword: '',
+    fotoPerfil: '',
+    idAreaPreferencia: '',
     acceptTerms: false,
   })
+  const [areas, setAreas] = useState([])
   const [error, setError] = useState('')
+
+  // Carregar áreas ao montar o componente
+  useEffect(() => {
+    getAreas()
+      .then((data) => {
+        setAreas(data)
+      })
+      .catch((err) => {
+        console.error('Erro ao carregar áreas:', err)
+      })
+  }, [])
+
+  const handleAvatarClick = () => {
+    fileInputRef.current.click()
+  }
 
   function handleChange(event) {
     const { name, value, type, checked } = event.target
@@ -34,6 +56,48 @@ function RegisterView() {
       [name]: type === 'checkbox' ? checked : value,
     }))
     if (error) setError('')
+  }
+
+  function handleFileChange(event) {
+    const file = event.target.files[0]
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError('A imagem é demasiado grande (máx 2MB).')
+        return
+      }
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          fotoPerfil: reader.result,
+        }))
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  async function handleRegisto() {
+    try {
+      const resultado = await registarConsultor(
+        formData.name,
+        formData.email,
+        formData.username,
+        formData.password,
+        formData.fotoPerfil,
+        formData.idAreaPreferencia
+      )
+      if (resultado === true) {
+        navigate('/acesso')
+      } else {
+        setError('Falha no registo, por favor tente outra vez')
+        return
+      }
+    } catch (err) {
+      console.error('Erro na chamada do controller:', err)
+      setError('Falha no registo, por favor tente outra vez')
+      return
+    }
   }
 
   function handleSubmit(event) {
@@ -51,10 +115,27 @@ function RegisterView() {
       setError('Tem de aceitar os termos e a política de privacidade.')
       return
     }
-
-    // TODO: integrar com a API de registo
-    console.log('Register attempt:', formData)
-    navigate('/acesso')
+    if (!formData.email) {
+      setError('Tem adicionar um email válido.')
+      return
+    }
+    if (!formData.fotoPerfil) {
+      setError('Tem de adicionar uma foto de perfil.')
+      return
+    }
+    if (!formData.name) {
+      setError('Tem de preencher o nome.')
+      return
+    }
+    if (!formData.username) {
+      setError('Tem preencher o username.')
+      return
+    }
+    if (!formData.idAreaPreferencia) {
+      setError('Tem escolher a àrea de preferencia.')
+      return
+    }
+    handleRegisto()
   }
 
   return (
@@ -68,7 +149,6 @@ function RegisterView() {
           <div className="register-circle register-circle-1" />
         </div>
 
-        {/* Logo */}
         <div className="register-logo-container">
           <svg className="register-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <rect width="200" height="200" rx="100" fill="#000000" />
@@ -80,7 +160,6 @@ function RegisterView() {
           </svg>
         </div>
 
-        {/* Back Arrow */}
         <button
           className="register-back-button"
           onClick={() => navigate(-1)}
@@ -99,6 +178,32 @@ function RegisterView() {
             <p className="register-subtitle">Cria a tua conta Softinsa</p>
 
             <form onSubmit={handleSubmit} className="register-form">
+              <div className="register-avatar-container">
+                <div className="register-avatar-wrapper" onClick={handleAvatarClick}>
+                  {formData.fotoPerfil ? (
+                    <img src={formData.fotoPerfil} alt="Avatar" className="register-avatar-image" />
+                  ) : (
+                    <div className="register-avatar-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="register-avatar-overlay">
+                    <span>Mudar</span>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/png, image/jpeg"
+                  style={{ display: 'none' }}
+                />
+                <p className="register-avatar-text">Foto de perfil</p>
+              </div>
+
               <div className="register-form-group">
                 <label htmlFor="name" className="register-label">
                   Nome completo
@@ -108,6 +213,21 @@ function RegisterView() {
                   id="name"
                   name="name"
                   value={formData.name}
+                  onChange={handleChange}
+                  className="register-input"
+                  required
+                />
+              </div>
+
+              <div className="register-form-group">
+                <label htmlFor="username" className="register-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
                   className="register-input"
                   required
@@ -127,6 +247,27 @@ function RegisterView() {
                   className="register-input"
                   required
                 />
+              </div>
+
+              <div className="register-form-group">
+                <label htmlFor="idAreaPreferencia" className="register-label">
+                  Área de Preferência
+                </label>
+                <select
+                  id="idAreaPreferencia"
+                  name="idAreaPreferencia"
+                  value={formData.idAreaPreferencia}
+                  onChange={handleChange}
+                  className="register-input"
+                  required
+                >
+                  <option value="">Seleciona uma área...</option>
+                  {areas.map((area) => (
+                    <option key={area.id_area} value={area.id_area}>
+                      {area.nome_area}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="register-form-row">
