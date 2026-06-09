@@ -135,6 +135,68 @@ controller.consultor = async (req, res) => {
     }
 }
 
+// dashboard Talent Manager
+controller.talentManager = async (req, res) => {
+    try {
+        const isTM = req.user?.role === "t";
+
+        if (!isTM) {
+            return res.status(401).json({ mensagem: "Utilizador não autorizado" });
+        }
+
+        const id_talent_manager = req.user.id_talent_manager;
+        const nome = await dashboardTalentManagerService.getNomeTalentManager(id_talent_manager);
+        const proximosPedidos = await dashboardTalentManagerService.getProximosPedidosExpirar(id_talent_manager);
+        const proximosBadgesExpirar = await dashboardTalentManagerService.getProximosBadgesExpirar();
+
+        const resultado = {
+            nome_talent_manager: nome,
+            proximos_pedidos: proximosPedidos,
+            proximos_badges_expirar: proximosBadgesExpirar
+        }
+
+        res.json(resultado);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: "Erro de servidor" });
+    }
+};
+
+// dashboard Service Line Lider
+controller.serviceLineLider = async (req, res) => {
+    try {
+        const isSLL = req.user?.role === "s";
+
+        if (!isSLL) {
+            return res.status(401).json({ mensagem: "Utilizador não autorizado" });
+        }
+
+        const id_service_line_lider = req.user.id_service_line_lider;
+        const nome = await dashboardServiceLineLiderService.getNomeServiceLineLider(id_service_line_lider);
+        const serviceLine = await dashboardServiceLineLiderService.getServiceLine(id_service_line_lider);
+        const proximosPedidos = await dashboardServiceLineLiderService.getProximosPedidosExpirar(id_service_line_lider);
+        const percentagemEstados = await dashboardServiceLineLiderService.getPercentagemEstados(id_service_line_lider);
+        const topConsultores = await dashboardServiceLineLiderService.getTopConsultores(id_service_line_lider);
+        const totalConsultores = await dashboardServiceLineLiderService.getTotalConsultores(id_service_line_lider);
+        const totalBadges = await dashboardServiceLineLiderService.getTotalBadges(id_service_line_lider);
+
+        const resultado = {
+            nome_service_line_lider: nome,
+            nome_service_line: serviceLine,
+            proximos_pedidos: proximosPedidos,
+            percentagem_estados: percentagemEstados,
+            top_consultores: topConsultores,
+            total_consultores: totalConsultores,
+            total_badges: totalBadges
+        }
+
+        res.json(resultado);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: "Erro de servidor" });
+    }
+};
+
 // dashboard Administrador
 controller.administrador = async (req, res) => {
     try {
