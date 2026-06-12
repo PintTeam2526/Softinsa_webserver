@@ -1,5 +1,7 @@
 import api from '../services/api'
 
+
+// Listar Requisitos de um Badge
 export const getRequisitosByBadge = async (id_badge) => {
     try {
         const response = await api.get(`/requisitos/get/${id_badge}/requisitos`)
@@ -10,6 +12,7 @@ export const getRequisitosByBadge = async (id_badge) => {
     }
 }
 
+// Listar dados de um Requisito
 export const getRequisitoById = async (id) => {
     try {
         const response = await api.get(`/requisitos/${id}/get`)
@@ -20,6 +23,7 @@ export const getRequisitoById = async (id) => {
     }
 }
 
+// Listar todos os Requisitos
 export const getAllRequisitos = async () => {
     try {
         const response = await api.get('/requisitos/get')
@@ -30,6 +34,7 @@ export const getAllRequisitos = async () => {
     }
 }
 
+// Criar um Requisito
 export const createRequisito = async (payload) => {
     try {
         const response = await api.post('/requisitos/create', payload)
@@ -40,6 +45,7 @@ export const createRequisito = async (payload) => {
     }
 }
 
+// Editar um Requisito
 export const updateRequisito = async (id, payload) => {
     try {
         const response = await api.put(`/requisitos/${id}/update`, payload)
@@ -50,6 +56,7 @@ export const updateRequisito = async (id, payload) => {
     }
 }
 
+// Apagar um Requisito
 export const deleteRequisito = async (id) => {
     try {
         const response = await api.delete(`/requisitos/${id}/delete`)

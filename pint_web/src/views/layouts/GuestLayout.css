@@ -1,0 +1,25 @@
+.tm-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+.tm-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+}
+
+.tm-main>header {
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.tm-main>section,
+.tm-main>article,
+.tm-main>div {
+    flex: 1;
+    width: 100%;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { FaFilter, FaSearch } from 'react-icons/fa'
 import SLLPagination from '../../components/SLLPagination'
+import { Row, Col } from 'react-bootstrap'
 import './TalentManagerPedidosView.css'
 
 import { getAreas } from '../../../controllers/areasController'
@@ -184,18 +185,10 @@ function ConfirmActionDialog({ action, onConfirm, onCancel }) {
   )
 }
 
-function RequirementStarIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M16 2L19.5 12H30L21.5 18.5L25 28.5L16 22L7 28.5L10.5 18.5L2 12H12.5L16 2Z" fill="#8A92A6" />
-    </svg>
-  )
-}
-
 function PendingRequestCard({ request, isDownloading, onDownload }) {
   return (
     <article className="sll-pending-card">
-      <div className="sll-pending-card-head">
+      <div className="sll-pending-card-head flex-column flex-md-row">
         <RequestBadge tone={request.avatarTone} image={request.avatarImage}>{request.avatar}</RequestBadge>
         <div className="sll-pending-card-head-copy">
           <h3>{request.title}</h3>
@@ -207,34 +200,35 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
         </div>
       </div>
 
-      <div className="sll-pending-card-body">
-        <div className="sll-pending-requirements">
-          {request.requirements.map((requirement, index) => (
-            <div className="sll-pending-requirement-row" key={`${request.title}-${index}`}>
-              <div className="sll-pending-requirement-copy">
-                <strong>Requisito {index + 1}</strong>
-                <span>{requirement}</span>
+      <Row className="g-4">
+        <Col xs={12} md>
+          <div className="sll-pending-requirements">
+            {request.requirements.map((requirement, index) => (
+              <div className="sll-pending-requirement-row" key={`${request.title}-${index}`}>
+                <div className="sll-pending-requirement-copy">
+                  <strong>Requisito {index + 1}</strong>
+                  <span>{requirement}</span>
+                </div>
               </div>
-              <div className="sll-pending-requirement-star" aria-hidden="true">
-                <RequirementStarIcon />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Col>
 
-        <div className="sll-pending-documents">
-          <h4>Documentos Anexados:</h4>
-          <button
-            type="button"
-            className="sll-pending-document-download-all"
-            onClick={onDownload}
-            disabled={isDownloading}
-          >
-            <EvidenceDownloadIcon />
-            <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
-          </button>
-        </div>
-      </div>
+        <Col xs={12} md>
+          <div className="sll-pending-documents">
+            <h4>Documentos Anexados:</h4>
+            <button
+              type="button"
+              className="sll-pending-document-download-all"
+              onClick={onDownload}
+              disabled={isDownloading}
+            >
+              <EvidenceDownloadIcon />
+              <span>{isDownloading ? 'A descarregar…' : 'Descarregar todos (.zip)'}</span>
+            </button>
+          </div>
+        </Col>
+      </Row>
 
       <div className="sll-pending-card-actions">
         <button type="button" className="sll-pending-action is-reject" onClick={() => request.onAction('reject')}>

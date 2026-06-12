@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plataforma de Badges — Softinsa</title>
+  <meta name="description" content="Projeto Integrado — Plataforma de badges digitais da Softinsa." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topo">
+    <div class="wrap">
+      <p class="kicker">Projeto Integrado</p>
+      <h1>Plataforma de Badges da Softinsa</h1>
+      <p class="sub">
+        Portal web e aplicação móvel para gestão, validação e partilha de badges digitais
+        de competências, à semelhança do Credly.
+      </p>
+    </div>
+  </header>
+
+  <nav class="menu">
+    <div class="wrap">
+      <a href="#contexto">Contexto</a>
+      <a href="#estrutura">Estrutura</a>
+      <a href="#perfis">Perfis</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#tecnologias">Tecnologias</a>
+    </div>
+  </nav>
+
+  <main class="wrap">Tecnologias
+Aplicação full-stack com arquitetura MVC.
+
+Camada	Tecnologias
+Frontend	React, React Hooks, Bootstrap 5, Axios, Vite
+Backend	Node.js, Express, JWT, bcrypt
+Base de dados	PostgreSQL com Sequelize (ORM)
+
+
+    <section id="contexto">
+      <h2>Contexto</h2>
+      <p>
+        A Softinsa organiza a formação dos seus consultores em <em>Learning Paths</em>, divididos
+        por Service Lines e áreas, cada uma com vários níveis de progressão. 
+      </p>
+      <p>
+        Esta plataforma transforma as formações realizadas (Udemy, IBM, AWS, Microsoft, etc.) em
+        badges verificáveis. Cada badge tem uma página pública própria, acessível por um link único,
+        que comprova a certificação do consultor.
+      </p>
+      <p>O projeto resolve quatro lacunas principais:</p>
+      <ul>
+        <li>Dificuldade em evidenciar e validar competências adquiridas.</li>
+        <li>Falta de um sistema de gamification que motive a aprendizagem contínua.</li>
+        <li>Ausência de uma forma padronizada de apresentar credenciais.</li>
+        <li>Pouca visibilidade das competências dos colaboradores.</li>
+      </ul>
+    </section>
+
+    <section id="estrutura">
+      <h2>Estrutura dos Learning Paths</h2>
+      <p>
+        A hierarquia organiza-se em cinco níveis. Um Learning Path contém Service Lines, que contêm
+        áreas, cada uma com cinco níveis de progressão. Cada nível tem vários requisitos e dá origem
+        a um badge quando todos são cumpridos.
+      </p>
+
+      <table>
+        <tbody>
+          <tr><th>Learning Path</th><td>Jornada Técnica · Power Skills </td></tr>
+          <tr><th>Service Lines</th><td>Hybrid Cloud · Application Operations · Sourcing &amp; Talent Management</td></tr>
+          <tr><th>Áreas</th><td>LowCode (Outsystems) · DevSecOps &amp; DevOps · Talent Management</td></tr>
+          <tr><th>Níveis</th><td>A — Júnior · B — Intermédio · C — Sénior · D — Especialista · E — Líder de Conhecimento</td></tr>
+          <tr><th>Requisitos</th><td>A1, A2, A3 … — cumprir todos atribui o badge do nível</td></tr>
+        </tbody>
+      </table>
+
+      <p class="nota">
+        Neste projeto existe apenas o Learning Path "Jornada Técnica", mas a base de dados foi
+        modelada para permitir adicionar outros no futuro.
+      </p>
+    </section>
+
+    <section id="perfis">
+      <h2>Perfis de utilizador</h2>
+      <p>A plataforma web tem quatro perfis distintos, e o consultor tem também acesso à versão móvel.</p>
+
+      <h3>Administrador</h3>
+      <p>
+        Gere utilizadores e permissões, cria e elimina badges, learning paths, áreas, níveis e
+        requisitos, define o sistema de pontos e as políticas RGPD, e publica avisos.
+      </p>
+
+      <h3>Consultor</h3>
+      <p>
+        Candidata-se a badges com upload de evidências, acompanha o progresso num dashboard pessoal,
+        consulta o histórico e o catálogo, e partilha badges no LinkedIn ou na assinatura de email.
+        Pode também descarregar certificados em PDF.
+      </p>
+
+      <h3>Talent Manager</h3>
+      <p>
+        Vê todas as submissões, independentemente da área ou service line. Valida as evidências e,
+        se estiverem corretas, encaminha o pedido para o Service Line Leader. Gera relatórios e
+        exporta dados para Excel ou PDF.
+      </p>
+
+      <h3>Service Line Leader</h3>
+      <p>
+        Acede apenas aos badges da sua service line. Faz a validação final — aprovar, rejeitar ou
+        devolver — e acompanha o ranking e o progresso dos consultores da sua equipa.
+      </p>
+    </section>
+
+    <section id="workflow">
+      <h2>Workflow de aprovação</h2>
+      <p>
+        Cada candidatura percorre um fluxo com duas etapas de validação. A base de dados regista
+        seis estados possíveis, e o histórico de cada pedido guarda todas as decisões e motivos.
+      </p>
+
+      <ol class="passos">
+        <li>
+          O consultor submete a candidatura ao badge com as evidências —
+          estado <strong>submetido</strong>. O pedido avança para o Talent Manager.
+        </li>
+        <li>
+          O Talent Manager valida as evidências. Se estiverem <strong>correto</strong>, o pedido
+          avança para o Service Line Leader; se estiverem <strong>incorreto</strong>, é devolvido
+          ao consultor com um motivo.
+        </li>
+        <li>
+          O Service Line Leader faz a validação final e decide entre <strong>aprovado</strong>,
+          <strong>rejeitado</strong> ou <strong>devolvido</strong> ao consultor com um motivo.
+        </li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr><th>Estado</th><th>Quem</th><th>Significado</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>submetido</th><td>Consultor</td><td>Candidatura submetida; avança para o Talent Manager</td></tr>
+          <tr><th>correto</th><td>Talent Manager</td><td>Evidências válidas; avança para o Service Line Leader</td></tr>
+          <tr><th>incorreto</th><td>Talent Manager</td><td>Devolvido ao consultor com motivo</td></tr>
+          <tr><th>aprovado</th><td>Service Line Leader</td><td>Badge aprovado — fim do processo</td></tr>
+          <tr><th>rejeitado</th><td>Service Line Leader</td><td>Pedido rejeitado — fim do processo</td></tr>
+          <tr><th>devolvido</th><td>Service Line Leader</td><td>Devolvido ao consultor com motivo</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="funcionalidades">
+      <h2>Funcionalidades</h2>
+      <ul class="duas-colunas">
+        <li>Dashboards de progresso e indicadores (KPIs)</li>
+        <li>Upload e verificação de evidências</li>
+        <li>Página pública por badge com link único</li>
+        <li>Sistema de pontos e ranking de consultores</li>
+        <li>Certificados personalizados em PDF</li>
+        <li>Notificações de aprovação e rejeição</li>
+        <li>Relatórios por área, nível e período</li>
+        <li>Exportação para Excel e PDF</li>
+        <li>Aceitação de termos RGPD</li>
+        <li>Recuperação de password e gestão de sessão</li>
+      </ul>
+    </section>
+
+    <section id="tecnologias">
+      <h2>Tecnologias</h2>
+      <p>Aplicação full-stack com arquitetura MVC.</p>
+
+      <table>
+        <thead>
+          <tr><th>Camada</th><th>Tecnologias</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Frontend</th><td>React, React Hooks, Bootstrap 5, Axios, Vite</td></tr>
+          <tr><th>Backend</th><td>Node.js, Express, JWT, bcrypt</td></tr>
+          <tr><th>Base de dados</th><td>PostgreSQL com Sequelize (ORM)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Plataforma de Badges da Softinsa — Projeto Integrado</p>
+    </div>
+  </footer>
+
+</body>
+</html>

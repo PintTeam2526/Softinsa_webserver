@@ -81,6 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 4px;
 }
@@ -247,34 +248,3 @@
   display: block;
 }
 
-/* ── RESPONSIVE ────────────────────────────────────────── */
-@media (max-width: 992px) {
-  .softinsa-rgpd-page {
-    padding-inline: 16px;
-  }
-
-  .softinsa-rgpd-hero {
-    margin-inline: -16px;
-    padding: 24px;
-  }
-
-  .softinsa-rgpd-editor-card {
-    padding: 20px;
-  }
-
-  .softinsa-rgpd-editor-textarea {
-    padding: 16px;
-    min-height: 360px;
-  }
-}
-
-@media (max-width: 600px) {
-  .softinsa-rgpd-editor-actions {
-    flex-direction: column-reverse;
-    align-items: stretch;
-  }
-
-  .softinsa-rgpd-editor-save {
-    width: 100%;
-  }
-}

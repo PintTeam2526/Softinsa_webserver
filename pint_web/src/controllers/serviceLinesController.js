@@ -1,5 +1,7 @@
 import api from '../services/api'
 
+
+// Listar todas as SLs
 export const getServiceLines = async () => {
   try {
     const response = await api.get('/serviceLines/get')
@@ -10,13 +12,10 @@ export const getServiceLines = async () => {
   }
 }
 
+// Criar uma SL
 export const createServiceLine = async (payload) => {
   try {
-    const response = await api.post(
-      '/serviceLines/create',
-      payload
-    )
-
+    const response = await api.post('/serviceLines/create', payload)
     return response.data
   } catch (error) {
     console.error('Erro ao criar service line', error)
@@ -24,16 +23,10 @@ export const createServiceLine = async (payload) => {
   }
 }
 
-export const updateServiceLine = async (
-  id,
-  payload
-) => {
+// Editar uma SL
+export const updateServiceLine = async (id, payload) => {
   try {
-    const response = await api.put(
-      `/serviceLines/${id}/update`,
-      payload
-    )
-
+    const response = await api.put(`/serviceLines/${id}/update`, payload)
     return response.data.dados
   } catch (error) {
     console.error('Erro ao atualizar service line', error)

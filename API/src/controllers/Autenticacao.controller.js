@@ -244,8 +244,52 @@ controllers.updatePerfil = async (req, res) => {
 
     const user = await User.findByPk(req.user.id);
 
-    if (!user) {
-      return res.status(404).json({ mensagem: "Utilizador não encontrado." });
+        if (!user) {
+            return res.status(404).json({ mensagem: "Utilizador não encontrado." });
+        }
+
+        if (email) user.email_utilizador = email;
+        if (foto) user.imagem_utilizador = foto;
+
+        if (password) {
+            if (!password_antiga) {
+                return res.status(400).json({ mensagem: "É obrigatório enviar a password antiga para alterar a password." });
+            }
+
+            const passwordCorreta = await bcrypt.compare(password_antiga, user.password_utilizador);
+            if (!passwordCorreta) {
+                return res.status(400).json({ mensagem: "Password antiga incorreta." });
+            }
+
+            user.password_utilizador = await bcrypt.hash(password, 10);
+        }
+
+    user.estado_a_i = false;
+    await user.save();
+
+        if (role === 'c' && id_area) {
+            const areaExiste = await Area.findByPk(id_area);
+            if (!areaExiste) {
+                return res.status(404).json({ mensagem: "Área não encontrada." });
+            }
+
+            const consultor = await Consultor.findOne({
+                where: { id_utilizador: req.user.id }
+            });
+
+            if (!consultor) {
+                return res.status(404).json({ mensagem: "Consultor não encontrado." });
+            }
+
+            consultor.id_area = id_area;
+            await consultor.save();
+        }
+
+        return res.status(200).json({ mensagem: "Perfil atualizado com sucesso." });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensagem: "Erro ao atualizar perfil.", erro: error.message });
     }
 
     if (email) user.email_utilizador = email;

@@ -1,13 +1,14 @@
 const { Op } = require("sequelize");
-
 const objetivos = require('../models/Objetivos.models');
 const badgesObtidos = require('../models/BadgesConcluidos.models');
 const badges = require('../models/Badges.models');
 const utilizador = require('../models/Utilizadores.models');
 const consultor = require('../models/Consultores.models');
 const area = require('../models/Areas.models')
-
 const dashboardConsultorService = require("../services/dashboardConsultor.service");
+const dashboardTalentManagerService = require('../services/dashboardTM.service');
+const dashboardServiceLineLiderService = require('../services/dashboardSLL.service');
+const dashboardAdministradorService = require('../services/dashboardAdmin.service');
 const { listarPedidosPorCargo } = require('../services/listarPedidos.service')
 
 const controller = {};
@@ -94,8 +95,9 @@ const controller = {};
     }
 };*/
 
+//dashboard Consultor
 controller.consultor = async (req, res) => {
-    try{
+    try {
         const isConsultor = req.user?.role === "c";
 
         if (!isConsultor) {
@@ -108,7 +110,6 @@ controller.consultor = async (req, res) => {
         const progressoArea = await dashboardConsultorService.getProgressoArea(id_consultor);
         const progressoServiceLine = await dashboardConsultorService.getProgressoServiceLine(id_consultor);
         const progressoLearningPath = await dashboardConsultorService.getProgressoLearningPath(id_consultor);
-        //const badgesConsultor = await dashboardConsultorService.getBadgesConsultor(id_consultor);
         const pedidosBadge = await dashboardConsultorService.getPedidosConsultor(id_consultor);
 
         const resultado = {
@@ -133,5 +134,58 @@ controller.consultor = async (req, res) => {
         res.status(500).json({mensagem: "Erro de servidor"})
     }
 }
+
+// dashboard Administrador
+controller.administrador = async (req, res) => {
+    try {
+        const isAdministrador = req.user?.role === "a";
+
+        if (!isAdministrador) {
+            return res.status(401).json({ mensagem: "Utilizador não autorizado" });
+        }
+
+        //se não receber nada têm valores default, ano atual, mês inicial 1 e mês final 12
+        const ano = parseInt(req.query.ano) || new Date().getFullYear();
+        const mesInicial = parseInt(req.query.mes_inicial) || 1;
+        const mesFinal = parseInt(req.query.mes_final) || 12;
+        const niveis = ['Júnior', 'Intermédio', 'Sénior', 'Especialista', 'Líder de Conhecimento']
+        const numeroBadgesPorNivel = {}
+        for (const n of niveis) {
+            numeroBadgesPorNivel[n] = await dashboardAdministradorService.getNumeroBadgesObtidosNivel(n)
+        }
+
+
+        const id_administrador = req.user.id_administrador;
+
+        const nome = await dashboardAdministradorService.getNomeAdministrador(id_administrador);
+        const totalUtilizadores = await dashboardAdministradorService.getTotalUtilizadores(id_administrador);
+        const totalBadges = await dashboardAdministradorService.getTotalBadges(id_administrador);
+        const totalAreas = await dashboardAdministradorService.getTotalAreas(id_administrador);
+        const totalServiceLines = await dashboardAdministradorService.getTotalServiceLines(id_administrador);
+        const totalLearningPaths = await dashboardAdministradorService.getTotaltotalLearningPaths(id_administrador);
+        const NumeroBadgesObtidosMesAno = await dashboardAdministradorService.getNumeroBadgesObtidosMesAno(ano, mesInicial, mesFinal);
+        const PercentagemBadgesObtidosMesAno = await dashboardAdministradorService.getPercentagemBadgesObtidosMesAno(ano);
+
+
+        const resultado = {
+            nome_administrador: nome,
+            total_utilizadores: totalUtilizadores,
+            total_badges: totalBadges,
+            total_areas: totalAreas,
+            total_service_lines: totalServiceLines,
+            total_learning_paths: totalLearningPaths,
+            numero_badges_obtidos_mes_ano_grafico_1: NumeroBadgesObtidosMesAno,
+            numero_badges_obtidos_nivel_grafico_2: numeroBadgesPorNivel,
+            percentagem_badges_obtidos_mes_ano_grafico_3: PercentagemBadgesObtidosMesAno
+        }
+
+        res.json(resultado);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensagem: "Erro de servidor" });
+    }
+};
+
 
 module.exports = controller;

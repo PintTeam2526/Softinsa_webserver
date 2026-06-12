@@ -1,13 +1,18 @@
 import { useMemo, useState, useEffect } from 'react'
-import { FaSearch } from 'react-icons/fa'
+import { Row, Col } from 'react-bootstrap'
+import { FaSearch, FaTimes } from 'react-icons/fa'
+import { HiOutlineCurrencyEuro } from 'react-icons/hi2'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import * as XLSX from 'xlsx'
 import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
+import './SLL-badges.css'
+
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
-import './SLL-badges.css'
+import { getRequisitosByBadge } from '../../../controllers/requisitosController'
+
 
 function ExportIcon() {
   return (
@@ -44,17 +49,17 @@ function normalizeImage(raw) {
 
 // ── sub-componentes ───────────────────────────────────────────────────────────
 
-function IconPoints() {
+function IconPoints({ className }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ flexShrink: 0 }}>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} style={{ flexShrink: 0 }}>
       <path d="M4.76567 1.60996C5.47447 1.31826 6.23337 1.16767 6.99984 1.16663C7.76401 1.16663 8.52234 1.31829 9.23401 1.60996C9.93984 1.90163 10.5815 2.33329 11.124 2.87579C11.6665 3.41829 12.0982 4.05996 12.3898 4.76579C12.6815 5.47746 12.8332 6.23579 12.8332 6.99996C12.8332 8.54579 12.2207 10.0333 11.124 11.1241C10.583 11.6666 9.9402 12.0969 9.23245 12.3902C8.5247 12.6835 7.76596 12.8341 6.99984 12.8333C6.23337 12.8322 5.47447 12.6817 4.76567 12.39C4.05871 12.0961 3.4165 11.666 2.87567 11.1241C2.33318 10.5832 1.90293 9.94032 1.60961 9.23257C1.3163 8.52482 1.16572 7.76608 1.16651 6.99996C1.16651 5.45413 1.77901 3.96663 2.87567 2.87579C3.41817 2.33329 4.05984 1.90163 4.76567 1.60996ZM6.99984 9.91663L7.90984 7.92163L9.91651 6.99996L7.90984 6.08996L6.99984 4.08329L6.08401 6.08996L4.08317 6.99996L6.08401 7.92163L6.99984 9.91663Z" fill="#8A92A6" />
     </svg>
   )
 }
 
-function BadgeCard({ badge }) {
+function BadgeCard({ badge, onClick }) {
   return (
-    <article className="sll-badges-card">
+    <button type="button" className="sll-badges-card" onClick={onClick}>
       <div className="sll-badges-card-image-wrap">
         <img
           src={badge.image}
@@ -63,16 +68,15 @@ function BadgeCard({ badge }) {
           onError={(e) => { e.target.src = imgBadgeFallback }}
         />
       </div>
-
       <div className="sll-badges-card-copy">
         <h3>{badge.name}</h3>
         <p>{badge.level}</p>
       </div>
-
       <div className="sll-badges-card-meta">{badge.points} Pontos</div>
-    </article>
+    </button>
   )
 }
+
 
 // ── componente principal ──────────────────────────────────────────────────────
 
@@ -81,6 +85,9 @@ function SLLBadgesView() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [selectedArea, setSelectedArea] = useState('')
+  const [selectedBadge, setSelectedBadge] = useState(null)
+  const [selectedBadgeRequisitos, setSelectedBadgeRequisitos] = useState([])
+  const [loadingRequisitos, setLoadingRequisitos] = useState(false)
   const [selectedExportFormat, setSelectedExportFormat] = useState('xlsx')
 
   // ── fetch ─────────────────────────────────────────────────────────────────
@@ -89,7 +96,6 @@ function SLLBadgesView() {
 
   async function loadData() {
     try {
-      // Extrai o id da service line do utilizador autenticado a partir do JWT
       const payload = getTokenPayload()
       const idServiceLine = payload?.id_service_line_lider
       if (!idServiceLine) {
@@ -102,25 +108,27 @@ function SLLBadgesView() {
         getBadges(),
       ])
 
-      // Filtra apenas as áreas da service line do utilizador
       const areasDaSL = areasData.filter((a) => a.id_service_line === idServiceLine)
 
-      // Mapeia badges por área
       const badgesByArea = {}
       badgesData.forEach((b) => {
         if (!badgesByArea[b.id_area]) badgesByArea[b.id_area] = []
         badgesByArea[b.id_area].push({
+          id: b.id_badge,
           name: b.nome_badge,
           level: b.nivel_badge,
           image: normalizeImage(b.imagem_badge),
           points: b.pontos_badge ?? 0,
+          description: b.descricao_badge ?? '',
+          isSpecial: b.pago ?? false,
         })
       })
 
-      // Constrói os grupos (uma entrada por área)
       const groups = areasDaSL.map((area) => ({
         id: area.id_area,
         title: area.nome_area,
+        description: area.descricao_area ?? '',
+        image: area.imagem_area ? normalizeImage(area.imagem_area) : null,
         badges: badgesByArea[area.id_area] || [],
       }))
 
@@ -128,6 +136,31 @@ function SLLBadgesView() {
     } catch (error) {
       console.error('Erro ao carregar badges:', error)
     }
+  }
+
+  async function handleBadgeClick(badge) {
+    setSelectedBadge(badge)
+    setSelectedBadgeRequisitos([])
+    setLoadingRequisitos(true)
+    try {
+      const data = await getRequisitosByBadge(badge.id)
+      const reqs = Array.isArray(data) ? data : (data?.requisitos ?? data?.data ?? [])
+      setSelectedBadgeRequisitos(reqs.map((r, i) => ({
+        id: r.id_requisito ?? i,
+        title: r.nome_requisito ?? `Requisito ${i + 1}`,
+        descricao: r.descricao_requisito ?? '',
+        image: r.imagem_requisito ? `data:image/png;base64,${r.imagem_requisito}` : null,
+      })))
+    } catch (err) {
+      console.error('Erro ao carregar requisitos', err)
+    } finally {
+      setLoadingRequisitos(false)
+    }
+  }
+
+  function closeBadgeModal() {
+    setSelectedBadge(null)
+    setSelectedBadgeRequisitos([])
   }
 
   // ── filtragem por pesquisa ────────────────────────────────────────────────
@@ -213,11 +246,7 @@ function SLLBadgesView() {
 
   return (
     <div className="sll-badges-page">
-      <SLLSidebar />
-
       <main className="sll-badges-main">
-        <SLLTopbar />
-
         <div className="sll-badges-content">
           <section className="sll-badges-hero" aria-label="Badges">
             <div className="sll-badges-hero-copy">
@@ -226,7 +255,7 @@ function SLLBadgesView() {
             </div>
           </section>
 
-          <section className="sll-badges-toolbar" aria-label="Pesquisa e exportação de badges">
+          <section className="sll-badges-toolbar flex-column flex-lg-row align-items-stretch align-items-lg-center" aria-label="Pesquisa e exportação de badges">
             <label className="sll-badges-search">
               <FaSearch aria-hidden="true" />
               <input
@@ -249,13 +278,41 @@ function SLLBadgesView() {
             ) : (
               filteredBadgeGroups.map((group) => (
                 <div key={group.id} className="sll-badges-group">
-                  <h2>{group.title} - {group.badges.length} badge{group.badges.length !== 1 ? 's' : ''}</h2>
 
-                  <div className="sll-badges-grid">
+                  <h2 className="sll-badges-group-title">
+                    {group.title} - {group.badges.length} badge{group.badges.length !== 1 ? 's' : ''}
+
+                    <div className="sll-badges-info-wrap">
+                      <div className="sll-badges-info-btn" role="button" aria-label="Informação da Área" tabIndex={0}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+
+                        <div className="sll-badges-info-tooltip">
+                          {group.image && (
+                            <img src={group.image} alt={group.title} className="sll-badges-info-tooltip-img" />
+                          )}
+                          <div className="sll-badges-info-tooltip-name">{group.title}</div>
+                          <p className="sll-badges-info-tooltip-desc">
+                            {group.description || 'Sem descrição disponível para esta área.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </h2>
+
+                  <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-2">
                     {group.badges.map((badge) => (
-                      <BadgeCard key={`${group.id}-${badge.name}-${badge.level}`} badge={badge} />
+                      <Col key={`${group.id}-${badge.name}-${badge.level}`}>
+                        <BadgeCard
+                          badge={badge}
+                          onClick={() => handleBadgeClick(badge)}
+                        />
+                      </Col>
                     ))}
-                  </div>
+                  </Row>
                 </div>
               ))
             )}
@@ -293,6 +350,85 @@ function SLLBadgesView() {
                 <button type="button" className="sll-badges-export-confirm" onClick={exportBadges}>
                   Exportar
                 </button>
+              </div>
+            </div>
+          ) : null}
+
+          {selectedBadge ? (
+            <div className="sll-badges-detail-backdrop" role="presentation" onClick={closeBadgeModal}>
+              <div
+                className="sll-badges-detail-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Detalhes do badge"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="sll-badges-detail-top">
+                  <div className="sll-badges-detail-badge-wrap">
+                    <img
+                      alt=""
+                      src={selectedBadge.image}
+                      className="sll-badges-detail-badge"
+                      onError={(e) => { e.target.src = imgBadgeFallback }}
+                    />
+                  </div>
+                  <button type="button" className="sll-badges-detail-close" onClick={closeBadgeModal} aria-label="Fechar detalhes">
+                    <FaTimes aria-hidden="true" />
+                  </button>
+                </div>
+
+                <div className="sll-badges-detail-copy">
+                  <div className="sll-badges-detail-title">{selectedBadge.name}</div>
+                  <div className="sll-badges-detail-attributes">
+                    <div className="sll-badges-detail-attribute">
+                      <IconPoints className="sll-badges-detail-attribute-icon" />
+                      <span>{selectedBadge.points} Pontos</span>
+                    </div>
+                    {selectedBadge.isSpecial ? (
+                      <div className="sll-badges-detail-attribute">
+                        <HiOutlineCurrencyEuro className="sll-badges-detail-attribute-icon" aria-hidden="true" />
+                        <span>Badge Especial</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="sll-badges-detail-section">
+                  <h3>Descrição:</h3>
+                  <p>{selectedBadge.description || 'Sem descrição disponível.'}</p>
+                </div>
+
+                <div className="sll-badges-detail-section">
+                  <h3>Nível:</h3>
+                  <p>{selectedBadge.level}</p>
+                </div>
+
+                <div className="sll-badges-detail-section">
+                  <h3>Requisitos:</h3>
+                  {loadingRequisitos ? (
+                    <p className="sll-badges-detail-req-loading">A carregar requisitos…</p>
+                  ) : selectedBadgeRequisitos.length === 0 ? (
+                    <p className="sll-badges-detail-req-loading">Sem requisitos definidos.</p>
+                  ) : (
+                    <div className="sll-badges-detail-req-list">
+                      {selectedBadgeRequisitos.map((req, index) => (
+                        <div key={req.id} className="sll-badges-detail-req-item">
+                          <div className="sll-badges-detail-req-number">
+                            {req.image ? (
+                              <img src={req.image} alt={req.title} />
+                            ) : (
+                              index + 1
+                            )}
+                          </div>
+                          <div className="sll-badges-detail-req-copy">
+                            <strong>{req.title}</strong>
+                            {req.descricao && <span>{req.descricao}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : null}

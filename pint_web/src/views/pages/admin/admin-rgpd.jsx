@@ -1,20 +1,9 @@
 import React, { memo, useEffect, useMemo, useState } from "react";
 import "./admin-rgpd.css";
 
-const POLICY_STORAGE_KEY = "softinsa.rgpd.policy";
+import { getRGPD, updateRGPD } from '../../../controllers/gestaoController'
+
 const ACCEPTANCE_STORAGE_KEY = "softinsa.rgpd.acceptance";
-
-const DEFAULT_POLICY = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore`;
 
 function CloseIcon() {
   return (
@@ -26,23 +15,19 @@ function CloseIcon() {
 }
 
 const SoftinsaRgpd = memo(() => {
-  const [policyText, setPolicyText] = useState(() => {
-    try {
-      return localStorage.getItem(POLICY_STORAGE_KEY) || DEFAULT_POLICY;
-    } catch (error) {
-      return DEFAULT_POLICY;
-    }
-  });
-  const [savedPolicyText, setSavedPolicyText] = useState(policyText);
+  const [policyText, setPolicyText] = useState("");
+  const [savedPolicyText, setSavedPolicyText] = useState("");
   const [saveStatus, setSaveStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [acceptance, setAcceptance] = useState(() => {
     try {
-      const storedAcceptance = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
-      if (!storedAcceptance) return null;
-      const parsedAcceptance = JSON.parse(storedAcceptance);
-      return parsedAcceptance && typeof parsedAcceptance === "object" ? parsedAcceptance : null;
-    } catch (error) {
+      const stored = localStorage.getItem(ACCEPTANCE_STORAGE_KEY);
+      if (!stored) return null;
+      const parsed = JSON.parse(stored);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
       localStorage.removeItem(ACCEPTANCE_STORAGE_KEY);
       return null;
     }
@@ -57,24 +42,47 @@ const SoftinsaRgpd = memo(() => {
     return Boolean(acceptance && acceptance.version === savedPolicyText);
   }, [acceptance, savedPolicyText]);
 
-  const isConsentModalOpen = !hasAcceptedCurrentVersion;
+  const isConsentModalOpen = !isLoading && !hasAcceptedCurrentVersion;
 
+  // Carrega a política da API
+  useEffect(() => {
+    const fetchPolicy = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getRGPD();
+        const text = data?.politica ?? "";
+        setPolicyText(text);
+        setSavedPolicyText(text);
+      } catch {
+        setSaveStatus("Não foi possível carregar a política.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPolicy();
+  }, []);
+
+  // Limpa a mensagem de estado após 3 s
   useEffect(() => {
     if (!saveStatus) return;
-    const timeoutId = window.setTimeout(() => setSaveStatus(""), 3000);
-    return () => window.clearTimeout(timeoutId);
+    const id = window.setTimeout(() => setSaveStatus(""), 3000);
+    return () => window.clearTimeout(id);
   }, [saveStatus]);
 
-  const handleSavePolicy = () => {
-    const trimmedPolicy = policyText.trim();
-    if (!trimmedPolicy) return;
+  const handleSavePolicy = async () => {
+    const trimmed = policyText.trim();
+    if (!trimmed) return;
 
+    setIsSaving(true);
     try {
-      localStorage.setItem(POLICY_STORAGE_KEY, policyText);
+      await updateRGPD({ politica: policyText });
       setSavedPolicyText(policyText);
       setSaveStatus("Política guardada com sucesso.");
-    } catch (error) {
+    } catch {
       setSaveStatus("Não foi possível guardar a política.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -115,10 +123,12 @@ const SoftinsaRgpd = memo(() => {
         <textarea
           id="softinsa-rgpd-policy"
           className="softinsa-rgpd-editor-textarea"
-          value={policyText}
-          onChange={(event) => setPolicyText(event.target.value)}
+          value={isLoading ? "" : policyText}
+          onChange={(e) => setPolicyText(e.target.value)}
           rows={16}
+          placeholder={isLoading ? "A carregar política..." : ""}
           aria-label="Texto das políticas RGPD"
+          disabled={isLoading || isSaving}
         />
 
         <div className="softinsa-rgpd-editor-actions">
@@ -132,9 +142,9 @@ const SoftinsaRgpd = memo(() => {
             type="button"
             className="softinsa-rgpd-editor-save"
             onClick={handleSavePolicy}
-            disabled={!isDirty || !policyText.trim()}
+            disabled={isLoading || isSaving || !isDirty || !policyText.trim()}
           >
-            Guardar
+            {isSaving ? "A guardar..." : "Guardar"}
           </button>
         </div>
       </div>
@@ -142,8 +152,8 @@ const SoftinsaRgpd = memo(() => {
       {isConsentModalOpen ? (
         <div className="softinsa-rgpd-modal-backdrop softinsa-rgpd-consent-backdrop" role="presentation">
           <div className="softinsa-rgpd-consent-modal" role="dialog" aria-label="Aceitação de termos RGPD">
-            <h2>Aceitação de termos</h2>
-            <p>Primeiro acesso detetado. Para continuar no portal, confirme a política abaixo.</p>
+            <h2>Teste de Aceitação de Termos</h2>
+            <p>Formulário apresentado no Registo da aplicação.</p>
 
             <div className="softinsa-rgpd-consent-policy">{savedPolicyText}</div>
 
@@ -151,8 +161,8 @@ const SoftinsaRgpd = memo(() => {
               <input
                 type="checkbox"
                 checked={consentChecked}
-                onChange={(event) => {
-                  setConsentChecked(event.target.checked);
+                onChange={(e) => {
+                  setConsentChecked(e.target.checked);
                   if (consentError) setConsentError("");
                 }}
               />

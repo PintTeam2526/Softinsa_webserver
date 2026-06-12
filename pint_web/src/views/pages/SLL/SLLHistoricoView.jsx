@@ -8,6 +8,12 @@ import SLLPagination from '../../components/SLLPagination'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-historico.css'
 
+import { getLearningPaths } from '../../../controllers/learningPathsController'
+import { getServiceLines } from '../../../controllers/serviceLinesController'
+import { getAreas } from '../../../controllers/areasController'
+import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
+
+
 function ExportIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true" style={{ strokeWidth: 2, stroke: 'currentColor' }}>
@@ -18,13 +24,11 @@ function ExportIcon() {
   )
 }
 
-
-import { getLearningPaths } from '../../../controllers/learningPathsController'
-import { getServiceLines } from '../../../controllers/serviceLinesController'
-import { getAreas } from '../../../controllers/areasController'
-import { getPedidos, getPedidoHistorico } from '../../../controllers/pedidosController'
-
-const requestAvatar = 'https://www.figma.com/api/mcp/asset/cf64d835-06cf-435b-8bfd-8b387bf43fa7'
+function normalizeImage(base64) {
+  return base64
+    ? `data:image/png;base64,${base64}`
+    : ''
+}
 
 function PaginationArrow({ direction = 'left', double = false }) {
   return (
@@ -99,6 +103,7 @@ function mapPedido(row, areaMap, slMap, lpMap) {
   return {
     id: row.id_pedido_badge,
     title: badge.nome_badge ?? `Pedido ${row.id_pedido_badge}`,
+    image: normalizeImage(badge.imagem_badge),
     consultant,
     status,
     approvedDate: dateStr ? String(dateStr).slice(0, 10) : '',
@@ -110,7 +115,6 @@ function mapPedido(row, areaMap, slMap, lpMap) {
 }
 
 function HistoryBadge({ status, approvedAt, approvedDate }) {
-  const label = status === 'Em progresso' ? 'Estado atualizado' : status
   const dateText = status === 'Em progresso'
     ? `Submetido em ${formatHistoryDate(approvedDate)}`
     : approvedAt
@@ -260,7 +264,7 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
     <article className={`sll-history-card-wrap${isExpanded ? ' is-expanded' : ''}`}>
       <button type="button" className="sll-history-card" onClick={onToggle} aria-expanded={isExpanded}>
         <div className="sll-history-card-avatar" aria-hidden="true">
-          <img src={requestAvatar} alt="" />
+          <img src={request.image} alt={request.title} />
           <span className="sll-history-card-avatar-ring" />
         </div>
 
@@ -306,7 +310,7 @@ function HistoryRequestCard({ request, isExpanded, onToggle, steps }) {
   )
 }
 
-function ExportFormatOption({ label, value, selected, onClick }) {
+function ExportFormatOption({ label, selected, onClick }) {
   return (
     <button type="button" className="sll-history-export-option" onClick={onClick} aria-pressed={selected}>
       <span className={`sll-history-export-option-toggle${selected ? ' is-selected' : ''}`} aria-hidden="true">
@@ -534,11 +538,7 @@ function SLLHistoricoView() {
 
   return (
     <div className="sll-history-page">
-      <SLLSidebar />
-
       <main className="sll-history-main">
-        <SLLTopbar />
-
         <div className="sll-history-content">
           <section className="sll-history-hero" aria-label="Histórico de pedidos">
             <div className="sll-history-hero-copy">
@@ -547,7 +547,7 @@ function SLLHistoricoView() {
             </div>
           </section>
 
-          <section className="sll-history-toolbar" aria-label="Filtros do histórico">
+          <section className="sll-history-toolbar flex-column flex-md-row align-items-stretch align-items-md-center" aria-label="Filtros do histórico">
             <div className="sll-history-tabs" role="tablist" aria-label="Estado dos pedidos">
               <button type="button" className={`sll-history-tab-button ${activeTab === 'Aprovado' ? 'is-active is-approved' : ''}`} onClick={() => setActiveTab('Aprovado')}>
                 Aprovados
@@ -566,7 +566,7 @@ function SLLHistoricoView() {
             </button>
           </section>
 
-          <section className="sll-history-search-row" aria-label="Pesquisar histórico">
+          <section className="sll-history-search-row flex-column flex-md-row align-items-stretch align-items-md-center" aria-label="Pesquisar histórico">
             <label className="sll-history-search">
               <FaSearch aria-hidden="true" />
               <input
