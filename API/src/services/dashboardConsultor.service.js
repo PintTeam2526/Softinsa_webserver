@@ -37,6 +37,10 @@ service.getObjetivoMaisProximo = async(id_consultor) => {
         order: [['data_limite_conclusao', 'ASC']]
     });
 
+        if (!objetivo) {
+        return null;
+    }
+
     const hoje = new Date();
     const dataLimiteObjetivo = new Date(objetivo.data_limite_conclusao);
 
