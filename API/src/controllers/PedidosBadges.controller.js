@@ -16,6 +16,12 @@ const Consultor = require("../models/Consultores.models");
 const Utilizador = require("../models/Utilizadores.models");
 const Objetivos = require('../models/Objetivos.models');
 const firebase = require('../services/firebase.service');
+const {
+  enviarEmailNovoPedidoTM,
+  enviarEmailPedidoSubmetido,
+  enviarEmailPedidoDevolvido,
+  enviarEmailValidacaoSL
+} = require('../services/email.service');
 
 const controllers = {};
 
@@ -55,13 +61,13 @@ async function criarHistorico(
 }
 
 async function criarNotificacao(idConsultor, texto, descricao, remetente) {
-    await Notificacoes.create({
-        id_consultor: idConsultor,
-        notificacao: texto,
-        descricao: descricao || null,
-        remetente: remetente,
-        data_de_envio: new Date()
-    });
+  await Notificacoes.create({
+    id_consultor: idConsultor,
+    notificacao: texto,
+    descricao: descricao || null,
+    remetente: remetente,
+    data_de_envio: new Date()
+  });
 }
 
 async function escolherTalentManager() {
@@ -279,6 +285,29 @@ controllers.createPedido = async (req, res) => {
 
       await transaction.commit();
 
+      const consultor = await Consultor.findByPk(id_consultor, {
+        include: [Utilizador]
+      });
+
+      const tmCompleto = await TalentManager.findByPk(
+        tm.id_talent_manager,
+        {
+          include: [Utilizador]
+        }
+      );
+
+      await enviarEmailNovoPedidoTM(
+        tmCompleto.Utilizadore.email_utilizador,
+        tmCompleto.Utilizadore.nome_utilizador,
+        consultor.Utilizadore.nome_utilizador,
+        badge.nome_badge
+      );
+
+      await enviarEmailPedidoSubmetido(
+        consultor.Utilizadore.email_utilizador,
+        consultor.Utilizadore.nome_utilizador,
+        badge.nome_badge
+      );
       return res.status(201).json({
         mensagem: "Pedido criado com sucesso",
         dados: pedido,
@@ -332,6 +361,30 @@ controllers.tmReview = async (req, res) => {
       mensagemHistorico = "Aprovado pelo Talent Manager";
       mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
       mensagemResposta = "Pedido aprovado";
+      const slCompleto = await ServiceLineLider.findByPk(
+        pedido.id_service_line_lider,
+        {
+          include: [Utilizador]
+        }
+      );
+
+      const consultor = await Consultor.findByPk(
+        pedido.id_consultor,
+        {
+          include: [Utilizador]
+        }
+      );
+
+      const badge = await Badges.findByPk(
+        pedido.id_badge
+      );
+
+      await enviarEmailValidacaoSL(
+        slCompleto.Utilizadore.email_utilizador,
+        slCompleto.Utilizadore.nome_utilizador,
+        consultor.Utilizadore.nome_utilizador,
+        badge.nome_badge
+      );
     } else if (acao === "devolver") {
       if (!motivo || motivo.trim() === "") {
         return res.status(400).json({
@@ -342,6 +395,23 @@ controllers.tmReview = async (req, res) => {
       mensagemHistorico = "Devolvido pelo Talent Manager";
       mensagemNotificacao = motivo;
       mensagemResposta = "Pedido devolvido";
+      const consultor = await Consultor.findByPk(
+        pedido.id_consultor,
+        {
+          include: [Utilizador]
+        }
+      );
+
+      const badge = await Badges.findByPk(
+        pedido.id_badge
+      );
+
+      await enviarEmailPedidoDevolvido(
+        consultor.Utilizadore.email_utilizador,
+        consultor.Utilizadore.nome_utilizador,
+        badge.nome_badge,
+        motivo
+      );
     } else {
       return res.status(400).json({
         mensagem: "Ação inválida. Use 'aprovar' ou 'devolver'",
@@ -358,11 +428,11 @@ controllers.tmReview = async (req, res) => {
       acao !== "aprovar" ? motivo : null,
     );
     await criarNotificacao(
-    pedido.id_consultor,
-    mensagemNotificacao,
-    acao === "devolver" ? motivo : "O teu pedido foi aprovado pelo Talent Manager e segue para avaliação final.",
-    "Talent Manager"
-);
+      pedido.id_consultor,
+      mensagemNotificacao,
+      acao === "devolver" ? motivo : "O teu pedido foi aprovado pelo Talent Manager e segue para avaliação final.",
+      "Talent Manager"
+    );
 
     //basta dar sync a tabela dos pedidos no mobile
     firebase.notificarSync('pedidosBadge');
@@ -501,6 +571,63 @@ controllers.slReview = async (req, res) => {
       acao !== "aprovar" ? motivo : "O teu pedido foi aprovado e o badge foi atribuído com sucesso.",
       "Service Line Líder"
     );
+
+    try {
+
+      const consultor = await Consultor.findByPk(
+        pedido.id_consultor,
+        {
+          include: [{
+            model: Utilizador
+          }]
+        }
+      );
+
+      const badge = await Badges.findByPk(
+        pedido.id_badge
+      );
+
+      if (consultor && badge) {
+
+        const email = consultor.Utilizadore.email_utilizador;
+        const nome = consultor.Utilizadore.nome_utilizador;
+
+        if (acao === "aprovar") {
+
+          await enviarEmailPedidoAprovado(
+            email,
+            nome,
+            badge.nome_badge
+          );
+
+        } else if (acao === "devolver") {
+
+          await enviarEmailPedidoDevolvido(
+            email,
+            nome,
+            badge.nome_badge,
+            motivo
+          );
+
+        } else if (acao === "rejeitar") {
+
+          await enviarEmailPedidoRejeitado(
+            email,
+            nome,
+            badge.nome_badge,
+            motivo
+          );
+
+        }
+      }
+
+    } catch (emailError) {
+      console.error(
+        "Erro ao enviar email:",
+        emailError
+      );
+    }
+
 
     firebase.notificarSync('historicoPedidos', pedido.id_consultor);
     firebase.notificarSync('badgesConcluidos', pedido.id_consultor);

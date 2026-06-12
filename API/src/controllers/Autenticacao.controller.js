@@ -8,7 +8,10 @@ const Area = require('../models/Areas.models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Utilizadores = require('../models/Utilizadores.models')
-const { enviarCodigoRecuperacao } = require('../services/email.service');
+const {
+  enviarCodigoRecuperacao,
+  enviarEmailBoasVindas
+} = require('../services/email.service');
 const codigoService = require('../services/codigoRecuperacao.service');
 
 
@@ -183,6 +186,15 @@ controllers.register = async (req, res) => {
       id_area: idAreaPref
     })
 
+    try {
+      await enviarEmailBoasVindas(
+        user.email_utilizador,
+        user.nome_utilizador
+      );
+    } catch (emailError) {
+      console.error('Erro ao enviar email:', emailError);
+    }
+
     //criar as conquistas do consultor
     //const conquistas = await Conquistas.findAll();
 
@@ -226,147 +238,147 @@ controllers.deleteUser = async (req, res) => {
 };
 
 controllers.updatePerfil = async (req, res) => {
-    try {
-        const { email, password, password_antiga, foto, id_area } = req.body;
-        const role = req.user.role;
+  try {
+    const { email, password, password_antiga, foto, id_area } = req.body;
+    const role = req.user.role;
 
-        const user = await User.findByPk(req.user.id);
+    const user = await User.findByPk(req.user.id);
 
-        if (!user) {
-            return res.status(404).json({ mensagem: "Utilizador não encontrado." });
-        }
-
-        if (email) user.email_utilizador = email;
-        if (foto) user.imagem_utilizador = foto;
-
-        if (password) {
-            if (!password_antiga) {
-                return res.status(400).json({ mensagem: "É obrigatório enviar a password antiga para alterar a password." });
-            }
-
-            const passwordCorreta = await bcrypt.compare(password_antiga, user.password_utilizador);
-            if (!passwordCorreta) {
-                return res.status(400).json({ mensagem: "Password antiga incorreta." });
-            }
-
-            user.password_utilizador = await bcrypt.hash(password, 10);
-        }
-
-        await user.save();
-
-        if (role === 'c' && id_area) {
-            const areaExiste = await Area.findByPk(id_area);
-            if (!areaExiste) {
-                return res.status(404).json({ mensagem: "Área não encontrada." });
-            }
-
-            const consultor = await Consultor.findOne({
-                where: { id_utilizador: req.user.id }
-            });
-
-            if (!consultor) {
-                return res.status(404).json({ mensagem: "Consultor não encontrado." });
-            }
-
-            consultor.id_area = id_area;
-            await consultor.save();
-        }
-
-        return res.status(200).json({ mensagem: "Perfil atualizado com sucesso." });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensagem: "Erro ao atualizar perfil.", erro: error.message });
+    if (!user) {
+      return res.status(404).json({ mensagem: "Utilizador não encontrado." });
     }
+
+    if (email) user.email_utilizador = email;
+    if (foto) user.imagem_utilizador = foto;
+
+    if (password) {
+      if (!password_antiga) {
+        return res.status(400).json({ mensagem: "É obrigatório enviar a password antiga para alterar a password." });
+      }
+
+      const passwordCorreta = await bcrypt.compare(password_antiga, user.password_utilizador);
+      if (!passwordCorreta) {
+        return res.status(400).json({ mensagem: "Password antiga incorreta." });
+      }
+
+      user.password_utilizador = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+
+    if (role === 'c' && id_area) {
+      const areaExiste = await Area.findByPk(id_area);
+      if (!areaExiste) {
+        return res.status(404).json({ mensagem: "Área não encontrada." });
+      }
+
+      const consultor = await Consultor.findOne({
+        where: { id_utilizador: req.user.id }
+      });
+
+      if (!consultor) {
+        return res.status(404).json({ mensagem: "Consultor não encontrado." });
+      }
+
+      consultor.id_area = id_area;
+      await consultor.save();
+    }
+
+    return res.status(200).json({ mensagem: "Perfil atualizado com sucesso." });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mensagem: "Erro ao atualizar perfil.", erro: error.message });
+  }
 };
 
 
 // POST /autenticacao/recuperar-password/enviar-codigo
 controllers.enviarCodigoRecuperacao = async (req, res) => {
-    try {
-        const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({ mensagem: "Email é obrigatório." });
-        }
-
-        const user = await User.findOne({ where: { email_utilizador: email } });
-
-        // Resposta genérica para não expor se o email existe
-        if (!user) {
-            return res.status(200).json({ mensagem: "Se o email existir, receberás um código de recuperação." });
-        }
-
-        // Gerar código de 6 dígitos
-        const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-
-        codigoService.guardarCodigo(email, codigo);
-
-        await enviarCodigoRecuperacao(email, codigo);
-
-        return res.status(200).json({ mensagem: "Se o email existir, receberás um código de recuperação." });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensagem: "Erro ao enviar código.", erro: error.message });
+    if (!email) {
+      return res.status(400).json({ mensagem: "Email é obrigatório." });
     }
+
+    const user = await User.findOne({ where: { email_utilizador: email } });
+
+    // Resposta genérica para não expor se o email existe
+    if (!user) {
+      return res.status(200).json({ mensagem: "Se o email existir, receberás um código de recuperação." });
+    }
+
+    // Gerar código de 6 dígitos
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+
+    codigoService.guardarCodigo(email, codigo);
+
+    await enviarCodigoRecuperacao(email, codigo);
+
+    return res.status(200).json({ mensagem: "Se o email existir, receberás um código de recuperação." });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mensagem: "Erro ao enviar código.", erro: error.message });
+  }
 };
 
 // POST /autenticacao/recuperar-password/verificar-codigo
 controllers.verificarCodigoRecuperacao = async (req, res) => {
-    try {
-        const { email, codigo } = req.body;
+  try {
+    const { email, codigo } = req.body;
 
-        if (!email || !codigo) {
-            return res.status(400).json({ mensagem: "Email e código são obrigatórios." });
-        }
-
-        const resultado = codigoService.validarCodigo(email, codigo);
-
-        if (!resultado.valido) {
-            return res.status(400).json({ mensagem: resultado.mensagem });
-        }
-
-        return res.status(200).json({ mensagem: "Código válido." });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensagem: "Erro ao verificar código.", erro: error.message });
+    if (!email || !codigo) {
+      return res.status(400).json({ mensagem: "Email e código são obrigatórios." });
     }
+
+    const resultado = codigoService.validarCodigo(email, codigo);
+
+    if (!resultado.valido) {
+      return res.status(400).json({ mensagem: resultado.mensagem });
+    }
+
+    return res.status(200).json({ mensagem: "Código válido." });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mensagem: "Erro ao verificar código.", erro: error.message });
+  }
 };
 
 // PUT /autenticacao/recuperar-password/redefinir
 controllers.redefinirPassword = async (req, res) => {
-    try {
-        const { email, codigo, nova_password } = req.body;
+  try {
+    const { email, codigo, nova_password } = req.body;
 
-        if (!email || !codigo || !nova_password) {
-            return res.status(400).json({ mensagem: "Email, código e nova password são obrigatórios." });
-        }
-
-        // Validar o código novamente antes de alterar
-        const resultado = codigoService.validarCodigo(email, codigo);
-        if (!resultado.valido) {
-            return res.status(400).json({ mensagem: resultado.mensagem });
-        }
-
-        const user = await User.findOne({ where: { email_utilizador: email } });
-        if (!user) {
-            return res.status(404).json({ mensagem: "Utilizador não encontrado." });
-        }
-
-        user.password_utilizador = await bcrypt.hash(nova_password, 10);
-        await user.save();
-
-        // Remover o código após uso
-        codigoService.removerCodigo(email);
-
-        return res.status(200).json({ mensagem: "A sua password foi redefinida com sucesso." });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensagem: "Erro ao redefinir password.", erro: error.message });
+    if (!email || !codigo || !nova_password) {
+      return res.status(400).json({ mensagem: "Email, código e nova password são obrigatórios." });
     }
+
+    // Validar o código novamente antes de alterar
+    const resultado = codigoService.validarCodigo(email, codigo);
+    if (!resultado.valido) {
+      return res.status(400).json({ mensagem: resultado.mensagem });
+    }
+
+    const user = await User.findOne({ where: { email_utilizador: email } });
+    if (!user) {
+      return res.status(404).json({ mensagem: "Utilizador não encontrado." });
+    }
+
+    user.password_utilizador = await bcrypt.hash(nova_password, 10);
+    await user.save();
+
+    // Remover o código após uso
+    codigoService.removerCodigo(email);
+
+    return res.status(200).json({ mensagem: "A sua password foi redefinida com sucesso." });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ mensagem: "Erro ao redefinir password.", erro: error.message });
+  }
 };
 
 
