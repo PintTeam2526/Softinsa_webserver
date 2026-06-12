@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://softinsa-api-rw5t.onrender.com',
 })
 
 // Sacar o token para o localStorage e colocar em todos os pedidos
