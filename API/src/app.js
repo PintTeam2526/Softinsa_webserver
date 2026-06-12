@@ -36,7 +36,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://softinsa-webserver.onrender.com",
   }),
 );
 app.use(express.static(path.join(__dirname, "public")));
