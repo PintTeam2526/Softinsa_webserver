@@ -113,7 +113,7 @@ function ProfileButton({ profile }) {
     <Link to="/consultor/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
       <div className="softinsa-shell-profile-wrap">
         <img
-          src={`data:image/jpeg;base64,${profile.imagem_utilizador}`}
+          src={profile.imagem_utilizador}
           alt={profile.nome_utilizador}
           className="softinsa-shell-profile-avatar"
         />

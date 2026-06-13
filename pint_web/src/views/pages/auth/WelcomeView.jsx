@@ -1,6 +1,34 @@
+import { useNavigate } from 'react-router-dom'
 import './WelcomeView.css'
 
 function WelcomeView() {
+  const navigate = useNavigate()
+
+  function handleLogin() {
+    const token = localStorage.getItem('token') ?? sessionStorage.getItem('token')
+
+    if (!token) {
+      navigate('/login')
+      return
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      const redirectMap = {
+        a: '/softinsa',
+        c: '/consultor',
+        s: '/sll',
+        t: '/talent-manager',
+      }
+      navigate(redirectMap[payload.role] ?? '/login')
+    } catch {
+      // Token corrompido -> limpa e manda para login
+      localStorage.removeItem('token')
+      sessionStorage.removeItem('token')
+      navigate('/login')
+    }
+  }
+
   return (
     <div className="welcome-page">
 
@@ -50,9 +78,9 @@ function WelcomeView() {
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </a>
-          <a href="/login" className="welcome-btn-secondary">
+          <button onClick={handleLogin} className="welcome-btn-secondary">
             Iniciar sessão
-          </a>
+          </button>
         </div>
 
         <a

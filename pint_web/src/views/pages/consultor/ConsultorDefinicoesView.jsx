@@ -19,7 +19,7 @@ import { getConsultor, updatemeUtilizador } from '../../../controllers/utilizado
 import { getAreas } from '../../../controllers/areasController'
 import { getRGPD } from '../../../controllers/gestaoController'
 
-// ─── Helper: converte Base64 da BD num src válido para <img> ─────────────────
+
 function resolveImagem(raw) {
   if (!raw) return null
 
@@ -42,21 +42,6 @@ function resolveImagem(raw) {
   else if (raw.startsWith('PHN2')) mime = 'image/svg+xml'
 
   return `data:${mime};base64,${raw}`
-}
-
-// ─── Aceitação RGPD (estado local do browser) ────────────────────────────────
-const ACCEPTANCE_STORAGE_KEY = 'softinsa.rgpd.acceptance'
-
-function getStoredAcceptance() {
-  try {
-    const raw = localStorage.getItem(ACCEPTANCE_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' ? parsed : null
-  } catch {
-    localStorage.removeItem(ACCEPTANCE_STORAGE_KEY)
-    return null
-  }
 }
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
@@ -178,7 +163,6 @@ function ConsultorDefinicoesView() {
 
   // RGPD
   const [rgpdPolitica, setRgpdPolitica] = useState(null)
-  const [acceptance, setAcceptance] = useState(getStoredAcceptance)
 
   // UI
   const [activeModal, setActiveModal] = useState(null)
@@ -191,11 +175,6 @@ function ConsultorDefinicoesView() {
   const [areaDraft, setAreaDraft] = useState('')
   const [avatarDraft, setAvatarDraft] = useState('')
   const fileInputRef = useRef(null)
-
-  const hasAcceptedRgpd = useMemo(() => {
-    if (!rgpdPolitica?.trim()) return true
-    return Boolean(acceptance && acceptance.version === rgpdPolitica)
-  }, [acceptance, rgpdPolitica])
 
   // Carrega perfil e RGPD em paralelo
   useEffect(() => {
@@ -296,19 +275,9 @@ function ConsultorDefinicoesView() {
     await saveUpdate({ foto: avatarDraft }, 'Imagem de perfil atualizada.')
   }
 
-  // ── RGPD ───────────────────────────────────────────────────────────────────
-  function handleRgpdAccept() {
-    const next = { version: rgpdPolitica, acceptedAt: new Date().toISOString() }
-    localStorage.setItem(ACCEPTANCE_STORAGE_KEY, JSON.stringify(next))
-    setAcceptance(next)
-  }
-
-  function handleRgpdReject() {
-    // Mantém o modal aberto com mensagem de erro (gerido dentro do RgpdConsentModal)
-  }
-
   function handleLogout() {
     localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
     navigate('/')
   }
 
@@ -579,15 +548,6 @@ function ConsultorDefinicoesView() {
         <Modal title="Política de privacidade (RGPD)" onClose={closeModal}>
           <div className="sll-profile-rgpd-policy">{rgpdPolitica}</div>
         </Modal>
-      ) : null}
-
-      {/* ── Modal RGPD ───────────────────────────────────────────────────────── */}
-      {!hasAcceptedRgpd ? (
-        <RgpdConsentModal
-          politica={rgpdPolitica}
-          onAccept={handleRgpdAccept}
-          onReject={handleRgpdReject}
-        />
       ) : null}
     </div>
   )

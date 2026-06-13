@@ -1,9 +1,23 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import './login.css'
+
 import api from '../../../services/api'
 
-const imgTick = 'http://localhost:3845/assets/0b2cf47547393ab971bf1e9c667b682519c74f46.svg'
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M13.5 4 6.5 11 2.5 7"
+        stroke="#3a57e8"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 function LoginView() {
   const navigate = useNavigate()
@@ -37,7 +51,8 @@ function LoginView() {
       })
 
       const { token, user } = response.data
-      localStorage.setItem('token', token)
+      const storage = formData.rememberPassword ? localStorage : sessionStorage
+      storage.setItem('token', token)
 
       const redirectMap = {
         a: '/softinsa',
@@ -150,13 +165,11 @@ function LoginView() {
                       className="login-checkbox"
                     />
                     <div className="login-checkbox-tick">
-                      {formData.rememberPassword && (
-                        <img alt="" src={imgTick} />
-                      )}
+                      {formData.rememberPassword && <CheckIcon />}
                     </div>
                   </div>
                   <label htmlFor="rememberPassword" className="login-checkbox-label">
-                    Guardar password?
+                    Guardar Login?
                   </label>
                 </div>
                 <a href="#" className="login-forgot-link">

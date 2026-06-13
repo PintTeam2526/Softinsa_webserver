@@ -395,6 +395,197 @@ select.register-input {
   transform: translateY(0);
 }
 
+/* ── MODAL RGPD ───────────────────────────────────────── */
+.rgpd-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: rgpd-fade-in 0.2s ease;
+}
+
+.rgpd-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: rgpd-fade-in 0.2s ease;
+}
+
+@keyframes rgpd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.rgpd-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 20px 60px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  animation: rgpd-slide-up 0.25s ease;
+  overflow: hidden;
+}
+
+@keyframes rgpd-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.rgpd-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f0f1f5;
+  flex-shrink: 0;
+}
+
+.rgpd-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.rgpd-close-button {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #8a92a6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.rgpd-close-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rgpd-close-button:hover {
+  background: #f0f1f5;
+  color: #000000;
+}
+
+.rgpd-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rgpd-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 0;
+  color: #8a92a6;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+}
+
+.rgpd-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f0f1f5;
+  border-top-color: #3a57e8;
+  border-radius: 50%;
+  animation: rgpd-spin 0.7s linear infinite;
+}
+
+@keyframes rgpd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rgpd-error-msg {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: #c03221;
+  background: #fdecea;
+  border: 1px solid #f5b8b1;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.rgpd-politica-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rgpd-politica-item + .rgpd-politica-item {
+  padding-top: 1.25rem;
+  border-top: 1px solid #f0f1f5;
+}
+
+.rgpd-politica-titulo {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.rgpd-politica-descricao {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: #4a5568;
+  margin: 0;
+}
+
+.rgpd-modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f1f5;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.rgpd-accept-button {
+  padding: 0.5rem 1.5rem;
+  background-color: #3a57e8;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  min-height: 2.5rem;
+}
+
+.rgpd-accept-button:hover {
+  background-color: #2940c0;
+  box-shadow: 0px 4px 12px rgba(58, 87, 232, 0.3);
+}
+
 /* ── FOOTER ───────────────────────────────────────────── */
 .register-footer {
   display: flex;
@@ -473,5 +664,17 @@ select.register-input {
 
   .register-button {
     min-height: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rgpd-modal {
+    max-height: 90vh;
+  }
+
+  .rgpd-modal-header,
+  .rgpd-modal-body,
+  .rgpd-modal-footer {
+    padding: 1rem;
   }
 }

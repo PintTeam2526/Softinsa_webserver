@@ -141,7 +141,7 @@ function AlertCard({ type, Icon, title, subtitle, subtitleHighlight, value, onCl
 
 function BadgeRow({ badge, isLarge = false, onClick, navigate: propNavigate = null }) {
   const StatusIcon = badge.Icon
-  const defaultNavigate = propNavigate || (() => {})
+  const defaultNavigate = propNavigate || (() => { })
   const handleClick = isLarge ? () => defaultNavigate('/consultor/badges/pedidos') : onClick
   const isInteractive = typeof handleClick === 'function'
 
@@ -216,9 +216,13 @@ function DashboardView() {
     { title: 'Learning Path', percent: Math.round(dados.progresso_learning_path), widthClass: 'is-learning-path' },
   ]
 
-  const diasLabel = dados.dias_proximo_objetivo < 0
-    ? `Expirado há ${Math.abs(dados.dias_proximo_objetivo)} dias`
-    : `${dados.dias_proximo_objetivo} ${dados.dias_proximo_objetivo === 1 ? 'dia' : 'dias'}`
+  const semObjetivos = dados.dias_proximo_objetivo === null || dados.dias_proximo_objetivo === undefined
+  const diasLabel = semObjetivos
+    ? null
+    : dados.dias_proximo_objetivo < 0
+      ? `Expirado há ${Math.abs(dados.dias_proximo_objetivo)} dias`
+      : `${dados.dias_proximo_objetivo} ${dados.dias_proximo_objetivo === 1 ? 'dia' : 'dias'}`
+
 
   const alertCards = [
     {
@@ -232,8 +236,12 @@ function DashboardView() {
       type: 'is-objective',
       Icon: IconAlertTarget,
       title: 'Objetivos Por Completar',
-      subtitleHighlight: diasLabel,
-      subtitle: dados.dias_proximo_objetivo < 0 ? '' : 'até o próximo objetivo expirar',
+      subtitleHighlight: semObjetivos ? null : diasLabel,
+      subtitle: semObjetivos
+        ? 'Não tens objetivos definidos'
+        : dados.dias_proximo_objetivo < 0
+          ? ''
+          : 'até o próximo objetivo expirar',
       onClick: () => navigate('/consultor/badges/objetivos'),
     },
     {
