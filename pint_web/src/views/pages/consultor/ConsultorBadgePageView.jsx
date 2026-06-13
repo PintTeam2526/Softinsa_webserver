@@ -552,90 +552,94 @@ function ConsultorBadgePageView({ isGuest = false }) {
 
       <Row className="g-4 justify-content-center">
         <Col xs={12} lg={badgeDevolvido ? 6 : 8}>
-        <article className="consultor-badge-card" aria-label={`Detalhes do badge ${badge.name}`}>
-          <header className="consultor-badge-info-header">
-            <h2>{badge.name}</h2>
-            <span className="consultor-badge-info-level">{badge.level}</span>
-          </header>
-          <Row className="g-3 align-items-center">
-            <Col xs={12} md>
-              <div className="consultor-badge-info-description">
-                <span className="consultor-badge-info-description-label">Descrição:</span>
-                <p className="consultor-badge-info-description-text">{badge.description}</p>
-              </div>
-            </Col>
-            <Col xs={12} md="auto">
-              <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
-            </Col>
-          </Row>
-          <div className="consultor-badge-info-status">
-            <span className="consultor-badge-info-status-row">
-              <IconStatus status={badge.status} />
-              <span>{badge.status}</span>
-            </span>
-            <span className="consultor-badge-info-status-row">
-              <HiOutlineCurrencyEuro aria-hidden="true" />
-              <span>{badge.pago === true ? 'Inclui documentação paga' : badge.pago === false ? 'Badge Gratuito' : '—'}</span>
-            </span>
-            <span className="consultor-badge-info-status-row">
-              <HiOutlineCalendarDays aria-hidden="true" />
-              <span>
-                {badge.dataExpiracao
-                  ? `Expira em ${badge.dataExpiracao}`
-                  : 'Sem data de expiração'}
+          <article className="consultor-badge-card" aria-label={`Detalhes do badge ${badge.name}`}>
+            <header className="consultor-badge-info-header">
+              <h2>{badge.name}</h2>
+              <span className="consultor-badge-info-level">{badge.level}</span>
+            </header>
+            <Row className="g-3 align-items-center">
+              <Col xs={12} md>
+                <div className="consultor-badge-info-description">
+                  <span className="consultor-badge-info-description-label">Descrição:</span>
+                  <p className="consultor-badge-info-description-text">{badge.description}</p>
+                </div>
+              </Col>
+              <Col xs={12} md="auto">
+                <img src={badge.image} alt={badge.name} className="consultor-badge-info-image" />
+              </Col>
+            </Row>
+            <div className="consultor-badge-info-status">
+              {!isGuest && (
+                <span className="consultor-badge-info-status-row">
+                  <IconStatus status={badge.status} />
+                  <span>{badge.status}</span>
+                </span>
+              )}
+              <span className="consultor-badge-info-status-row">
+                <HiOutlineCurrencyEuro aria-hidden="true" />
+                <span>{badge.pago === true ? 'Inclui documentação paga' : badge.pago === false ? 'Badge Gratuito' : '—'}</span>
               </span>
-            </span>
-            <span className="consultor-badge-info-status-row">
-              <IconBadgePoints />
-              <span>{badge.points} Pontos</span>
-            </span>
+              {!isGuest && (
+                <span className="consultor-badge-info-status-row">
+                  <HiOutlineCalendarDays aria-hidden="true" />
+                  <span>
+                    {badge.dataExpiracao
+                      ? `Expira em ${badge.dataExpiracao}`
+                      : 'Sem data de expiração'}
+                  </span>
+                </span>
+              )}
+              <span className="consultor-badge-info-status-row">
+                <IconBadgePoints />
+                <span>{badge.points} Pontos</span>
+              </span>
 
-          </div>
-          <div className="consultor-badge-info-actions">
-            {!isGuest && (
-              <button
-                type="button"
-                className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
-                onClick={handleToggleFavorito}
-                aria-pressed={isFavorite}
-              >
-                {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
-                <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
-              </button>
-            )}
-            {!isGuest && (
-              <button
-                type="button"
-                className="consultor-badge-info-action-btn"
-                onClick={() => setIsShareOpen(true)}
-                aria-haspopup="dialog"
-                aria-expanded={isShareOpen}
-                disabled={!badgeAceite}
-                title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
-              >
-                <HiOutlineShare aria-hidden="true" />
-                <span>Partilhar Badge</span>
-              </button>
-            )}
-          </div>
-        </article>
+            </div>
+            <div className="consultor-badge-info-actions">
+              {!isGuest && (
+                <button
+                  type="button"
+                  className={`consultor-badge-info-action-btn${isFavorite ? ' is-active' : ''}`}
+                  onClick={handleToggleFavorito}
+                  aria-pressed={isFavorite}
+                >
+                  {isFavorite ? <HiStar aria-hidden="true" /> : <HiOutlineStar aria-hidden="true" />}
+                  <span>{isFavorite ? 'Retirar dos Favoritos' : 'Marcar como Favorito'}</span>
+                </button>
+              )}
+              {!isGuest && (
+                <button
+                  type="button"
+                  className="consultor-badge-info-action-btn"
+                  onClick={() => setIsShareOpen(true)}
+                  aria-haspopup="dialog"
+                  aria-expanded={isShareOpen}
+                  disabled={!badgeAceite}
+                  title={!badgeAceite ? 'Só podes partilhar um badge aprovado' : undefined}
+                >
+                  <HiOutlineShare aria-hidden="true" />
+                  <span>Partilhar Badge</span>
+                </button>
+              )}
+            </div>
+          </article>
         </Col>
 
         {badgeDevolvido && (
           <Col xs={12} lg={6}>
-          <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
-            <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
-            <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
-            <div className="consultor-badge-devolucoes-field"><label>Avaliador e Cargo:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span></div>
-            <div className="consultor-badge-devolucoes-field"><label>Motivo:</label><span className="consultor-badge-devolucoes-field-value is-motivo">{badge.devolucao.motivo}</span></div>
-            <div className="consultor-badge-devolucoes-upload">
-              <span className="consultor-badge-devolucoes-upload-label">Nova Documentação:</span>
-              <UploadRow />
-            </div>
-            <div className="consultor-badge-card-actions">
-              <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
-            </div>
-          </article>
+            <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
+              <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
+              <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
+              <div className="consultor-badge-devolucoes-field"><label>Avaliador e Cargo:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span></div>
+              <div className="consultor-badge-devolucoes-field"><label>Motivo:</label><span className="consultor-badge-devolucoes-field-value is-motivo">{badge.devolucao.motivo}</span></div>
+              <div className="consultor-badge-devolucoes-upload">
+                <span className="consultor-badge-devolucoes-upload-label">Nova Documentação:</span>
+                <UploadRow />
+              </div>
+              <div className="consultor-badge-card-actions">
+                <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
+              </div>
+            </article>
           </Col>
         )}
       </Row>
