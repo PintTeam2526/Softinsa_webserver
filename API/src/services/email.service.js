@@ -12,8 +12,13 @@ const transporter = nodemailer.createTransport({
 });
 
 async function enviarCodigoRecuperacao(email, codigo) {
+<<<<<<< Updated upstream
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+    /* const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: email,
         subject: 'Recuperação de Password',
         html: `
@@ -28,11 +33,22 @@ async function enviarCodigoRecuperacao(email, codigo) {
             </div>
         `
     });
+<<<<<<< Updated upstream
 }
 
 async function enviarEmailBoasVindas(email, nome) {
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
+}
+
+async function enviarEmailBoasVindas(email, nome) {
+   /*  const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: email,
         subject: 'Bem-vindo à Softinsa Badges',
         html: `
@@ -49,11 +65,22 @@ async function enviarEmailBoasVindas(email, nome) {
             </div>
         `
     });
+<<<<<<< Updated upstream
 }
 
 async function enviarEmailNovoPedidoTM(emailTM, nomeTM, nomeConsultor, nomeBadge) {
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
+}
+
+async function enviarEmailNovoPedidoTM(emailTM, nomeTM, nomeConsultor, nomeBadge) {
+    /* const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: emailTM,
         subject: 'Nova candidatura para validação',
         html: `
@@ -67,11 +94,22 @@ async function enviarEmailNovoPedidoTM(emailTM, nomeTM, nomeConsultor, nomeBadge
             <p>Acede à plataforma para analisar o pedido.</p>
         `
     });
+<<<<<<< Updated upstream
 }
 
 async function enviarEmailPedidoSubmetido(email, nome, nomeBadge) {
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
+}
+
+async function enviarEmailPedidoSubmetido(email, nome, nomeBadge) {
+    /* const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: email,
         subject: 'Candidatura submetida com sucesso',
         html: `
@@ -84,11 +122,22 @@ async function enviarEmailPedidoSubmetido(email, nome, nomeBadge) {
             <p>Receberás uma notificação quando existir uma decisão.</p>
         `
     });
+<<<<<<< Updated upstream
 }
 
 async function enviarEmailPedidoDevolvido(email, nome, nomeBadge, motivo) {
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
+}
+
+async function enviarEmailPedidoDevolvido(email, nome, nomeBadge, motivo) {
+    /* const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: email,
         subject: 'Pedido devolvido para correção',
         html: `
@@ -102,11 +151,22 @@ async function enviarEmailPedidoDevolvido(email, nome, nomeBadge, motivo) {
             <p>Podes corrigir a informação e submeter novamente.</p>
         `
     });
+<<<<<<< Updated upstream
 }
 
 async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge) {
     await transporter.sendMail({
         from: `"Softinsa Badges" <${process.env.EMAIL_USER}>`,
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
+}
+
+async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge) {
+    /* const { error } = await resend.emails.send({
+        from: FROM,
+>>>>>>> Stashed changes
         to: emailSL,
         subject: 'Pedido pendente de validação final',
         html: `
@@ -120,6 +180,13 @@ async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge)
             <p>Acede à plataforma para concluir a avaliação.</p>
         `
     });
+<<<<<<< Updated upstream
+=======
+
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+
+    console.log("teste");
+>>>>>>> Stashed changes
 }
 
 module.exports = {
