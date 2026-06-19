@@ -264,7 +264,6 @@ controllers.updatePerfil = async (req, res) => {
             user.password_utilizador = await bcrypt.hash(password, 10);
         }
 
-    user.estado_a_i = false;
     await user.save();
 
         if (role === 'c' && id_area) {
