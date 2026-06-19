@@ -92,7 +92,7 @@ function BadgeRow({ badge }) {
 
       <div className="tm-badge-row-right">
         <span>{badge.consultant}</span>
-        <Link to={`/talent-manager/perfil-publico?name=${encodeURIComponent(badge.consultant)}`} state={{ name: badge.consultant }}>
+        <Link to={`/talent-manager/perfil-publico/${badge.id}`}>
           Ver perfil +
         </Link>
       </div>
@@ -160,13 +160,17 @@ function TalentManagerDashboardView() {
   }))
 
   // Mapear badges a expirar
-  const badgeExpiring = (dados.proximos_badges_expirar ?? []).map(badge => ({
-    name: badge.nome_badge,
-    consultant: badge.nome_consultor,
-    date: diasParaData(badge.dias_para_expirar),
-    image: resolveImagem(badge.imagem_badge),
-    tone: calcularToneBadge(badge.dias_para_expirar),
-  }))
+  const badgeExpiring = (dados.proximos_badges_expirar ?? []).map(badge => {
+    console.log('badge raw:', badge)  // ← add this temporarily
+    return {
+      id: badge.id_consultor,
+      name: badge.nome_badge,
+      consultant: badge.nome_consultor,
+      date: diasParaData(badge.dias_para_expirar),
+      image: resolveImagem(badge.imagem_badge),
+      tone: calcularToneBadge(badge.dias_para_expirar),
+    }
+  })
 
   return (
     <>
