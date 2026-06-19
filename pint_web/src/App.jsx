@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import PrivateRoute from './views/components/PrivateRoute'
+
 import GuestLayout from './views/layouts/GuestLayout'
 import SoftinsaLayout from './views/layouts/SoftinsaLayout'
 import SllLayout from './views/layouts/SllLayout'
@@ -58,6 +60,7 @@ function App() {
       <ScrollToTop />
       <Routes>
 
+        {/* Rotas Públicas */}
         <Route path="/" element={<GuestLayout />}>
           <Route index element={<WelcomeView />} />
           <Route path="/badges" element={<TalentManagerBadgesView isGuest={true} />} />
@@ -69,7 +72,9 @@ function App() {
         <Route path="/login" element={<LoginView />} />
         <Route path="/recuperar" element={<RecuperacaoView />} />
 
-        <Route path="/softinsa" element={<SoftinsaLayout />}>
+        <Route path="/softinsa" element={
+          <PrivateRoute><SoftinsaLayout /></PrivateRoute>
+        }>
           <Route index element={<DashboardView />} />
           <Route path="utilizadores" element={<SoftinsaUsers />} />
           <Route path="pedidos" element={<SoftinsaPedidos />} />
@@ -82,7 +87,9 @@ function App() {
           <Route path="perfil-publico" element={<PerfilPublicoView />} />
         </Route>
 
-        <Route path="/sll" element={<SllLayout />}>
+        <Route path="/sll" element={
+          <PrivateRoute><SllLayout /></PrivateRoute>
+        }>
           <Route index element={<SLLDashboard />} />
           <Route path="/sll/certificados" element={<SLLCertificadosView />} />
           <Route path="/sll/badges" element={<SLLBadgesView />} />
@@ -94,7 +101,9 @@ function App() {
           <Route path="/sll/perfil-publico/:id_consultor" element={<PerfilPublicoView />} />
         </Route>
 
-        <Route path="/talent-manager" element={<TalentManagerLayout />}>
+        <Route path="/talent-manager" element={
+          <PrivateRoute><TalentManagerLayout /></PrivateRoute>
+        }>
           <Route index element={<TalentManagerDashboardView />} />
           <Route path="pedidos" element={<TalentManagerPedidosView />} />
           <Route path="historico" element={<TalentManagerHistoricoView />} />
@@ -106,7 +115,9 @@ function App() {
           <Route path="perfil-publico/:id_consultor" element={<PerfilPublicoView />} />
         </Route>
 
-        <Route path="/consultor" element={<ConsultorLayout />}>
+        <Route path="/consultor" element={
+          <PrivateRoute><ConsultorLayout /></PrivateRoute>
+        }>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<ConsultorDashboardView />} />
           <Route path="home" element={<ConsultorDashboardView />} />

@@ -14,6 +14,8 @@ import './ConsultorBadgePageView.css'
 
 import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
 
+import { getToken } from '../../../services/auth'
+
 import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
@@ -75,10 +77,10 @@ function normalizeBadge(raw, requisitosRaw = [], resolved = {}) {
 
 function getConsultorIdFromToken() {
   try {
-    const token = localStorage.getItem('token')
+    const token = getToken()
     if (!token) return null
     const payload = JSON.parse(atob(token.split('.')[1]))
-    return payload.id_consultor ?? payload.id ?? null  // id_consultor primeiro
+    return payload.id_consultor ?? payload.id ?? null
   } catch { return null }
 }
 

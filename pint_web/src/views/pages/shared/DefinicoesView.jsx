@@ -11,6 +11,8 @@ import {
     HiOutlineArrowRightOnRectangle,
 } from 'react-icons/hi2'
 
+import { getToken } from '../../../services/auth'
+
 import { getUtilizadorById, updatemeUtilizador } from '../../../controllers/utilizadoresController'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -92,10 +94,11 @@ function PerfilView({ roleLabel, rolePillClass }) {
 
     const idUtilizador = (() => {
         try {
-            const payload = JSON.parse(atob(localStorage.getItem('token').split('.')[1]))
+            const token = getToken()
+            const payload = JSON.parse(atob(token.split('.')[1]))
             return payload.id
         } catch {
-            return localStorage.getItem('id_utilizador')
+            return null
         }
     })()
 

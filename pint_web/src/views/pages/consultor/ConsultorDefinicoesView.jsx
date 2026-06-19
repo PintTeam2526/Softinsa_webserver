@@ -15,6 +15,8 @@ import { Row, Col } from 'react-bootstrap'
 import './ConsultorDefinicoesView.css'
 import '../shared/profile-settings.css'
 
+import { clearToken } from '../../../services/auth'
+
 import { getConsultor, updatemeUtilizador } from '../../../controllers/utilizadoresController'
 import { getAreas } from '../../../controllers/areasController'
 import { getRGPD } from '../../../controllers/gestaoController'
@@ -276,8 +278,7 @@ function ConsultorDefinicoesView() {
   }
 
   function handleLogout() {
-    localStorage.removeItem('token')
-    sessionStorage.removeItem('token')
+    clearToken()
     navigate('/')
   }
 
