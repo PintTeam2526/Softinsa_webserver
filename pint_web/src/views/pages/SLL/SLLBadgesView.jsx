@@ -9,6 +9,8 @@ import SLLSidebar from '../../components/SLLSidebar'
 import SLLTopbar from '../../components/SLLTopbar'
 import './SLL-badges.css'
 
+import { getToken } from '../../../services/auth'
+
 import { getAreas } from '../../../controllers/areasController'
 import { getBadges } from '../../../controllers/badgesController'
 import { getRequisitosByBadge } from '../../../controllers/requisitosController'
@@ -27,18 +29,6 @@ function ExportIcon() {
 const imgBadgeFallback = 'https://www.figma.com/api/mcp/asset/886d10fd-890a-4f34-b26c-01f949cbf5a6'
 
 // ── utilitários ───────────────────────────────────────────────────────────────
-
-/** Extrai o payload do JWT guardado no localStorage sem biblioteca externa */
-function getTokenPayload() {
-  try {
-    const token = localStorage.getItem('token')
-    if (!token) return null
-    const payload = token.split('.')[1]
-    return JSON.parse(atob(payload))
-  } catch {
-    return null
-  }
-}
 
 /** Normaliza imagens base64 vindas do backend */
 function normalizeImage(raw) {
@@ -96,7 +86,9 @@ function SLLBadgesView() {
 
   async function loadData() {
     try {
-      const payload = getTokenPayload()
+      const token = getToken()
+      if (!token) return
+      const payload = JSON.parse(atob(token.split('.')[1]))
       const idServiceLine = payload?.id_service_line_lider
       if (!idServiceLine) {
         console.error('Não foi possível determinar a service line do utilizador.')
