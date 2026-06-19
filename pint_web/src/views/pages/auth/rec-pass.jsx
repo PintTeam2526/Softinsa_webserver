@@ -2,22 +2,32 @@ import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './rec-pass.css'
 
+import { enviarCodigoRecuperacao, verificarCodigoRecuperacao, redefinirPassword } from '../../../controllers/recPassController'
+
+
 function RecuperacaoView() {
   const navigate = useNavigate()
-  const [step, setStep] = useState('email') // 'email' | 'codigo'
+  const [step, setStep] = useState('email') // 'email' | 'codigo' | 'nova-password'
   const [email, setEmail] = useState('')
   const [codigo, setCodigo] = useState(['', '', '', '', '', ''])
+  const [novaPassword, setNovaPassword] = useState('')
+  const [confirmarPassword, setConfirmarPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const inputsRef = useRef([])
 
-  function handleEmailSubmit(event) {
+  async function handleEmailSubmit(event) {
     event.preventDefault()
     if (!email) { setError('Introduza o seu email.'); return }
     setError('')
     setLoading(true)
-    // TODO: chamar API de recuperação
-    setTimeout(() => { setLoading(false); setStep('codigo') }, 800)
+    const sucesso = await enviarCodigoRecuperacao(email)
+    setLoading(false)
+    if (sucesso) {
+      setStep('codigo')
+    } else {
+      setError('Erro ao enviar o código. Tente novamente.')
+    }
   }
 
   function handleCodigoChange(index, value) {
@@ -45,14 +55,34 @@ function RecuperacaoView() {
     }
   }
 
-  function handleCodigoSubmit(event) {
+  async function handleCodigoSubmit(event) {
     event.preventDefault()
     if (codigo.some(d => d === '')) { setError('Preencha todos os dígitos do código.'); return }
     setError('')
     setLoading(true)
-    // TODO: chamar API de verificação de código
-    console.log('Código:', codigo.join(''))
-    setTimeout(() => setLoading(false), 800)
+    const sucesso = await verificarCodigoRecuperacao(email, codigo.join(''))
+    setLoading(false)
+    if (sucesso) {
+      setStep('nova-password')
+    } else {
+      setError('Código inválido ou expirado. Tente novamente.')
+    }
+  }
+
+  async function handleNovaPasswordSubmit(event) {
+    event.preventDefault()
+    if (!novaPassword || !confirmarPassword) { setError('Preencha os dois campos.'); return }
+    if (novaPassword !== confirmarPassword) { setError('As passwords não coincidem.'); return }
+    if (novaPassword.length < 6) { setError('A password deve ter pelo menos 6 caracteres.'); return }
+    setError('')
+    setLoading(true)
+    const sucesso = await redefinirPassword(email, codigo.join(''), novaPassword)
+    setLoading(false)
+    if (sucesso) {
+      navigate('/login')
+    } else {
+      setError('Erro ao redefinir a password. O código pode ter expirado.')
+    }
   }
 
   return (
@@ -70,7 +100,8 @@ function RecuperacaoView() {
       <div className="recuperacao-form-side">
         <div className="recuperacao-form-wrapper">
 
-          {step === 'email' ? (
+          {/* PASSO 1 — Email */}
+          {step === 'email' && (
             <div className="recuperacao-form-content">
               <div className="recuperacao-icon" aria-hidden="true">
                 <svg viewBox="0 0 48 48" fill="none">
@@ -100,7 +131,7 @@ function RecuperacaoView() {
                   />
                 </div>
 
-                {error ? <p className="recuperacao-error">{error}</p> : null}
+                {error && <p className="recuperacao-error">{error}</p>}
 
                 <button type="submit" className="recuperacao-button" disabled={loading}>
                   {loading ? 'A enviar…' : 'Enviar código'}
@@ -116,8 +147,10 @@ function RecuperacaoView() {
                 Cancelar
               </button>
             </div>
+          )}
 
-          ) : (
+          {/* PASSO 2 — Código */}
+          {step === 'codigo' && (
             <div className="recuperacao-form-content">
               <div className="recuperacao-icon" aria-hidden="true">
                 <svg viewBox="0 0 48 48" fill="none">
@@ -152,7 +185,7 @@ function RecuperacaoView() {
                   ))}
                 </div>
 
-                {error ? <p className="recuperacao-error">{error}</p> : null}
+                {error && <p className="recuperacao-error">{error}</p>}
 
                 <button type="submit" className="recuperacao-button" disabled={loading}>
                   {loading ? 'A verificar…' : 'Confirmar código'}
@@ -166,6 +199,62 @@ function RecuperacaoView() {
               >
                 ← Alterar email ou reenviar código
               </button>
+
+              <button type="button" className="recuperacao-cancel" onClick={() => navigate(-1)}>
+                Cancelar
+              </button>
+            </div>
+          )}
+
+          {/* PASSO 3 — Nova password */}
+          {step === 'nova-password' && (
+            <div className="recuperacao-form-content">
+              <div className="recuperacao-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="22" fill="#eef2ff" stroke="#3a57e8" strokeWidth="1.5" />
+                  <path d="M17 24h14M24 17v14" stroke="#3a57e8" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="24" cy="24" r="8" stroke="#3a57e8" strokeWidth="1.5" fill="none" />
+                </svg>
+              </div>
+
+              <h1 className="recuperacao-title">Nova password</h1>
+              <p className="recuperacao-subtitle">
+                Escolhe uma nova password para a tua conta.
+              </p>
+
+              <form onSubmit={handleNovaPasswordSubmit} className="recuperacao-form">
+                <div className="recuperacao-form-group">
+                  <label htmlFor="nova-password" className="recuperacao-label">Nova password</label>
+                  <input
+                    type="password"
+                    id="nova-password"
+                    value={novaPassword}
+                    onChange={e => { setNovaPassword(e.target.value); setError('') }}
+                    className="recuperacao-input"
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                  />
+                </div>
+
+                <div className="recuperacao-form-group">
+                  <label htmlFor="confirmar-password" className="recuperacao-label">Confirmar password</label>
+                  <input
+                    type="password"
+                    id="confirmar-password"
+                    value={confirmarPassword}
+                    onChange={e => { setConfirmarPassword(e.target.value); setError('') }}
+                    className="recuperacao-input"
+                    placeholder="Repete a nova password"
+                    required
+                  />
+                </div>
+
+                {error && <p className="recuperacao-error">{error}</p>}
+
+                <button type="submit" className="recuperacao-button" disabled={loading}>
+                  {loading ? 'A guardar…' : 'Guardar password'}
+                </button>
+              </form>
 
               <button type="button" className="recuperacao-cancel" onClick={() => navigate(-1)}>
                 Cancelar

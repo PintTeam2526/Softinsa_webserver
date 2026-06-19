@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = `"Softinsa Badges" <${process.env.EMAIL_FROM ?? 'onboarding@resend.dev'}>`;
 
 async function enviarCodigoRecuperacao(email, codigo) {
-    const { error } = await resend.emails.send({
+    /* const { error } = await resend.emails.send({
         from: FROM,
         to: email,
         subject: 'Recuperação de Password',
@@ -24,11 +24,12 @@ async function enviarCodigoRecuperacao(email, codigo) {
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
 }
 
 async function enviarEmailBoasVindas(email, nome) {
-    const { error } = await resend.emails.send({
+   /*  const { error } = await resend.emails.send({
         from: FROM,
         to: email,
         subject: 'Bem-vindo à Softinsa Badges',
@@ -47,11 +48,12 @@ async function enviarEmailBoasVindas(email, nome) {
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
 }
 
 async function enviarEmailNovoPedidoTM(emailTM, nomeTM, nomeConsultor, nomeBadge) {
-    const { error } = await resend.emails.send({
+    /* const { error } = await resend.emails.send({
         from: FROM,
         to: emailTM,
         subject: 'Nova candidatura para validação',
@@ -67,11 +69,12 @@ async function enviarEmailNovoPedidoTM(emailTM, nomeTM, nomeConsultor, nomeBadge
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
 }
 
 async function enviarEmailPedidoSubmetido(email, nome, nomeBadge) {
-    const { error } = await resend.emails.send({
+    /* const { error } = await resend.emails.send({
         from: FROM,
         to: email,
         subject: 'Candidatura submetida com sucesso',
@@ -86,11 +89,12 @@ async function enviarEmailPedidoSubmetido(email, nome, nomeBadge) {
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
 }
 
 async function enviarEmailPedidoDevolvido(email, nome, nomeBadge, motivo) {
-    const { error } = await resend.emails.send({
+    /* const { error } = await resend.emails.send({
         from: FROM,
         to: email,
         subject: 'Pedido devolvido para correção',
@@ -106,11 +110,12 @@ async function enviarEmailPedidoDevolvido(email, nome, nomeBadge, motivo) {
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+    console.log("teste");
 }
 
 async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge) {
-    const { error } = await resend.emails.send({
+    /* const { error } = await resend.emails.send({
         from: FROM,
         to: emailSL,
         subject: 'Pedido pendente de validação final',
@@ -126,7 +131,9 @@ async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge)
         `
     });
 
-    if (error) throw new Error(`Resend error: ${error.message}`);
+    if (error) throw new Error(`Resend error: ${error.message}`); */
+
+    console.log("teste");
 }
 
 module.exports = {

@@ -243,8 +243,10 @@ controllers.createPedido = async (req, res) => {
 
     const transaction = await sequelize.transaction();
 
+    // ---- Bloco da transação: só operações de BD entram aqui ----
+    let pedido;
     try {
-      const pedido = await Pedidos.create(
+      pedido = await Pedidos.create(
         {
           id_consultor,
           id_talent_manager: tm.id_talent_manager,
@@ -275,7 +277,7 @@ controllers.createPedido = async (req, res) => {
 
         for (const doc of docsTemporarios) {
           await Documentacoes.create({
-            id_historico: historico.id_historico,   // <-- mudança chave
+            id_historico: historico.id_historico,
             id_consultor,
             documentacao: doc.documentacao
           }, { transaction });
@@ -298,7 +300,17 @@ controllers.createPedido = async (req, res) => {
       );
 
       await transaction.commit();
+    } catch (error) {
+      // Aqui a transação ainda não foi commitada, por isso o rollback é seguro.
+      await transaction.rollback();
+      throw error;
+    }
+    // ---- Fim do bloco da transação ----
 
+    // A partir daqui os dados já estão guardados na BD.
+    // Qualquer falha a seguir (ex: emails) NÃO deve anular o pedido
+    // nem tentar fazer rollback de uma transação já commitada.
+    try {
       const consultor = await Consultor.findByPk(id_consultor, {
         include: [Utilizador]
       });
@@ -322,14 +334,15 @@ controllers.createPedido = async (req, res) => {
         consultor.Utilizadore.nome_utilizador,
         badge.nome_badge
       );
-      return res.status(201).json({
-        mensagem: "Pedido criado com sucesso",
-        dados: pedido,
-      });
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
+    } catch (emailError) {
+      // Só regista o erro; não afeta a resposta de sucesso ao cliente.
+      console.error("Erro ao enviar emails de notificação do pedido:", emailError);
     }
+
+    return res.status(201).json({
+      mensagem: "Pedido criado com sucesso",
+      dados: pedido,
+    });
   } catch (error) {
     return res.status(500).json({
       mensagem: "Erro ao criar pedido",

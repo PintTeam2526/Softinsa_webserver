@@ -346,9 +346,9 @@ function ConsultorSidebar() {
       <div className="softinsa-sidebar-panel">
         <div className="softinsa-sidebar-header">
           {!isCollapsed ? (
-            <div className="softinsa-sidebar-logo-pill">
+            <NavLink to="/" className="softinsa-sidebar-logo-pill" aria-label="Ir para a página inicial">
               <SoftinsaLogo />
-            </div>
+            </NavLink>
           ) : null}
         </div>
 

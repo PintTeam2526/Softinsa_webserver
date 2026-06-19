@@ -284,7 +284,7 @@ function SoftinsaSidebar() {
     <aside className={`softinsa-sidebar-shell${isCollapsed ? ' is-collapsed' : ''}`}>
       <div className="softinsa-sidebar-panel">
         <div className="softinsa-sidebar-header">
-          <div className="softinsa-sidebar-logo-pill">
+          <NavLink to="/" className="softinsa-sidebar-logo-pill" aria-label="Ir para a página inicial">
             <span className="softinsa-sidebar-logo-text">
               <svg xmlns="http://www.w3.org/2000/svg" width="204" height="69" viewBox="0 0 204 69" fill="none">
                   <g filter="url(#filter0_d_3792_2491)">
@@ -317,7 +317,7 @@ function SoftinsaSidebar() {
                 </defs>
               </svg>
             </span>
-          </div>
+          </NavLink>
         </div>
 
         <div className="softinsa-sidebar-top-line" />

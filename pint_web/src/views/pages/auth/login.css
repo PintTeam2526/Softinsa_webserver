@@ -233,12 +233,8 @@
   margin: 0;
 }
 
-.login-checkbox:checked+.login-checkbox-tick {
-  display: flex;
-}
-
 .login-checkbox-tick {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -246,10 +242,9 @@
   pointer-events: none;
 }
 
-.login-checkbox-tick img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.login-checkbox-tick svg {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .login-checkbox-label {

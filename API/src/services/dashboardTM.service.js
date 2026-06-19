@@ -125,6 +125,7 @@ service.getProximosBadgesExpirar = async () => {
             nome_badge: badge.Badge.nome_badge,
             nivel_badge: badge.Badge.nivel_badge,
             //temos que usar Consultore e Utilizadore porque são nomes criados automaticamente pelo sequelize
+            id_consultor: badge.Consultore.id_consultor,
             nome_consultor: badge.Consultore.Utilizadore.nome_utilizador,
             dias_para_expirar: diasRestantes,
             imagem_badge: badge.Badge.imagem_badge

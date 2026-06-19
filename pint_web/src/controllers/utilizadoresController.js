@@ -54,7 +54,8 @@ export const updateUtilizador = async (id, payload) => {
 // Listar dados do Consultor
 export const getConsultor = async (id) => {
   try {
-    const consultorId = id ?? JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id_consultor
+    const token = localStorage.getItem('token') ?? sessionStorage.getItem('token')
+    const consultorId = id ?? JSON.parse(atob(token.split('.')[1])).id_consultor
     const response = await api.get(`/consultores/${consultorId}/publico`)
     return response.data
   } catch (error) {
