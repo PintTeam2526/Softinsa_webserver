@@ -6,7 +6,7 @@ import {
   HiOutlineShare, HiOutlineXMark, HiStar,
   HiOutlineClock, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineArrowUturnLeft,
   HiOutlineCalendarDays, HiOutlineArrowDownTray,
-  HiOutlineLink,
+  HiOutlineLink, HiOutlineQuestionMarkCircle,
   HiOutlineClipboard,
 } from 'react-icons/hi2'
 import { Row, Col } from 'react-bootstrap'
@@ -309,6 +309,7 @@ function IconBadgePoints({ className }) {
 // ─── configuração de estado / ícone ───────────────────────────────────────────
 
 const STATUS_CONFIG = {
+  'Por Obter': { label: 'Por Obter', Icon: HiOutlineQuestionMarkCircle, cls: 'is-pending' },
   'Submetido': { label: 'Em Análise', Icon: HiOutlineClock, cls: 'is-analysis' },
   'Correto': { label: 'Em Análise', Icon: HiOutlineClock, cls: 'is-analysis' },
   'Incorreto': { label: 'Devolvido', Icon: HiOutlineArrowUturnLeft, cls: 'is-returned' },
@@ -420,6 +421,7 @@ function ConsultorBadgePageView({ isGuest = false }) {
               : calcularDataExpiracao(raw.data_insercao, raw.validade)
 
           } else {
+            normalized.status = 'Por Obter'
             normalized.dataExpiracao = calcularDataExpiracao(raw.data_insercao, raw.validade)
           }
 
