@@ -35,6 +35,11 @@ controllers.editarDados = async (req, res) => {
 //MOBILE (EDITAR DADOS)
 controllers.editarDadosConsultorMobile = async (req, res) => {
   try {
+
+     if (req.user?.role !== 'c') {
+        return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+      }
+
     const {
       idConsultor,
       nome,
@@ -150,6 +155,11 @@ controllers.editarDadosConsultorMobile = async (req, res) => {
 }
 
 controllers.getConsultorByIdMobile = async (req, res) => {
+
+   if (req.user?.role !== 'c') {
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
+
   const { id } = req.params;
 
   try {
@@ -194,6 +204,11 @@ controllers.getConsultorByIdMobile = async (req, res) => {
 };
 
 controllers.getCountBadgesObtidosByConsultorMobile = async (req, res) => {
+  
+  if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
+
   const { id } = req.params;
 
   if (!id) {
@@ -218,6 +233,11 @@ controllers.getCountBadgesObtidosByConsultorMobile = async (req, res) => {
 };
 
 controllers.getCountBadgesPorObterMobile = async (req, res) => {
+  
+  if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
+
   const { id } = req.params;
 
   if (!id) {
@@ -254,7 +274,12 @@ controllers.getCountBadgesPorObterMobile = async (req, res) => {
   };
 
   controllers.getCountObjetivosPorConcluirMobile = async (req, res) => {
-  const { id } = req.params;
+  
+  	if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
+
+    const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ error: 'ID do consultor é obrigatório' });
@@ -279,7 +304,12 @@ controllers.getCountBadgesPorObterMobile = async (req, res) => {
   };
 
   controllers.getDiasObjetivoExpirarMobile = async (req, res) => {
-  const { id } = req.params;
+  
+  	if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
+  
+    const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ error: 'ID do consultor é obrigatório' });
@@ -309,6 +339,11 @@ controllers.getCountBadgesPorObterMobile = async (req, res) => {
   };
 
 controllers.getBadgesPorObterMobile = async (req, res) => {
+  
+  	if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
+
   const { id } = req.params;
 
   if (!id) {

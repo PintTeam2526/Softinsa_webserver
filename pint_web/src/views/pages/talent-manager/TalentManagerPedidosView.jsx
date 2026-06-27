@@ -8,6 +8,7 @@ import { getAreas } from '../../../controllers/areasController'
 import { getPedidos, tmReview } from '../../../controllers/pedidosController'
 import { getDocumentosByPedido } from '../../../controllers/documentosController'
 
+// Ícone de calendário com relógio - para as SLAs
 function ResponseDeadlineIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -16,6 +17,7 @@ function ResponseDeadlineIcon() {
   )
 }
 
+// Ícone de documento/ficheiro - Não usado (Retirar)
 function EvidenceDocumentIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -25,6 +27,7 @@ function EvidenceDocumentIcon() {
   )
 }
 
+// Ícone de Download - para o botão do Zip
 function EvidenceDownloadIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -35,8 +38,10 @@ function EvidenceDownloadIcon() {
   )
 }
 
+// Cores de bordas de Imagem de Perfil (placeholder)
 const AVATAR_TONES = ['primary', 'secondary', 'dark']
 
+// Função para criar download do ficheiro dentro do browser (pasta .zip)
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -46,6 +51,7 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
+// Função para calcular e devolver a SLA
 function calcDeadline(createdAt, sla) {
   if (!createdAt || !sla) return 'Prazo não definido'
   const deadline = new Date(new Date(createdAt).getTime() + sla * 24 * 60 * 60 * 1000)
@@ -55,10 +61,12 @@ function calcDeadline(createdAt, sla) {
   return `Tempo limite de resposta termina em ${diffDays} dia${diffDays !== 1 ? 's' : ''}`
 }
 
+// Função para devolver iniciais do nome na Imagem de Perfil (placeholder)
 function getAvatarInitials(name) {
   return name.split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('')
 }
 
+// Função para mapear um pedido
 function mapPedidoPendente(row, areaMap, index) {
   const badge = row.Badge ?? {}
   const consultant = row.Consultore?.Utilizadore?.nome_utilizador ?? String(row.id_consultor)
@@ -78,7 +86,7 @@ function mapPedidoPendente(row, areaMap, index) {
   }
 }
 
-
+// Função para devolver a imagem em Base64 
 function RequestBadge({ tone, children, image }) {
   if (image) {
     return (
@@ -95,6 +103,7 @@ function RequestBadge({ tone, children, image }) {
   return <div className={`sll-pending-request-avatar is-${tone}`}>{children}</div>
 }
 
+// Estrutura dos Alertas de confirmação de ações
 const ALERT_COPY = {
   accept: {
     title: 'Aceitar Pedido de Badge',
@@ -108,6 +117,7 @@ const ALERT_COPY = {
   },
 }
 
+// Modal de Alerta para confirmação de ação (Aceitar ou Rejeitar)
 function ConfirmActionDialog({ action, onConfirm, onCancel }) {
   const [reason, setReason] = useState('')
   const dialogRef = useRef(null)
@@ -185,6 +195,7 @@ function ConfirmActionDialog({ action, onConfirm, onCancel }) {
   )
 }
 
+// Card de Pedido para aprovação/rejeição
 function PendingRequestCard({ request, isDownloading, onDownload }) {
   return (
     <article className="sll-pending-card">
@@ -242,21 +253,33 @@ function PendingRequestCard({ request, isDownloading, onDownload }) {
   )
 }
 
-
+// Componente principal - View de Pedidos de Badge
 function TalentManagerPedidosView() {
+  // Controla se o popover de filtro está visível
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  // Texto da barra de pesquisa
   const [searchTerm, setSearchTerm] = useState('')
+  // Área selecionada no filtro (ainda não aplicada)
   const [draftArea, setDraftArea] = useState('')
+  // Área efetivamente aplicada ao filtrar
   const [appliedArea, setAppliedArea] = useState('')
+  // Lista de pedidos pendentes carregados da API
   const [requests, setRequests] = useState([])
+  // Indica se os dados ainda estão a carregar
   const [isLoading, setIsLoading] = useState(true)
+  // Página atual da paginação
   const [currentPage, setCurrentPage] = useState(1)
+  // Objeto { requestId, action } quando há uma ação aguardando confirmação
   const [pendingAction, setPendingAction] = useState(null)
+  // ID do pedido cujos documentos estão a ser descarregados
   const [downloadingId, setDownloadingId] = useState(null)
+
   const filterPopoverRef = useRef(null)
 
+  // lista de áreas únicas extraídas dos pedidos, para popular o <select> do filtro
   const areaOptions = useMemo(() => [...new Set(requests.map((request) => request.area))], [requests])
 
+  // Filtro de pesquisa por texto livre + Filtro por área selecionada
   const filteredRequests = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
@@ -283,11 +306,14 @@ function TalentManagerPedidosView() {
   const requestsPerPage = 2
   const totalPages = Math.max(1, Math.ceil(filteredRequests.length / requestsPerPage))
 
+  // Paginação por numero de pedidos (max: 2 pedidos por pagina)
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * requestsPerPage
     return filteredRequests.slice(startIndex, startIndex + requestsPerPage)
   }, [currentPage, filteredRequests])
 
+
+  // Carregamento inicial de dados (com os gets)
   useEffect(() => {
     async function loadData() {
       setIsLoading(true)
@@ -312,15 +338,17 @@ function TalentManagerPedidosView() {
     loadData()
   }, [])
 
-
+  // Reset da página quando os filtros mudam
   useEffect(() => {
     setCurrentPage(1)
   }, [appliedArea, searchTerm])
 
+  // Correção da página quando o total de páginas diminui
   useEffect(() => {
     setCurrentPage((previousPage) => Math.min(previousPage, totalPages))
   }, [totalPages])
 
+  // Fecho do popover de filtro ao clicar fora
   useEffect(() => {
     function handleDocumentClick(event) {
       if (filterPopoverRef.current && !filterPopoverRef.current.contains(event.target)) {
@@ -332,12 +360,14 @@ function TalentManagerPedidosView() {
     return () => document.removeEventListener('mousedown', handleDocumentClick)
   }, [])
 
+  // Sincronização do draft do filtro
   useEffect(() => {
     if (isFilterOpen) {
       setDraftArea(appliedArea)
     }
   }, [appliedArea, isFilterOpen])
 
+  // Handler para fazer o download do Zip
   async function handleDownloadDocs(requestId) {
     setDownloadingId(requestId)
     try {
@@ -350,16 +380,18 @@ function TalentManagerPedidosView() {
     }
   }
 
-
+  // Handler para copiar draftArea para appliedArea e fechar o popover
   function applyFilter() {
     setAppliedArea(draftArea)
     setIsFilterOpen(false)
   }
 
+  // Handler para guardar em pendingAction qual pedido e qual ação foram escolhidos
   function requestAction(requestId, action) {
     setPendingAction({ requestId, action })
   }
 
+  // Handler para chamar tmReview com a ação mapeada e remover o pedido da pendingAction
   async function confirmPendingAction(reason) {
     if (!pendingAction) return
 
@@ -378,11 +410,12 @@ function TalentManagerPedidosView() {
     setPendingAction(null)
   }
 
-
+  // Handler para cancelar a ação
   function cancelPendingAction() {
     setPendingAction(null)
   }
 
+  // Contrução da View
   return (
     <div className="sll-pending-content">
       <section className="sll-pending-hero" aria-label="Pedidos pendentes">

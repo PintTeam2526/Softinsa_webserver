@@ -7,6 +7,6 @@ var authVerification = require("../middleware/requireAuth.middleware");
 router.get('/get/consultor', authVerification, controllerConquistas.getConquistaByIdConsultor);
 
 // CONQUISTAS MOBILE
-router.get('/mobile/get/:idConsultor', controllerConquistas.getListaConquistasByIdConsultorMobile);
-router.get('/mobile/count/:idConsultor', controllerConquistas.getCountConquistasObtidasMobile);
+router.get('/mobile/get/:idConsultor', authVerification, controllerConquistas.getListaConquistasByIdConsultorMobile);
+router.get('/mobile/count/:idConsultor', authVerification,controllerConquistas.getCountConquistasObtidasMobile);
 module.exports = router;

@@ -631,18 +631,11 @@ function ConsultorBadgePageView({ isGuest = false }) {
 
         {badgeDevolvido && (
           <Col xs={12} lg={6}>
-            <article className="consultor-badge-card" aria-label="Devoluções do Pedido">
-              <h2 className="consultor-badge-card-title">Devoluções do Pedido</h2>
+            <article className="consultor-badge-card" aria-label="Devolução do Pedido">
+              <h2 className="consultor-badge-card-title">Devolução do Pedido</h2>
               <div className="consultor-badge-devolucoes-field"><label>Data da Devolução:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.data}</span></div>
               <div className="consultor-badge-devolucoes-field"><label>Avaliador e Cargo:</label><span className="consultor-badge-devolucoes-field-value">{badge.devolucao.avaliador}</span></div>
               <div className="consultor-badge-devolucoes-field"><label>Motivo:</label><span className="consultor-badge-devolucoes-field-value is-motivo">{badge.devolucao.motivo}</span></div>
-              <div className="consultor-badge-devolucoes-upload">
-                <span className="consultor-badge-devolucoes-upload-label">Nova Documentação:</span>
-                <UploadRow />
-              </div>
-              <div className="consultor-badge-card-actions">
-                <button type="button" className="consultor-badge-primary-btn">Recandidatar ao Badge</button>
-              </div>
             </article>
           </Col>
         )}
