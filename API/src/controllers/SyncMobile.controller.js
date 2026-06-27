@@ -210,6 +210,10 @@ controllers.syncEstadosMobile = async (req, res) => {
 
 controllers.syncBadgesConcluidosMobile = async (req, res) => {
   try {
+    
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params;
 
     if (!id) {
@@ -265,6 +269,9 @@ controllers.syncBadgesConcluidosMobile = async (req, res) => {
 
 controllers.syncPedidosBadgesMobile = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params;
 
     if (!id) {
@@ -297,6 +304,9 @@ controllers.syncPedidosBadgesMobile = async (req, res) => {
 
 controllers.syncHistoricoPedidosMobile = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params; // id_consultor
 
     if (!id) {
@@ -336,6 +346,9 @@ controllers.syncHistoricoPedidosMobile = async (req, res) => {
 
 controllers.syncObjetivosMobile = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params; // id_consultor
 
     if (!id) {
@@ -395,6 +408,9 @@ controllers.syncRequisitosMobile = async (req, res) => {
 
 controllers.syncDocumentacoesMobile = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params; // id_consultor
 
     if (!id) {
@@ -428,6 +444,9 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
 
 controllers.syncConquistasConsultores = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { idConsultor } = req.params;
     if (!idConsultor) {
       return res.status(400).json({ erro: 'ID do consultor é obrigatório' });
@@ -459,6 +478,9 @@ controllers.syncConquistasConsultores = async (req, res) => {
 
 controllers.syncNotificacoesMobileByConsultorID = async (req, res) => {
   try {
+    if (req.user?.role !== 'c') {
+    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+  }
     const { id } = req.params;
 
     if (!id) {

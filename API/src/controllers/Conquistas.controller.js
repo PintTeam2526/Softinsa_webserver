@@ -38,6 +38,11 @@ controllers.getConquistaByIdConsultor = async (req, res) => {
 
 controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
     try {
+
+        if (req.user?.role !== 'c') {
+            return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+        }
+        
         const { idConsultor } = req.params;
 
         if (!idConsultor) {
@@ -70,6 +75,11 @@ controllers.getListaConquistasByIdConsultorMobile = async (req, res) => {
 // MOBILE - Retorna apenas o número total de conquistas obtidas
 controllers.getCountConquistasObtidasMobile = async (req, res) => {
     try {
+        
+        if (req.user?.role !== 'c') {
+            return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+        }
+
         const { idConsultor } = req.params;
 
         if (!idConsultor) {

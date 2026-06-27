@@ -7,14 +7,15 @@ const requireAuth = require('../middleware/requireAuth.middleware');
 
 // Aplicar o middleware de autenticação a todas as rotas deste router
 //router.use(requireAuth);
-
 router.put('/:id', consultoresController.editarDados);
-router.get('/info/:id', consultoresController.getConsultorByIdMobile);
-router.get('/count/badgesObtidos/:id', consultoresController.getCountBadgesObtidosByConsultorMobile);
-router.get('/count/badgesPorObter/:id', consultoresController.getCountBadgesPorObterMobile);
-router.get('/badgesPorObter/lista/:id', consultoresController.getBadgesPorObterMobile);
-router.get('/count/objetivos/porCompletar/:id', consultoresController.getCountObjetivosPorConcluirMobile);
-router.get('/objetivos/minDiasAteExpirar/:id', consultoresController.getDiasObjetivoExpirarMobile);
+router.get('/info/:id', authVerification, consultoresController.getConsultorByIdMobile);
+router.get('/count/badgesObtidos/:id', authVerification, consultoresController.getCountBadgesObtidosByConsultorMobile);
+router.get('/count/badgesPorObter/:id', authVerification, consultoresController.getCountBadgesPorObterMobile);
+router.get('/badgesPorObter/lista/:id', authVerification, consultoresController.getBadgesPorObterMobile);
+router.get('/count/objetivos/porCompletar/:id', authVerification, consultoresController.getCountObjetivosPorConcluirMobile);
+router.get('/objetivos/minDiasAteExpirar/:id', authVerification, consultoresController.getDiasObjetivoExpirarMobile);
+
+
 router.get('/:id/publico', consultoresController.perfilPublico)
 router.get('/sidebar', authVerification, consultoresController.getAreaEBadges);
 
@@ -24,5 +25,5 @@ router.get('/:id/notificacoes', authVerification, consultoresController.getAllNo
 router.post('/:id/notificacoes', authVerification, consultoresController.createNotificacao);
 
 //ALTERAR DEFINICOES CONSULTOR MOBILE
-router.put('/mobile/update', consultoresController.editarDadosConsultorMobile);
+router.put('/mobile/update', authVerification, consultoresController.editarDadosConsultorMobile);
 module.exports = router;
