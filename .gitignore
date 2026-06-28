@@ -5,3 +5,73 @@ API/package-lock.json
 pint_web/package-lock.json
 API/.env
 
+########## MOBILE
+# Miscellaneous
+MOBILE/*.class
+MOBILE/*.log
+MOBILE/*.pyc
+MOBILE/*.swp
+MOBILE/.DS_Store
+MOBILE/.atom/
+MOBILE/.build/
+MOBILE/.buildlog/
+MOBILE/.history
+MOBILE/.svn/
+MOBILE/.swiftpm/
+MOBILE/migrate_working_dir/
+
+# IntelliJ related
+MOBILE/*.iml
+MOBILE/*.ipr
+MOBILE/*.iws
+MOBILE/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#MOBILE/.vscode/
+
+# Flutter/Dart/Pub related
+MOBILE/**/doc/api/
+MOBILE/**/ios/Flutter/.last_build_id
+MOBILE/.dart_tool/
+MOBILE/.flutter-plugins-dependencies
+MOBILE/.pub-cache/
+MOBILE/.pub/
+MOBILE/build/
+MOBILE/coverage/
+
+# Symbolication related
+MOBILE/app.*.symbols
+
+# Obfuscation related
+MOBILE/app.*.map.json
+
+# Android Studio will place build artifacts here
+MOBILE/android/app/debug
+MOBILE/android/app/profile
+MOBILE/android/app/release
+
+# Arquivos de ferramentas do Dart/Flutter
+MOBILE/.packages
+MOBILE/build/
+
+# Android específico
+MOBILE/.gradle/
+MOBILE/local.properties
+MOBILE/*.keystore
+MOBILE/*.jks
+MOBILE/*.ap_
+MOBILE/*.apk
+MOBILE/*.aab
+
+# iOS específico
+MOBILE/*.testresult
+MOBILE/*.xcworkspace
+MOBILE/ios/Pods
+MOBILE/ios/.symlinks
+MOBILE/ios/Flutter/Generated.xcconfig
+MOBILE/ios/Flutter/flutter_export_environment.sh
+
+# IDEs
+MOBILE/.vscode/
