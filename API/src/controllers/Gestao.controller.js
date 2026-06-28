@@ -1,5 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../../database");
+const fs = require('fs');
+const path = require('path');
 const Areas = require('../models/Areas.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const Consultores = require('../models/Consultores.models');
@@ -8,6 +10,43 @@ const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
 const Politicas = require('../models/Politicas.models');
+
+// ... (resto do ficheiro igual) ...
+
+controllers.BDWipe = async (req, res) => {
+    try {
+        if (!isAdmin(req)) {
+            return res.status(403).json({ mensagem: "Acesso negado. Apenas administradores podem limpar a base de dados." });
+        }
+
+        // Apaga todos os dados de todas as tabelas do schema 'public', mesmo que já existam registos
+        await sequelize.query(`
+            DO $$
+            DECLARE
+                r RECORD;
+            BEGIN
+                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                    EXECUTE 'TRUNCATE TABLE "' || r.tablename || '" RESTART IDENTITY CASCADE';
+                END LOOP;
+            END $$;
+        `);
+
+        // Lê e executa o ficheiro de seed para repopular a base de dados
+        const sqlPath = path.join(__dirname, '../../sql/seed.sql');
+        const sql = fs.readFileSync(sqlPath, 'utf8');
+
+        await sequelize.query(sql);
+
+        console.log('✅ Base de dados limpa e repopulada com sucesso!');
+
+        return res.status(200).json({ mensagem: "Base de dados limpa e repopulada com os dados de seed com sucesso." });
+
+    } catch (error) {
+        console.error('❌ Erro ao limpar e popular a base de dados:', error.message);
+        if (error.sql) console.error('   SQL:', error.sql.substring(0, 200));
+        return res.status(500).json({ mensagem: "Erro ao limpar a base de dados.", erro: error.message });
+    }
+};
 
 const controllers = {};
 
@@ -370,6 +409,41 @@ controllers.relatorio = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ mensagem: "Erro ao gerar relatório.", erro: error.message });
+    }
+};
+
+controllers.BDWipe = async (req, res) => {
+    try {
+        if (!isAdmin(req)) {
+            return res.status(403).json({ mensagem: "Acesso negado. Apenas administradores podem limpar a base de dados." });
+        }
+
+        // Apaga todos os dados de todas as tabelas do schema 'public', mesmo que já existam registos
+        await sequelize.query(`
+            DO $$
+            DECLARE
+                r RECORD;
+            BEGIN
+                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                    EXECUTE 'TRUNCATE TABLE "' || r.tablename || '" RESTART IDENTITY CASCADE';
+                END LOOP;
+            END $$;
+        `);
+
+        // Lê e executa o ficheiro de seed para repopular a base de dados
+        const sqlPath = path.join(__dirname, '../../sql/seed.sql');
+        const sql = fs.readFileSync(sqlPath, 'utf8');
+
+        await sequelize.query(sql);
+
+        console.log('✅ Base de dados limpa e repopulada com sucesso!');
+
+        return res.status(200).json({ mensagem: "Base de dados limpa e repopulada com os dados de seed com sucesso." });
+
+    } catch (error) {
+        console.error('❌ Erro ao limpar e popular a base de dados:', error.message);
+        if (error.sql) console.error('   SQL:', error.sql.substring(0, 200));
+        return res.status(500).json({ mensagem: "Erro ao limpar a base de dados.", erro: error.message });
     }
 };
 

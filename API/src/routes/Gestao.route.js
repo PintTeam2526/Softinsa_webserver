@@ -18,6 +18,9 @@ router.get('/rank', authVerification, controllerGestao.rankConsultores)
 // Rota para dados de relatorio
 router.post("/relatorio", authVerification, controllerGestao.relatorio);
 
+//Rota de desenvolvimento para apagar os dados da base de dados
+router.post("/BDWipe",authVerification,controllerGestao.BDWipe);
+
 
 
 module.exports = router;
