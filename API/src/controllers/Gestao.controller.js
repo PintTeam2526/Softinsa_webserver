@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const sequelize = require("../../database");
 const fs = require('fs');
 const path = require('path');
+const { QueryTypes } = require('sequelize');
 const Areas = require('../models/Areas.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const Consultores = require('../models/Consultores.models');
@@ -381,54 +382,19 @@ controllers.BDWipe = async (req, res) => {
         if (!isAdmin(req)) {
             return res.status(403).json({ mensagem: "Acesso negado. Apenas administradores podem limpar a base de dados." });
         }
- 
-        // Lê o ficheiro de seed
+
+        // Drop + recria as tabelas a partir dos models — sequences renascem em 1
+        await sequelize.sync({ force: true });
+
         const sqlPath = path.join(__dirname, '../../sql/seed.sql');
         const sql = fs.readFileSync(sqlPath, 'utf8');
- 
-        // Descobre quais as tabelas que o próprio seed.sql repovoa,
-        // a partir dos "INSERT INTO ..." existentes no ficheiro.
-        // Isto evita apagar tabelas de lookup/estados (populadas por migrations)
-        // que o seed não volta a inserir e que, se fossem truncadas, partiriam
-        // as foreign keys (ex.: PedidosBadges.estado_atual).
-        const tabelasNoSeed = [...new Set(
-            [...sql.matchAll(/INSERT\s+INTO\s+"?([A-Za-z0-9_]+)"?/gi)].map(m => m[1])
-        )];
- 
-        if (tabelasNoSeed.length === 0) {
-            return res.status(500).json({ mensagem: "Não foi possível identificar tabelas no ficheiro de seed." });
-        }
- 
-        // Confirma quais dessas tabelas realmente existem no schema 'public'
-        const tabelasExistentes = await sequelize.query(
-            `SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename = ANY(:tabelas)`,
-            { replacements: { tabelas: tabelasNoSeed }, type: Sequelize.QueryTypes.SELECT }
-        );
-        const tabelasParaLimpar = tabelasExistentes.map(t => t.tablename);
- 
-        if (tabelasParaLimpar.length === 0) {
-            return res.status(500).json({ mensagem: "Nenhuma das tabelas do seed foi encontrada na base de dados." });
-        }
- 
-        await sequelize.transaction(async (t) => {
-            const listaTabelas = tabelasParaLimpar.map(nome => `"${nome}"`).join(', ');
- 
-            // Um único TRUNCATE com todas as tabelas evita problemas de ordem com FKs
-            await sequelize.query(
-                `TRUNCATE TABLE ${listaTabelas} RESTART IDENTITY CASCADE`,
-                { transaction: t }
-            );
- 
-            await sequelize.query(sql, { transaction: t });
-        });
- 
+
+        await sequelize.query(sql);
+
         console.log('✅ Base de dados limpa e repopulada com sucesso!');
- 
-        return res.status(200).json({
-            mensagem: "Base de dados limpa e repopulada com os dados de seed com sucesso.",
-            tabelas_repovoadas: tabelasParaLimpar
-        });
- 
+
+        return res.status(200).json({ mensagem: "Base de dados limpa e repopulada com sucesso." });
+
     } catch (error) {
         console.error('❌ Erro ao limpar e popular a base de dados:', error.message);
         if (error.sql) console.error('   SQL:', error.sql.substring(0, 200));
