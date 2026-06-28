@@ -57,11 +57,11 @@ async function criarUtilizador({
             }, { transaction });
 
             //criar as conquistas do consultor
-            const conquistas = await Conquistas.findAll();
+            //const conquistas = await Conquistas.findAll();
 
-            conquistas.forEach(conquista => {
+            /*conquistas.forEach(conquista => {
                 conquistasService.criarConquista(consultor.id_consultor, conquista.id_conquista);
-            });
+            });*/
         }
 
         // TALENT MANAGER
