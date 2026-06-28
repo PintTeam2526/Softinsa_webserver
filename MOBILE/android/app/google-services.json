@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "276204793616",
+    "project_id": "pint26-softinsa",
+    "storage_bucket": "pint26-softinsa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:276204793616:android:eceb674b411e10c8fb3f95",
+        "android_client_info": {
+          "package_name": "com.example.pint_26_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPHq_h-MWfL3-xxgIxOGJ0kZnYNT2rHBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

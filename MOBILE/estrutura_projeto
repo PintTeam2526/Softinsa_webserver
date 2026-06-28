@@ -1,0 +1,56 @@
+lib/
+|-- assets/
+|   |
+|   |-- images/         # AQUI VAO ESTAR AS IMAGENS USADAS NO PROJETO (ATUALIZAR SEMPRE NO pubscpec.yaml)
+|   |-- icons/          # AQUI VAO ESTAR OS ICONS USADOS NO PROJETO (ATUALIZAR SEMPRE NO pubscpec.yaml)
+├── core/
+│   ├── theme/          # ThemeData MD3, cores, tipografia
+│   └── router/         # GoRouter ou Navigator 2.0
+│   │── models/           ← classes de dados (User, Pedido, Badge)
+│   ├── repositories/     ← vai guardar os dados (local ou API)
+│   └── services/         ← vai pedir dados da api
+|   ├── app_state.dart    ← guarda as variaveis globais da app
+|
+│
+├── features/
+│   ├── auth/
+│   │   ├── screens/    # LoginScreen, RegisterScreen
+│   │   ├── widgets/    # LoginForm, OtpInput
+│   │   └── providers/  # AuthNotifier (Riverpod/BLoC)
+│   │
+│   └── home/
+│       ├── screens/    # HomeScreen
+│       ├── widgets/    # FeedCard, StoryBar
+│       └── providers/  # estado + liga UI aos dados
+│
+└── main.dart
+
+//Transição entre páginas GoRouter
+-> push , pop,
+-> context.go (retirar tudo da pilha e colocar o target como base, util para passar de login -> ecra principal e vice-versa),
+
+
+//FUNCIONAMENTO BASE DAS PAGINAS
+
+main.dart
+    ↓ chama
+ConsultorNavBar  ← tem o Scaffold + navbar
+    ↓ no body mostra
+EcraPrincipal   ← só tem o conteúdo
+    ↓ para clicar no body e transitar de ecra
+Criar um callback na ecra em questao  e usar ontapped para alterar o indice do _buildscreens (cuidado com a ordem) ← para o pai "navbar" saber quando foi selecionado
+
+// BUSCAR DADOS DA BD
+    --> A app arranca e acede à BD e copia tudo para a BD Interna
+    --> A app usa sempre a BD Interna
+
+
+//FUNCIONAMENTO DO PEDIDO DE DADOS EXTERNOS
+
+    PARA ALTERAR O URL DA API ir ver o ficheiro lib/core/api_config.dart
+
+    1. A UI PEDE ao repository uma funcao. EX: getAllBadges
+    2. O repository dispara a funcao do service dos badges
+    3. O service pede a api os dados e devolve ao repository
+    4. O repository repository recebe os dados, armazena na bd local e envia de volta para a UI
+    5. A UI mostra os dados
