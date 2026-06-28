@@ -5,7 +5,7 @@ import 'package:pint_26_mobile/features/home/widgets/consultor_appbar.dart';
 import 'package:pint_26_mobile/core/app_state.dart';
 import 'package:pint_26_mobile/core/models/objetivos_model.dart';
 import 'package:pint_26_mobile/core/repositories/objetivos_repository.dart';
-import 'package:flutter/material.dart';
+
 class EcraDataObjetivo extends StatefulWidget {
   final int idBadgeObjetivo;
   final String nomeBadge;
@@ -25,7 +25,6 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
   DateTime _dataSelecionada = DateTime.now();
   final ObjetivosRepository _repositorioObjetivos = ObjetivosRepository();
 
-
   void _mostrarErro(String mensagem) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -40,11 +39,9 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Cor de fundo leve para destacar o cartão branco
       backgroundColor: Colors.white,
       appBar: const PaginaAppBar(
         titulo: 'Adicionar Objetivo',
@@ -64,7 +61,6 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
             ),
             const SizedBox(height: 30),
 
-            // --- CARTÃO DO CALENDÁRIO ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -82,7 +78,6 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Cabecalho
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
                       child: Row(
@@ -102,10 +97,9 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
                     ),
                     const Divider(height: 1, thickness: 1, color: Color(0xFFCAC4D0)),
 
-                    // Seletor de Data
                     CalendarDatePicker(
                       initialDate: _dataSelecionada,
-                      firstDate: DateTime.now(), // Data inicial
+                      firstDate: DateTime.now(),
                       lastDate: DateTime.now().add(const Duration(days: 365)),
                       onDateChanged: (DateTime novaData) {
                         setState(() {
@@ -114,7 +108,6 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
                       },
                     ),
 
-                    // Barra de Ações (Botões)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                       child: Row(
@@ -134,7 +127,7 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
                           Row(
                             children: [
                               TextButton(
-                                onPressed: () => context.pushReplacement('/homepage', extra: AppState().idConsultor),
+                                onPressed: () => context.pop(),
                                 child: const Text(
                                   'Cancelar',
                                   style: TextStyle(color: Color(0xFF39639C), fontWeight: FontWeight.w600),
@@ -142,15 +135,17 @@ class _EcraDataObjetivoState extends State<EcraDataObjetivo> {
                               ),
                               TextButton(
                                 onPressed: () async {
-                                  //CHAMAR O REPO QUE VAI INSERIR O OBJETIVO
-                                  final adicionarObjetivo = await _repositorioObjetivos.adicionarObjetivo(AppState().idConsultor, widget.idBadgeObjetivo, widget.nomeBadge, _dataSelecionada);
-                                  print('Finalizar objetivo ${widget.idBadgeObjetivo} para a data $_dataSelecionada');
-                                  if(adicionarObjetivo == true){
-                                    print('ADICIONEI OBJETIVO');
-                                    context.pushReplacement('/homepage', extra: AppState().idConsultor);
-                                  }else{
+                                  final success = await _repositorioObjetivos.adicionarObjetivo(
+                                    AppState().idConsultor, 
+                                    widget.idBadgeObjetivo, 
+                                    widget.nomeBadge, 
+                                    _dataSelecionada
+                                  );
+                                  
+                                  if (success) {
+                                    if (mounted) context.go('/homepage');
+                                  } else {
                                     _mostrarErro('Erro ao adicionar objetivo');
-                                    context.pushReplacement('/homepage', extra: AppState().idConsultor);
                                   }
                                 },
                                 child: const Text(

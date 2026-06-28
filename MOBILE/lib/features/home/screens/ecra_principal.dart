@@ -10,7 +10,7 @@ import 'package:pint_26_mobile/core/models/consultores_model.dart';
 import 'package:pint_26_mobile/core/repositories/consultores_repository.dart';
 import 'package:pint_26_mobile/core/repositories/conquistas_repository.dart';
 import 'package:pint_26_mobile/core/repositories/conquistasConsultores_repository.dart';
-
+import 'dart:io';
 import '../../../core/services/sync_service.dart';
 
 class EcraPrincipal extends ConsumerStatefulWidget {
@@ -46,6 +46,7 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
   late Future<List<dynamic>> _futureDadosConsultor;
   StreamSubscription? _syncSubscription;
 
+
   void _atualizarDados() {
     // acedemos aos repositórios através dos Providers do Riverpod
     final repositorio = ref.read(consultoresRepositoryProvider);
@@ -61,6 +62,12 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
         repositorioConquistasConsultor.getCountConquistasConsultor(widget.idConsultor),
       ]);
     });
+
+
+    //forcar sync do consultor
+
+    //forcar sync dos objetivos
+
   }
 
   @override

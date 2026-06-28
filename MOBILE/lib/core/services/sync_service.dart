@@ -64,9 +64,9 @@ class SyncService {
     try {
       if (idConsultor > 0) {
         print(">>> [SYNC] A enviar dados pendentes (Push)...");
-        await pushPendingData('objetivos', '/objetivos/adicionar', 'ID_OBJETIVO');
-        await pushPendingData('documentacoes', '/candidaturas/documentacao', 'ID_DOCUMENTACAO');
-        await pushPendingData('pedidosBadge', '/candidaturas/candidatar', 'ID_PEDIDO_BADGE');
+        await pushPendingData('objetivos', '/objetivos/adicionar', 'ID_OBJETIVO', idConsultor: idConsultor);
+        await pushPendingData('documentacoes', '/candidaturas/documentacao', 'ID_DOCUMENTACAO', idConsultor: idConsultor);
+        await pushPendingData('pedidosBadge', '/candidaturas/candidatar', 'ID_PEDIDO_BADGE', idConsultor: idConsultor);
       }
 
       final globalTables = ['learningPaths', 'serviceLines', 'areas', 'badges', 'requisitos', 'estados'];
@@ -88,8 +88,6 @@ class SyncService {
     }
   }
 
-  /// [force] ignora o lock de sincronização
-  /// [ignoreLastUpdate] não envia o segmento de data, forçando o download total
   Future<void> syncTableByName(String tableName, {int? idConsultor, bool force = false, bool ignoreLastUpdate = false}) async {
     if (_syncingTables.contains(tableName) && !force) {
        print(">>> [SYNC] Tabela $tableName já está em sincronização. A ignorar...");
@@ -110,10 +108,10 @@ class SyncService {
         case 'requisitos': endpoint = '/syncMobile/requisitos'; break;
         case 'estados': endpoint = '/syncMobile/estados'; break;
         case 'conquistas': 
-          if (idConsultor != null) endpoint = '/conquistas/mobile/get/$idConsultor'; 
+          if (idConsultor != null) {endpoint = '/syncMobile/conquistas/$idConsultor'; ignoreLastUpdate = true; isSingle=false;}
           break;
         case 'consultores':
-          if (idConsultor != null) { endpoint = '/consultores/info/$idConsultor'; isSingle = true; }
+          if (idConsultor != null) { endpoint = '/consultores/info/$idConsultor'; ignoreLastUpdate = true; isSingle = false; }
           break;
         case 'badgesConcluidos': if (idConsultor != null) endpoint = '/syncMobile/badgesConcluidos/$idConsultor'; break;
         case 'objetivos': if (idConsultor != null) endpoint = '/syncMobile/objetivos/$idConsultor'; break;
@@ -122,7 +120,7 @@ class SyncService {
         case 'historicoPedidos': if (idConsultor != null) endpoint = '/syncMobile/historicoPedidos/$idConsultor'; break;
         case 'documentacoes': if (idConsultor != null) endpoint = '/syncMobile/documentacoes/$idConsultor'; break;
         case 'conquistasConsultores':
-          if (idConsultor != null) endpoint = '/syncMobile/conquistasConsultores/$idConsultor';
+          if (idConsultor != null) endpoint = '/conquistas/mobile/get/$idConsultor';
           break;
       }
 
@@ -150,13 +148,14 @@ class SyncService {
     try {
       String? lastUpdate;
       if (!ignoreLastUpdate) {
-        // CORREÇÃO: Passar o idConsultor para obter a data correta para este utilizador
+        // Passar o idConsultor para obter a data correta para este utilizador
         lastUpdate = await _db.getLastUpdate(tableName, idConsultor: idConsultor);
       }
 
       String url = '$_baseUrl$endpoint';
       if (lastUpdate != null) {
-        url += '/${Uri.encodeComponent(lastUpdate)}';
+        final dataFormatada = _formatDateForApi(lastUpdate);
+        url += '/${Uri.encodeComponent(dataFormatada)}';
       }
 
       // Adicionar timestamp para evitar cache em pedidos forçados
@@ -198,7 +197,7 @@ class SyncService {
         }
 
         bool hasChanges = false;
-        final now = DateTime.now().toIso8601String();
+        //final now = DateTime.now().toIso8601String();
 
         for (var item in remoteData) {
           if (item == null) continue;
@@ -207,10 +206,11 @@ class SyncService {
             if (row.isNotEmpty) {
               // Se o utilizador mudou durante o processamento, abortamos o save
               if (idConsultor != null && _syncingUserId != idConsultor) {
-                print(">>> [SYNC] Utilizador mudou durante o sync de $tableName. Abortando save.");
+                print(">>> [SYNC] Utilizador mudou durante o sync de $tableName. Abortar o sync.");
                 return;
               }
-
+              //usar a data do servidor (hospedado no render)
+              final String serverDate = item['updatedAt'] ?? item['updated_at'] ?? DateTime.now().toUtc().toIso8601String();
               if (tableName == 'objetivos' && idConsultor != null) {
                 final db = await _db.database;
                 await db.delete('objetivos', where: 'ID_BADGE = ? AND ID_CONSULTOR = ? AND sync_status = ?', whereArgs: [row['ID_BADGE'], idConsultor, 'pending']);
@@ -219,7 +219,7 @@ class SyncService {
               await _db.upsert(tableName, {
                 ...row, 
                 'sync_status': 'synced', 
-                'updated_at': now
+                'updated_at': serverDate
               });
               hasChanges = true;
             }
@@ -287,7 +287,7 @@ class SyncService {
     } catch (e) { return {}; }
   }
 
-  Future<void> pushPendingData(String tableName, String endpoint, String idColumn) async {
+  Future<void> pushPendingData(String tableName, String endpoint, String idColumn, {int? idConsultor}) async {
     var prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
 
@@ -298,6 +298,7 @@ class SyncService {
     if (_syncingTables.contains(tableName)) return;
     _syncingTables.add(tableName);
 
+    bool pushed = false;
     try {
       final pending = await _db.getPendingSync(tableName);
       if (pending.isEmpty) return;
@@ -319,11 +320,17 @@ class SyncService {
           if (response.statusCode == 201 || response.statusCode == 200 || response.statusCode == 409) {
             final db = await _db.database;
             await db.delete(tableName, where: '$idColumn = ?', whereArgs: [localId]);
+            pushed = true;
           }
         } catch (e) { print("Erro push $tableName: $e"); }
       }
     } finally {
       _syncingTables.remove(tableName);
+      // Se enviámos dados com sucesso, disparamos um pull para atualizar os IDs e dados locais
+      if (pushed && idConsultor != null) {
+        // Usar await e ignoreLastUpdate para garantir que o novo apareca logo
+        await syncTableByName(tableName, idConsultor: idConsultor, force: true, ignoreLastUpdate: true);
+      }
     }
   }
 
@@ -344,6 +351,30 @@ class SyncService {
         data.remove('sync_status');
         data.remove('updated_at');
         return data;
+    }
+  }
+
+  String _formatDateForApi(String isoDateString) {
+    try {
+      DateTime dt = DateTime.parse(isoDateString).toUtc();
+      String iso = dt.toIso8601String();
+
+      // Corta para 3 casas decimais (milissegundos)
+      if (iso.contains('.')) {
+        int pontoIndex = iso.indexOf('.');
+        if (iso.length > pontoIndex + 4) {
+          iso = iso.substring(0, pontoIndex + 4);
+        }
+      }
+
+      // Garante que termina com Z para o Sequelize
+      if (!iso.endsWith('Z')) {
+        iso = iso.split('Z')[0] + 'Z';
+      }
+
+      return iso;
+    } catch (e) {
+      return isoDateString;
     }
   }
 }

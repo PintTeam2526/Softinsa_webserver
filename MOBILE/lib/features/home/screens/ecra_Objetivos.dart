@@ -137,7 +137,7 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                               dataConclusao = null;
                             }
                           }
-        
+
                           return ConsultorObjetivosCard(
                             nomeBadge: objetivo.nome,
                             dataLimiteObjetivo: objetivo.data_limite_conclusao,

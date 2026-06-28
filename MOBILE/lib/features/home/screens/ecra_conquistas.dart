@@ -49,6 +49,7 @@ class _EcraConquistasState extends ConsumerState<EcraConquistas> {
         onRefresh: () async {
           ref.invalidate(allConquistasProvider);
           await ref.read(allConquistasProvider.future);
+
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
