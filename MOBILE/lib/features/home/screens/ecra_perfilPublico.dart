@@ -153,11 +153,13 @@ class _EcraPerfilPublicoState extends ConsumerState<EcraPerfilPublico> {
                           },
                         ),
                 ),
+                const SizedBox(height: 100),
               ],
             );
           },
         ),
       ),
+
     );
   }
 }

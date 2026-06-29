@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pint_26_mobile/core/database/database_helper.dart';
 
 class AppState {
   static final AppState _instance = AppState._internal();
@@ -49,6 +50,8 @@ class AppState {
     await prefs.remove('idConsultor');
     await prefs.remove('token');
     await prefs.remove('isLoggedIn');
+    //ELIMINAR BD LOCAL
+    await DatabaseHelper.instance.wipeDataDB();
     print("Sessão terminada e dados removidos.");
   }
 }

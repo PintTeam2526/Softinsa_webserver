@@ -87,10 +87,11 @@ class ObjetivosRepository {
 
     try {
       await _db.upsert('objetivos', row);
-      // Disparar push imediato apenas se houver internet
-      _syncService.pushPendingData('objetivos', '/objetivos/adicionar', 'ID_OBJETIVO');
+      // Disparar push imediato e aguardar sincronização para atualizar UI com dados reais
+      await _syncService.pushPendingData('objetivos', '/objetivos/adicionar', 'ID_OBJETIVO', idConsultor: idConsultor);
       return true;
     } catch (e) {
+      print(">>> [REPO] Erro ao adicionar objetivo: $e");
       return false;
     }
   }

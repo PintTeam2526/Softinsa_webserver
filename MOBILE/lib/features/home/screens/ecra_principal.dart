@@ -10,7 +10,7 @@ import 'package:pint_26_mobile/core/models/consultores_model.dart';
 import 'package:pint_26_mobile/core/repositories/consultores_repository.dart';
 import 'package:pint_26_mobile/core/repositories/conquistas_repository.dart';
 import 'package:pint_26_mobile/core/repositories/conquistasConsultores_repository.dart';
-
+import 'dart:io';
 import '../../../core/services/sync_service.dart';
 
 class EcraPrincipal extends ConsumerStatefulWidget {
@@ -46,10 +46,14 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
   late Future<List<dynamic>> _futureDadosConsultor;
   StreamSubscription? _syncSubscription;
 
+
   void _atualizarDados() {
     // acedemos aos repositórios através dos Providers do Riverpod
     final repositorio = ref.read(consultoresRepositoryProvider);
     final repositorioConquistasConsultor = ref.read(conquistasConsultoresRepositoryProvider);
+    //forcar sync geral
+    print(">> [Homepage] SYNC geral da homepage");
+    SyncService.instance.syncAll(widget.idConsultor);
 
     setState(() {
       _futureDadosConsultor = Future.wait([
@@ -61,11 +65,13 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
         repositorioConquistasConsultor.getCountConquistasConsultor(widget.idConsultor),
       ]);
     });
+
   }
 
   @override
   void initState(){
     super.initState();
+
     _atualizarDados();
     //Fica sempre a escuta por toda a aplicação se alguma destas tabelas alterar
     _syncSubscription = SyncService.instance.syncStream.listen((tabela) {
@@ -118,6 +124,7 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
             onRefresh: () async {
               _atualizarDados();
               await _futureDadosConsultor;
+
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

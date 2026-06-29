@@ -176,6 +176,7 @@ class _EcraBadgesObtidosState extends ConsumerState<EcraBadgesObtidos> {
                 },
               ),
             ),
+            const SizedBox(height: 100),
           ],
         ),
       ),

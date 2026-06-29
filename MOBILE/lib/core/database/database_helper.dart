@@ -6,7 +6,6 @@ import 'dart:io';
 class DatabaseHelper {
   static const _databaseName = "MyDbLocal.db";
   static const _databaseVersion = 2; // Aumentado para 2 para forçar o upgrade
-
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
@@ -324,4 +323,26 @@ class DatabaseHelper {
     print(">>> [DB] Dados do utilizador limpos.");
   }
 
+  Future<void> wipeDataDB() async {
+    Database db = await instance.database;
+
+    // Lista de todas as tabelas da base de dados
+    List<String> tables = [
+      'learningPaths', 'serviceLines', 'areas', 'consultores',
+      'badges', 'requisitos', 'badgesConcluidos', 'estados',
+      'pedidosBadge', 'historicoPedidos', 'objetivos', 'notificacoes',
+      'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores'
+    ];
+
+    try {
+      await db.transaction((txn) async {
+        for (var table in tables) {
+          await txn.delete(table);
+        }
+      });
+      print(">>> [DB] Todos os dados foram eliminados com sucesso.");
+    } catch (e) {
+      print(">>> [DB] Erro ao limpar base de dados: $e");
+    }
+  }
 }
