@@ -22,6 +22,7 @@ import '../models/requisitos_model.dart';
 import '../models/documentacao_model.dart';
 import '../models/conquistas_model.dart';
 import '../models/conquistasConsultores_model.dart';
+import '../models/badgesRecomendados_model.dart';
 
 // PROVIDER ÚNICO (SINGLETON)
 final syncServiceProvider = Provider((ref) => SyncService.instance);
@@ -76,7 +77,7 @@ class SyncService {
       }
 
       if (idConsultor > 0) {
-        final privateTables = ['consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistas', 'conquistasConsultores'];
+        final privateTables = ['consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'];
         for (var table in privateTables) {
           if (_syncingUserId != idConsultor) break; // Aborta se utilizador mudou
           await syncTableByName(table, idConsultor: idConsultor);
@@ -122,6 +123,7 @@ class SyncService {
         case 'conquistasConsultores':
           if (idConsultor != null) endpoint = '/syncMobile/conquistasConsultores/$idConsultor';
           break;
+        case 'badgesRecomendados': endpoint = '/badges/recomendados'; idConsultor = null; ignoreLastUpdate = true; break;
       }
 
       if (endpoint != null) {
@@ -188,6 +190,12 @@ class SyncService {
         } else {
           if (decoded is List) remoteData = decoded;
           else if (decoded is Map && decoded['data'] is List) remoteData = decoded['data'];
+          else if (decoded.containsKey('recomendados') && decoded['recomendados'] is List) {
+            remoteData = decoded['recomendados'];
+          }
+          else if (isSingleObject) {
+            remoteData = [decoded];
+          }
           else remoteData = [];
         }
 
@@ -282,6 +290,9 @@ class SyncService {
         case 'conquistasConsultores':
           final m = ConquistasConsultoresModel.fromJson(item);
           return {'ID_CONQUISTA_CONSULTOR': m.id_conquista_consultor, 'ID_CONSULTOR': m.id_consultor, 'ID_CONQUISTA': m.id_conquista};
+        case 'badgesRecomendados':
+          final m = BadgesRecomendadosModel.fromJson(item);
+          return {'ID_BADGE': m.idBadge, 'NOME_BADGE': m.nomeBadge, 'IMAGEM_BADGE': m.imagemBadge};
         default: return {};
       }
     } catch (e) { return {}; }
