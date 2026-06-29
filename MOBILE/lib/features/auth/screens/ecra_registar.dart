@@ -7,9 +7,14 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:pint_26_mobile/features/auth/widgets/login_input.dart';
 import 'package:pint_26_mobile/features/home/widgets/consultor_areaPreferencia.dart';
+import 'package:pint_26_mobile/features/home/widgets/rgpd_modal.dart';
 
 //IMPORT DO REPO PARA CRIAR O CONSULTOR
 import 'package:pint_26_mobile/core/repositories/consultores_repository.dart';
+
+//IMPORT DO REPO PARA CHAMAR OS TERMOS RGPD
+import 'package:pint_26_mobile/core/models/rgpd_model.dart';
+import 'package:pint_26_mobile/core/repositories/rgpd_repository.dart';
 
 class EcraRegistar extends ConsumerStatefulWidget {
   const EcraRegistar({super.key});
@@ -29,6 +34,8 @@ class _EcraRegistarState extends ConsumerState<EcraRegistar> {
   int? _idAreaSelecionada; 
   File? _imagemSelecionada;
   final ImagePicker _picker = ImagePicker();
+
+
 
   @override
   void initState() {
@@ -282,6 +289,53 @@ class _EcraRegistarState extends ConsumerState<EcraRegistar> {
              ),
            ),
           const SizedBox(height: 10),
+           Center(
+             child: InkWell(
+               onTap: () async {
+                 showDialog(
+                   context: context,
+                   barrierDismissible: true, //Permite Abrir/Fechar o loading manualmente
+                   builder: (context) => const Center(
+                     child: CircularProgressIndicator(color: primaryColor),
+                   ),
+                 );
+
+                 try {
+                   final rgpd = await ref.read(rgpdServiceProvider).fetchRgpd();
+
+                   if (context.mounted) {
+                     Navigator.pop(context);
+
+                     showDialog(
+                       context: context,
+                       builder: (BuildContext context) => RgpdModal(textoRgpd: rgpd.politica),
+                     );
+                   }
+                 } catch (e) {
+                   if (context.mounted) Navigator.pop(context);
+                   _mostrarErro("Não foi possível carregar os termos RGPD.");
+                 }
+               },
+               child: const Text.rich(
+                 TextSpan(
+                   text: 'Ao registar aceito os ',
+                   style: TextStyle(color: Colors.grey, fontSize: 14),
+                   children: [
+                     TextSpan(
+                       text: 'Termos e Condições',
+                       style: TextStyle(
+                         color: primaryColor,
+                         fontWeight: FontWeight.bold,
+                         decoration: TextDecoration.underline,
+                       ),
+                     ),
+                   ],
+                 ),
+                 textAlign: TextAlign.center,
+               ),
+             ),
+           ),
+           const SizedBox(height: 10),
            Center(
              child: InkWell(
                onTap: () => context.pop(),
