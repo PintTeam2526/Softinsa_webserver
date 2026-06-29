@@ -10,7 +10,6 @@ class ConquistasService {
   Future<List<ConquistasModel>> fetchAllConquistas() async {
     try {
       final idConsultor = AppState().idConsultor;
-      // Rota: http://localhost:3000/api/conquistas/mobile/get/1
       final response = await http.get(Uri.parse('$_endpoint/conquistas/mobile/get/$idConsultor'));
 
       if (response.statusCode == 200) {
