@@ -108,7 +108,7 @@ class SyncService {
         case 'requisitos': endpoint = '/syncMobile/requisitos'; break;
         case 'estados': endpoint = '/syncMobile/estados'; break;
         case 'conquistas': 
-          if (idConsultor != null) {endpoint = '/syncMobile/conquistas/$idConsultor'; ignoreLastUpdate = true; isSingle=false;}
+          if (idConsultor != null) {endpoint = '/conquistas/mobile/get/$idConsultor'; ignoreLastUpdate = true; isSingle=false;}
           break;
         case 'consultores':
           if (idConsultor != null) { endpoint = '/consultores/info/$idConsultor'; ignoreLastUpdate = true; isSingle = false; }
@@ -120,7 +120,7 @@ class SyncService {
         case 'historicoPedidos': if (idConsultor != null) endpoint = '/syncMobile/historicoPedidos/$idConsultor'; break;
         case 'documentacoes': if (idConsultor != null) endpoint = '/syncMobile/documentacoes/$idConsultor'; break;
         case 'conquistasConsultores':
-          if (idConsultor != null) endpoint = '/conquistas/mobile/get/$idConsultor';
+          if (idConsultor != null) endpoint = '/syncMobile/conquistasConsultores/$idConsultor';
           break;
       }
 

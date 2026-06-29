@@ -51,6 +51,9 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
     // acedemos aos repositórios através dos Providers do Riverpod
     final repositorio = ref.read(consultoresRepositoryProvider);
     final repositorioConquistasConsultor = ref.read(conquistasConsultoresRepositoryProvider);
+    //forcar sync geral
+    print(">> [Homepage] SYNC geral da homepage");
+    SyncService.instance.syncAll(widget.idConsultor);
 
     setState(() {
       _futureDadosConsultor = Future.wait([
@@ -63,16 +66,12 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
       ]);
     });
 
-
-    //forcar sync do consultor
-
-    //forcar sync dos objetivos
-
   }
 
   @override
   void initState(){
     super.initState();
+
     _atualizarDados();
     //Fica sempre a escuta por toda a aplicação se alguma destas tabelas alterar
     _syncSubscription = SyncService.instance.syncStream.listen((tabela) {
@@ -125,6 +124,7 @@ class _EcraPrincipalState extends ConsumerState<EcraPrincipal> with RouteAware {
             onRefresh: () async {
               _atualizarDados();
               await _futureDadosConsultor;
+
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
