@@ -109,11 +109,15 @@ function ProfileButton({ profile }) {
     ? `${profile.cargo} · ${profile.total_pontos} pontos`
     : profile.cargo
 
+  const imageSrc = profile.imagem_utilizador?.startsWith('data:')
+    ? profile.imagem_utilizador
+    : `data:image/jpeg;base64,${profile.imagem_utilizador}`
+
   return (
     <Link to="/consultor/definicoes" className="softinsa-shell-profile-btn" aria-label="Abrir perfil público">
       <div className="softinsa-shell-profile-wrap">
         <img
-          src={profile.imagem_utilizador}
+          src={imageSrc}
           alt={profile.nome_utilizador}
           className="softinsa-shell-profile-avatar"
         />

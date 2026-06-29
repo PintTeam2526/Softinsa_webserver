@@ -338,6 +338,8 @@ const STATUS_CONFIG = {
   'Devolvido': { label: 'Devolvido', Icon: HiOutlineArrowUturnLeft, cls: 'is-returned' },
 }
 
+const ESTADOS_CANDIDATAVEL = new Set(['Por Obter', 'Incorreto', 'Devolvido'])
+
 function IconStatus({ status, className }) {
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG['Submetido']
   const StatusIcon = config.Icon
@@ -692,7 +694,11 @@ function ConsultorBadgePageView({ isGuest = false }) {
 
         <div className="consultor-badge-card-actions">
           {!isGuest && (
-            <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar} disabled={isSubmitting} aria-busy={isSubmitting}>
+            <button type="button" className="consultor-badge-primary-btn" onClick={handleCandidatar}
+              disabled={isSubmitting || !ESTADOS_CANDIDATAVEL.has(badge.status)}
+              aria-busy={isSubmitting}
+              title={!ESTADOS_CANDIDATAVEL.has(badge.status) ? 'Não é possível candidatar neste estado' : undefined}
+            >
               {isSubmitting ? 'A submeter…' : 'Candidatar ao Badge'}
             </button>
           )}

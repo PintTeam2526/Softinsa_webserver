@@ -2,6 +2,6 @@ Link do Projeto: https://softinsa-webserver.onrender.com/
 
 Credenciais:
 -> Administrador: admin@softinsa.pt | admin123
--> Service Line Leader: sl@softinsa.pt | password132
--> Talent Manager: tm@softinsa.pt | password132
+-> Service Line Leader: sl@softinsa.pt | password123
+-> Talent Manager: tm@softinsa.pt | password123
 -> Consultor: registo + login com um email qualquer OU consultor1@softinsa.pt | 123456

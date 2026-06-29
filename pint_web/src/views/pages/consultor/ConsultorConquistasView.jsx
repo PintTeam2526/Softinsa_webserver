@@ -1,41 +1,19 @@
 import { useEffect, useState } from 'react'
 import { HiOutlineStar } from 'react-icons/hi2'
 
-import outsystems1 from '../../../assets/images/badges/outsystems_1.png'
-import outsystems3 from '../../../assets/images/badges/outsystems_3.png'
-import outsystemsSpecial from '../../../assets/images/badges/outsystems_special.png'
-import tm1 from '../../../assets/images/badges/tm_1.png'
-import devops2 from '../../../assets/images/badges/devops_2.png'
-
 import { getConquistasConsultor } from '../../../controllers/conquistasController'
 import './ConsultorConquistasView.css'
 
-const BADGE_MAP = {
-  1: outsystems1,
-  2: outsystems3,
-  3: devops2,
-  4: tm1,
-  5: outsystemsSpecial,
-  6: outsystems1,
-  7: outsystems3,
-  8: devops2,
-  9: tm1,
-  10: outsystemsSpecial,
-}
-
-function resolveBadge(id) {
-  return BADGE_MAP[id] ?? outsystems1
-}
+// ─── Cálculo de progresso ─────────────────────────────────────────────────────
 
 function calcularProgresso(conquista, total_badges, total_pontos) {
-  const desc = conquista.descricao_conquista?.toLowerCase() ?? ''
-  const meta = parseInt(desc)   // extrai o número (1, 5, 10, 50, 100…)
-
-  if (isNaN(meta) || meta === 0) return 0
-
-  const valor = desc.includes('ponto') ? total_pontos : total_badges
-  return Math.min(Math.round((valor / meta) * 100), 100)
+  const { tipo_conquista, valor_conquista } = conquista
+  if (!valor_conquista || valor_conquista === 0) return 0
+  const valor = tipo_conquista === 'pontos' ? total_pontos : total_badges
+  return Math.min(Math.round((valor / valor_conquista) * 100), 100)
 }
+
+// ─── Icon ─────────────────────────────────────────────────────────────────────
 
 function IconConquistas({ className }) {
   return (
@@ -45,6 +23,8 @@ function IconConquistas({ className }) {
   )
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function progressTier(progress) {
   if (progress >= 100) return 'is-tier-4'
   if (progress >= 75) return 'is-tier-3'
@@ -53,16 +33,24 @@ function progressTier(progress) {
   return 'is-tier-0'
 }
 
+// ─── Row ──────────────────────────────────────────────────────────────────────
+
 function ConquistaRow({ conquista, total_badges, total_pontos }) {
   const progress = calcularProgresso(conquista, total_badges, total_pontos)
   const tier = progressTier(progress)
+  const obtida = conquista.estado === 'Obtido'
 
   return (
-    <tr>
+    <tr className={obtida ? 'consultor-conquistas-row--obtida' : ''}>
       <td>
         <div className="consultor-conquistas-description-cell">
-          <img src={resolveBadge(conquista.id_conquista)} alt="" className="consultor-conquistas-thumb" />
-          <span className="consultor-conquistas-description-text">{conquista.descricao_conquista}</span>
+          {conquista.imagem_conquista && (
+            <img src={conquista.imagem_conquista} alt="" className="consultor-conquistas-thumb" />
+          )}
+          <span className="consultor-conquistas-description-text">
+            {obtida && <span className="consultor-conquistas-check" aria-hidden="true">✓ </span>}
+            Obter {conquista.descricao_conquista}
+          </span>
         </div>
       </td>
 
@@ -92,6 +80,8 @@ function ConquistaRow({ conquista, total_badges, total_pontos }) {
     </tr>
   )
 }
+
+// ─── Estados de UI ────────────────────────────────────────────────────────────
 
 function LoadingRows() {
   return Array.from({ length: 4 }).map((_, i) => (
@@ -126,6 +116,8 @@ function EmptyMessage() {
   )
 }
 
+// ─── View principal ───────────────────────────────────────────────────────────
+
 function ConsultorConquistasView() {
   const [dados, setDados] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -151,14 +143,27 @@ function ConsultorConquistasView() {
     if (error) return <ErrorMessage message={error} onRetry={fetchConquistas} />
     if (!dados?.conquistas?.length) return <EmptyMessage />
 
-    return dados.conquistas.map((c) => (
-      <ConquistaRow
-        key={c.id_conquista}
-        conquista={c}
-        total_badges={dados.total_badges}
-        total_pontos={dados.total_pontos}
-      />
-    ))
+    return [...dados.conquistas]
+      .sort((a, b) => {
+        const aObtida = a.estado === 'Obtido'
+        const bObtida = b.estado === 'Obtido'
+
+        // Obtidas vão sempre para o fim
+        if (aObtida !== bObtida) return aObtida ? 1 : -1
+
+        // Dentro do mesmo grupo, ordena por progresso decrescente
+        const pA = calcularProgresso(a, dados.total_badges, dados.total_pontos)
+        const pB = calcularProgresso(b, dados.total_badges, dados.total_pontos)
+        return pB - pA
+      })
+      .map((c) => (
+        <ConquistaRow
+          key={c.id_conquista}
+          conquista={c}
+          total_badges={dados.total_badges}
+          total_pontos={dados.total_pontos}
+        />
+      ))
   }
 
   return (
@@ -171,8 +176,8 @@ function ConsultorConquistasView() {
       </header>
 
       <article className="consultor-conquistas-card" aria-label="Histórico de Conquistas">
-        <header className="consultor-conquistas-card-header d-flex align-items-center gap-2 flex-wrap">
-          <IconConquistas className="consultor-conquistas-card-header-icon flex-shrink-0" />
+        <header className="consultor-conquistas-card-header">
+          <IconConquistas className="consultor-conquistas-card-header-icon" />
           <h2>Histórico de Conquistas</h2>
         </header>
 

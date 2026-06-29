@@ -887,6 +887,13 @@
   background: #2c4f80;
 }
 
+.consultor-badge-primary-btn:disabled {
+  opacity: 0.45;
+  background: #39639c;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ── REQUISITOS CARD ───────────────────────────────────── */
 .consultor-badge-req-list {
   display: flex;

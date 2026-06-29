@@ -19,11 +19,6 @@
   align-items: center;
 }
 
-.consultor-conquistas-hero-copy {
-  position: static;
-  max-width: 100%;
-}
-
 .consultor-conquistas-hero-copy h1 {
   margin: 0 0 8px;
   font-size: clamp(24px, 4vw, 40px);
@@ -74,12 +69,12 @@
   color: #232d42;
 }
 
+/* ─── Table wrapper ──────────────────────────────────────────────────────────── */
+
 .consultor-conquistas-table-wrap {
   display: block;
   width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: scroll;
+  overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: #adb5bd transparent;
 }
@@ -96,6 +91,8 @@
 .consultor-conquistas-table-wrap::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* ─── Table ──────────────────────────────────────────────────────────────────── */
 
 .consultor-conquistas-table {
   width: max-content;
@@ -114,8 +111,15 @@
   letter-spacing: 0.02em;
 }
 
-.consultor-conquistas-table thead th:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
-.consultor-conquistas-table thead th:last-child  { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.consultor-conquistas-table thead th:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.consultor-conquistas-table thead th:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
 
 .consultor-conquistas-table tbody tr {
   border-bottom: 1px solid #eeeeee;
@@ -134,14 +138,29 @@
   vertical-align: middle;
 }
 
-.consultor-conquistas-col-description { min-width: 260px; }
-.consultor-conquistas-col-points      { min-width: 120px; }
-.consultor-conquistas-col-progress    { min-width: 200px; }
+/* Linha de conquista obtida */
+.consultor-conquistas-row--obtida {
+  opacity: 0.75;
+}
+
+.consultor-conquistas-col-description {
+  min-width: 260px;
+}
+
+.consultor-conquistas-col-points {
+  min-width: 120px;
+}
+
+.consultor-conquistas-col-progress {
+  min-width: 200px;
+}
+
+/* ─── Célula de descrição ────────────────────────────────────────────────────── */
 
 .consultor-conquistas-description-cell {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   min-width: 0;
 }
 
@@ -153,6 +172,13 @@
   flex-shrink: 0;
 }
 
+.consultor-conquistas-description-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .consultor-conquistas-description-text {
   font-size: 16px;
   font-weight: 400;
@@ -162,6 +188,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.consultor-conquistas-badge-obtida {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2f6fd8;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Célula de pontos ───────────────────────────────────────────────────────── */
 
 .consultor-conquistas-points-cell {
   display: inline-flex;
@@ -180,6 +215,8 @@
   flex-shrink: 0;
 }
 
+/* ─── Barra de progresso ─────────────────────────────────────────────────────── */
+
 .consultor-conquistas-progress {
   position: relative;
   height: 16px;
@@ -196,7 +233,7 @@
   align-items: center;
   justify-content: center;
   font-family: Inter, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1;
   color: #ffffff;
@@ -204,9 +241,96 @@
   min-width: 28px;
 }
 
-.consultor-conquistas-progress-bar.is-tier-0 { background: rgba(57, 99, 156, 0.75); }
-.consultor-conquistas-progress-bar.is-tier-1 { background: #369bff; }
-.consultor-conquistas-progress-bar.is-tier-2 { background: #05666c; }
-.consultor-conquistas-progress-bar.is-tier-3 { background: #1aa053; }
-.consultor-conquistas-progress-bar.is-tier-4 { background: #409900; }
+/* Todos os tiers em tons de azul */
+.consultor-conquistas-progress-bar.is-tier-0 {
+  background: #f0883e;
+}
 
+.consultor-conquistas-progress-bar.is-tier-1 {
+  background: #f5c518;
+}
+
+.consultor-conquistas-progress-bar.is-tier-2 {
+  background: #c5d800;
+}
+
+.consultor-conquistas-progress-bar.is-tier-3 {
+  background: #82c91e;
+}
+
+.consultor-conquistas-progress-bar.is-tier-4 {
+  background: #409900;
+}
+
+/* ─── Feedback ───────────────────────────────────────────────────────────────── */
+
+.consultor-conquistas-feedback-cell {
+  text-align: center;
+  padding: 32px 24px !important;
+}
+
+.consultor-conquistas-error {
+  margin: 0 0 12px;
+  color: #d9534f;
+  font-size: 14px;
+}
+
+.consultor-conquistas-empty {
+  margin: 0;
+  color: #8a92a6;
+  font-size: 14px;
+}
+
+.consultor-conquistas-retry-btn {
+  padding: 8px 16px;
+  background: #2f6fd8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.consultor-conquistas-retry-btn:hover {
+  background: #24489a;
+}
+
+/* ─── Skeleton ───────────────────────────────────────────────────────────────── */
+
+.consultor-conquistas-skeleton {
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e9ecef 25%, #f5f6fa 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: consultor-conquistas-shimmer 1.4s infinite;
+}
+
+.consultor-conquistas-skeleton--desc {
+  height: 18px;
+  width: 220px;
+}
+
+.consultor-conquistas-skeleton--pts {
+  height: 18px;
+  width: 60px;
+}
+
+.consultor-conquistas-skeleton--bar {
+  height: 16px;
+  width: 160px;
+  border-radius: 8px;
+}
+
+@keyframes consultor-conquistas-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.consultor-conquistas-check {
+  color: #409900;
+  font-weight: 700;
+}
