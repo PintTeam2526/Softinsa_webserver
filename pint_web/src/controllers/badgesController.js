@@ -134,12 +134,7 @@ export const getBadgesRecomendados = async () => {
 }
 
 // Partilhar o Badge por LinkedIn
-export const getBadgeShareUrl = async (id) => {
-  try {
-    const response = await api.get(`/badges/${id}/share`)
-    return response.data
-  } catch (error) {
-    console.error(`Erro ao enviar badge ${id} para o LinkdIn`, error)
-    throw error
-  }
+export const getBadgeShareUrl = (id) => {
+  const base = api.defaults.baseURL.replace(/\/$/, '')
+  return `${base}/badges/${id}/share`
 }
