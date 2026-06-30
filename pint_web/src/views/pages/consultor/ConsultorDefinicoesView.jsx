@@ -381,7 +381,7 @@ function ConsultorDefinicoesView() {
                 Icon={HiOutlineArrowRightOnRectangle}
                 label="Terminar sessão"
                 description="Sair da aplicação"
-                onClick={handleLogout}
+                onClick={() => openModal('logout')}
               />
             </div>
           </section>
@@ -548,6 +548,32 @@ function ConsultorDefinicoesView() {
       {activeModal === 'rgpd' ? (
         <Modal title="Política de privacidade (RGPD)" onClose={closeModal}>
           <div className="sll-profile-rgpd-policy">{rgpdPolitica}</div>
+        </Modal>
+      ) : null}
+
+      {activeModal === 'logout' ? (
+        <Modal title="Terminar sessão" onClose={closeModal}>
+          <div className="sll-profile-form">
+            <p>Tem a certeza que pretende terminar a sessão?</p>
+
+            <div className="sll-profile-modal-actions">
+              <button
+                type="button"
+                className="sll-profile-btn-secondary"
+                onClick={closeModal}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="sll-profile-btn-primary"
+                onClick={handleLogout}
+              >
+                Terminar sessão
+              </button>
+            </div>
+          </div>
         </Modal>
       ) : null}
     </div>
