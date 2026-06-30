@@ -865,6 +865,11 @@ controllers.getBadgeShareHtml = async (req, res) => {
 </head>
 
 <body>
+
+<script>
+window.location.href = "${webUrl}";
+</script>
+
 </body>
 
 </html>
