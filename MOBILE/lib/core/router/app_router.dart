@@ -13,6 +13,8 @@ import '../../features/home/screens/ecra_CandidatarBadge.dart';
 import '../../features/home/screens/ecra_AdicionarObjetivo.dart';
 import '../../features/home/screens/ecra_AdicionarDataObjetivo.dart';
 import '../../features/home/screens/ecra_BadgesObtidos.dart';
+import '../../features/home/screens/ecra_badgesRecomendados.dart';
+
 import '../../core/app_state.dart';
 import '../../core/services/sync_service.dart';
 
@@ -31,6 +33,7 @@ class AppRoutes {
   static const String adicionarObjetivo = '/adicionarObjetivo';
   static const String adicionarDataObjetivo = '/adicionarDataObjetivo';
   static const String mostrarBadgesConcluidos = '/mostrarBadgesConcluidos';
+  static const String mostrarBadgesRecomendados = '/mostrarBadgesRecomendados';
 }
 //permite que o widget detete quando uma pagina que estava em cima na pilha foi removida (pop)
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -88,7 +91,6 @@ final appRouter = GoRouter(
         return ConsultorNavBar(idConsultorLogado:idConsultor);
       }
     ),
-    //FAZER O GOROUTE PARA AS DEFINICOES
     GoRoute(
       path: AppRoutes.alterarDefinicoes,
       builder:(context, state) => const EcraAlterarDefinicoes(),
@@ -145,7 +147,11 @@ final appRouter = GoRouter(
           return EcraBadgesObtidos(nomeBadgePesquisa: nomeBadgeSelecionado,);
        },
     ),
-
-
+    GoRoute(
+      path: AppRoutes.mostrarBadgesRecomendados,
+      builder: (context,state){
+        return const EcraBadgesRecomendados();
+      }
+    ),
   ],
 );
