@@ -810,10 +810,10 @@ controllers.devolvidos = async (req, res) => {
 };
 
 controllers.getBadgeShareHtml = async (req, res) => {
-    try {
-        const id = req.params.id;
 
-        const badge = await Badges.findByPk(id, {
+    try {
+
+        const badge = await Badges.findByPk(req.params.id, {
             include: [
                 {
                     model: Areas,
@@ -823,57 +823,70 @@ controllers.getBadgeShareHtml = async (req, res) => {
         });
 
         if (!badge) {
-            return res.status(404).send('Badge não encontrado');
+            return res.status(404).send("Badge não encontrado");
         }
 
-        // URL base do site
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const badgeUrl = `${baseUrl}/api/badges/${badge.id_badge}`;
+        const webUrl =
+            `https://softinsa-webserver.onrender.com/badges/${badge.id_badge}`;
 
-        // imagem absoluta (IMPORTANTE para LinkedIn)
-        const imageUrl = badge.imagem_badge?.startsWith('http')
-            ? badge.imagem_badge
-            : `${baseUrl}/${badge.imagem_badge}`;
-
-        const title = `${badge.nome_badge} | Softinsa`;
-        const description = badge.descricao_badge
-            ? badge.descricao_badge
-            : `Conquista o badge ${badge.nome_badge} na Softinsa`;
+        const imageUrl =
+            `https://softinsa-api-rw5t.onrender.com/api/badges/${badge.id_badge}/image`;
 
         const html = `
-        <!DOCTYPE html>
-        <html lang="pt">
-        <head>
-            <meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="pt">
 
-            <!-- Open Graph (LinkedIn usa isto) -->
-            <meta property="og:type" content="website" />
-            <meta property="og:title" content="${title}" />
-            <meta property="og:description" content="${description}" />
-            <meta property="og:image" content="${imageUrl}" />
-            <meta property="og:url" content="${badgeUrl}" />
+<head>
 
-            <!-- fallback -->
-            <meta name="description" content="${description}" />
+<meta charset="UTF-8">
 
-            <title>${title}</title>
-        </head>
-        <body>
-            <p>Redirecionando para o badge...</p>
-            <script>
-                window.location.href = "${badgeUrl}";
-            </script>
-        </body>
-        </html>
-        `;
+<title>${badge.nome_badge}</title>
 
-        res.setHeader('Content-Type', 'text/html');
-        return res.status(200).send(html);
+<meta property="og:type" content="article"/>
+
+<meta property="og:title"
+      content="${badge.nome_badge}"/>
+
+<meta property="og:description"
+      content="${badge.descricao_badge}"/>
+
+<meta property="og:image"
+      content="${imageUrl}"/>
+
+<meta property="og:url"
+      content="${webUrl}"/>
+
+<meta property="og:site_name"
+      content="Softinsa"/>
+
+<meta name="twitter:card"
+      content="summary_large_image"/>
+
+</head>
+
+<body>
+
+<script>
+window.location.href = "${webUrl}";
+</script>
+
+</body>
+
+</html>
+`;
+
+        res.setHeader("Content-Type", "text/html");
+
+        res.send(html);
 
     } catch (error) {
+
         console.error(error);
-        return res.status(500).send('Erro ao gerar página de partilha');
+
+        res.status(500).send("Erro interno");
+
     }
+
 };
 
 controllers.getBadgeImage = async (req, res) => {
