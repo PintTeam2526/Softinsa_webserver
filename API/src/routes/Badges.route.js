@@ -80,7 +80,7 @@ router.get('/get/:id', controllerBadges.getBadgeByIdMobile);
 router.get('/get/obtidos/:id', controllerBadges.getBadgesObtidosConsultorMobile);
 
 //rota de Linkdin
-router.get('/badges/:id/share', controllerBadges.getBadgeShareHtml);
+router.get('/:id/share', controllerBadges.getBadgeShareHtml);
 
 
 module.exports = router;
