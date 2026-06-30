@@ -4,6 +4,8 @@ import 'package:pint_26_mobile/features/home/widgets/consultor_appbar.dart';
 import 'package:pint_26_mobile/features/home/widgets/consultor_badgeObtidoRetangulo.dart';
 import 'package:pint_26_mobile/features/home/widgets/consultor_searchBar.dart';
 import 'package:pint_26_mobile/core/app_state.dart';
+import 'package:pint_26_mobile/features/home/widgets/consultor_partilharBadgeModal.dart';
+
 
 // REPOSITORIOS
 import 'package:pint_26_mobile/core/repositories/badgesConcluidos_repository.dart';
@@ -166,7 +168,8 @@ class _EcraBadgesObtidosState extends ConsumerState<EcraBadgesObtidos> {
                               CertificadoService.gerarEVisualizar(certificado);
                             },
                             onPartilhar: () {
-                              print('Partilhar badge: ${badge.nomeBadge}');
+                              //print('Partilhar badge: ${badge.nomeBadge}');
+                              ConsultorPartilharBadgeModal.show(context, badge.idBadge);
                             },
                           );
                         },
