@@ -809,5 +809,72 @@ controllers.devolvidos = async (req, res) => {
     }
 };
 
+controllers.getBadgeShareHtml = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const badge = await Badges.findByPk(id, {
+            include: [
+                {
+                    model: Areas,
+                    attributes: ['nome_area']
+                }
+            ]
+        });
+
+        if (!badge) {
+            return res.status(404).send('Badge não encontrado');
+        }
+
+        // URL base do site
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const badgeUrl = `${baseUrl}/badges/${badge.id_badge}`;
+
+        // imagem absoluta (IMPORTANTE para LinkedIn)
+        const imageUrl = badge.imagem_badge?.startsWith('http')
+            ? badge.imagem_badge
+            : `${baseUrl}/${badge.imagem_badge}`;
+
+        const title = `${badge.nome_badge} | Softinsa`;
+        const description = badge.descricao_badge
+            ? badge.descricao_badge
+            : `Conquista o badge ${badge.nome_badge} na Softinsa`;
+
+        const html = `
+        <!DOCTYPE html>
+        <html lang="pt">
+        <head>
+            <meta charset="utf-8">
+
+            <!-- Open Graph (LinkedIn usa isto) -->
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content="${title}" />
+            <meta property="og:description" content="${description}" />
+            <meta property="og:image" content="${imageUrl}" />
+            <meta property="og:url" content="${badgeUrl}" />
+
+            <!-- fallback -->
+            <meta name="description" content="${description}" />
+
+            <title>${title}</title>
+        </head>
+        <body>
+            <p>Redirecionando para o badge...</p>
+            <script>
+                window.location.href = "${badgeUrl}";
+            </script>
+        </body>
+        </html>
+        `;
+
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(html);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Erro ao gerar página de partilha');
+    }
+};
+
 
 module.exports = controllers;
