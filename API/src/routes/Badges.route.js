@@ -81,6 +81,7 @@ router.get('/get/obtidos/:id', controllerBadges.getBadgesObtidosConsultorMobile)
 
 //rota de Linkdin
 router.get('/:id/share', controllerBadges.getBadgeShareHtml);
+router.get('/:id/image', controllerBadges.getBadgeImage);
 
 
 module.exports = router;

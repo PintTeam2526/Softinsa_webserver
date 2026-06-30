@@ -828,7 +828,7 @@ controllers.getBadgeShareHtml = async (req, res) => {
 
         // URL base do site
         const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const badgeUrl = `${baseUrl}/badges/${badge.id_badge}`;
+        const badgeUrl = `${baseUrl}/api/badges/${badge.id_badge}`;
 
         // imagem absoluta (IMPORTANTE para LinkedIn)
         const imageUrl = badge.imagem_badge?.startsWith('http')
@@ -873,6 +873,27 @@ controllers.getBadgeShareHtml = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).send('Erro ao gerar página de partilha');
+    }
+};
+
+controllers.getBadgeImage = async (req, res) => {
+    try {
+        const badge = await Badges.findByPk(req.params.id);
+
+        if (!badge || !badge.imagem_badge) {
+            return res.status(404).send('Imagem não encontrada');
+        }
+
+        const imageBuffer = Buffer.from(
+            badge.imagem_badge,
+            'base64'
+        );
+
+        res.set('Content-Type', 'image/png');
+        res.send(imageBuffer);
+
+    } catch (error) {
+        res.status(500).send('Erro ao obter imagem');
     }
 };
 
