@@ -7,9 +7,10 @@ import 'package:pint_26_mobile/features/home/widgets/consultor_searchBar.dart';
 import 'package:pint_26_mobile/features/home/widgets/consultor_objetivosCard.dart';
 import 'package:intl/intl.dart'; 
 import 'package:go_router/go_router.dart';
-
+import 'package:pint_26_mobile/core/repositories/badgesRecomendados_repository.dart';
 import 'package:pint_26_mobile/core/repositories/objetivos_repository.dart';
 import 'package:pint_26_mobile/core/services/sync_service.dart';
+import 'package:pint_26_mobile/core/models/objetivos_model.dart';
 
 class EcraObjetivos extends ConsumerStatefulWidget {
   const EcraObjetivos({super.key});
@@ -20,6 +21,7 @@ class EcraObjetivos extends ConsumerStatefulWidget {
 
 class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
   final TextEditingController _controllerPesquisa = TextEditingController();
+  String _filtroAtivo = 'Todos';
 
   @override
   void initState() {
@@ -74,22 +76,34 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                     texto: 'Novo Objetivo',
                     icone: 'lib/assets/icons/Icon_Adicionar.svg',
                     onTap: () async {
-                      await context.push('/adicionarObjetivo');
-                      // Invalida o provider para forçar refresh ao voltar
+                      final repo = ref.read(badgesRecomendadosRepositoryProvider);
+
+
+                      final badges = await repo.getAllBadgesRecomendados(idConsultor);
+
+                      if (badges != null && badges.isNotEmpty) {
+                        if (mounted) {
+                          await context.push('/mostrarBadgesRecomendados');
+                        }
+                      } else {
+                        if (mounted) {
+                          await context.push('/adicionarObjetivo');
+                        }
+                      }
                       ref.invalidate(objetivosConsultorProvider(idConsultor));
                     }
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
-                    texto: 'Por Concluir',
+                    texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_Objetivos.svg',
-                    onTap: () => print('Por Concluir'),
+                    onTap: () => setState(() => _filtroAtivo = 'Todos'),
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
-                    texto: 'Expirados',
+                    texto: 'Por Concluir',
                     icone: 'lib/assets/icons/Icon_Expirado.svg',
-                    onTap: () => print('Expirados'),
+                    onTap: () => setState(() => _filtroAtivo = 'Por Concluir'),
                   ),
                 ],
               ),
@@ -106,8 +120,26 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                   ],
                 ),
                 data: (listaObjetivos) {
-                  final listaObjetivosFiltrada = listaObjetivos.where((obj){
-                    return obj.nome.toLowerCase().contains(_controllerPesquisa.text.toLowerCase());
+                  // Ordenar: Não concluídos primeiro
+                  final listaOrdenada = List<ObjetivosModel>.from(listaObjetivos);
+                  listaOrdenada.sort((a, b) {
+                    bool aConcluido = a.data_conclusao_objetivo != null && a.data_conclusao_objetivo!.isNotEmpty;
+                    bool bConcluido = b.data_conclusao_objetivo != null && b.data_conclusao_objetivo!.isNotEmpty;
+                    
+                    if (!aConcluido && bConcluido) return -1;
+                    if (aConcluido && !bConcluido) return 1;
+                    return 0;
+                  });
+
+                  // Filtrar por pesquisa e por estado (Todos / Por Concluir)
+                  final listaObjetivosFiltrada = listaOrdenada.where((obj) {
+                    final matchPesquisa = obj.nome.toLowerCase().contains(_controllerPesquisa.text.toLowerCase());
+                    
+                    if (_filtroAtivo == 'Por Concluir') {
+                      final naoConcluido = obj.data_conclusao_objetivo == null || obj.data_conclusao_objetivo!.isEmpty;
+                      return matchPesquisa && naoConcluido;
+                    }
+                    return matchPesquisa;
                   }).toList();
         
                   if(listaObjetivosFiltrada.isEmpty){
@@ -121,7 +153,7 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                   }
                   return ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 100), // AJUSTADO BOTTOM PADDING
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 100),
                     children: [
                       Wrap(
                         spacing: 5,

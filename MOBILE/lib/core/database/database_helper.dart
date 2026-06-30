@@ -34,7 +34,7 @@ class DatabaseHelper {
         'learningPaths', 'serviceLines', 'areas', 'consultores', 
         'badges', 'requisitos', 'badgesConcluidos', 'estados', 
         'pedidosBadge', 'historicoPedidos', 'objetivos', 'notificacoes',
-        'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores'
+        'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'
       ];
 
       for (var table in tables) {
@@ -253,6 +253,15 @@ class DatabaseHelper {
             sync_status TEXT
           )
           ''');
+    await db.execute('''
+          CREATE TABLE badgesRecomendados (
+          ID_BADGE INTEGER PRIMARY KEY,
+          NOME_BADGE TEXT NOT NULL,
+          IMAGEM_BADGE TEXT NOT NULL,
+          updated_at TEXT,
+          sync_status TEXT
+          )
+    ''');
   }
 
   Future<void> upsert(String table, Map<String, dynamic> row) async {
@@ -295,7 +304,7 @@ class DatabaseHelper {
     // Lista de tabelas que são específicas de consultor (possuem ID_CONSULTOR)
     const userTables = [
       'consultores', 'badgesConcluidos', 'pedidosBadge', 'historicoPedidos', 
-      'objetivos', 'notificacoes', 'documentacoes', 'conquistasConsultores'
+      'objetivos', 'notificacoes', 'documentacoes', 'conquistasConsultores', 'badgesRecomendados'
     ];
 
     String query = 'SELECT MAX(updated_at) as lastUpdate FROM $table WHERE sync_status = "synced"';
@@ -315,7 +324,7 @@ class DatabaseHelper {
     const privateTables = [
       'consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 
       'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistasConsultores', 
-      'conquistas'
+      'conquistas', 'badgesRecomendados'
     ];
     for (var table in privateTables) {
       await db.delete(table);
@@ -331,7 +340,7 @@ class DatabaseHelper {
       'learningPaths', 'serviceLines', 'areas', 'consultores',
       'badges', 'requisitos', 'badgesConcluidos', 'estados',
       'pedidosBadge', 'historicoPedidos', 'objetivos', 'notificacoes',
-      'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores'
+      'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'
     ];
 
     try {
