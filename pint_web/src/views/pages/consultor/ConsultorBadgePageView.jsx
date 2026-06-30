@@ -19,7 +19,7 @@ import { getToken } from '../../../services/auth'
 import { getLearningPaths } from '../../../controllers/learningPathsController'
 import { getServiceLines } from '../../../controllers/serviceLinesController'
 import { getAreas } from '../../../controllers/areasController'
-import { getBadgeById, getFavoritos, setFavorito } from '../../../controllers/badgesController'
+import { getBadgeById, getFavoritos, setFavorito, getBadgeShareUrl } from '../../../controllers/badgesController'
 import { getRequisitosByBadge } from '../../../controllers/requisitosController'
 import { getPedidos, uploadDocumentacao, createPedido, getPedidoHistorico } from '../../../controllers/pedidosController'
 
@@ -150,8 +150,14 @@ function ShareModal({ badge, onClose }) {
 
   const badgeUrl = `${window.location.origin}/badges/${badge.id}`
 
+  const shareUrl = getBadgeShareUrl(badge.id)
+
   function handleLinkedInPublish() {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(badgeUrl)}`, '_blank', 'noopener,noreferrer')
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
     onClose()
   }
 
@@ -264,9 +270,21 @@ function ShareModal({ badge, onClose }) {
         )}
         {activeTab === 'linkedin' && (
           <div className="consultor-badge-share-body">
-            <div className="consultor-badge-share-field"><label htmlFor="li-user">Login:</label><input id="li-user" type="text" className="consultor-badge-share-input" placeholder="utilizador@linkedin" /></div>
-            <div className="consultor-badge-share-field"><label htmlFor="li-pass">Password:</label><input id="li-pass" type="password" className="consultor-badge-share-input" placeholder="••••••••" /></div>
-            <div className="consultor-badge-share-actions"><button type="button" className="consultor-badge-share-submit" onClick={handleLinkedInPublish}>Publicar</button></div>
+            <div className="consultor-badge-share-email-preview">
+              <img src={badge.image} alt={badge.name} className="consultor-badge-share-email-preview-img" />
+              <div className="consultor-badge-share-email-preview-info">
+                <p className="consultor-badge-share-email-preview-name">{badge.name}</p>
+                <p className="consultor-badge-share-email-preview-meta">{badge.level} · {badge.area}</p>
+              </div>
+            </div>
+            <p className="consultor-badge-share-field-section-label">
+              Vais ser redirecionado para o LinkedIn para publicares este badge, já autenticado com a tua conta.
+            </p>
+            <div className="consultor-badge-share-actions">
+              <button type="button" className="consultor-badge-share-submit" onClick={handleLinkedInPublish}>
+                Partilhar no LinkedIn
+              </button>
+            </div>
           </div>
         )}
         {activeTab === 'pdf' && (
