@@ -451,14 +451,8 @@ const SoftinsaBadges = memo(() => {
 
   const handleBackStep = () => { setStepError(""); setFormStep((s) => Math.max(s - 1, 1)); };
 
-  const handleSubmitBadge = async (e) => {
-    e.preventDefault();
-
-    if (formStep !== TOTAL_STEPS) {
-      // Garantia extra: o submit só deve disparar no último passo
-      handleNextStep();
-      return;
-    }
+  const handleSubmitBadge = async () => {
+    if (formStep !== TOTAL_STEPS) return;
 
     const sanitizedName = formData.name.trim();
     const parsedPoints = Number(formData.points);
@@ -664,7 +658,7 @@ const SoftinsaBadges = memo(() => {
 
             <StepIndicator currentStep={formStep} />
 
-            <form className="softinsa-badges-modal-form d-flex flex-column" onSubmit={handleSubmitBadge}>
+            <form className="softinsa-badges-modal-form d-flex flex-column" noValidate onSubmit={(e) => e.preventDefault()}>
 
               {/* PASSO 1 — Nome, Descrição, Learning Path, Service Line, Área */}
               {formStep === 1 ? (
@@ -876,7 +870,7 @@ const SoftinsaBadges = memo(() => {
                 {formStep < TOTAL_STEPS ? (
                   <button type="button" className="softinsa-badges-step-next-btn" onClick={handleNextStep}>Avançar</button>
                 ) : (
-                  <button type="submit" className="softinsa-badges-step-confirm-btn">{isEditMode ? "Confirmar Edição" : "Confirmar"}</button>
+                  <button type="button" className="softinsa-badges-step-confirm-btn" onClick={handleSubmitBadge}>{isEditMode ? "Confirmar Edição" : "Confirmar"}</button>
                 )}
               </div>
             </form>
