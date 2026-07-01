@@ -26,6 +26,13 @@ const rankByLevelLabel = Object.fromEntries(
   Object.entries(levelLabelByRank).map(([rank, label]) => [label, rank])
 );
 
+const TOTAL_STEPS = 3;
+const stepTitles = {
+  1: "Informação Geral",
+  2: "Nível & Aparência",
+  3: "Requisitos",
+};
+
 const getDefaultFilterDraft = () => ({ learningPath: "", serviceLine: "", area: "" });
 
 const getDefaultBadgeForm = () => ({
@@ -47,7 +54,7 @@ const normalizeSearchValue = (value) =>
 const formatBadgeImage = (img) => {
   if (!img) return defaultBadgeImage;
   if (img.startsWith("data:")) return img;
-  return `data:image/png;base64,${img}`;   
+  return `data:image/png;base64,${img}`;
 };
 
 const mapBadge = (row, areaMap, slMap, lpMap) => {
@@ -63,7 +70,7 @@ const mapBadge = (row, areaMap, slMap, lpMap) => {
     isSpecial: row.pago ?? false,
     badgeLevel: rankByLevelLabel[levelLabel] ?? "1",
     level: levelLabel,
-    image: formatBadgeImage(row.imagem_badge),      
+    image: formatBadgeImage(row.imagem_badge),
     logoFileName: row.imagem_badge ?? "",
     validityDate: row.validade ? String(row.validade) : "",
     status: row.estado_a_i ? "Ativo" : "Inativo",
@@ -144,6 +151,24 @@ function FileSelector({ fileName, onChange, ariaLabel, className = "" }) {
   );
 }
 
+function StepIndicator({ currentStep }) {
+  return (
+    <div className="softinsa-badges-stepper d-flex align-items-end justify-content-center" role="tablist" aria-label="Passos do formulário de badge">
+      {[1, 2, 3].map((step) => (
+        <div key={step} className="softinsa-badges-step-dot-wrap d-inline-flex flex-column align-items-center">
+          <span className={`softinsa-badges-step-label${step === currentStep ? " is-active" : ""}`}>{stepTitles[step]}</span>
+          <span
+            className={`softinsa-badges-step-dot${step === currentStep ? " is-active" : ""}${step < currentStep ? " is-done" : ""}`}
+            role="tab"
+            aria-selected={step === currentStep}
+            aria-label={`Passo ${step}: ${stepTitles[step]}`}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const SoftinsaBadges = memo(() => {
   const [badges, setBadges] = useState([]);
   const [learningPathOptions, setLearningPathOptions] = useState([]);
@@ -157,21 +182,23 @@ const SoftinsaBadges = memo(() => {
   const [modalMode, setModalMode] = useState(null);
   const [editingBadgeId, setEditingBadgeId] = useState(null);
   const [formData, setFormData] = useState(getDefaultBadgeForm());
-  const [isRequirementModalOpen, setIsRequirementModalOpen] = useState(false);
-  const [requirementModalMode, setRequirementModalMode] = useState("add");
+  const [formStep, setFormStep] = useState(1);
+  const [stepError, setStepError] = useState("");
   const [requirementFormData, setRequirementFormData] = useState(getDefaultRequirementForm(false));
   const [requirementFormError, setRequirementFormError] = useState("");
   const [editingRequirementIndex, setEditingRequirementIndex] = useState(null);
   const [deletedRequirementIds, setDeletedRequirementIds] = useState([]);
   const [areasRaw, setAreasRaw] = useState([]);
   const [slRaw, setSlRaw] = useState([]);
+  const [lpRaw, setLpRaw] = useState([]);
   const filterWrapRef = useRef(null);
 
   const cardsPerPage = 8;
   const isModalOpen = modalMode !== null;
   const isEditMode = modalMode === "edit";
   const hasActiveFilters = Boolean(activeFilters.learningPath || activeFilters.serviceLine || activeFilters.area);
-  const isEditRequirementMode = requirementModalMode === "edit";
+  // No modo de edição de badge mostramos o nível do requisito; em adição não (mantém o comportamento anterior)
+  const isEditRequirementMode = isEditMode;
   const isEditingRequirementDraft = editingRequirementIndex !== null;
   const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
@@ -197,6 +224,7 @@ const SoftinsaBadges = memo(() => {
 
       setAreasRaw(areasData);
       setSlRaw(slData);
+      setLpRaw(lpData);
 
       setLearningPathOptions(lpData.map((lp) => lp.nome_learning_path));
       setServiceLineOptions(slData.map((sl) => sl.nome_service_line));
@@ -224,20 +252,30 @@ const SoftinsaBadges = memo(() => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
   const paginatedBadges = filteredBadges.slice((currentPageClamped - 1) * cardsPerPage, currentPageClamped * cardsPerPage);
 
+  // Service Lines / Áreas do MODAL filtradas em cascata (Learning Path -> Service Line -> Área)
+  const formSelectedLpId = lpRaw.find((lp) => lp.nome_learning_path === formData.learningPath)?.id_learning_path;
+  const filteredFormServiceLineOptions = slRaw
+    .filter((sl) => !formSelectedLpId || Number(sl.id_learning_path) === Number(formSelectedLpId))
+    .map((sl) => sl.nome_service_line);
+
+  const formSelectedSlId = slRaw.find((sl) => sl.nome_service_line === formData.serviceLine)?.id_service_line;
+  const filteredFormAreaOptions = areasRaw
+    .filter((a) => !formSelectedSlId || Number(a.id_service_line) === Number(formSelectedSlId))
+    .map((a) => a.nome_area);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (isFilterOpen && filterWrapRef.current && !filterWrapRef.current.contains(e.target)) setIsFilterOpen(false);
     };
     const handleEscape = (e) => {
       if (e.key === "Escape") {
-        if (isRequirementModalOpen) { setIsRequirementModalOpen(false); return; }
         setIsFilterOpen(false); setModalMode(null); setEditingBadgeId(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
     return () => { document.removeEventListener("mousedown", handleClickOutside); document.removeEventListener("keydown", handleEscape); };
-  }, [isFilterOpen, isRequirementModalOpen]);
+  }, [isFilterOpen]);
 
   const handleSearchChange = (e) => { setSearchTerm(e.target.value); setCurrentPage(1); };
   const handleToggleFilter = () => { setFilterDraft(activeFilters); setIsFilterOpen((p) => !p); };
@@ -248,13 +286,18 @@ const SoftinsaBadges = memo(() => {
   const handleOpenAddBadge = () => {
     setFormData({
       ...getDefaultBadgeForm(),
-      learningPath: learningPathOptions[0] ?? "",
-      serviceLine: serviceLineOptions[0] ?? "",
-      area: areaOptions[0] ?? "",
+      learningPath: "",
+      serviceLine: "",
+      area: "",
       status: "Ativo",
     });
     setEditingBadgeId(null);
+    setFormStep(1);
+    setStepError("");
     setEditingRequirementIndex(null);
+    setRequirementFormData(getDefaultRequirementForm(false));
+    setRequirementFormError("");
+    setDeletedRequirementIds([]);
     setIsFilterOpen(false);
     setModalMode("add");
   };
@@ -263,9 +306,9 @@ const SoftinsaBadges = memo(() => {
     setFormData({
       name: badge.name || "",
       description: badge.description || "",
-      learningPath: badge.learningPath || learningPathOptions[0] || "",
-      serviceLine: badge.serviceLine || serviceLineOptions[0] || "",
-      area: badge.area || areaOptions[0] || "",
+      learningPath: badge.learningPath || "",
+      serviceLine: badge.serviceLine || "",
+      area: badge.area || "",
       validityDate: badge.validityDate || "",
       status: badge.status || "Ativo",
       badgeLevel: badge.badgeLevel || "1",
@@ -278,7 +321,11 @@ const SoftinsaBadges = memo(() => {
     });
 
     setEditingBadgeId(badge.id);
+    setFormStep(1);
+    setStepError("");
     setEditingRequirementIndex(null);
+    setRequirementFormData(getDefaultRequirementForm(true));
+    setRequirementFormError("");
     setDeletedRequirementIds([]);
     setIsFilterOpen(false);
     setModalMode("edit");
@@ -297,20 +344,33 @@ const SoftinsaBadges = memo(() => {
   const handleCloseModal = () => {
     setModalMode(null);
     setEditingBadgeId(null);
-    setIsRequirementModalOpen(false);
-    setRequirementModalMode("add");
+    setFormStep(1);
+    setStepError("");
     setRequirementFormData(getDefaultRequirementForm(false));
     setRequirementFormError("");
     setEditingRequirementIndex(null);
     setDeletedRequirementIds([]);
   };
 
-  const handleCloseRequirementModal = () => {
-    setIsRequirementModalOpen(false); setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode));
-    setRequirementFormError(""); setEditingRequirementIndex(null);
-  };
+  const handleFieldChange = (field, value) => {
+    setStepError("");
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
 
-  const handleFieldChange = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+      // Mudou Learning Path -> limpa Service Line e Área
+      if (field === "learningPath") {
+        updated.serviceLine = "";
+        updated.area = "";
+      }
+
+      // Mudou Service Line -> limpa Área
+      if (field === "serviceLine") {
+        updated.area = "";
+      }
+
+      return updated;
+    });
+  };
 
   const handleBadgeLogoFileChange = (e) => {
     const file = e.target.files?.[0] ?? null;
@@ -344,12 +404,6 @@ const SoftinsaBadges = memo(() => {
     return true;
   };
 
-  const handleOpenRequirementModal = () => {
-    const nextMode = isEditMode ? "edit" : "add";
-    setRequirementModalMode(nextMode); setRequirementFormError(""); setEditingRequirementIndex(null);
-    setRequirementFormData(getDefaultRequirementForm(nextMode === "edit")); setIsRequirementModalOpen(true);
-  };
-
   const handleEditRequirement = (req, idx) => { setRequirementFormError(""); setEditingRequirementIndex(idx); setRequirementFormData({ title: req.title || "", description: req.description || "", level: isEditRequirementMode ? req.level || "1" : "", fileName: req.fileName || "", file: null }); };
   const handleDeleteRequirement = (idxToDelete) => {
     const req = formData.requirements[idxToDelete];
@@ -371,15 +425,50 @@ const SoftinsaBadges = memo(() => {
     setRequirementFormError("");
   };
   const handleCancelRequirementEdit = () => { setEditingRequirementIndex(null); setRequirementFormError(""); setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); };
-  const handleAddMoreRequirements = () => { if (appendRequirementFromDraft()) setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); };
-  const handleConfirmRequirement = (e) => { e.preventDefault(); if (!appendRequirementFromDraft()) return; setIsRequirementModalOpen(false); setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); setEditingRequirementIndex(null); };
+  const handleAddOrUpdateRequirement = () => { if (appendRequirementFromDraft()) setRequirementFormData(getDefaultRequirementForm(isEditRequirementMode)); };
+
+  // Validação por passo, ao tentar avançar
+  const validateStep1 = () => {
+    if (!formData.name.trim()) return "Indique o nome do badge.";
+    if (!formData.learningPath) return "Selecione a Learning Path.";
+    if (!formData.serviceLine) return "Selecione a Service Line.";
+    if (!formData.area) return "Selecione a Área.";
+    return "";
+  };
+
+  const validateStep2 = () => {
+    if (formData.points === "" || Number.isNaN(Number(formData.points))) return "Indique os pontos do badge.";
+    if (!formData.status) return "Selecione o estado do badge.";
+    return "";
+  };
+
+  const handleNextStep = () => {
+    const error = formStep === 1 ? validateStep1() : formStep === 2 ? validateStep2() : "";
+    if (error) { setStepError(error); return; }
+    setStepError("");
+    setFormStep((s) => Math.min(s + 1, TOTAL_STEPS));
+  };
+
+  const handleBackStep = () => { setStepError(""); setFormStep((s) => Math.max(s - 1, 1)); };
 
   const handleSubmitBadge = async (e) => {
     e.preventDefault();
+
+    if (formStep !== TOTAL_STEPS) {
+      // Garantia extra: o submit só deve disparar no último passo
+      handleNextStep();
+      return;
+    }
+
     const sanitizedName = formData.name.trim();
     const parsedPoints = Number(formData.points);
     const badgeLevel = formData.badgeLevel || "1";
     if (!sanitizedName || Number.isNaN(parsedPoints)) return;
+
+    if (!formData.learningPath || !formData.serviceLine || !formData.area) {
+      setStepError("Selecione a Learning Path, a Service Line e a Área.");
+      return;
+    }
 
     const resolvedArea = areasRaw.find((a) => a.nome_area === formData.area);
     if (!resolvedArea) { console.error("Área não encontrada"); return; }
@@ -479,52 +568,52 @@ const SoftinsaBadges = memo(() => {
         </label>
 
         <div className="softinsa-badges-toolbar-actions d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center">
-        <div className="softinsa-badges-filter-wrap d-inline-flex" ref={filterWrapRef}>
-          <button type="button" className="softinsa-badges-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
-            <FilterIcon /><span>Filtro</span>
-          </button>
-          {isFilterOpen ? (
-            <div className="softinsa-badges-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de badges">
-              <div className="softinsa-badges-filter-field d-flex flex-column">
-                <label htmlFor="softinsa-badges-filter-learning-path">Learning Paths:</label>
-                <div className="softinsa-badges-select-wrap">
-                  <select id="softinsa-badges-filter-learning-path" className="w-100" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
-                    <option value="">Selecione a Learning Path</option>
-                    {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <SelectArrowIcon />
+          <div className="softinsa-badges-filter-wrap d-inline-flex" ref={filterWrapRef}>
+            <button type="button" className="softinsa-badges-filter-btn d-inline-flex align-items-center" aria-label="Abrir filtro" aria-expanded={isFilterOpen} onClick={handleToggleFilter}>
+              <FilterIcon /><span>Filtro</span>
+            </button>
+            {isFilterOpen ? (
+              <div className="softinsa-badges-filter-panel d-flex flex-column" role="dialog" aria-label="Filtro de badges">
+                <div className="softinsa-badges-filter-field d-flex flex-column">
+                  <label htmlFor="softinsa-badges-filter-learning-path">Learning Paths:</label>
+                  <div className="softinsa-badges-select-wrap">
+                    <select id="softinsa-badges-filter-learning-path" className="w-100" value={filterDraft.learningPath} onChange={(e) => handleFilterDraftChange("learningPath", e.target.value)}>
+                      <option value="">Selecione a Learning Path</option>
+                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                    <SelectArrowIcon />
+                  </div>
+                </div>
+                <div className="softinsa-badges-filter-field d-flex flex-column">
+                  <label htmlFor="softinsa-badges-filter-service-line">Service Line:</label>
+                  <div className="softinsa-badges-select-wrap">
+                    <select id="softinsa-badges-filter-service-line" className="w-100" value={filterDraft.serviceLine} onChange={(e) => handleFilterDraftChange("serviceLine", e.target.value)}>
+                      <option value="">Selecione a Service Line</option>
+                      {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                    <SelectArrowIcon />
+                  </div>
+                </div>
+                <div className="softinsa-badges-filter-field d-flex flex-column">
+                  <label htmlFor="softinsa-badges-filter-area">Área</label>
+                  <div className="softinsa-badges-select-wrap">
+                    <select id="softinsa-badges-filter-area" className="w-100" value={filterDraft.area} onChange={(e) => handleFilterDraftChange("area", e.target.value)}>
+                      <option value="">Selecione a Área</option>
+                      {areaOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                    <SelectArrowIcon />
+                  </div>
+                </div>
+                <div className="softinsa-badges-filter-actions w-100 d-inline-flex align-items-center">
+                  <button type="button" className="softinsa-badges-filter-submit" onClick={handleApplyFilters}>Filtrar</button>
                 </div>
               </div>
-              <div className="softinsa-badges-filter-field d-flex flex-column">
-                <label htmlFor="softinsa-badges-filter-service-line">Service Line:</label>
-                <div className="softinsa-badges-select-wrap">
-                  <select id="softinsa-badges-filter-service-line" className="w-100" value={filterDraft.serviceLine} onChange={(e) => handleFilterDraftChange("serviceLine", e.target.value)}>
-                    <option value="">Selecione a Service Line</option>
-                    {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <SelectArrowIcon />
-                </div>
-              </div>
-              <div className="softinsa-badges-filter-field d-flex flex-column">
-                <label htmlFor="softinsa-badges-filter-area">Área</label>
-                <div className="softinsa-badges-select-wrap">
-                  <select id="softinsa-badges-filter-area" className="w-100" value={filterDraft.area} onChange={(e) => handleFilterDraftChange("area", e.target.value)}>
-                    <option value="">Selecione a Área</option>
-                    {areaOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <SelectArrowIcon />
-                </div>
-              </div>
-              <div className="softinsa-badges-filter-actions w-100 d-inline-flex align-items-center">
-                <button type="button" className="softinsa-badges-filter-submit" onClick={handleApplyFilters}>Filtrar</button>
-              </div>
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
 
-        <button type="button" className="softinsa-badges-add-btn d-inline-flex align-items-center" onClick={handleOpenAddBadge}>
-          <PlusIcon /><span>Adicionar</span>
-        </button>
+          <button type="button" className="softinsa-badges-add-btn d-inline-flex align-items-center" onClick={handleOpenAddBadge}>
+            <PlusIcon /><span>Adicionar</span>
+          </button>
         </div>
       </div>
 
@@ -572,191 +661,214 @@ const SoftinsaBadges = memo(() => {
               <h2>{isEditMode ? "Editar Badge" : "Adicionar Badge"}</h2>
               <button type="button" className="softinsa-badges-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal" onClick={handleCloseModal}><CloseIcon /></button>
             </div>
-            <form className="softinsa-badges-modal-form d-flex flex-column" onSubmit={handleSubmitBadge}>
-              <div className="softinsa-badges-modal-field d-flex flex-column">
-                <label htmlFor="softinsa-badge-name">Nome:</label>
-                <input id="softinsa-badge-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
-              </div>
-              <div className="softinsa-badges-modal-field d-flex flex-column">
-                <label htmlFor="softinsa-badge-description">Descrição:</label>
-                <textarea id="softinsa-badge-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
-              </div>
-              <Row className="g-3 align-items-end row-cols-1 row-cols-sm-2 row-cols-lg-5">
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-learning-path">Learning Path:</label>
-                  <div className="softinsa-badges-select-wrap">
-                    <select id="softinsa-badge-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
-                      {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-service-line">Service Line:</label>
-                  <div className="softinsa-badges-select-wrap">
-                    <select id="softinsa-badge-service-line" className="w-100" value={formData.serviceLine} onChange={(e) => handleFieldChange("serviceLine", e.target.value)}>
-                      {serviceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-area">Área:</label>
-                  <div className="softinsa-badges-select-wrap">
-                    <select id="softinsa-badge-area" className="w-100" value={formData.area} onChange={(e) => handleFieldChange("area", e.target.value)}>
-                      {areaOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-validity">Tempo de Validade:</label>
-                  <input
-                    id="softinsa-badge-validity"
-                    type="number"
-                    min={0}
-                    className="w-100"
-                    placeholder="Nº de dias"
-                    value={formData.validityDate}
-                    onChange={(e) => handleFieldChange("validityDate", e.target.value)}
-                  />
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-status">Estado:</label>
-                  <div className="softinsa-badges-select-wrap">
-                    <select id="softinsa-badge-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
-                      <option value="" disabled>Ativo/Inativo</option>
-                      {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                </Col>
-              </Row>
-              <Row className="g-3 align-items-end row-cols-1 row-cols-sm-2 row-cols-lg-4">
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-level">Nível:</label>
-                  <div className="softinsa-badges-select-wrap">
-                    <select id="softinsa-badge-level" className="w-100" value={formData.badgeLevel} onChange={(e) => handleFieldChange("badgeLevel", e.target.value)}>
-                      {badgeLevelRankOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                    </select><SelectArrowIcon />
-                  </div>
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label htmlFor="softinsa-badge-points">Pontos:</label>
-                  <input id="softinsa-badge-points" type="number" min={0} className="w-100" value={formData.points} onChange={(e) => handleFieldChange("points", e.target.value)} required />
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label>Badge Especial?</label>
-                  <div className="softinsa-badges-special-options d-inline-flex align-items-center" role="radiogroup" aria-label="Badge especial">
-                    <label className="softinsa-badges-special-option d-inline-flex align-items-center"><input type="radio" name="softinsa-badge-special" checked={formData.isSpecial === true} onChange={() => handleFieldChange("isSpecial", true)} /><span>Sim</span></label>
-                    <label className="softinsa-badges-special-option d-inline-flex align-items-center"><input type="radio" name="softinsa-badge-special" checked={formData.isSpecial === false} onChange={() => handleFieldChange("isSpecial", false)} /><span>Não</span></label>
-                  </div>
-                </div>
-                </Col>
-                <Col>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label>Logotipo do Badge:</label>
-                  <FileSelector fileName={formData.logoFileName} onChange={handleBadgeLogoFileChange} ariaLabel="Selecionar logotipo do badge" />
-                  <div className="softinsa-badge-logo-preview-wrap w-100 d-flex align-items-center justify-content-center">
-                    <img src={formData.image || defaultBadgeImage} alt="Pré-visualização do badge" className="softinsa-badge-logo-preview" />
-                  </div>
-                </div>
-                </Col>
-              </Row>
-              <div className="softinsa-badges-modal-actions-row d-flex align-items-center justify-content-between">
-                <button type="button" className="softinsa-badges-requirements-btn" onClick={handleOpenRequirementModal}>
-                  {isEditMode ? "Editar Requisitos" : "Adicionar Requisitos"}
-                </button>
-                <button type="submit" className="softinsa-badges-modal-submit-primary">
-                  {isEditMode ? "Editar" : "Adicionar"}
-                </button>
-              </div>
-              {formData.requirements.length > 0 ? <p className="softinsa-badges-requirements-count">Requisitos adicionados: {formData.requirements.length}</p> : null}
-            </form>
-          </div>
-        </div>
-      ) : null}
 
-      {isRequirementModalOpen ? (
-        <div className="softinsa-requirement-modal-backdrop d-flex align-items-center justify-content-center" role="presentation" onClick={handleCloseRequirementModal}>
-          <div className="softinsa-requirement-modal d-flex flex-column" data-node-id={isEditRequirementMode ? "4194:6737" : "4194:6483"} role="dialog" aria-label={isEditRequirementMode ? "Editar Requisito" : "Adicionar Requisito"} onClick={(e) => e.stopPropagation()}>
-            <div className="softinsa-requirement-modal-header d-flex align-items-center justify-content-between">
-              <h3>{isEditRequirementMode ? "Editar Requisito" : "Adicionar Requisito"}</h3>
-              <button type="button" className="softinsa-badges-modal-close d-inline-flex align-items-center justify-content-center" aria-label="Fechar modal de requisito" onClick={handleCloseRequirementModal}><CloseIcon /></button>
-            </div>
-            <form className="softinsa-requirement-modal-form d-flex flex-column" onSubmit={handleConfirmRequirement}>
-              {formData.requirements.length > 0 ? (
-                <div className="softinsa-requirement-list">
-                  <p className="softinsa-requirement-list-title">Requisitos já adicionados</p>
-                  <ul className="softinsa-requirement-list-items">
-                    {formData.requirements.map((req, idx) => (
-                      <li key={req.id || `${req.title}-${idx}`} className={`softinsa-requirement-list-item d-flex align-items-start justify-content-between${editingRequirementIndex === idx ? " is-editing" : ""}`}>
-                        <div className="softinsa-requirement-list-item-text d-flex flex-column">
-                          <strong>{req.title || `Requisito ${idx + 1}`}</strong>
-                          {req.description ? <span>{req.description}</span> : null}
+            <StepIndicator currentStep={formStep} />
+
+            <form className="softinsa-badges-modal-form d-flex flex-column" onSubmit={handleSubmitBadge}>
+
+              {/* PASSO 1 — Nome, Descrição, Learning Path, Service Line, Área */}
+              {formStep === 1 ? (
+                <div className="softinsa-badges-step-content d-flex flex-column">
+                  <div className="softinsa-badges-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-badge-name">Nome:</label>
+                    <input id="softinsa-badge-name" type="text" className="w-100" value={formData.name} onChange={(e) => handleFieldChange("name", e.target.value)} required />
+                  </div>
+                  <div className="softinsa-badges-modal-field d-flex flex-column">
+                    <label htmlFor="softinsa-badge-description">Descrição:</label>
+                    <textarea id="softinsa-badge-description" className="w-100" value={formData.description} onChange={(e) => handleFieldChange("description", e.target.value)}></textarea>
+                  </div>
+                  <Row className="g-3 align-items-end row-cols-1 row-cols-sm-3">
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-learning-path">Learning Path:</label>
+                        <div className="softinsa-badges-select-wrap">
+                          <select id="softinsa-badge-learning-path" className="w-100" value={formData.learningPath} onChange={(e) => handleFieldChange("learningPath", e.target.value)}>
+                            <option value="">Selecionar</option>
+                            {learningPathOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                          </select><SelectArrowIcon />
                         </div>
-                        <div className="softinsa-requirement-list-item-actions d-inline-flex flex-wrap">
-                          <button type="button" className="softinsa-requirement-item-edit-btn" onClick={() => handleEditRequirement(req, idx)}>Editar</button>
-                          <button type="button" className="softinsa-requirement-item-delete-btn" onClick={() => handleDeleteRequirement(idx)}>Apagar</button>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-service-line">Service Line:</label>
+                        <div className="softinsa-badges-select-wrap">
+                          <select
+                            id="softinsa-badge-service-line"
+                            className="w-100"
+                            value={formData.serviceLine}
+                            onChange={(e) => handleFieldChange("serviceLine", e.target.value)}
+                            disabled={!formData.learningPath}
+                          >
+                            <option value="">Selecionar</option>
+                            {filteredFormServiceLineOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                          </select><SelectArrowIcon />
                         </div>
-                      </li>
-                    ))}
-                  </ul>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-area">Área:</label>
+                        <div className="softinsa-badges-select-wrap">
+                          <select
+                            id="softinsa-badge-area"
+                            className="w-100"
+                            value={formData.area}
+                            onChange={(e) => handleFieldChange("area", e.target.value)}
+                            disabled={!formData.serviceLine}
+                          >
+                            <option value="">Selecionar</option>
+                            {filteredFormAreaOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                          </select><SelectArrowIcon />
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
               ) : null}
-              <div className="softinsa-badges-modal-field d-flex flex-column">
-                <label htmlFor="softinsa-requirement-title">Título:</label>
-                <input id="softinsa-requirement-title" type="text" className="w-100" value={requirementFormData.title} onChange={(e) => handleRequirementFieldChange("title", e.target.value)} />
-              </div>
-              <div className="softinsa-badges-modal-field d-flex flex-column">
-                <label htmlFor="softinsa-requirement-description">Descrição (opcional):</label>
-                <textarea id="softinsa-requirement-description" className="w-100" value={requirementFormData.description} onChange={(e) => handleRequirementFieldChange("description", e.target.value)}></textarea>
-              </div>
-              <Row className="g-3 align-items-end">
-                {isEditRequirementMode ? (
-                  <Col xs={12} md="auto">
+
+              {/* PASSO 2 — Nível, Pontos, Especial, Estado, Logotipo */}
+              {formStep === 2 ? (
+                <div className="softinsa-badges-step-content d-flex flex-column">
+                  <Row className="g-3 align-items-end row-cols-1 row-cols-sm-2 row-cols-lg-5">
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-level">Nível:</label>
+                        <div className="softinsa-badges-select-wrap">
+                          <select id="softinsa-badge-level" className="w-100" value={formData.badgeLevel} onChange={(e) => handleFieldChange("badgeLevel", e.target.value)}>
+                            {badgeLevelRankOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                          </select><SelectArrowIcon />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-points">Pontos:</label>
+                        <input id="softinsa-badge-points" type="number" min={0} className="w-100" value={formData.points} onChange={(e) => handleFieldChange("points", e.target.value)} required />
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label>Badge Especial?</label>
+                        <div className="softinsa-badges-special-options d-inline-flex align-items-center" role="radiogroup" aria-label="Badge especial">
+                          <label className="softinsa-badges-special-option d-inline-flex align-items-center"><input type="radio" name="softinsa-badge-special" checked={formData.isSpecial === true} onChange={() => handleFieldChange("isSpecial", true)} /><span>Sim</span></label>
+                          <label className="softinsa-badges-special-option d-inline-flex align-items-center"><input type="radio" name="softinsa-badge-special" checked={formData.isSpecial === false} onChange={() => handleFieldChange("isSpecial", false)} /><span>Não</span></label>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-status">Estado:</label>
+                        <div className="softinsa-badges-select-wrap">
+                          <select id="softinsa-badge-status" className="w-100" value={formData.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
+                            <option value="" disabled>Ativo/Inativo</option>
+                            {statusOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                          </select><SelectArrowIcon />
+                        </div>
+                      </div>
+                    </Col>
+                    <Col>
+                      <div className="softinsa-badges-modal-field d-flex flex-column">
+                        <label htmlFor="softinsa-badge-validity">Tempo de Validade:</label>
+                        <input
+                          id="softinsa-badge-validity"
+                          type="number"
+                          min={0}
+                          className="w-100"
+                          placeholder="Nº de dias"
+                          value={formData.validityDate}
+                          onChange={(e) => handleFieldChange("validityDate", e.target.value)}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
                   <div className="softinsa-badges-modal-field d-flex flex-column">
-                    <label htmlFor="softinsa-requirement-level">Nível:</label>
-                    <div className="softinsa-badges-select-wrap">
-                      <select id="softinsa-requirement-level" className="w-100" value={requirementFormData.level} onChange={(e) => handleRequirementFieldChange("level", e.target.value)}>
-                        {badgeLevelRankOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                      </select><SelectArrowIcon />
+                    <label>Logotipo do Badge:</label>
+                    <FileSelector fileName={formData.logoFileName} onChange={handleBadgeLogoFileChange} ariaLabel="Selecionar logotipo do badge" />
+                    <div className="softinsa-badge-logo-preview-wrap d-flex align-items-center justify-content-center">
+                      <img src={formData.image || defaultBadgeImage} alt="Pré-visualização do badge" className="softinsa-badge-logo-preview" />
                     </div>
                   </div>
-                  </Col>
-                ) : null}
-                <Col xs={12} md>
-                <div className="softinsa-badges-modal-field d-flex flex-column">
-                  <label>Logotipo do Requisito (opcional):</label>
-                  <FileSelector fileName={requirementFormData.fileName} onChange={handleRequirementFileChange} ariaLabel="Selecionar logotipo do requisito" className="softinsa-requirement-file-field" />
-                </div>
-                </Col>
-                <Col xs={12} md="auto">
-                <div className="softinsa-requirement-inline-actions d-flex flex-column">
-                  <button type="button" className="softinsa-requirement-add-more-btn d-inline-flex align-items-center" onClick={handleAddMoreRequirements}>
-                    {isEditingRequirementDraft ? <span>Guardar Alterações</span> : <><PlusIcon /><span>Adicionar Mais Requisitos</span></>}
-                  </button>
-                  {isEditingRequirementDraft ? <button type="button" className="softinsa-requirement-cancel-edit-btn" onClick={handleCancelRequirementEdit}>Cancelar edição</button> : null}
-                </div>
-                </Col>
-              </Row>
-              {requirementFormError ? <p className="softinsa-requirement-error">{requirementFormError}</p> : null}
-              {!isEditingRequirementDraft ? (
-                <div className="softinsa-requirement-actions d-flex justify-content-end">
-                  <button type="submit" className="softinsa-requirement-submit-btn">{isEditRequirementMode ? "Editar" : "Adicionar"}</button>
                 </div>
               ) : null}
+
+              {/* PASSO 3 — Requisitos (adicionar/editar/listar) */}
+              {formStep === 3 ? (
+                <div className="softinsa-badges-step-content d-flex flex-column">
+                  {formData.requirements.length > 0 ? (
+                    <div className="softinsa-requirement-list">
+                      <ul className="softinsa-requirement-list-items">
+                        {formData.requirements.map((req, idx) => (
+                          <li key={req.id || `${req.title}-${idx}`} className={`softinsa-requirement-list-item d-flex align-items-start justify-content-between${editingRequirementIndex === idx ? " is-editing" : ""}`}>
+                            <div className="softinsa-requirement-list-item-text d-flex flex-column">
+                              <strong>{req.title || `Requisito ${idx + 1}`}</strong>
+                              {req.description ? <span>{req.description}</span> : null}
+                            </div>
+                            <div className="softinsa-requirement-list-item-actions d-inline-flex flex-wrap">
+                              <button type="button" className="softinsa-requirement-item-edit-btn" onClick={() => handleEditRequirement(req, idx)}>Editar</button>
+                              <button type="button" className="softinsa-requirement-item-delete-btn" onClick={() => handleDeleteRequirement(idx)}>Apagar</button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  <div className="softinsa-badges-requirement-form d-flex flex-column">
+                    <div className="softinsa-badges-modal-field d-flex flex-column">
+                      <label htmlFor="softinsa-requirement-title">Título:</label>
+                      <input id="softinsa-requirement-title" type="text" className="w-100" value={requirementFormData.title} onChange={(e) => handleRequirementFieldChange("title", e.target.value)} />
+                    </div>
+                    <div className="softinsa-badges-modal-field d-flex flex-column">
+                      <label htmlFor="softinsa-requirement-description">Descrição (opcional):</label>
+                      <textarea id="softinsa-requirement-description" className="w-100" value={requirementFormData.description} onChange={(e) => handleRequirementFieldChange("description", e.target.value)}></textarea>
+                    </div>
+                    <Row className="g-3 align-items-end">
+                      {isEditRequirementMode ? (
+                        <Col xs={12} md="auto">
+                          <div className="softinsa-badges-modal-field d-flex flex-column">
+                            <label htmlFor="softinsa-requirement-level">Nível:</label>
+                            <div className="softinsa-badges-select-wrap">
+                              <select id="softinsa-requirement-level" className="w-100" value={requirementFormData.level} onChange={(e) => handleRequirementFieldChange("level", e.target.value)}>
+                                {badgeLevelRankOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                              </select><SelectArrowIcon />
+                            </div>
+                          </div>
+                        </Col>
+                      ) : null}
+                      <Col xs={12} md>
+                        <div className="softinsa-badges-modal-field d-flex flex-column">
+                          <label>Logotipo do Requisito (opcional):</label>
+                          <FileSelector fileName={requirementFormData.fileName} onChange={handleRequirementFileChange} ariaLabel="Selecionar logotipo do requisito" className="softinsa-requirement-file-field" />
+                        </div>
+                      </Col>
+                      <Col xs={12} md="auto">
+                        <div className="softinsa-requirement-inline-actions d-flex flex-column">
+                          <button type="button" className="softinsa-requirement-add-more-btn d-inline-flex align-items-center" onClick={handleAddOrUpdateRequirement}>
+                            {isEditingRequirementDraft ? <span>Guardar Alterações</span> : <><PlusIcon /><span>Adicionar Requisito</span></>}
+                          </button>
+                          {isEditingRequirementDraft ? <button type="button" className="softinsa-requirement-cancel-edit-btn" onClick={handleCancelRequirementEdit}>Cancelar edição</button> : null}
+                        </div>
+                      </Col>
+                    </Row>
+                    {requirementFormError ? <p className="softinsa-requirement-error">{requirementFormError}</p> : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {stepError ? <p className="softinsa-badges-step-error">{stepError}</p> : null}
+
+              <div className="softinsa-badges-step-nav d-flex align-items-center justify-content-between">
+                {formStep > 1 ? (
+                  <button type="button" className="softinsa-badges-step-back-btn" onClick={handleBackStep}>Voltar</button>
+                ) : <span />}
+
+                {formStep < TOTAL_STEPS ? (
+                  <button type="button" className="softinsa-badges-step-next-btn" onClick={handleNextStep}>Avançar</button>
+                ) : (
+                  <button type="submit" className="softinsa-badges-step-confirm-btn">{isEditMode ? "Confirmar Edição" : "Confirmar"}</button>
+                )}
+              </div>
             </form>
           </div>
         </div>

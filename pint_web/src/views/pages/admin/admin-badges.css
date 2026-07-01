@@ -719,3 +719,108 @@
   cursor: pointer;
 }
 
+/* ===== Step Wizard (Adicionar/Editar Badge) ===== */
+
+.softinsa-badges-stepper {
+  gap: 24px;
+  margin: 0 auto 4px;
+}
+
+.softinsa-badges-step-dot-wrap {
+  gap: 6px;
+}
+
+.softinsa-badges-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e9ecef;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.softinsa-badges-step-dot.is-active {
+  background: #3a57e8;
+  transform: scale(1.15);
+}
+
+.softinsa-badges-step-dot.is-done {
+  background: #39639c;
+}
+
+.softinsa-badges-step-label {
+  color: #8a92a6;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.softinsa-badges-step-label.is-active {
+  color: #3a57e8;
+  font-weight: 600;
+}
+
+.softinsa-badges-step-error {
+  margin: 0;
+  color: #d63384;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.softinsa-badges-step-content {
+  gap: 14px;
+  min-height: 220px;
+}
+
+.softinsa-badges-step-nav {
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px solid #eeeeee;
+}
+
+.softinsa-badges-step-back-btn {
+  border-radius: 4px;
+  background: #f1f3f5;
+  color: #495057;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 24px;
+  cursor: pointer;
+  border: 0;
+}
+
+.softinsa-badges-step-next-btn {
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 24px;
+  cursor: pointer;
+  border: 0;
+}
+
+.softinsa-badges-step-confirm-btn {
+  border-radius: 4px;
+  background: #3a57e8;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 400;
+  padding: 8px 24px;
+  cursor: pointer;
+  border: 0;
+}
+
+.softinsa-badges-requirement-form {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+  gap: 12px;
+}
