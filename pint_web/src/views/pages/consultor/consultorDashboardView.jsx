@@ -139,24 +139,22 @@ function AlertCard({ type, Icon, title, subtitle, subtitleHighlight, value, onCl
   )
 }
 
-function BadgeRow({ badge, isLarge = false, onClick, navigate: propNavigate = null }) {
+function BadgeGridCard({ badge, onClick }) {
   const StatusIcon = badge.Icon
-  const defaultNavigate = propNavigate || (() => { })
-  const handleClick = isLarge ? () => defaultNavigate('/consultor/badges/pedidos') : onClick
-  const isInteractive = typeof handleClick === 'function'
+  const isInteractive = typeof onClick === 'function'
 
   function handleKeyDown(event) {
     if (!isInteractive) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
-      handleClick()
+      onClick()
     }
   }
 
   return (
     <div
-      className={`consultor-dashboard-badge-row${isLarge ? ' is-my-badge' : ''}${isInteractive ? ' is-clickable' : ''}`}
-      onClick={isInteractive ? handleClick : undefined}
+      className={`consultor-dashboard-badge-card${isInteractive ? ' is-clickable' : ''}`}
+      onClick={isInteractive ? onClick : undefined}
       onKeyDown={handleKeyDown}
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
@@ -164,23 +162,16 @@ function BadgeRow({ badge, isLarge = false, onClick, navigate: propNavigate = nu
       <img
         src={badge.image}
         alt={badge.name}
-        className={`consultor-dashboard-badge-image${isLarge ? ' consultor-dashboard-badge-image--large' : ''}`}
+        className="consultor-dashboard-badge-card-image"
       />
 
-      <div className={`consultor-dashboard-badge-copy${isLarge ? ' consultor-dashboard-badge-copy--my-badge' : ''}`}>
-        <h4>{badge.name}</h4>
-        {isLarge ? (
-          <p className={`consultor-dashboard-badge-status ${badge.statusClass}`}>
-            {badge.status}
-            {StatusIcon && <StatusIcon className="consultor-dashboard-badge-status-icon" aria-hidden="true" />}
-          </p>
-        ) : (
-          <p>{badge.subtitle}</p>
-        )}
-      </div>
+      <h4 className="consultor-dashboard-badge-card-name">{badge.name}</h4>
 
-      {!isLarge && (
-        <HiOutlineChevronRight className="consultor-dashboard-badge-action" aria-hidden="true" />
+      {badge.status && (
+        <p className={`consultor-dashboard-badge-status ${badge.statusClass}`}>
+          {badge.status}
+          {StatusIcon && <StatusIcon className="consultor-dashboard-badge-status-icon" aria-hidden="true" />}
+        </p>
       )}
     </div>
   )
@@ -289,16 +280,20 @@ function DashboardView() {
         ))}
       </section>
 
-      <Row as="section" className="justify-content-center mb-5" aria-label="Badges">
-        <Col xs={12} xl={8}>
+      <Row as="section" className="g-4 justify-content-center mb-5" aria-label="Badges">
+        <Col xs={12}>
           <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
-            <div className="consultor-dashboard-card-header">
-              <h2>Os meus badges</h2>
+            <div className="consultor-dashboard-card-header consultor-dashboard-card-header--centered">
+              <h2>Os meus Pedidos</h2>
             </div>
 
-            <div className="consultor-dashboard-card-body consultor-dashboard-card-body--my-badges">
+            <div className="consultor-dashboard-badge-grid">
               {myBadges.map((badge, i) => (
-                <BadgeRow key={i} badge={badge} isLarge navigate={navigate} />
+                <BadgeGridCard
+                  key={i}
+                  badge={badge}
+                  onClick={() => navigate('/consultor/badges/pedidos')}
+                />
               ))}
             </div>
           </article>

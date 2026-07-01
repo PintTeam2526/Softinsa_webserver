@@ -285,6 +285,12 @@
   color: #000000;
 }
 
+.consultor-dashboard-card-header--centered {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
 .consultor-dashboard-card-header--with-action {
   display: flex;
   align-items: center;
@@ -333,41 +339,65 @@
   gap: 24px;
 }
 
-.consultor-dashboard-card-body--my-badges {
-  gap: 18px;
+/* ── OS MEUS PEDIDOS — GRID DE BADGES ─────────────────── */
+.consultor-dashboard-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 24px 16px;
 }
 
-/* ── BADGE ROWS ────────────────────────────────────────── */
+.consultor-dashboard-badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+}
+
+.consultor-dashboard-badge-card.is-clickable {
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.consultor-dashboard-badge-card.is-clickable:hover {
+  background: #f6f7f9;
+  transform: translateY(-2px);
+}
+
+.consultor-dashboard-badge-card.is-clickable:focus-visible {
+  outline: 2px solid #39639c;
+  outline-offset: 2px;
+}
+
+.consultor-dashboard-badge-card-image {
+  width: clamp(64px, 14vw, 88px);
+  height: clamp(64px, 14vw, 88px);
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.consultor-dashboard-badge-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #000000;
+  overflow-wrap: break-word;
+}
+
+.consultor-dashboard-badge-card .consultor-dashboard-badge-status {
+  justify-content: center;
+}
+
+/* ── BADGE ROWS (uso genérico, fora do grid "Os meus Pedidos") ── */
 .consultor-dashboard-badge-row {
   display: flex;
   align-items: center;
   gap: 24px;
-}
-
-.consultor-dashboard-badge-row.is-my-badge {
-  gap: clamp(10px, 3vw, 18px);
-}
-
-.consultor-dashboard-badge-row.is-clickable {
-  cursor: pointer;
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin: -8px -10px;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.consultor-dashboard-badge-row.is-clickable:hover {
-  background: #f6f7f9;
-  transform: translateX(2px);
-}
-
-.consultor-dashboard-badge-row.is-clickable:hover .consultor-dashboard-badge-action {
-  color: #39639c;
-}
-
-.consultor-dashboard-badge-row.is-clickable:focus-visible {
-  outline: 2px solid #39639c;
-  outline-offset: 2px;
 }
 
 .consultor-dashboard-badge-image {
@@ -376,11 +406,6 @@
   flex-shrink: 0;
   border-radius: 999px;
   object-fit: cover;
-}
-
-.consultor-dashboard-badge-image--large {
-  width: clamp(56px, 18vw, 96px);
-  height: clamp(56px, 18vw, 96px);
 }
 
 .consultor-dashboard-badge-copy {
@@ -406,11 +431,6 @@
   font-weight: 400;
   line-height: 1.3;
   color: #8a92a6;
-}
-
-.consultor-dashboard-badge-copy--my-badge h4 {
-  font-size: clamp(15px, 4vw, 19px);
-  line-height: 1.75;
 }
 
 .consultor-dashboard-badge-status {
@@ -454,4 +474,3 @@
   flex-shrink: 0;
   color: #8a92a6;
 }
-
