@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:pint_26_mobile/core/app_state.dart';
 import 'package:pint_26_mobile/core/repositories/badgesConcluidos_repository.dart';
 
@@ -65,22 +65,17 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
 
   Future<void> _downloadImage(Uint8List bytes, String fileName) async {
     try {
-      // Verificar/Pedir permissão de escrita
       bool hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
         await Gal.requestAccess();
       }
 
-      // Criar um ficheiro temporário para o Gal conseguir ler
       final tempDir = await getTemporaryDirectory();
       final tempPath = '${tempDir.path}/$fileName';
       final file = File(tempPath);
       await file.writeAsBytes(bytes);
 
-      // Guardar na Galeria do Android
       await Gal.putImage(tempPath);
-
-      // Limpar o ficheiro temporário
       await file.delete();
 
       _showNotification("Imagem guardada na Galeria!");
@@ -89,6 +84,41 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Erro ao guardar imagem: $e")),
+        );
+      }
+    }
+  }
+
+  Future<bool> _checkInternet() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _shareToLinkedIn(int idBadge) async {
+    bool hasInternet = await _checkInternet();
+    if (!hasInternet) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sem ligação à internet. Por favor, verifique a sua ligação."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    final url = Uri.parse('https://www.linkedin.com/sharing/share-offsite/?url=https://softinsa-api-rw5t.onrender.com/api/badges/$idBadge/share');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Não foi possível abrir o LinkedIn.")),
         );
       }
     }
@@ -210,108 +240,146 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
                 ),
                 const SizedBox(height: 24),
 
-                // Imagem do Badge Section
-                const Text(
-                  'IMAGEM DO BADGE',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    letterSpacing: 1.1,
+                if (_selectedTabIndex == 0) ...[
+                  // Imagem do Badge Section
+                  const Text(
+                    'IMAGEM DO BADGE',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      letterSpacing: 1.1,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.link, color: Colors.grey, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'badge-${badge.nomeBadge.toLowerCase().replaceAll(' ', '-')}.png',
-                          style: const TextStyle(color: Colors.grey, fontSize: 14),
-                          overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.link, color: Colors.grey, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'badge-${badge.nomeBadge.toLowerCase().replaceAll(' ', '-')}.png',
+                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          final bytes = _getImageBytes(badge.imagemBadge);
-                          if (bytes.isNotEmpty) {
-                            final fileName = 'badge-${badge.nomeBadge.toLowerCase().replaceAll(' ', '-')}.png';
-                            await _downloadImage(bytes, fileName);
-                          } else {
-                            _showNotification("Erro: Imagem não disponível");
-                          }
-                        },
-                        icon: const Icon(Icons.download_rounded, size: 18),
-                        label: const Text("Descarregar"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF002D5E),
-                          side: const BorderSide(color: Color(0xFF1D4E89)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            final bytes = _getImageBytes(badge.imagemBadge);
+                            if (bytes.isNotEmpty) {
+                              final fileName = 'badge-${badge.nomeBadge.toLowerCase().replaceAll(' ', '-')}.png';
+                              await _downloadImage(bytes, fileName);
+                            } else {
+                              _showNotification("Erro: Imagem não disponível");
+                            }
+                          },
+                          icon: const Icon(Icons.download_rounded, size: 18),
+                          label: const Text("Descarregar"),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF002D5E),
+                            side: const BorderSide(color: Color(0xFF1D4E89)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Link Público Section
-                const Text(
-                  'LINK PÚBLICO',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    letterSpacing: 1.1,
+                  // Link Público Section
+                  const Text(
+                    'LINK PÚBLICO',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      letterSpacing: 1.1,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.link, color: Colors.grey, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'https://softinsa-webserver.onrender.com/badges/${badge.idBadge}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 14),
-                          overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.link, color: Colors.grey, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'https://softinsa-webserver.onrender.com/badges/${badge.idBadge}',
+                            style: const TextStyle(color: Colors.grey, fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(
-                            text: 'https://softinsa-webserver.onrender.com/badges/${badge.idBadge}',
-                          ));
-                          _showNotification("Link copiado com sucesso!");
-                        },
-                        icon: const Icon(Icons.copy, size: 18),
-                        label: const Text("Copiar"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF002D5E),
-                          side: const BorderSide(color: Color(0xFF002D5E)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(
+                              text: 'https://softinsa-webserver.onrender.com/badges/${badge.idBadge}',
+                            ));
+                            _showNotification("Link copiado com sucesso!");
+                          },
+                          icon: const Icon(Icons.copy, size: 18),
+                          label: const Text("Copiar"),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF002D5E),
+                            side: const BorderSide(color: Color(0xFF002D5E)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ] else ...[
+                  // LinkedIn Section
+                  const Text(
+                    'PARTILHAR NO LINKEDIN',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _shareToLinkedIn(badge.idBadge),
+                      icon: const Icon(Icons.share, color: Colors.white),
+                      label: const Text(
+                        "Partilhar no LinkedIn",
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF39639C),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Partilhe a sua conquista com a sua rede profissional.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+
                 const SizedBox(height: 20),
 
                 // Notificação de Sucesso (Fundo do Modal)
