@@ -136,4 +136,16 @@ class ConsultoresRepository {
 
     return sucesso;
   }
+
+  Future<bool> enviarCodigoRecuperacao(String email) async {
+    return await ConsultoresService().recuperarPasswordEnviarCodigo(email);
+  }
+
+  Future<bool> verificarCodigoRecuperacao(String email, String codigo) async {
+    return await ConsultoresService().verificarCodigoRecuperacao(email, codigo);
+  }
+
+  Future<bool> redefinirPassword(String email, String codigo, String novaPassword) async {
+    return await ConsultoresService().redefinirPassword(email, codigo, novaPassword);
+  }
 }
