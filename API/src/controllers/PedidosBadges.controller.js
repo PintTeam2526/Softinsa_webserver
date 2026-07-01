@@ -20,7 +20,9 @@ const {
   enviarEmailNovoPedidoTM,
   enviarEmailPedidoSubmetido,
   enviarEmailPedidoDevolvido,
-  enviarEmailValidacaoSL
+  enviarEmailValidacaoSL,
+  enviarEmailPedidoAprovado,
+  enviarEmailPedidoRejeitado
 } = require('../services/email.service');
 
 const NotificacoesPedidos = require('../models/Notificacoes.models');

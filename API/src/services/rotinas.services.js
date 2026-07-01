@@ -3,16 +3,23 @@ const { Op } = require('sequelize');
 const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const Notificacoes = require('../models/Notificacoes.models');
+const Consultores = require('../models/Consultores.models');
+const Utilizadores = require('../models/Utilizadores.models');
+const { enviarEmailBadgeExpirado } = require('./email.service'); // ajusta o path se necessário
 
 function iniciarExpiracaoBadges() {
-  // Executa todos os dias à meia-noite
   cron.schedule('0 0 * * *', async () => {
     console.log(`[${new Date().toISOString()}] A verificar badges expirados...`);
 
     try {
-      // Buscar todos os badges concluídos com o badge associado
       const concluidos = await BadgesConcluidos.findAll({
-        include: [{ model: Badges, attributes: ['sla'] }],
+        include: [
+          { model: Badges, attributes: ['sla', 'nome_badge'] },
+          {
+            model: Consultores,
+            include: [{ model: Utilizadores, attributes: ['nome_utilizador', 'email_utilizador'] }]
+          }
+        ],
       });
 
       const agora = new Date();
@@ -27,14 +34,28 @@ function iniciarExpiracaoBadges() {
 
         if (agora >= dataExpiracao) {
           idsExpirados.push(concluido.id_badge_concluido);
-          
+
           await Notificacoes.create({
             id_consultor: concluido.id_consultor,
             notificacao: "Badge expirado",
             descricao: `O teu badge expirou e foi removido. Podes submeter um novo pedido para o reobter.`,
             remetente: "Sistema",
             data_de_envio: new Date()
-        });
+          });
+
+          // Enviar email — falha silenciosamente para não bloquear os restantes
+          try {
+            const utilizador = concluido.Consultor?.Utilizadore;
+            if (utilizador) {
+              await enviarEmailBadgeExpirado(
+                utilizador.email_utilizador,
+                utilizador.nome_utilizador,
+                concluido.Badge.nome_badge
+              );
+            }
+          } catch (emailError) {
+            console.error(`Erro ao enviar email de expiração para consultor ${concluido.id_consultor}:`, emailError.message);
+          }
         }
       }
 

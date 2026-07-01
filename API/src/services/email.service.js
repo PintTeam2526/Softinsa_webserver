@@ -129,11 +129,72 @@ async function enviarEmailValidacaoSL(emailSL, nomeSL, nomeConsultor, nomeBadge)
     if (error) throw new Error(`Resend error: ${error.message}`);
 }
 
+async function enviarEmailPedidoAprovado(email, nome, nomeBadge) {
+    const { error } = await resend.emails.send({
+        from: FROM,
+        to: email,
+        subject: `Badge "${nomeBadge}" aprovado! 🎉`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+        <h2 style="color: #0033A0;">Parabéns, ${nome}!</h2>
+        <p>O teu pedido para o badge <strong>${nomeBadge}</strong> foi aprovado.</p>
+        <p>O badge já está disponível no teu perfil.</p>
+        <p>Continua o teu percurso de aprendizagem na plataforma Softinsa Badges!</p>
+        <p>Equipa Softinsa Badges</p>
+        </div>
+        `
+    });
+    if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+async function enviarEmailPedidoRejeitado(email, nome, nomeBadge, motivo) {
+    const { error } = await resend.emails.send({
+        from: FROM,
+        to: email,
+        subject: `Pedido para badge "${nomeBadge}" rejeitado`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+        <h2 style="color: #0033A0;">Pedido rejeitado</h2>
+        <p>Olá <strong>${nome}</strong>,</p>
+        <p>O teu pedido para o badge <strong>${nomeBadge}</strong> foi rejeitado.</p>
+        <p><strong>Motivo:</strong></p>
+        <div style="background:#f4f4f4;padding:15px;border-radius:5px;margin:10px 0;">
+        ${motivo}
+        </div>
+        <p>Se tiveres dúvidas, contacta o teu Service Line Líder.</p>
+        <p>Equipa Softinsa Badges</p>
+        </div>
+        `
+    });
+    if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+async function enviarEmailBadgeExpirado(email, nome, nomeBadge) {
+    const { error } = await resend.emails.send({
+        from: FROM,
+        to: email,
+        subject: `O teu badge "${nomeBadge}" expirou`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+        <h2 style="color: #0033A0;">Badge expirado</h2>
+        <p>Olá <strong>${nome}</strong>,</p>
+        <p>O teu badge <strong>${nomeBadge}</strong> expirou e foi removido do teu perfil.</p>
+        <p>Podes submeter um novo pedido para o reobter a qualquer momento.</p>
+        <p>Equipa Softinsa Badges</p>
+        </div>
+        `
+    });
+    if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
 module.exports = {
     enviarCodigoRecuperacao,
     enviarEmailBoasVindas,
     enviarEmailNovoPedidoTM,
     enviarEmailPedidoSubmetido,
     enviarEmailPedidoDevolvido,
-    enviarEmailValidacaoSL
+    enviarEmailValidacaoSL,
+    enviarEmailPedidoAprovado,
+    enviarEmailPedidoRejeitado,
+    enviarEmailBadgeExpirado  
 };
