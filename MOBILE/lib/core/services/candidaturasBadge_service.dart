@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pint_26_mobile/core/app_state.dart';
 import '../api_config.dart';
 
 //PARA JA SO VAI CHAMAR O "sp_InserirDocumentacaoBadges" e o "sp_CandidaturaBadge"
@@ -32,13 +33,20 @@ class CandidaturasBadgeService {
   //CHAMAR O SUBMETER DOCUMENTACAO
   Future<bool> candidatarBadge(int idConsultor, int idBadge, String SessaoID) async {
     try{
-      final response = await http.post(Uri.parse('$_endpoint/candidaturas/candidatar'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "idConsultor": idConsultor,
-          "SessaoID": SessaoID,
-          "idBadge": idBadge
-        }),
+      var token = AppState().tokenLogin;
+      //usar a mesma rota da web
+      //final response = await http.post(Uri.parse('$_endpoint/candidaturas/candidatar'),
+          final response = await http.post(Uri.parse('$_endpoint/pedidos/create'),
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+        //body: jsonEncode({
+          //"idConsultor": idConsultor,
+         // "SessaoID": SessaoID,
+          //"idBadge": idBadge
+        //}),
+            body: jsonEncode({
+              "sessao_id": SessaoID,
+              "id_badge": idBadge
+            }),
       );
       if(response.statusCode == 200){
         return true;

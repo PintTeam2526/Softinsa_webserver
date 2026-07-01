@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,7 +8,7 @@ import 'package:go_router/go_router.dart';
 class ConsultorBadgeObtidoRetangulo extends StatelessWidget {
   final String titulo;
   final String subtitulo;
-  final String imagem;
+  final String imagem; // Pode ser path de ficheiro ou Base64
   final String? dataExpiracao;
   final int pontos;
   final VoidCallback? onCertificado;
@@ -26,14 +27,34 @@ class ConsultorBadgeObtidoRetangulo extends StatelessWidget {
     this.onPartilhar,
   });
 
-  Uint8List _getImageBytes(String base64String) {
+  Widget _buildImage() {
+    if (imagem.isEmpty || imagem == "null") {
+      return const Icon(Icons.workspace_premium, size: 40, color: Colors.grey);
+    }
+
+    // Se for um caminho de ficheiro local
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 40),
+      );
+    }
+
+    // Se for Base64 (legado)
     try {
-      String cleanBase64 = base64String.contains(',')
-          ? base64String.split(',').last
-          : base64String;
-      return base64Decode(cleanBase64);
+      String cleanBase64 = imagem.contains(',')
+          ? imagem.split(',').last
+          : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 40),
+      );
     } catch (e) {
-      return Uint8List(0);
+      return const Icon(Icons.broken_image, size: 40);
     }
   }
 
@@ -82,14 +103,7 @@ class ConsultorBadgeObtidoRetangulo extends StatelessWidget {
                       context.push('/mostrarCandidaturaBadge', extra: idBadge);
                     },
                     child: ClipOval(
-                      child: imagem.isNotEmpty && imagem != "null"
-                          ? Image.memory(
-                              _getImageBytes(imagem),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.broken_image, size: 40),
-                            )
-                          : const Icon(Icons.image, size: 40),
+                      child: _buildImage(),
                     ),
                   ),
                 ),

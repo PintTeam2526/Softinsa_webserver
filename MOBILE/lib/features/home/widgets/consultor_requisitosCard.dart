@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'dart:convert';
@@ -19,12 +20,35 @@ class ConsultorRequisitosBadgeCard extends StatelessWidget {
     this.isAprovado = false,
   });
 
-  // Converte a string base64 para bytes, removendo prefixos se existirem
-  Uint8List _getImageBytes(String base64String) {
-    String cleanBase64 = base64String.contains(',')
-        ? base64String.split(',').last
-        : base64String;
-    return base64Decode(cleanBase64);
+  Widget _buildImage() {
+    if (imagem.isEmpty) {
+      return Container(color: Colors.grey[300], child: const Icon(Icons.image));
+    }
+
+    // Se for um caminho de ficheiro local
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Container(color: Colors.grey[300], child: const Icon(Icons.broken_image)),
+      );
+    }
+
+    // Fallback para Base64
+    try {
+      String cleanBase64 = imagem.contains(',')
+          ? imagem.split(',').last
+          : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Container(color: Colors.grey[300], child: const Icon(Icons.broken_image)),
+      );
+    } catch (e) {
+      return Container(color: Colors.grey[300], child: const Icon(Icons.broken_image));
+    }
   }
 
   @override
@@ -57,14 +81,9 @@ class ConsultorRequisitosBadgeCard extends StatelessWidget {
               Container(
                 width: 60,
                 height: 60,
-                child: imagem.isNotEmpty
-                  ? Image.memory(
-                      _getImageBytes(imagem),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(color: Colors.grey[300], child: const Icon(Icons.broken_image)),
-                      )
-                    : Container(color: Colors.grey[300], child: const Icon(Icons.image)),
+                child: ClipOval(
+                  child: _buildImage(),
+                ),
               ),
               const SizedBox(width: 16),
               // Título

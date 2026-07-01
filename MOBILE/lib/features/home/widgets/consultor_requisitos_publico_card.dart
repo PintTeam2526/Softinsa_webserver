@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -14,16 +15,37 @@ class RequisitosPublicoCard extends StatelessWidget {
     required this.imagem,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    Uint8List? imageBytes;
-    try {
-      String cleanBase64 = imagem.contains(',') ? imagem.split(',').last : imagem;
-      imageBytes = base64Decode(cleanBase64);
-    } catch (e) {
-      imageBytes = null;
+  Widget _buildImage() {
+    if (imagem.isEmpty || imagem == "null") {
+      return const Icon(Icons.image_not_supported, color: Colors.grey, size: 30);
     }
 
+    // Se for um caminho de ficheiro local
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey, size: 30),
+      );
+    }
+
+    // Fallback para Base64
+    try {
+      String cleanBase64 = imagem.contains(',') ? imagem.split(',').last : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey, size: 30),
+      );
+    } catch (e) {
+      return const Icon(Icons.broken_image, color: Colors.grey, size: 30);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -81,16 +103,10 @@ class RequisitosPublicoCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.grey[100],
-                    image: imageBytes != null
-                        ? DecorationImage(
-                            image: MemoryImage(imageBytes),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
                   ),
-                  child: imageBytes == null
-                      ? const Icon(Icons.image_not_supported, color: Colors.grey, size: 30)
-                      : null,
+                  child: ClipOval(
+                    child: _buildImage(),
+                  ),
                 ),
               ],
             ),

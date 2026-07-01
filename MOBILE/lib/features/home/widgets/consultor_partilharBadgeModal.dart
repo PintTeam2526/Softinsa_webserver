@@ -51,14 +51,30 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
     super.dispose();
   }
 
-  Uint8List _getImageBytes(String base64String) {
+  // Novo método para obter os bytes da imagem (Ficheiro ou Base64)
+  Future<Uint8List> _getImageBytes(String pathOrBase64) async {
+    if (pathOrBase64.isEmpty || pathOrBase64 == "null") return Uint8List(0);
+
+    // Se for um ficheiro local
+    if (pathOrBase64.startsWith('/')) {
+      try {
+        final file = File(pathOrBase64);
+        if (await file.exists()) {
+          return await file.readAsBytes();
+        }
+      } catch (e) {
+        debugPrint("Erro ao ler ficheiro de imagem: $e");
+      }
+    }
+
+    // Se for Base64 (legado)
     try {
-      if (base64String.isEmpty || base64String == "null") return Uint8List(0);
-      String cleanBase64 = base64String.contains(',')
-          ? base64String.split(',').last
-          : base64String;
-      return base64Decode(cleanBase64);
+      String cleanBase64 = pathOrBase64.contains(',')
+          ? pathOrBase64.split(',').last
+          : pathOrBase64;
+      return base64Decode(cleanBase64.trim());
     } catch (e) {
+      debugPrint("Erro ao descodificar Base64: $e");
       return Uint8List(0);
     }
   }
@@ -121,6 +137,29 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
           const SnackBar(content: Text("Não foi possível abrir o LinkedIn.")),
         );
       }
+    }
+  }
+
+  Widget _buildBadgeImage(String imagem) {
+    if (imagem.isEmpty) return const Icon(Icons.image, size: 30);
+
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    }
+
+    try {
+      String cleanBase64 = imagem.contains(',') ? imagem.split(',').last : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    } catch (e) {
+      return const Icon(Icons.broken_image);
     }
   }
 
@@ -207,9 +246,7 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
                         height: 60,
                         decoration: const BoxDecoration(shape: BoxShape.circle),
                         child: ClipOval(
-                          child: badge.imagemBadge.isNotEmpty
-                              ? Image.memory(_getImageBytes(badge.imagemBadge), fit: BoxFit.cover)
-                              : const Icon(Icons.image, size: 30),
+                          child: _buildBadgeImage(badge.imagemBadge),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -272,7 +309,7 @@ class _PartilharBadgeModalState extends ConsumerState<ConsultorPartilharBadgeMod
                         ),
                         OutlinedButton.icon(
                           onPressed: () async {
-                            final bytes = _getImageBytes(badge.imagemBadge);
+                            final bytes = await _getImageBytes(badge.imagemBadge);
                             if (bytes.isNotEmpty) {
                               final fileName = 'badge-${badge.nomeBadge.toLowerCase().replaceAll(' ', '-')}.png';
                               await _downloadImage(bytes, fileName);

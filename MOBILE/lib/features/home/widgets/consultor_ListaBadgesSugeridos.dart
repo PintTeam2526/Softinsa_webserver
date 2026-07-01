@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -126,14 +127,57 @@ class BadgeItem extends StatelessWidget {
 
   const BadgeItem({super.key, required this.badge});
 
-  Uint8List _getImageBytes(String base64String) {
+  Widget _buildBadgeImage() {
+    final String imageSource = badge.imagemBadge;
+    if (imageSource.isEmpty) {
+      return Container(
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
+      );
+    }
+
+    // Se for URL (formato fallback/API externa)
+    if (imageSource.startsWith('http')) {
+      return Image.network(
+        imageSource,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
+        ),
+      );
+    }
+
+    // Se for ficheiro local
+    if (imageSource.startsWith('/')) {
+      return Image.file(
+        File(imageSource),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
+        ),
+      );
+    }
+
+    // Se for Base64 (legado)
     try {
-      String cleanBase64 = base64String.contains(',')
-          ? base64String.split(',').last
-          : base64String;
-      return base64Decode(cleanBase64.trim());
+      String cleanBase64 = imageSource.contains(',')
+          ? imageSource.split(',').last
+          : imageSource;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
+        ),
+      );
     } catch (e) {
-      return Uint8List(0);
+      return Container(
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
+      );
     }
   }
 
@@ -163,23 +207,7 @@ class BadgeItem extends StatelessWidget {
               ],
             ),
             child: ClipOval(
-              child: badge.imagemBadge.startsWith('http')
-                  ? Image.network(
-                      badge.imagemBadge,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
-                      ),
-                    )
-                  : Image.memory(
-                      _getImageBytes(badge.imagemBadge),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.workspace_premium, size: 40, color: Colors.grey),
-                      ),
-                    ),
+              child: _buildBadgeImage(),
             ),
           ),
           const SizedBox(height: 10),

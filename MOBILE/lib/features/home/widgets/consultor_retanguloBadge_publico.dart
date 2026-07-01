@@ -1,8 +1,9 @@
-import 'dart:convert'; // Necessário para base64Decode
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class BadgePerfilPublico extends StatelessWidget {
-  final String imagemBadge; // Agora espera a String Base64
+  final String imagemBadge; // Agora contém o caminho do ficheiro ou Base64
   final String nomeBadge;
   final String nivel;
   final String dataConclusao;
@@ -17,13 +18,38 @@ class BadgePerfilPublico extends StatelessWidget {
     required this.onTapRequisitos,
   });
 
+  Widget _buildImage() {
+    if (imagemBadge.isEmpty) {
+      return const Icon(Icons.workspace_premium, size: 60, color: Colors.grey);
+    }
+
+    // Se começar com '/' é um ficheiro local (novo formato)
+    if (imagemBadge.startsWith('/')) {
+      return Image.file(
+        File(imagemBadge),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 60),
+      );
+    }
+
+    // Caso contrário, tenta como Base64 (formato antigo/legado)
+    try {
+      String cleanBase64 = imagemBadge.contains(',')
+          ? imagemBadge.split(',').last
+          : imagemBadge;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 60),
+      );
+    } catch (e) {
+      return const Icon(Icons.broken_image, size: 60);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const azulEscuro = Color(0xFF39639C);
-
-    // Converte a string Base64 em bytes (Uint8List)
-    // Se a string vier com o prefixo "data:image/png;base64,", terás de o remover primeiro.
-    final imageBytes = base64Decode(imagemBadge);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
@@ -41,17 +67,15 @@ class BadgePerfilPublico extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Imagem do Badge renderizada da Memória
           Container(
             width: 120,
             height: 120,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              image: DecorationImage(
-                // Substituído AssetImage por MemoryImage
-                image: MemoryImage(imageBytes),
-                fit: BoxFit.cover,
-              ),
+              color: Colors.white,
+            ),
+            child: ClipOval(
+              child: _buildImage(),
             ),
           ),
           const SizedBox(width: 16),

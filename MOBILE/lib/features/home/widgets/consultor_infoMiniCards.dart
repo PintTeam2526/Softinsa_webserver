@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
@@ -16,11 +17,42 @@ class InfoMiniCard extends StatelessWidget {
     this.pai,
   });
 
-  Uint8List _getImageBytes(String base64String) {
-    String cleanBase64 = base64String.contains(',')
-        ? base64String.split(',').last
-        : base64String;
-    return base64Decode(cleanBase64);
+  Widget _buildImage() {
+    if (imagem.isEmpty) {
+      return Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.image, size: 40, color: Colors.grey),
+      );
+    }
+
+    // Se for um caminho de ficheiro local (novo formato)
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        width: 80,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 40),
+      );
+    }
+
+    // Caso contrário, tenta como Base64 (formato legado)
+    try {
+      String cleanBase64 = imagem.contains(',')
+          ? imagem.split(',').last
+          : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        width: 80,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 40),
+      );
+    } catch (e) {
+      return const Icon(Icons.broken_image, size: 40);
+    }
   }
 
   @override
@@ -42,19 +74,7 @@ class InfoMiniCard extends StatelessWidget {
             ],
           ),
           child: ClipOval(
-            child: imagem.isNotEmpty
-                ? Image.memory(
-                    _getImageBytes(imagem),
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image, size: 40),
-                  )
-                : Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image, size: 40, color: Colors.grey),
-                  ),
+            child: _buildImage(),
           ),
         ),
         const SizedBox(height: 8),

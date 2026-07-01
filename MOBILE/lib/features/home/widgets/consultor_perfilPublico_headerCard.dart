@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
@@ -40,6 +41,45 @@ class PerfilConsultorWidget extends StatelessWidget {
     }
   }
 
+  Widget _buildProfileImage() {
+    if (imagemPerfil.isEmpty || imagemPerfil == 'null') {
+      return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+    }
+
+    // Suporte para ficheiro local
+    if (imagemPerfil.startsWith('/')) {
+      return Image.file(
+        File(imagemPerfil),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+      );
+    }
+
+    // Suporte para Base64 (legado ou novos dados ainda não convertidos)
+    bool isBase64 = imagemPerfil.length > 100 || !imagemPerfil.contains('/');
+    if (isBase64) {
+      try {
+        return Image.memory(
+          _getImageBytes(imagemPerfil),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+        );
+      } catch (e) {
+        return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+      }
+    }
+
+    // Suporte para Assets (caminhos curtos sem '/')
+    return Image.asset(
+      imagemPerfil,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+          Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const azulEscuro = Color(0xFF39639C);
@@ -64,28 +104,7 @@ class PerfilConsultorWidget extends StatelessWidget {
                   border: Border.all(color: azulEscuro, width: 4),
                 ),
                 child: ClipOval(
-                  child: Builder(
-                    builder: (context) {
-                      // Verifica se a imagem é Base64 ou Asset
-                      bool isBase64 = imagemPerfil.length > 100 || !imagemPerfil.contains('/');
-
-                      if (imagemPerfil.isNotEmpty && isBase64) {
-                        return Image.memory(
-                          _getImageBytes(imagemPerfil),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
-                        );
-                      } else {
-                        return Image.asset(
-                          imagemPerfil.isNotEmpty ? imagemPerfil : 'lib/assets/images/default-consultor-pfp.png',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
-                        );
-                      }
-                    },
-                  ),
+                  child: _buildProfileImage(),
                 ),
               ),
 

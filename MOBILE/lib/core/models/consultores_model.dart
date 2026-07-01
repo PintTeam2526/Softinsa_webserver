@@ -19,6 +19,8 @@ class ConsultoresModel {
     required this.username,
   });
 
+  int get id => idConsultor;
+
   factory ConsultoresModel.fromJson(Map<String, dynamic> json) {
     int toInt(dynamic value) {
       if (value == null) return 0;
@@ -51,5 +53,27 @@ class ConsultoresModel {
       'IMAGEM_PERFIL': imagemPerfil,
       'USERNAME_UTILIZADOR': username,
     };
+  }
+
+  ConsultoresModel copyWith({
+    int? idConsultor,
+    int? pontos,
+    int? idAreaPreferencia,
+    String? nomeAreaPreferencia,
+    String? username,
+    String? nomeUtilizador,
+    String? emailUtilizador,
+    String? imagemPerfil,
+  }) {
+    return ConsultoresModel(
+      idConsultor: idConsultor ?? this.idConsultor,
+      pontos: pontos ?? this.pontos,
+      idAreaPreferencia: idAreaPreferencia ?? this.idAreaPreferencia,
+      nomeAreaPreferencia: nomeAreaPreferencia ?? this.nomeAreaPreferencia,
+      username: username ?? this.username,
+      nomeUtilizador: nomeUtilizador ?? this.nomeUtilizador,
+      emailUtilizador: emailUtilizador ?? this.emailUtilizador,
+      imagemPerfil: imagemPerfil ?? this.imagemPerfil,
+    );
   }
 }
