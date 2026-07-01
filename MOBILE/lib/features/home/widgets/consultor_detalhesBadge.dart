@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'dart:convert';
@@ -23,11 +24,35 @@ class ConsultorDetalhesBadge extends StatelessWidget {
     required this.descricaoBadge,
   });
 
-  Uint8List _getImageBytes(String base64String) {
-    String cleanBase64 = base64String.contains(',')
-        ? base64String.split(',').last
-        : base64String;
-    return base64Decode(cleanBase64);
+  Widget _buildImage() {
+    if (imagem.isEmpty || imagem == "null") {
+      return const Icon(Icons.image, color: Colors.grey);
+    }
+
+    // Se for um caminho de ficheiro local (novo formato)
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey),
+      );
+    }
+
+    // Caso contrário, tenta como Base64 (formato legado)
+    try {
+      String cleanBase64 = imagem.contains(',')
+          ? imagem.split(',').last
+          : imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, color: Colors.grey),
+      );
+    } catch (e) {
+      return const Icon(Icons.broken_image, color: Colors.grey);
+    }
   }
 
   @override
@@ -67,9 +92,7 @@ class ConsultorDetalhesBadge extends StatelessWidget {
                   width: 120,
                   height: 120,
                   color: Colors.grey[50],
-                  child: imagem.isNotEmpty
-                      ? Image.memory(_getImageBytes(imagem), fit: BoxFit.contain)
-                      : const Icon(Icons.image, color: Colors.grey),
+                  child: _buildImage(),
                 ),
               ),
               const SizedBox(width: 16),

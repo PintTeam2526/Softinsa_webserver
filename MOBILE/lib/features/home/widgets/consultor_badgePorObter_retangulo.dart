@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -21,11 +22,23 @@ class BadgePorObterRetangulo extends StatelessWidget {
     required this.onTapCandidatar,
   });
 
-  Uint8List _getImageBytes(String base64String) {
+  // Função robusta para obter os bytes da imagem (Ficheiro ou Base64)
+  Uint8List _getImageBytes(String imageSource) {
     try {
-      String cleanBase64 = base64String.contains(',')
-          ? base64String.split(',').last
-          : base64String;
+      if (imageSource.isEmpty || imageSource == "null") return Uint8List(0);
+
+      // Se for um caminho de ficheiro local
+      if (imageSource.startsWith('/')) {
+        final file = File(imageSource);
+        if (file.existsSync()) {
+          return file.readAsBytesSync();
+        }
+      }
+
+      // Se for Base64 (legado)
+      String cleanBase64 = imageSource.contains(',')
+          ? imageSource.split(',').last
+          : imageSource;
       cleanBase64 = cleanBase64.replaceAll(RegExp(r'\s+'), '');
       int paddingNeeded = (4 - (cleanBase64.length % 4)) % 4;
       cleanBase64 += '=' * paddingNeeded;
@@ -33,6 +46,33 @@ class BadgePorObterRetangulo extends StatelessWidget {
     } catch (e) {
       return Uint8List(0);
     }
+  }
+
+  Widget _buildImage() {
+    if (imagem.isEmpty || imagem == "null") {
+      return const Icon(Icons.badge, size: 35, color: Colors.grey);
+    }
+
+    // Se for caminho de ficheiro, podemos usar Image.file diretamente para performance
+    if (imagem.startsWith('/')) {
+      return Image.file(
+        File(imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image, size: 35, color: Colors.grey),
+      );
+    }
+
+    // Fallback para bytes (Base64)
+    final bytes = _getImageBytes(imagem);
+    if (bytes.isEmpty) return const Icon(Icons.badge, size: 35, color: Colors.grey);
+
+    return Image.memory(
+      bytes,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.broken_image, size: 35, color: Colors.grey),
+    );
   }
 
   @override
@@ -63,14 +103,7 @@ class BadgePorObterRetangulo extends StatelessWidget {
               color: Colors.grey[100],
             ),
             child: ClipOval(
-              child: imagem.isNotEmpty && imagem != "null"
-                  ? Image.memory(
-                _getImageBytes(imagem),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.badge, size: 35, color: Colors.grey),
-              )
-                  : const Icon(Icons.badge, size: 35, color: Colors.grey),
+              child: _buildImage(),
             ),
           ),
           const SizedBox(width: 16),

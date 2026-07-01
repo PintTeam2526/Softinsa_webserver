@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ConsultorHeaderCard extends StatelessWidget {
@@ -73,10 +74,13 @@ class _imagemPerfilState extends State<_imagemPerfil> {
   Widget build(BuildContext context) {
     ImageProvider provider;
 
-    if (_imagemFalhou || widget.imagemPerfil.isEmpty || widget.imagemPerfil == 'teste') {
+    if (_imagemFalhou || widget.imagemPerfil.isEmpty || widget.imagemPerfil == 'teste' || widget.imagemPerfil == 'null') {
       provider = const AssetImage('lib/assets/images/default-consultor-pfp.png');
     } else if (widget.imagemPerfil.startsWith('http')) {
       provider = NetworkImage(widget.imagemPerfil);
+    } else if (widget.imagemPerfil.startsWith('/')) {
+      // Suporte para ficheiro local
+      provider = FileImage(File(widget.imagemPerfil));
     } else {
       try {
         String cleanBase64 = widget.imagemPerfil.contains(',')
@@ -98,9 +102,14 @@ class _imagemPerfilState extends State<_imagemPerfil> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
-        image: DecorationImage(
+      ),
+      child: ClipOval(
+        child: Image(
           image: provider,
           fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+          },
         ),
       ),
     );

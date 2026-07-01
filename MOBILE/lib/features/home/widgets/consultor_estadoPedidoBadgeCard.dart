@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ConsultorEstadoPedidoBadgeCard extends StatefulWidget {
-  final String imagem;
+  final String imagem; // Agora pode ser um path de ficheiro ou Base64
   final String nomeBadge;
   final String nivelBadge;
   final String textoBotao;
@@ -27,15 +28,44 @@ class ConsultorEstadoPedidoBadgeCard extends StatefulWidget {
 class _ConsultorEstadoPedidoBadgeCardState
     extends State<ConsultorEstadoPedidoBadgeCard> {
 
-  // Função de conversão de Base64 para Bytes
-  Uint8List _getImageBytes(String base64String) {
+  Widget _buildImage() {
+    if (widget.imagem.isEmpty || widget.imagem == ' ' || widget.imagem == 'null') {
+      return Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.image, color: Colors.grey),
+      );
+    }
+
+    // Se for um caminho de ficheiro local (novo formato)
+    if (widget.imagem.startsWith('/')) {
+      return Image.file(
+        File(widget.imagem),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey[200],
+          child: const Icon(Icons.broken_image, color: Colors.grey),
+        ),
+      );
+    }
+
+    // Caso contrário, tenta como Base64 (formato legado)
     try {
-      String cleanBase64 = base64String.contains(',')
-          ? base64String.split(',').last
-          : base64String;
-      return base64Decode(cleanBase64);
+      String cleanBase64 = widget.imagem.contains(',')
+          ? widget.imagem.split(',').last
+          : widget.imagem;
+      return Image.memory(
+        base64Decode(cleanBase64.trim()),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey[200],
+          child: const Icon(Icons.broken_image, color: Colors.grey),
+        ),
+      );
     } catch (e) {
-      return Uint8List(0);
+      return Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.broken_image, color: Colors.grey),
+      );
     }
   }
 
@@ -78,20 +108,7 @@ class _ConsultorEstadoPedidoBadgeCardState
                 child: SizedBox(
                   width: 100,
                   height: 100,
-                  child: widget.imagem.isNotEmpty && widget.imagem != ' ' && widget.imagem != 'null'
-                      ? Image.memory(
-                    _getImageBytes(widget.imagem),
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(
-                          color: Colors.grey[200],
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
-                        ),
-                  )
-                      : Container(
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.image, color: Colors.grey),
-                  ),
+                  child: _buildImage(),
                 ),
               ),
               const SizedBox(width: 12),

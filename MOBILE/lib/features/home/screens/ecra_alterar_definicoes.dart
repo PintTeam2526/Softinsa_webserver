@@ -80,6 +80,34 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
     }
   }
 
+  Widget _buildProfileImage(String imageSource) {
+    if (_imagemPerfilLocal != null) {
+      return Image.file(_imagemPerfilLocal!, fit: BoxFit.cover);
+    }
+
+    if (imageSource.isEmpty || imageSource == "null") {
+      return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+    }
+
+    // Suporte para ficheiro local
+    if (imageSource.startsWith('/')) {
+      return Image.file(
+        File(imageSource),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+      );
+    }
+
+    // Fallback para Base64
+    return Image.memory(
+      _getImageBytes(imageSource),
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) =>
+          Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+    );
+  }
+
 
   void _mostrarErro(String mensagem) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -149,16 +177,7 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
                             ),
                           ),
                           child: ClipOval(
-                            child: _imagemPerfilLocal != null 
-                                ? Image.file(_imagemPerfilLocal!, fit: BoxFit.cover)
-                                : (consultor.imagemPerfil.isNotEmpty && consultor.imagemPerfil != "null"
-                                    ? Image.memory(
-                                        _getImageBytes(consultor.imagemPerfil), 
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => 
-                                          Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
-                                      )
-                                    : Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover)),
+                            child: _buildProfileImage(consultor.imagemPerfil),
                           ),
                         ),
                       ),

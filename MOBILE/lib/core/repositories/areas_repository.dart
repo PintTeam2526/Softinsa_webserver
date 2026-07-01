@@ -19,17 +19,43 @@ class AreasRepository {
 
   Future<List<AreasModel>> getAllAreas() async {
     final db = await _db.database;
-    List<Map<String, dynamic>> maps = await db.query('areas');
+    
+    // Agora que as imagens são guardadas como ficheiros locais (caminhos) no SyncService,
+    // já não causam o erro de CursorWindow (Row too big) e podem ser listadas normalmente.
+    List<Map<String, dynamic>> maps = await db.query(
+      'areas',
+      columns: [
+        'id_area', 
+        'id_service_line', 
+        'nome_area', 
+        'descricao_area', 
+        'imagem_area',
+        'estado_a_i', 
+        'data_insercao', 
+        'nome_service_line'
+      ]
+    );
 
-    // Se a BD local estiver vazia, tenta sincronizar imediatamente com a API
-    // Isto garante que no primeiro arranque o ecrã de registo tenha dados.
     if (maps.isEmpty) {
-      print(">>> [AREAS] BD Local vazia. A sincronizar com a API para o Registo...");
+      print(">>> [AREAS] BD Local vazia. A sincronizar com a API...");
       try {
         await SyncService.instance.syncTableByName('areas');
-        maps = await db.query('areas');
+        // Recarregar após o sync
+        maps = await db.query(
+          'areas',
+          columns: [
+            'id_area', 
+            'id_service_line', 
+            'nome_area', 
+            'descricao_area', 
+            'imagem_area',
+            'estado_a_i', 
+            'data_insercao', 
+            'nome_service_line'
+          ]
+        );
       } catch (e) {
-        print(">>> [AREAS] Erro ao sincronizar áreas no arranque: $e");
+        print(">>> [AREAS] Erro ao sincronizar áreas: $e");
       }
     }
 
@@ -39,10 +65,10 @@ class AreasRepository {
         id_service_line: maps[i]['id_service_line'],
         nome: maps[i]['nome_area'],
         descricao: maps[i]['descricao_area'],
-        imagem: maps[i]['imagem_area'],
+        imagem: maps[i]['imagem_area'] ?? "", // Agora contém o PATH do ficheiro
         estado_a_i: maps[i]['estado_a_i'] == 1,
-        data_insercao: maps[i]['data_insercao'],
-        nome_service_line_pai: maps[i]['nome_service_line'],
+        data_insercao: maps[i]['data_insercao'] ?? "",
+        nome_service_line_pai: maps[i]['nome_service_line'] ?? "",
       );
     });
   }
@@ -61,13 +87,12 @@ class AreasRepository {
         id_service_line: maps[0]['id_service_line'],
         nome: maps[0]['nome_area'],
         descricao: maps[0]['descricao_area'],
-        imagem: maps[0]['imagem_area'],
+        imagem: maps[0]['imagem_area'] ?? "",
         estado_a_i: maps[0]['estado_a_i'] == 1,
-        data_insercao: maps[0]['data_insercao'],
-        nome_service_line_pai: maps[0]['nome_service_line'],
+        data_insercao: maps[0]['data_insercao'] ?? "",
+        nome_service_line_pai: maps[0]['nome_service_line'] ?? "",
       );
     } else {
-      // Fallback para API caso não exista localmente
       return _serviceAreas.fetchArea(id);
     }
   }
