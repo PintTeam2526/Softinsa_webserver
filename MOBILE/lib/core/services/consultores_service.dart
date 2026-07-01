@@ -193,9 +193,70 @@ class ConsultoresService {
     }
   }
 
+  Future<bool> recuperarPasswordEnviarCodigo(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_endpoint/autenticacao/recuperar-password/enviar-codigo'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"email": email}),
+      );
 
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Erro ao enviar código: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print('Erro ao enviar código: $e');
+      return false;
+    }
+  }
 
+  Future<bool> verificarCodigoRecuperacao(String email, String codigo) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_endpoint/autenticacao/recuperar-password/verificar-codigo'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "email": email,
+          "codigo": codigo
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Erro ao verificar código: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print('Erro ao verificar código: $e');
+      return false;
+    }
+  }
+
+  Future<bool> redefinirPassword(String email, String codigo, String novaPassword) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$_endpoint/autenticacao/recuperar-password/redefinir'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "email": email,
+          "codigo": codigo,
+          "nova_password": novaPassword
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Erro ao redefinir password: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print('Erro ao redefinir password: $e');
+      return false;
+    }
+  }
 }
-
-
-

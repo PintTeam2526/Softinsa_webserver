@@ -14,6 +14,7 @@ import '../../features/home/screens/ecra_AdicionarObjetivo.dart';
 import '../../features/home/screens/ecra_AdicionarDataObjetivo.dart';
 import '../../features/home/screens/ecra_BadgesObtidos.dart';
 import '../../features/home/screens/ecra_badgesRecomendados.dart';
+import '../../features/auth/screens/ecra_recuperarPassword.dart';
 
 import '../../core/app_state.dart';
 import '../../core/services/sync_service.dart';
@@ -34,6 +35,7 @@ class AppRoutes {
   static const String adicionarDataObjetivo = '/adicionarDataObjetivo';
   static const String mostrarBadgesConcluidos = '/mostrarBadgesConcluidos';
   static const String mostrarBadgesRecomendados = '/mostrarBadgesRecomendados';
+  static const String recuperarPassword = '/recuperarPassword';
 }
 //permite que o widget detete quando uma pagina que estava em cima na pilha foi removida (pop)
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -51,7 +53,9 @@ final appRouter = GoRouter(
     // Definir quais são as rotas que NÃO precisam de login
     final bool isLoggingIn = state.matchedLocation == AppRoutes.login;
     final bool isRegistering = state.matchedLocation == AppRoutes.registar;
-    if (isLoggingIn || isRegistering) {
+    final bool isRecoveringPassword = state.matchedLocation == AppRoutes.recuperarPassword;
+
+    if (isLoggingIn || isRegistering || isRecoveringPassword) {
       return null;
     }
 
@@ -151,6 +155,12 @@ final appRouter = GoRouter(
       path: AppRoutes.mostrarBadgesRecomendados,
       builder: (context,state){
         return const EcraBadgesRecomendados();
+      }
+    ),
+    GoRoute(
+      path: AppRoutes.recuperarPassword,
+      builder: (context,state){
+        return const EcraRecuperarPassword();
       }
     ),
   ],

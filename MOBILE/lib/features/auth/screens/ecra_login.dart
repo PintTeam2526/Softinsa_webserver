@@ -189,9 +189,10 @@ class _EcraLoginState extends ConsumerState<EcraLogin> {
             Center(
               child: InkWell(
                 onTap: () {
+                  context.push(AppRoutes.recuperarPassword);
                 },
                 child: const Text(
-                  'Esqueci-me da palavra-passe',
+                  'Esqueci-me da password',
                   style: TextStyle(
                     color: Color(0xFF39639C),
                     fontSize: 14,
