@@ -814,10 +814,20 @@ const SoftinsaBadges = memo(() => {
                     </div>
                   ) : null}
 
-                  <div className="softinsa-badges-requirement-form d-flex flex-column">
+                  <div
+                    className="softinsa-badges-requirement-form d-flex flex-column"
+                    onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
+                  >
                     <div className="softinsa-badges-modal-field d-flex flex-column">
                       <label htmlFor="softinsa-requirement-title">Título:</label>
-                      <input id="softinsa-requirement-title" type="text" className="w-100" value={requirementFormData.title} onChange={(e) => handleRequirementFieldChange("title", e.target.value)} />
+                      <input
+                        id="softinsa-requirement-title"
+                        type="text"
+                        className="w-100"
+                        value={requirementFormData.title}
+                        onChange={(e) => handleRequirementFieldChange("title", e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddOrUpdateRequirement(); } }}
+                      />
                     </div>
                     <div className="softinsa-badges-modal-field d-flex flex-column">
                       <label htmlFor="softinsa-requirement-description">Descrição (opcional):</label>
