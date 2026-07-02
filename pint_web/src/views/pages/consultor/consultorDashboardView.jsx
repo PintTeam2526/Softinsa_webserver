@@ -159,11 +159,13 @@ function BadgeGridCard({ badge, onClick }) {
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
     >
-      <img
-        src={badge.image}
-        alt={badge.name}
-        className="consultor-dashboard-badge-card-image"
-      />
+      <div className="consultor-dashboard-badge-card-image-wrap">
+        <img
+          src={badge.image}
+          alt={badge.name}
+          className="consultor-dashboard-badge-card-image"
+        />
+      </div>
 
       <h4 className="consultor-dashboard-badge-card-name">{badge.name}</h4>
 
