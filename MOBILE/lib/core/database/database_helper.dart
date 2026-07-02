@@ -265,7 +265,6 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE badgesFavoritos (
           ID_BADGE INTEGER PRIMARY KEY,
-          ID_CONSULTOR INTEGER NOT NULL,
           FAVORITO INTEGER, 
           updated_at TEXT,
           sync_status TEXT
