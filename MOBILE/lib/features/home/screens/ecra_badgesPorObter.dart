@@ -19,6 +19,7 @@ class EcraBadgesPorObter extends ConsumerStatefulWidget {
 
 class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
   final TextEditingController _controllerPesquisa = TextEditingController();
+  String _filtroAtivo = 'Por Obter';
 
   @override
   void initState(){
@@ -72,13 +73,18 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
                   ConsultorFiltroChip(
                       texto: 'Badges Favoritos',
                       icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                      onTap: () => print('SO MOSTRO OS FAVORITOS')
+                      isSelected: _filtroAtivo == 'Favoritos',
+                      onTap: () => setState(() => _filtroAtivo = 'Favoritos')
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                       texto: 'Por Obter',
                       icone: 'lib/assets/icons/Icon_BadgePorObter.svg',
-                      onTap: () => ref.invalidate(badgesPorObterProvider(idConsultor))
+                      isSelected: _filtroAtivo == 'Por Obter',
+                      onTap: () {
+                        setState(() => _filtroAtivo = 'Por Obter');
+                        ref.invalidate(badgesPorObterProvider(idConsultor));
+                      }
                   ),
                 ],
               ),

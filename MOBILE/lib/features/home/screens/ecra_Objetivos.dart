@@ -97,12 +97,14 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                   ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_Objetivos.svg',
+                    isSelected: _filtroAtivo == 'Todos',
                     onTap: () => setState(() => _filtroAtivo = 'Todos'),
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                     texto: 'Por Concluir',
                     icone: 'lib/assets/icons/Icon_Expirado.svg',
+                    isSelected: _filtroAtivo == 'Por Concluir',
                     onTap: () => setState(() => _filtroAtivo = 'Por Concluir'),
                   ),
                 ],

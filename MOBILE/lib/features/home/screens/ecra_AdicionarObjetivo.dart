@@ -20,6 +20,7 @@ class EcraAdicionarObjetivo extends ConsumerStatefulWidget {
 class _EcraAdicionarObjetivoState extends ConsumerState<EcraAdicionarObjetivo> {
   final TextEditingController _controllerPesquisa = TextEditingController();
   late Future<List<BadgesModel>> _futureBadges;
+  String _filtroAtivo = 'Todos';
 
   void _carregarDados() {
     final repositorio = ref.read(objetivosRepositoryProvider);
@@ -70,7 +71,9 @@ class _EcraAdicionarObjetivoState extends ConsumerState<EcraAdicionarObjetivo> {
                 ConsultorFiltroChip(
                     texto: 'Badges Favoritos',
                     icone: 'lib/assets/icons/Icon_Favoritos.svg',
+                    isSelected: _filtroAtivo == 'Favoritos',
                     onTap: () {
+                      setState(() => _filtroAtivo = 'Favoritos');
                       print('SO MOSTRO OS FAVORITOS');
                     }
                 ),
@@ -78,7 +81,11 @@ class _EcraAdicionarObjetivoState extends ConsumerState<EcraAdicionarObjetivo> {
                 ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_Objetivos.svg',
-                    onTap: () => _carregarDados(),
+                    isSelected: _filtroAtivo == 'Todos',
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Todos');
+                      _carregarDados();
+                    },
                 ),
               ],
             ),

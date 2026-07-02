@@ -28,6 +28,7 @@ class EcraMostrarServiceLines extends ConsumerStatefulWidget{
 
 class _EcraMostrarServiceLines extends ConsumerState<EcraMostrarServiceLines>{
   final TextEditingController _controllerPesquisa = TextEditingController();
+  String _filtroAtivo = 'Todas';
 
   @override
   void initState(){
@@ -97,15 +98,18 @@ class _EcraMostrarServiceLines extends ConsumerState<EcraMostrarServiceLines>{
                   ConsultorFiltroChip(
                     texto: 'Favoritos',
                     icone: 'lib/assets/icons/Icon_Favoritos.svg',
+                    isSelected: _filtroAtivo == 'Favoritos',
                     onTap: () {
-                      print('Cliquei no filtro de Favoritos :)');
+                      setState(() => _filtroAtivo = 'Favoritos');
                     },
                   ),
                   const SizedBox(width: 9),
                   ConsultorFiltroChip(
                     texto: 'Todas',
                     icone: 'lib/assets/icons/Icon_ServiceLines.svg',
+                    isSelected: _filtroAtivo == 'Todas',
                     onTap: () {
+                      setState(() => _filtroAtivo = 'Todas');
                       ref.invalidate(allServiceLinesProvider);
                     },
                   )

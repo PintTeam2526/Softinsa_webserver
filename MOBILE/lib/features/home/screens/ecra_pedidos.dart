@@ -74,24 +74,28 @@ class _EcraPedidosState extends ConsumerState<EcraPedidos> {
                   ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_Pedidos_Navbar.svg',
+                    isSelected: _filtroEstado == 'todos',
                     onTap: () => setState(() => _filtroEstado = 'todos'),
                   ),
                   const SizedBox(width: 9),
                   ConsultorFiltroChip(
                     texto: 'Submetido',
                     icone: 'lib/assets/icons/Icon_EmAnalise.svg',
+                    isSelected: _filtroEstado == 'submetido',
                     onTap: () => setState(() => _filtroEstado = 'submetido'),
                   ),
                   const SizedBox(width: 9),
                   ConsultorFiltroChip(
                     texto: 'Aprovado',
                     icone: 'lib/assets/icons/Icon_Aceite.svg',
+                    isSelected: _filtroEstado == 'aprovado',
                     onTap: () => setState(() => _filtroEstado = 'aprovado'),
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                     texto: 'Rejeitado',
                     icone: 'lib/assets/icons/Icon_Rejeitado.svg',
+                    isSelected: _filtroEstado == 'rejeitado',
                     onTap: () => setState(() => _filtroEstado = 'rejeitado'),
                   ),
                 ],
