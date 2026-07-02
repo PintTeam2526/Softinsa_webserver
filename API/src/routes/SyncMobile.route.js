@@ -45,4 +45,7 @@ router.get("/conquistasConsultores/:idConsultor/:lastUpdate", authVerification, 
 router.get("/notificacoes/:id", authVerification, controllerSyncMobile.syncNotificacoesMobileByConsultorID);
 router.get("/notificacoes/:id/:lastUpdate", authVerification, controllerSyncMobile.syncNotificacoesMobileByConsultorID);
 
+router.get("/badges/favoritos", authVerification, controllerSyncMobile.getFavorito);
+router.get("/badges/favoritos/:lastUpdate", authVerification, controllerSyncMobile.getFavorito);
+
 module.exports = router;

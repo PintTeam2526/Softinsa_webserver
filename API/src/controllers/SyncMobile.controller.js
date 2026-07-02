@@ -516,4 +516,55 @@ controllers.syncNotificacoesMobileByConsultorID = async (req, res) => {
   }
 };
 
+
+controllers.getFavorito = async (req, res) => {
+    try {
+
+        const idConsultor = req.user.id_consultor;
+
+        if (!idConsultor) {
+            return res.status(400).json({
+                mensagem: "ID do consultor não encontrado"
+            });
+        }
+
+        const where = getWhereClause(req.params, {
+              [Op.or]: [{ id_consultor: id }, { id_consultor: null }],
+        });
+
+        const favoritos = await Favoritos.findAll({
+            where,
+            order: [["data_insercao", "DESC"]],
+            },
+            include: [
+                {
+                    model: Badges,
+                    include: [
+                        {
+                            model: Areas,
+                            attributes: ['nome_area']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const resultado = favoritos.map(f => ({
+            id_badge: f.Badge.id_badge,
+            id_consultor: idConsultor,
+        }));
+
+        return res.status(200).json(resultado);
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            mensagem: "Erro ao buscar favoritos",
+            erro: error.message
+        });
+    }
+};
+
 module.exports = controllers;

@@ -24,6 +24,7 @@ import '../models/documentacao_model.dart';
 import '../models/conquistas_model.dart';
 import '../models/conquistasConsultores_model.dart';
 import '../models/badgesRecomendados_model.dart';
+import '../models/badgesFavoritos_model.dart';
 
 // PROVIDER ÚNICO (SINGLETON)
 final syncServiceProvider = Provider((ref) => SyncService.instance);
@@ -87,6 +88,7 @@ class SyncService {
         await pushPendingData('objetivos', '/objetivos/adicionar', 'ID_OBJETIVO', idConsultor: idConsultor);
         await pushPendingData('documentacoes', '/candidaturas/documentacao', 'ID_DOCUMENTACAO', idConsultor: idConsultor);
         await pushPendingData('pedidosBadge', '/candidaturas/candidatar', 'ID_PEDIDO_BADGE', idConsultor: idConsultor);
+        await pushPendingData('badgesFavoritos', '/favorito/set', 'ID_BADGE', idConsultor: idConsultor);
       }
 
       final globalTables = ['learningPaths', 'serviceLines', 'areas', 'badges', 'requisitos', 'estados'];
@@ -96,7 +98,7 @@ class SyncService {
       }
 
       if (idConsultor > 0) {
-        final privateTables = ['consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'];
+        final privateTables = ['consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistas', 'conquistasConsultores', 'badgesRecomendados', 'badgesFavoritos'];
         for (var table in privateTables) {
           if (_syncingUserId != idConsultor) break;
           await syncTableByName(table, idConsultor: idConsultor);
@@ -137,7 +139,8 @@ class SyncService {
         case 'conquistasConsultores':
           if (idConsultor != null) endpoint = '/syncMobile/conquistasConsultores/$idConsultor';
           break;
-        case 'badgesRecomendados': endpoint = '/badges/recomendados'; idConsultor = null; ignoreLastUpdate = true; break;
+        case 'badgesRecomendados': endpoint = '/syncMobile/badges/recomendados'; idConsultor = null; ignoreLastUpdate = true; break;
+        case 'badgesFavoritos' : endpoint = '/syncMobile/badges/favoritos'; idConsultor = null; ignoreLastUpdate = true; break;
       }
 
       if (endpoint != null) {
@@ -300,7 +303,11 @@ class SyncService {
           final m = BadgesRecomendadosModel.fromJson(item);
           String localPath = await _saveImageLocally(m.imagemBadge, 'recomendados', 'rec_${m.idBadge}');
           return {'ID_BADGE': m.idBadge, 'NOME_BADGE': m.nomeBadge, 'IMAGEM_BADGE': localPath};
-        
+
+          case 'badgesFavoritos':
+            final m = BadgesFavoritosModel.fromJson(item);
+            return {'ID_BADGE': m.id, 'ID_CONSULTOR': m.id_consultor, 'FAVORITO': m.setFavorito};
+
         default: return {};
       }
     } catch (e) { return {}; }
@@ -343,6 +350,7 @@ class SyncService {
     }
   }
 
+
   Map<String, dynamic> _mapRowToApi(String tableName, Map<String, dynamic> row) {
     switch (tableName) {
       case 'objetivos':
@@ -355,6 +363,8 @@ class SyncService {
         return {'idBadge': row['ID_BADGE'], 'idConsultor': row['ID_CONSULTOR'], 'nomeBadge': row['NOME_OBJETIVO'], 'dataLimiteConclusao': isoDate};
       case 'pedidosBadge': return {'idBadge': row['ID_BADGE'], 'idConsultor': row['ID_CONSULTOR'], 'SessaoID': row['SESSAO_ID']};
       case 'documentacoes': return {'documentacao': row['DOCUMENTACAO'], 'sessaoId': row['SESSAO_ID']};
+      case 'badgesFavoritos': return {'id_badge': row['ID_BADGE'], 'id_consultor': row['ID_CONSULTOR'],'set': row['FAVORITO']};
+
       default:
         var data = Map<String, dynamic>.from(row);
         data.remove('sync_status');
@@ -362,7 +372,6 @@ class SyncService {
         return data;
     }
   }
-
   String _formatDateForApi(String isoDateString) {
     try {
       DateTime dt = DateTime.parse(isoDateString).toUtc();
