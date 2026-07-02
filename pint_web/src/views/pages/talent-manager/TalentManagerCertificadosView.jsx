@@ -82,7 +82,7 @@ function TalentManagerCertificadosView() {
     const pageWidth = documentPdf.internal.pageSize.getWidth()
     const pageHeight = documentPdf.internal.pageSize.getHeight()
     const cardWidth = 262
-    const cardHeight = 188
+    const cardHeight = 170
     const cardX = (pageWidth - cardWidth) / 2
     const cardY = 16
     const centerX = pageWidth / 2
@@ -153,7 +153,6 @@ function TalentManagerCertificadosView() {
     documentPdf.setLineWidth(0.4)
     documentPdf.line(centerX - 48, cardY + 145, centerX + 48, cardY + 145)
 
-    documentPdf.setTextColor(138, 146, 166)
     documentPdf.setFont('helvetica', 'italic')
     documentPdf.setFontSize(8)
     documentPdf.text('Talent Manager', centerX, cardY + 151, { align: 'center' })
@@ -161,18 +160,22 @@ function TalentManagerCertificadosView() {
     documentPdf.setFontSize(8)
     documentPdf.text('Softinsa - Sistemas de Informação', centerX, cardY + 158, { align: 'center' })
 
-    const stampX = centerX
-    const stampY = cardY + 178
-    const stampRadius = 9
+    documentPdf.saveGraphicsState()
+    documentPdf.setGState(new documentPdf.GState({ opacity: 0.06 }))
 
-    documentPdf.setDrawColor(63, 106, 167) // azul da marca
-    documentPdf.setLineWidth(0.5)
-    documentPdf.circle(stampX, stampY, stampRadius, 'S')
+    const wmRadius = 46
+    const wmY = cardY + cardHeight / 2 + 6
+
+    documentPdf.setDrawColor(63, 106, 167)
+    documentPdf.setLineWidth(1.2)
+    documentPdf.circle(centerX, wmY, wmRadius, 'S')
 
     documentPdf.setTextColor(63, 106, 167)
     documentPdf.setFont('helvetica', 'bold')
-    documentPdf.setFontSize(13)
-    documentPdf.text('TI', stampX, stampY + 3.6, { align: 'center' })
+    documentPdf.setFontSize(70)
+    documentPdf.text('TI', centerX, wmY + 24, { align: 'center' })
+
+    documentPdf.restoreGraphicsState()
 
     documentPdf.save(`certificado-${previewConsultant.nome.replace(/\s+/g, '-').toLowerCase()}.pdf`)
   }
@@ -255,6 +258,7 @@ function TalentManagerCertificadosView() {
               ) : (
                 <div className="sll-certificates-preview-canvas">
                   <div className="sll-certificates-certificate">
+                    <div className="sll-certificates-certificate-watermark" aria-hidden="true">TI</div>
                     <div className="sll-certificates-certificate-topbar" aria-hidden="true">
                       <span className="sll-certificates-certificate-logo">SOF<span>TI</span>NSA</span>
                     </div>
@@ -281,10 +285,7 @@ function TalentManagerCertificadosView() {
 
                       <div className="sll-certificates-certificate-signature-rule" aria-hidden="true" />
                       <p className="sll-certificates-certificate-signature">Talent Manager</p>
-                      <p className="sll-certificates-certificate-signature">Talent Manager</p>
                       <p className="sll-certificates-certificate-company">Softinsa - Sistemas de Informação</p>
-
-                      <div className="sll-certificates-certificate-stamp" aria-hidden="true">TI</div>
                     </div>
                   </div>
                 </div>
