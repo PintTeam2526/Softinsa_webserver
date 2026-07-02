@@ -23,6 +23,7 @@ class EcraMostrarLearningpaths extends ConsumerStatefulWidget {
 
 class _EcraLearningpathsState extends ConsumerState<EcraMostrarLearningpaths> {
   final TextEditingController _controllerPesquisa = TextEditingController();
+  String _filtroAtivo = 'Todos';
 
   @override
   void initState() {
@@ -84,13 +85,18 @@ class _EcraLearningpathsState extends ConsumerState<EcraMostrarLearningpaths> {
                   ConsultorFiltroChip(
                     texto: 'Favoritos',
                     icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                    onTap: () => print('Filtro Favoritos'),
+                    isSelected: _filtroAtivo == 'Favoritos',
+                    onTap: () => setState(() => _filtroAtivo = 'Favoritos'),
                   ),
                   const SizedBox(width: 9),
                   ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_LearningPaths.svg',
-                    onTap: () => ref.invalidate(allLearningPathsProvider),
+                    isSelected: _filtroAtivo == 'Todos',
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Todos');
+                      ref.invalidate(allLearningPathsProvider);
+                    },
                   )
                 ],
               ),

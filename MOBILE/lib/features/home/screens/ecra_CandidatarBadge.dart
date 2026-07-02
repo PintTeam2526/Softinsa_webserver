@@ -119,6 +119,7 @@ class _EcraCandidatarBadgeState extends State<EcraCandidatarBadge>{
             logo: 'lib/assets/icons/Icon_Favoritos.svg',
             onLogoTap: () {
               print('Adicionei ${badge.nome} aos favoritos');
+              //_repositorioBadge.adicionarBadgeFavorito(badge.id);
             },
           ),
           body: SingleChildScrollView( // Recomendado para evitar overflow

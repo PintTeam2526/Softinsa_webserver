@@ -12,21 +12,31 @@ const Documentacoes = require("../models/Documentacoes.models");
 const Conquistas = require("../models/Conquistas.models");
 const ConquistasConsultores = require('../models/ConquistasConsultores.models')
 const Notificacoes = require("../models/Notificacoes.models");
+const Favoritos = require("../models/Favoritos.models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
 const controllers = {};
 
-// Função auxiliar para construir o WHERE clause com base no lastUpdate
 const getWhereClause = (params, baseWhere = {}) => {
   const { lastUpdate } = params;
-  if (lastUpdate && lastUpdate !== "null" && lastUpdate !== "undefined") {
-    return {
-      ...baseWhere,
-      updatedAt: { [Op.gt]: new Date(lastUpdate) },
-    };
+
+
+  if (!lastUpdate || lastUpdate === "null" || lastUpdate === "undefined" || lastUpdate === "Invalid date") {
+    return baseWhere;
   }
-  return baseWhere;
+
+
+  const parsedDate = Date.parse(lastUpdate);
+  if (isNaN(parsedDate)) {
+    console.warn(`>>> [WARN] Data de sincronização inválida rejeitada: "${lastUpdate}". A ignorar filtro.`);
+    return baseWhere; 
+  }
+
+  return {
+    ...baseWhere,
+    updatedAt: { [Op.gt]: new Date(parsedDate) },
+  };
 };
 
 controllers.syncConquistasMobile = async (req, res) => {
@@ -210,10 +220,9 @@ controllers.syncEstadosMobile = async (req, res) => {
 
 controllers.syncBadgesConcluidosMobile = async (req, res) => {
   try {
-    
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
     const { id } = req.params;
 
     if (!id) {
@@ -270,8 +279,8 @@ controllers.syncBadgesConcluidosMobile = async (req, res) => {
 controllers.syncPedidosBadgesMobile = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
     const { id } = req.params;
 
     if (!id) {
@@ -280,9 +289,7 @@ controllers.syncPedidosBadgesMobile = async (req, res) => {
 
     const where = getWhereClause(req.params, { id_consultor: id });
 
-    const pedidos = await PedidosBadges.findAll({
-      where,
-    });
+    const pedidos = await PedidosBadges.findAll({ where });
 
     const data = pedidos.map((item) => ({
       ID_PEDIDO_BADGE: item.id_pedido_badge,
@@ -305,9 +312,9 @@ controllers.syncPedidosBadgesMobile = async (req, res) => {
 controllers.syncHistoricoPedidosMobile = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
-    const { id } = req.params; // id_consultor
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
+    const { id } = req.params;
 
     if (!id) {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
@@ -347,9 +354,9 @@ controllers.syncHistoricoPedidosMobile = async (req, res) => {
 controllers.syncObjetivosMobile = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
-    const { id } = req.params; // id_consultor
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
+    const { id } = req.params;
 
     if (!id) {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
@@ -357,9 +364,7 @@ controllers.syncObjetivosMobile = async (req, res) => {
 
     const where = getWhereClause(req.params, { id_consultor: id });
 
-    const objetivos = await Objetivos.findAll({
-      where,
-    });
+    const objetivos = await Objetivos.findAll({ where });
 
     const data = objetivos.map((item) => ({
       ID_OBJETIVO: item.id_objetivo,
@@ -409,9 +414,9 @@ controllers.syncRequisitosMobile = async (req, res) => {
 controllers.syncDocumentacoesMobile = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
-    const { id } = req.params; // id_consultor
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
+    const { id } = req.params;
 
     if (!id) {
       return res.status(400).json({ error: "ID do consultor é obrigatório" });
@@ -419,9 +424,7 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
 
     const where = getWhereClause(req.params, { id_consultor: id });
 
-    const docs = await Documentacoes.findAll({
-      where,
-    });
+    const docs = await Documentacoes.findAll({ where });
 
     const data = docs.map((item) => ({
       ID: item.id_documentacao,
@@ -441,12 +444,11 @@ controllers.syncDocumentacoesMobile = async (req, res) => {
   }
 };
 
-
 controllers.syncConquistasConsultores = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
     const { idConsultor } = req.params;
     if (!idConsultor) {
       return res.status(400).json({ erro: 'ID do consultor é obrigatório' });
@@ -454,9 +456,7 @@ controllers.syncConquistasConsultores = async (req, res) => {
 
     const where = getWhereClause(req.params, { id_consultor: idConsultor });
 
-    const resultado = await ConquistasConsultores.findAll({
-      where
-    });
+    const resultado = await ConquistasConsultores.findAll({ where });
 
     const data = resultado.map(item => ({
       id_conquista_consultor: item.id_conquista_consultor,
@@ -466,7 +466,6 @@ controllers.syncConquistasConsultores = async (req, res) => {
     }));
 
     return res.status(200).json(data);
-    
   } catch (error) {
     console.error("Erro no sync de ConquistasConsultores:", error);
     return res.status(500).json({
@@ -474,13 +473,13 @@ controllers.syncConquistasConsultores = async (req, res) => {
       details: error.message,
     });
   }
-}
+};
 
 controllers.syncNotificacoesMobileByConsultorID = async (req, res) => {
   try {
     if (req.user?.role !== 'c') {
-    return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
-  }
+      return res.status(403).json({ message: 'Token Invalido: Apenas consultores registados podem aceder' });
+    }
     const { id } = req.params;
 
     if (!id) {
@@ -512,6 +511,65 @@ controllers.syncNotificacoesMobileByConsultorID = async (req, res) => {
     return res.status(500).json({
       error: "Erro interno ao sincronizar Notificações",
       details: error.message,
+    });
+  }
+};
+
+controllers.getFavorito = async (req, res) => {
+  try {
+    const idConsultor = req.user.id_consultor;
+
+    if (!idConsultor) {
+      return res.status(400).json({
+        mensagem: "ID do consultor não encontrado"
+      });
+    }
+
+    // Limpeza de segurança para parâmetros de data corrompidos
+    if (req.params) {
+      Object.keys(req.params).forEach(key => {
+        const value = req.params[key];
+        if (value === 'Invalid date' || value === 'undefined' || (key === 'lastUpdate' && isNaN(Date.parse(value)))) {
+          delete req.params[key];
+        }
+      });
+    }
+
+    // FIX: Filtrar estritamente pelo id_consultor logado, sem misturar lógicas de Op.or vazias
+    const where = getWhereClause(req.params, {
+      id_consultor: idConsultor
+    });
+
+    const favoritos = await Favoritos.findAll({
+      where,
+      // Se na tabela a coluna se chamar "createdAt" ou "updatedAt" (como na imagem), 
+      // altera "data_insercao" para "createdAt" se vires que a ordenação falha
+      order: [["createdAt", "DESC"]], 
+      include: [
+        {
+          model: Badges,
+          required: true, // Garante um INNER JOIN: só traz se o Badge ainda existir
+          include: [
+            {
+              model: Areas,
+              attributes: ['nome_area']
+            }
+          ]
+        }
+      ]
+    });
+
+    const resultado = favoritos.map(f => ({
+      id_badge: f.Badge?.id_badge || null,
+    }));
+
+    return res.status(200).json(resultado);
+
+  } catch (error) {
+    console.error(">>> [API ERROR] Erro no controller getFavorito:", error);
+    return res.status(500).json({
+      mensagem: "Erro ao buscar favoritos",
+      erro: error.message
     });
   }
 };

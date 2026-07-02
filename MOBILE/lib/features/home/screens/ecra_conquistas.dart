@@ -70,18 +70,21 @@ class _EcraConquistasState extends ConsumerState<EcraConquistas> {
                   ConsultorFiltroChip(
                     texto: 'Todas',
                     icone: 'lib/assets/icons/Icon_Conquista.svg',
+                    isSelected: _filtroEstado == 'todas',
                     onTap: () => setState(() => _filtroEstado = 'todas'),
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                     texto: 'Por Obter',
                     icone: 'lib/assets/icons/Icon_Objetivos.svg',
+                    isSelected: _filtroEstado == 'por obter',
                     onTap: () => setState(() => _filtroEstado = 'por obter'),
                   ),
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                     texto: 'Obtidas',
                     icone: 'lib/assets/icons/Icon_Conquista.svg',
+                    isSelected: _filtroEstado == 'obtido',
                     onTap: () => setState(() => _filtroEstado = 'obtido'),
                   ),
                 ],

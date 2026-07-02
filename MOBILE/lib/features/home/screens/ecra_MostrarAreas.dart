@@ -25,6 +25,7 @@ class EcraMostrarAreas extends ConsumerStatefulWidget {
 
 class _EcraMostrarAreasState extends ConsumerState<EcraMostrarAreas> {
   final TextEditingController _controllerPesquisa = TextEditingController();
+  String _filtroAtivo = 'Todos';
 
   @override
   void initState() {
@@ -88,13 +89,18 @@ class _EcraMostrarAreasState extends ConsumerState<EcraMostrarAreas> {
                   ConsultorFiltroChip(
                     texto: 'Favoritos',
                     icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                    onTap: () => print('Cliquei no filtro de Favoritos :)'),
+                    isSelected: _filtroAtivo == 'Favoritos',
+                    onTap: () => setState(() => _filtroAtivo = 'Favoritos'),
                   ),
                   const SizedBox(width: 9),
                   ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_Areas.svg',
-                    onTap: () => ref.invalidate(allAreasProvider),
+                    isSelected: _filtroAtivo == 'Todos',
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Todos');
+                      ref.invalidate(allAreasProvider);
+                    },
                   )
                 ],
               ),

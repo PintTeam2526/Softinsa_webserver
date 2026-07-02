@@ -34,7 +34,7 @@ class DatabaseHelper {
         'learningPaths', 'serviceLines', 'areas', 'consultores', 
         'badges', 'requisitos', 'badgesConcluidos', 'estados', 
         'pedidosBadge', 'historicoPedidos', 'objetivos', 'notificacoes',
-        'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'
+        'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados', 'badgesFavoritos'
       ];
 
       for (var table in tables) {
@@ -262,6 +262,14 @@ class DatabaseHelper {
           sync_status TEXT
           )
     ''');
+    await db.execute('''
+          CREATE TABLE badgesFavoritos (
+          ID_BADGE INTEGER PRIMARY KEY,
+          FAVORITO INTEGER, 
+          updated_at TEXT,
+          sync_status TEXT
+          )
+    '''); // FAVORITO: 1 para sim, null para não (na api chamas-se set)
   }
 
   Future<void> upsert(String table, Map<String, dynamic> row) async {
@@ -304,7 +312,7 @@ class DatabaseHelper {
     // Lista de tabelas que são específicas de consultor (possuem ID_CONSULTOR)
     const userTables = [
       'consultores', 'badgesConcluidos', 'pedidosBadge', 'historicoPedidos', 
-      'objetivos', 'notificacoes', 'documentacoes', 'conquistasConsultores', 'badgesRecomendados'
+      'objetivos', 'notificacoes', 'documentacoes', 'conquistasConsultores', 'badgesRecomendados', 'badgesFavoritos'
     ];
 
     String query = 'SELECT MAX(updated_at) as lastUpdate FROM $table WHERE sync_status = "synced"';
@@ -324,7 +332,7 @@ class DatabaseHelper {
     const privateTables = [
       'consultores', 'badgesConcluidos', 'objetivos', 'notificacoes', 
       'pedidosBadge', 'historicoPedidos', 'documentacoes', 'conquistasConsultores', 
-      'conquistas', 'badgesRecomendados'
+      'conquistas', 'badgesRecomendados', 'badgesFavoritos'
     ];
     for (var table in privateTables) {
       await db.delete(table);
@@ -340,7 +348,7 @@ class DatabaseHelper {
       'learningPaths', 'serviceLines', 'areas', 'consultores',
       'badges', 'requisitos', 'badgesConcluidos', 'estados',
       'pedidosBadge', 'historicoPedidos', 'objetivos', 'notificacoes',
-      'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados'
+      'documentacoes', 'documentacaoTemporaria', 'conquistas', 'conquistasConsultores', 'badgesRecomendados', 'badgesFavoritos'
     ];
 
     try {
