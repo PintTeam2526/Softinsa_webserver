@@ -465,3 +465,18 @@
   display: block;
 }
 
+
+.sll-certificates-certificate-stamp {
+  margin: 14px auto 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid #3f6aa7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3f6aa7;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}

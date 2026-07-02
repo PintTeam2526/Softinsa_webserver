@@ -82,7 +82,7 @@ function TalentManagerCertificadosView() {
     const pageWidth = documentPdf.internal.pageSize.getWidth()
     const pageHeight = documentPdf.internal.pageSize.getHeight()
     const cardWidth = 262
-    const cardHeight = 170
+    const cardHeight = 188
     const cardX = (pageWidth - cardWidth) / 2
     const cardY = 16
     const centerX = pageWidth / 2
@@ -161,6 +161,19 @@ function TalentManagerCertificadosView() {
     documentPdf.setFontSize(8)
     documentPdf.text('Softinsa - Sistemas de Informação', centerX, cardY + 158, { align: 'center' })
 
+    const stampX = centerX
+    const stampY = cardY + 178
+    const stampRadius = 9
+
+    documentPdf.setDrawColor(63, 106, 167) // azul da marca
+    documentPdf.setLineWidth(0.5)
+    documentPdf.circle(stampX, stampY, stampRadius, 'S')
+
+    documentPdf.setTextColor(63, 106, 167)
+    documentPdf.setFont('helvetica', 'bold')
+    documentPdf.setFontSize(13)
+    documentPdf.text('TI', stampX, stampY + 3.6, { align: 'center' })
+
     documentPdf.save(`certificado-${previewConsultant.nome.replace(/\s+/g, '-').toLowerCase()}.pdf`)
   }
 
@@ -178,103 +191,106 @@ function TalentManagerCertificadosView() {
 
       <Row as="section" className="g-3 align-items-start" aria-label="Configuração do certificado">
         <Col xs={12}>
-        <article className="sll-certificates-form-card">
-          <h2>Selecionar Dados</h2>
+          <article className="sll-certificates-form-card">
+            <h2>Selecionar Dados</h2>
 
-          <div className="sll-certificates-field">
-            <label>Consultor:</label>
-            <div className="sll-certificates-select-wrap">
-              <select value={selectedConsultantName} onChange={(e) => handleConsultantChange(e.target.value)}>
-                <option value="">Selecione o consultor</option>
-                {consultants.map((c) => (
-                  <option key={c.nome} value={c.nome}>{c.nome}</option>
-                ))}
-              </select>
+            <div className="sll-certificates-field">
+              <label>Consultor:</label>
+              <div className="sll-certificates-select-wrap">
+                <select value={selectedConsultantName} onChange={(e) => handleConsultantChange(e.target.value)}>
+                  <option value="">Selecione o consultor</option>
+                  {consultants.map((c) => (
+                    <option key={c.nome} value={c.nome}>{c.nome}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div className="sll-certificates-field">
-            <label>Badge:</label>
-            <div className="sll-certificates-select-wrap">
-              <select
-                value={selectedBadgeName}
-                onChange={(e) => setSelectedBadgeName(e.target.value)}
-                disabled={availableBadges.length === 0}
-              >
-                <option value="">Selecione o badge</option>
-                {availableBadges.map((name) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
+            <div className="sll-certificates-field">
+              <label>Badge:</label>
+              <div className="sll-certificates-select-wrap">
+                <select
+                  value={selectedBadgeName}
+                  onChange={(e) => setSelectedBadgeName(e.target.value)}
+                  disabled={availableBadges.length === 0}
+                >
+                  <option value="">Selecione o badge</option>
+                  {availableBadges.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            className="sll-certificates-visualize-btn"
-            onClick={handleVisualizeCertificate}
-            disabled={!selectedConsultantName || !selectedBadgeName}
-          >
-            Visualizar Certificado
-          </button>
+            <button
+              type="button"
+              className="sll-certificates-visualize-btn"
+              onClick={handleVisualizeCertificate}
+              disabled={!selectedConsultantName || !selectedBadgeName}
+            >
+              Visualizar Certificado
+            </button>
 
-          <button
-            type="button"
-            className="sll-certificates-download-btn"
-            onClick={downloadPdf}
-            disabled={!hasPreview}
-          >
-            <ExportIcon />
-            <span>Descarregar PDF</span>
-          </button>
-        </article>
+            <button
+              type="button"
+              className="sll-certificates-download-btn"
+              onClick={downloadPdf}
+              disabled={!hasPreview}
+            >
+              <ExportIcon />
+              <span>Descarregar PDF</span>
+            </button>
+          </article>
         </Col>
 
         <Col xs={12}>
-        <article className="sll-certificates-preview-card">
-          <h2>Pre-visualização</h2>
+          <article className="sll-certificates-preview-card">
+            <h2>Pre-visualização</h2>
 
-          <div className="sll-certificates-preview">
-            {!hasPreview ? (
-              <div className="sll-certificates-preview-empty">
-                <p>Selecione um consultor e um badge para visualizar o certificado</p>
-              </div>
-            ) : (
-              <div className="sll-certificates-preview-canvas">
-                <div className="sll-certificates-certificate">
-                  <div className="sll-certificates-certificate-topbar" aria-hidden="true">
-                    <span className="sll-certificates-certificate-logo">SOF<span>TI</span>NSA</span>
-                  </div>
+            <div className="sll-certificates-preview">
+              {!hasPreview ? (
+                <div className="sll-certificates-preview-empty">
+                  <p>Selecione um consultor e um badge para visualizar o certificado</p>
+                </div>
+              ) : (
+                <div className="sll-certificates-preview-canvas">
+                  <div className="sll-certificates-certificate">
+                    <div className="sll-certificates-certificate-topbar" aria-hidden="true">
+                      <span className="sll-certificates-certificate-logo">SOF<span>TI</span>NSA</span>
+                    </div>
 
-                  <div className="sll-certificates-certificate-body">
-                    <h3>CERTIFICADO DE CONQUISTA</h3>
-                    <span className="sll-certificates-certificate-rule" aria-hidden="true" />
+                    <div className="sll-certificates-certificate-body">
+                      <h3>CERTIFICADO DE CONQUISTA</h3>
+                      <span className="sll-certificates-certificate-rule" aria-hidden="true" />
 
-                    <p className="sll-certificates-certificate-kicker">Certifica-se que</p>
-                    <p className="sll-certificates-certificate-name">{previewConsultantName.toUpperCase()}</p>
-                    <p className="sll-certificates-certificate-copy">conquistou com sucesso o badge</p>
-                    <p className="sll-certificates-certificate-badge">{previewBadgeName}</p>
+                      <p className="sll-certificates-certificate-kicker">Certifica-se que</p>
+                      <p className="sll-certificates-certificate-name">{previewConsultantName.toUpperCase()}</p>
+                      <p className="sll-certificates-certificate-copy">conquistou com sucesso o badge</p>
+                      <p className="sll-certificates-certificate-badge">{previewBadgeName}</p>
 
-                    <img
-                      src={resolveBadgeImage(previewBadgeName)}
-                      alt=""
-                      aria-hidden="true"
-                      className="sll-certificates-certificate-badge-img"
-                    />
+                      <img
+                        src={resolveBadgeImage(previewBadgeName)}
+                        alt=""
+                        aria-hidden="true"
+                        className="sll-certificates-certificate-badge-img"
+                      />
 
-                    <p className="sll-certificates-certificate-date">
-                      Emitido em {new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </p>
+                      <p className="sll-certificates-certificate-date">
+                        Emitido em {new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
 
-                    <div className="sll-certificates-certificate-signature-rule" aria-hidden="true" />
-                    <p className="sll-certificates-certificate-signature">Talent Manager</p>
-                    <p className="sll-certificates-certificate-company">Softinsa - Sistemas de Informação</p>
+                      <div className="sll-certificates-certificate-signature-rule" aria-hidden="true" />
+                      <p className="sll-certificates-certificate-signature">Talent Manager</p>
+                      <p className="sll-certificates-certificate-signature">Talent Manager</p>
+                      <p className="sll-certificates-certificate-company">Softinsa - Sistemas de Informação</p>
+
+                      <div className="sll-certificates-certificate-stamp" aria-hidden="true">TI</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </article>
+              )}
+            </div>
+          </article>
         </Col>
       </Row>
     </div>
