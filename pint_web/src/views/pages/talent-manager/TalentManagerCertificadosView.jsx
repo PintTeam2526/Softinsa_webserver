@@ -161,7 +161,7 @@ function TalentManagerCertificadosView() {
     documentPdf.text('Softinsa - Sistemas de Informação', centerX, cardY + 158, { align: 'center' })
 
     documentPdf.saveGraphicsState()
-    documentPdf.setGState(new documentPdf.GState({ opacity: 0.06 }))
+    documentPdf.setGState(new documentPdf.GState({ opacity: 0.15, 'stroke-opacity': 0.15 }))
 
     const wmRadius = 46
     const wmY = cardY + cardHeight / 2 + 6
