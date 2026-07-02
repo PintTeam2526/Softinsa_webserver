@@ -486,15 +486,15 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(180px, 30vw, 260px);
-  height: clamp(180px, 30vw, 260px);
+  width: clamp(220px, 38vw, 320px);
+  height: clamp(220px, 38vw, 320px);
   border-radius: 50%;
   border: 2px solid #3f6aa7;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #3f6aa7;
-  font-size: clamp(90px, 14vw, 130px);
+  font-size: clamp(110px, 18vw, 160px);
   font-weight: 700;
   opacity: 0.15;
   z-index: 0;

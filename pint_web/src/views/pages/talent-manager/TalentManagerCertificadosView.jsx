@@ -163,17 +163,19 @@ function TalentManagerCertificadosView() {
     documentPdf.saveGraphicsState()
     documentPdf.setGState(new documentPdf.GState({ opacity: 0.15, 'stroke-opacity': 0.15 }))
 
-    const wmRadius = 46
-    const wmY = cardY + cardHeight / 2 + 6
+    const wmRadius = 62
+    const whiteAreaTop = cardY + 24
+    const whiteAreaHeight = cardHeight - 24
+    const wmY = whiteAreaTop + whiteAreaHeight / 2
 
     documentPdf.setDrawColor(63, 106, 167)
-    documentPdf.setLineWidth(1.2)
+    documentPdf.setLineWidth(1.4)
     documentPdf.circle(centerX, wmY, wmRadius, 'S')
 
     documentPdf.setTextColor(63, 106, 167)
     documentPdf.setFont('helvetica', 'bold')
-    documentPdf.setFontSize(70)
-    documentPdf.text('TI', centerX, wmY + 24, { align: 'center' })
+    documentPdf.setFontSize(95)
+    documentPdf.text('TI', centerX, wmY + 32, { align: 'center' })
 
     documentPdf.restoreGraphicsState()
 
@@ -258,12 +260,13 @@ function TalentManagerCertificadosView() {
               ) : (
                 <div className="sll-certificates-preview-canvas">
                   <div className="sll-certificates-certificate">
-                    <div className="sll-certificates-certificate-watermark" aria-hidden="true">TI</div>
                     <div className="sll-certificates-certificate-topbar" aria-hidden="true">
                       <span className="sll-certificates-certificate-logo">SOF<span>TI</span>NSA</span>
                     </div>
 
                     <div className="sll-certificates-certificate-body">
+                      <div className="sll-certificates-certificate-watermark" aria-hidden="true">TI</div>
+
                       <h3>CERTIFICADO DE CONQUISTA</h3>
                       <span className="sll-certificates-certificate-rule" aria-hidden="true" />
 
