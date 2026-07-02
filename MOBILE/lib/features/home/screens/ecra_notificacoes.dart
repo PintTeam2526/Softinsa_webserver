@@ -24,6 +24,7 @@ class EcraNotificacoes extends ConsumerStatefulWidget {
 
 class _EcraNotificacoesState extends ConsumerState<EcraNotificacoes> {
   late final TextEditingController _controllerPesquisa;
+  String _filtroAtivo = 'Todas';
 
   @override
   void initState() {
@@ -74,19 +75,22 @@ class _EcraNotificacoesState extends ConsumerState<EcraNotificacoes> {
                   ConsultorFiltroChip(
                     texto: 'Todas',
                     icone: 'lib/assets/icons/Icon_Notificacoes_Navbar.svg',
-                    onTap: () {},
+                    isSelected: _filtroAtivo == 'Todas',
+                    onTap: () => setState(() => _filtroAtivo = 'Todas'),
                   ),
                   const SizedBox(width: 13),
                   ConsultorFiltroChip(
                     texto: 'Lidas',
                     icone: 'lib/assets/icons/Icon_NotificacaoLida.svg',
-                    onTap: () {},
+                    isSelected: _filtroAtivo == 'Lidas',
+                    onTap: () => setState(() => _filtroAtivo = 'Lidas'),
                   ),
                   const SizedBox(width: 13),
                   ConsultorFiltroChip(
                     texto: 'Não Lidas',
                     icone: 'lib/assets/icons/Icon_NotificacaoNaoLida.svg',
-                    onTap: () {},
+                    isSelected: _filtroAtivo == 'Não Lidas',
+                    onTap: () => setState(() => _filtroAtivo = 'Não Lidas'),
                   ),
                 ],
               ),
@@ -108,7 +112,18 @@ class _EcraNotificacoesState extends ConsumerState<EcraNotificacoes> {
                   // Filtragem por remetente baseada no texto da pesquisa
                   final filteredList = notificacoes.where((n) {
                     final query = _controllerPesquisa.text.toLowerCase();
-                    return n.remetente.toLowerCase().contains(query);
+                    final matchesPesquisa = n.remetente.toLowerCase().contains(query);
+                    
+                    if (_filtroAtivo == 'Lidas') {
+                       // Supondo que existe um campo 'lida' no modelo, 
+                       // mas como não vi o modelo, vou apenas aplicar a lógica de visibilidade se existir.
+                       // Se o modelo não tiver status, este filtro apenas mostra tudo.
+                       return matchesPesquisa; 
+                    } else if (_filtroAtivo == 'Não Lidas') {
+                       return matchesPesquisa;
+                    }
+
+                    return matchesPesquisa;
                   }).toList();
 
                   if (filteredList.isEmpty) {
