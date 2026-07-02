@@ -464,3 +464,28 @@
   display: block;
 }
 
+.sll-certificates-certificate-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(220px, 38vw, 320px);
+  height: clamp(220px, 38vw, 320px);
+  border-radius: 50%;
+  border: 2px solid #3f6aa7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3f6aa7;
+  font-size: clamp(110px, 18vw, 160px);
+  font-weight: 700;
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sll-certificates-certificate-topbar,
+.sll-certificates-certificate-body {
+  position: relative;
+  z-index: 1;
+}
