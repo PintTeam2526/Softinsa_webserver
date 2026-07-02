@@ -340,36 +340,15 @@
 }
 
 /* ── OS MEUS PEDIDOS — GRID DE BADGES ─────────────────── */
-.consultor-dashboard-card--my-badges {
-  background: linear-gradient(180deg, #fbfcff 0%, #ffffff 100%);
-}
-
 .consultor-dashboard-card--my-badges .consultor-dashboard-card-header {
   margin-bottom: 8px;
-}
-
-.consultor-dashboard-card--my-badges .consultor-dashboard-card-header h2 {
-  position: relative;
-  padding-bottom: 14px;
-}
-
-.consultor-dashboard-card--my-badges .consultor-dashboard-card-header h2::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #3699ff, #00b8e0);
 }
 
 .consultor-dashboard-badge-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 20px;
   padding-top: 20px;
   width: 100%;
@@ -382,6 +361,7 @@
   text-align: center;
   gap: 10px;
   width: 150px;
+  min-height: 190px;
   padding: 22px 14px;
   border-radius: 14px;
   background: #ffffff;
@@ -444,6 +424,7 @@
   font-size: 12px;
   font-weight: 600;
   background: rgba(138, 146, 166, 0.1);
+  margin-top: auto;
 }
 
 .consultor-dashboard-badge-card .consultor-dashboard-badge-status.is-expired {
