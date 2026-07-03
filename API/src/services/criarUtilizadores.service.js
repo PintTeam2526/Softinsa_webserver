@@ -7,30 +7,27 @@ const TalentManagers = require('../models/TalentManagers.models');
 const ServiceLineLiders = require('../models/ServiceLineLiders.models');
 const conquistasService = require('../services/conquistas.service');
 
-async function criarUtilizador({
-    nome_utilizador,
-    email_utilizador,
-    password_utilizador,
-    username_utilizador,
-    tipo_utilizador,
-    imagem_utilizador,
-    id_area,
-    id_service_line
-}) {
+async function criarUtilizador({ nome_utilizador, email_utilizador, password_utilizador, username_utilizador, tipo_utilizador, imagem_utilizador, id_area, id_service_line }) {
 
-    const transaction =
-        await sequelize.transaction();
+    const transaction = await sequelize.transaction();
 
     try {
-
-        // Verificar username existente
+        // Verificar username existente (já tinhas)
         const usernameExistente = await Utilizadores.findOne({
-            where: {username_utilizador},
+            where: { username_utilizador },
             transaction
         });
-
         if (usernameExistente) {
             throw new Error('ERRO! O username_utilizador já existe!');
+        }
+
+        // Verificar email duplicado (adicionar)
+        const emailExistente = await Utilizadores.findOne({
+            where: { email_utilizador },
+            transaction
+        });
+        if (emailExistente) {
+            throw new Error('ERRO! O email já está a ser utilizado por outro utilizador.');
         }
 
         // Criar utilizador

@@ -15,7 +15,8 @@ var Utilizadores = sequelize.define('Utilizadores',
     },
     email_utilizador: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password_utilizador: {
         type: Sequelize.TEXT,

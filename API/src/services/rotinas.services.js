@@ -5,10 +5,10 @@ const Badges = require('../models/Badges.models');
 const Notificacoes = require('../models/Notificacoes.models');
 const Consultores = require('../models/Consultores.models');
 const Utilizadores = require('../models/Utilizadores.models');
-const { enviarEmailBadgeExpirado } = require('./email.service'); // ajusta o path se necessário
+const { enviarEmailBadgeExpirado } = require('./email.service');
 
 function iniciarExpiracaoBadges() {
-  cron.schedule('0 0 * * *', async () => {
+  cron.schedule('0 11 * * *', async () => {
     console.log(`[${new Date().toISOString()}] A verificar badges expirados...`);
 
     try {
@@ -43,7 +43,6 @@ function iniciarExpiracaoBadges() {
             data_de_envio: new Date()
           });
 
-          // Enviar email — falha silenciosamente para não bloquear os restantes
           try {
             const utilizador = concluido.Consultor?.Utilizadore;
             if (utilizador) {
@@ -72,6 +71,8 @@ function iniciarExpiracaoBadges() {
     } catch (error) {
       console.error('Erro ao verificar badges expirados:', error.message);
     }
+  }, {
+    timezone: 'Europe/Lisbon'  // trata WET/WEST automaticamente
   });
 
   console.log('Job de expiração de badges iniciado.');
