@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart'; //VAI GERAR O MEU UID
 import 'dart:io';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //PEDIDOS DE DADOS (MODEL + REPO)
 import 'package:pint_26_mobile/core/repositories/badges_repository.dart'; //chamar o repositorio
@@ -15,9 +16,12 @@ import 'package:pint_26_mobile/core/models/badges_model.dart'; //chamar o model
 import 'package:pint_26_mobile/core/repositories/requisitos_repository.dart';
 import 'package:pint_26_mobile/core/models/requisitos_model.dart';
 import 'package:pint_26_mobile/core/repositories/candidaturasBadge_repository.dart';
+import 'package:pint_26_mobile/core/repositories/badgesFavoritos_repository.dart';
+import 'package:pint_26_mobile/core/services/sync_service.dart'; // Importar SyncService
 
 
-class EcraCandidatarBadge extends StatefulWidget{
+
+class EcraCandidatarBadge extends ConsumerStatefulWidget{
     final int idBadge;
 
     const EcraCandidatarBadge({
@@ -26,10 +30,10 @@ class EcraCandidatarBadge extends StatefulWidget{
 });
 
     @override
-    State<EcraCandidatarBadge> createState() => _EcraCandidatarBadgeState();
+    ConsumerState<EcraCandidatarBadge> createState() => _EcraCandidatarBadgeState();
 }
 
-class _EcraCandidatarBadgeState extends State<EcraCandidatarBadge>{
+class _EcraCandidatarBadgeState extends ConsumerState<EcraCandidatarBadge>{
 
   //INSTANCIAR REPOSITORIO
   final BadgesRepository _repositorioBadge = BadgesRepository();
@@ -80,7 +84,12 @@ class _EcraCandidatarBadgeState extends State<EcraCandidatarBadge>{
     );
   }
 
+  @override
   Widget build (BuildContext context){
+    //verificar o estado do favorito
+    final isFavoritoAsync = ref.watch(isBadgeFavoritoProvider(widget.idBadge));
+    final bool isFavorito = isFavoritoAsync.value ?? false;
+
     return FutureBuilder<List<dynamic>>(
       future: _pedidos,
       builder: (context, snapshot) {
@@ -114,12 +123,20 @@ class _EcraCandidatarBadgeState extends State<EcraCandidatarBadge>{
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: PaginaAppBar(
-            // AGORA JÁ PODES USAR O snapshot (badge) AQUI!
             titulo: badge.nome,
-            logo: 'lib/assets/icons/Icon_Favoritos.svg',
-            onLogoTap: () {
-              print('Adicionei ${badge.nome} aos favoritos');
-              //_repositorioBadge.adicionarBadgeFavorito(badge.id);
+            logo: isFavorito ? 'lib/assets/icons/Icon_Favorito-Preenchido.svg' : 'lib/assets/icons/Icon_Favoritos.svg',
+            logoSize: isFavorito ? 38.0 : 45.0,
+            onLogoTap: () async {
+              // Alternar favorito localmente
+              await ref.read(badgesFavoritosRepositoryProvider).toggleFavorito(widget.idBadge);
+              
+              // Atualizar a UI imediatamente
+              ref.invalidate(isBadgeFavoritoProvider(widget.idBadge)); 
+
+              // Disparar sincronização
+              SyncService.instance.syncAll(AppState().idConsultor);
+
+              _mostrarSucesso(isFavorito ? 'Removido dos favoritos' : 'Adicionado aos favoritos');
             },
           ),
           body: SingleChildScrollView( // Recomendado para evitar overflow

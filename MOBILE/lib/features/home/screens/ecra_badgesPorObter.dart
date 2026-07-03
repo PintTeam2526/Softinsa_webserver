@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:pint_26_mobile/core/repositories/badges_repository.dart';
 import 'package:pint_26_mobile/core/services/sync_service.dart';
+import 'package:pint_26_mobile/core/repositories/badgesFavoritos_repository.dart';
 
 class EcraBadgesPorObter extends ConsumerStatefulWidget {
   const EcraBadgesPorObter({super.key});
@@ -27,8 +28,9 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
     
     // Escuta atualizações do sync para tabelas relacionadas
     ref.read(syncServiceProvider).syncStream.listen((tableName) {
-      if ((tableName == 'badges' || tableName == 'badgesConcluidos') && mounted) {
+      if ((tableName == 'badges' || tableName == 'badgesConcluidos' || tableName == 'badgesFavoritos') && mounted) {
         ref.invalidate(badgesPorObterProvider(AppState().idConsultor));
+        ref.invalidate(favoriteBadgeIdsProvider);
       }
     });
   }
@@ -43,6 +45,8 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
   Widget build(BuildContext context) {
     final idConsultor = AppState().idConsultor;
     final badgesAsync = ref.watch(badgesPorObterProvider(idConsultor));
+    final favoritosIdsAsync = ref.watch(favoriteBadgeIdsProvider);
+    final favoritosIds = favoritosIdsAsync.value ?? {};
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -53,6 +57,7 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(badgesPorObterProvider(idConsultor));
+          ref.invalidate(favoriteBadgeIdsProvider);
           await ref.read(badgesPorObterProvider(idConsultor).future);
         },
         child: Column(
@@ -72,7 +77,9 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
                 children: [
                   ConsultorFiltroChip(
                       texto: 'Badges Favoritos',
-                      icone: 'lib/assets/icons/Icon_Favoritos.svg',
+                      icone: _filtroAtivo == 'Favoritos' 
+                        ? 'lib/assets/icons/Icon_Favorito-Preenchido.svg' 
+                        : 'lib/assets/icons/Icon_Favoritos.svg',
                       isSelected: _filtroAtivo == 'Favoritos',
                       onTap: () => setState(() => _filtroAtivo = 'Favoritos')
                   ),
@@ -106,7 +113,13 @@ class _EcraBadgesPorObterState extends ConsumerState<EcraBadgesPorObter>{
                     final areaPai = badge.nome_area_pai ?? "";
                     final matchesNomeArea = areaPai.toLowerCase().contains(_controllerPesquisa.text.toLowerCase());
                     final isAtivo = badge.estado_a_i;
-                    return (matchesNome || matchesNomeArea) && isAtivo;
+                    
+                    bool matchesFavoritos = true;
+                    if (_filtroAtivo == 'Favoritos') {
+                      matchesFavoritos = favoritosIds.contains(badge.id);
+                    }
+
+                    return (matchesNome || matchesNomeArea) && isAtivo && matchesFavoritos;
                   }).toList();
         
                   if (listaBadgesFiltrada.isEmpty) {

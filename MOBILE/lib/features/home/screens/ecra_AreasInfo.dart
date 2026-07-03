@@ -32,7 +32,7 @@ class _EcraLearningPathInfoState extends State<EcraAreasInfo> {
   @override
   void initState(){
     super.initState(); // Importante chamar o super, executa as configuracoes internas padrao primeiro, boa pratica
-    // CORREÇÃO 2: Usar widget.idLearningPath para aceder ao valor do construtor
+    //Usar widget.idLearningPath para aceder ao valor do construtor
     _futureArea = _repositorioAreas.getAreaById(widget.idArea);
   }
 
@@ -42,9 +42,9 @@ class _EcraLearningPathInfoState extends State<EcraAreasInfo> {
         backgroundColor: Colors.white,
         appBar: PaginaAppBar(
           titulo: 'Áreas',
-          logo: 'lib/assets/icons/Icon_Favoritos.svg',
+          logo: 'lib/assets/icons/Icon_Areas.svg',
           onLogoTap: (){
-            print('Carreguei no icone dos favoritos');
+            print('Carreguei no icone das areas.');
           },
         ),
         // CORREÇÃO 3: Usar FutureBuilder para esperar pelos dados da API

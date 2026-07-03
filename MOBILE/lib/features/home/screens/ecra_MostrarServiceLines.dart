@@ -96,15 +96,6 @@ class _EcraMostrarServiceLines extends ConsumerState<EcraMostrarServiceLines>{
               child: Row(
                 children: [
                   ConsultorFiltroChip(
-                    texto: 'Favoritos',
-                    icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                    isSelected: _filtroAtivo == 'Favoritos',
-                    onTap: () {
-                      setState(() => _filtroAtivo = 'Favoritos');
-                    },
-                  ),
-                  const SizedBox(width: 9),
-                  ConsultorFiltroChip(
                     texto: 'Todas',
                     icone: 'lib/assets/icons/Icon_ServiceLines.svg',
                     isSelected: _filtroAtivo == 'Todas',

@@ -83,13 +83,6 @@ class _EcraLearningpathsState extends ConsumerState<EcraMostrarLearningpaths> {
               child: Row(
                 children: [
                   ConsultorFiltroChip(
-                    texto: 'Favoritos',
-                    icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                    isSelected: _filtroAtivo == 'Favoritos',
-                    onTap: () => setState(() => _filtroAtivo = 'Favoritos'),
-                  ),
-                  const SizedBox(width: 9),
-                  ConsultorFiltroChip(
                     texto: 'Todos',
                     icone: 'lib/assets/icons/Icon_LearningPaths.svg',
                     isSelected: _filtroAtivo == 'Todos',

@@ -119,7 +119,7 @@ class _EcraMostrarBadgesAreaState extends State<EcraMostrarBadgesArea> {
           backgroundColor: Colors.white,
           appBar: PaginaAppBar(
             titulo: 'Badges ${area.nome}',
-            logo: 'lib/assets/icons/Icon_Favoritos.svg',
+            logo: 'lib/assets/icons/Icon_BadgePorObter.svg',
             onLogoTap: () => print('Favoritos'),
           ),
           body: RefreshIndicator(
