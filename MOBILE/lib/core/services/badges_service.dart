@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../api_config.dart';
 import '../models/badges_model.dart';
+import '../app_state.dart';
 
 class BadgesService {
   final String _endpoint = '${ApiConfig.baseUrlApi}';
@@ -79,10 +81,23 @@ class BadgesService {
     }
   }
 
-
-
-
-
-
+  Future<bool> setBadgeFavorito(int idBadge, bool set) async {
+    try {
+      final String token = AppState().tokenLogin;
+      final response = await http.post(
+        Uri.parse('$_endpoint/badges/favorito/set'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token.isNotEmpty) HttpHeaders.authorizationHeader: 'Bearer $token',
+        },
+        body: jsonEncode({
+          'id_badge': idBadge,
+          'set': set,
+        }),
+      );
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
 }
-

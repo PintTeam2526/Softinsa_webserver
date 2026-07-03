@@ -8,12 +8,14 @@ class PaginaAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.titulo,
     required this.logo,
-    this.onLogoTap
+    this.onLogoTap,
+    this.logoSize = 50.0, // Tamanho padrão do logo
   });
 
   final String titulo;
   final String logo;
   final VoidCallback? onLogoTap;
+  final double logoSize;
 
   @override
   Size get preferredSize => const Size.fromHeight(90);
@@ -76,8 +78,8 @@ class PaginaAppBar extends StatelessWidget implements PreferredSizeWidget {
                   onTap: onLogoTap,
                   child: SvgPicture.asset(
                     logoPath,
-                    width: 50,
-                    height: 50,
+                    width: logoSize,
+                    height: logoSize,
                     colorFilter: const ColorFilter.mode(
                       Color(0xFF39639C),
                       BlendMode.srcIn,

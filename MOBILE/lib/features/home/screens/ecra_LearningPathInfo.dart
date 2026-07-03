@@ -42,9 +42,9 @@ class _EcraLearningPathInfoState extends State<EcraLearningPathInfo> {
         backgroundColor: Colors.white,
         appBar: PaginaAppBar(
             titulo: 'Learning Path',
-            logo: 'lib/assets/icons/Icon_Favoritos.svg', 
+            logo: 'lib/assets/icons/Icon_LearningPaths.svg',
             onLogoTap: (){
-              print('Carreguei no icone dos favoritos');
+              print('Carreguei no icone dos learning paths.');
             },
         ),
         // CORREÇÃO 3: Usar FutureBuilder para esperar pelos dados da API
