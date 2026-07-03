@@ -7,75 +7,83 @@ const Consultores = require('../models/Consultores.models');
 const Utilizadores = require('../models/Utilizadores.models');
 const { enviarEmailBadgeExpirado } = require('./email.service');
 
-function iniciarExpiracaoBadges() {
-  cron.schedule('0 11 * * *', async () => {
+async function executar() {
     console.log(`[${new Date().toISOString()}] A verificar badges expirados...`);
 
     try {
-      const concluidos = await BadgesConcluidos.findAll({
-        include: [
-          { model: Badges, attributes: ['sla', 'nome_badge'] },
-          {
-            model: Consultores,
-            include: [{ model: Utilizadores, attributes: ['nome_utilizador', 'email_utilizador'] }]
-          }
-        ],
-      });
+        const concluidos = await BadgesConcluidos.findAll({
+            include: [
+                { model: Badges, attributes: ['sla', 'nome_badge'] },
+                {
+                    model: Consultores,
+                    include: [{ model: Utilizadores, attributes: ['nome_utilizador', 'email_utilizador'] }]
+                }
+            ],
+        });
 
-      const agora = new Date();
-      const idsExpirados = [];
+        const agora = new Date();
+        const idsExpirados = [];
 
-      for (const concluido of concluidos) {
-        const sla = concluido.Badge?.sla;
-        if (!sla) continue;
+        for (const concluido of concluidos) {
+            const sla = concluido.Badge?.sla;
+            if (!sla) continue;
 
-        const dataExpiracao = new Date(concluido.data_conclusao_badge);
-        dataExpiracao.setDate(dataExpiracao.getDate() + sla);
+            const dataExpiracao = new Date(concluido.data_conclusao_badge);
+            dataExpiracao.setDate(dataExpiracao.getDate() + sla);
 
-        if (agora >= dataExpiracao) {
-          idsExpirados.push(concluido.id_badge_concluido);
+            if (agora >= dataExpiracao) {
+                idsExpirados.push(concluido.id_badge_concluido);
 
-          await Notificacoes.create({
-            id_consultor: concluido.id_consultor,
-            notificacao: "Badge expirado",
-            descricao: `O teu badge expirou e foi removido. Podes submeter um novo pedido para o reobter.`,
-            remetente: "Sistema",
-            data_de_envio: new Date()
-          });
+                await Notificacoes.create({
+                    id_consultor: concluido.id_consultor,
+                    notificacao: "Badge expirado",
+                    descricao: `O teu badge expirou e foi removido. Podes submeter um novo pedido para o reobter.`,
+                    remetente: "Sistema",
+                    data_de_envio: new Date()
+                });
 
-          try {
-            const utilizador = concluido.Consultor?.Utilizadore;
-            if (utilizador) {
-              await enviarEmailBadgeExpirado(
-                utilizador.email_utilizador,
-                utilizador.nome_utilizador,
-                concluido.Badge.nome_badge
-              );
+                // Enviar email — falha silenciosamente para não bloquear os restantes
+                try {
+                    const utilizador = concluido.Consultor?.Utilizadore;
+                    if (utilizador) {
+                        await enviarEmailBadgeExpirado(
+                            utilizador.email_utilizador,
+                            utilizador.nome_utilizador,
+                            concluido.Badge.nome_badge
+                        );
+                    }
+                } catch (emailError) {
+                    console.error(`Erro ao enviar email de expiração para consultor ${concluido.id_consultor}:`, emailError.message);
+                }
             }
-          } catch (emailError) {
-            console.error(`Erro ao enviar email de expiração para consultor ${concluido.id_consultor}:`, emailError.message);
-          }
         }
-      }
 
-      if (idsExpirados.length === 0) {
-        console.log('Nenhum badge expirado encontrado.');
-        return;
-      }
+        if (idsExpirados.length === 0) {
+            console.log('Nenhum badge expirado encontrado.');
+            return;
+        }
 
-      await BadgesConcluidos.destroy({
-        where: { id_badge_concluido: { [Op.in]: idsExpirados } },
-      });
+        await BadgesConcluidos.destroy({
+            where: { id_badge_concluido: { [Op.in]: idsExpirados } },
+        });
 
-      console.log(`${idsExpirados.length} badge(s) expirado(s) removido(s).`);
+        console.log(`${idsExpirados.length} badge(s) expirado(s) removido(s).`);
     } catch (error) {
-      console.error('Erro ao verificar badges expirados:', error.message);
+        console.error('Erro ao verificar badges expirados:', error.message);
     }
-  }, {
-    timezone: 'Europe/Lisbon'  // trata WET/WEST automaticamente
-  });
+}
 
-  console.log('Job de expiração de badges iniciado.');
+function iniciarExpiracaoBadges() {
+    // Executa todos os dias às 11h de Lisboa (trata WET/WEST automaticamente)
+    cron.schedule('0 11 * * *', executar, {
+        timezone: 'Europe/Lisbon'
+    });
+
+    // ⚠️ REMOVER DEPOIS DE TESTAR — disparo imediato para confirmar que funciona
+    console.log('[CRON] A executar disparo imediato para teste...');
+    executar();
+
+    console.log('Job de expiração de badges iniciado.');
 }
 
 module.exports = iniciarExpiracaoBadges;

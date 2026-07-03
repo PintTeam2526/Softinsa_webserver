@@ -50,8 +50,6 @@ app.use(middlewareAuth);
 //Timeout global — evita pedidos órfãos
 app.use(require("./middleware/timeout.middleware"));
 
-//Rotina para remover badges expirados
-badgesExpirados();
 
 const routes = require("./routes/Rotas");
 app.use("/api", routes);
@@ -63,14 +61,17 @@ app.get("/api", (req, res) => {
 
 async function start() {
   try {
-    //await sequelize.sync({ force: true });
-    await sequelize.sync({ });
+    await sequelize.sync({});
     console.log("✅ Tabelas sincronizadas!");
 
-    // Criar triggers PostgreSQL
     await triggers.criarTriggers();
+    console.log("💥 Triggers das Conquistas Criados");
 
     await seedDatabase();
+
+    // Iniciar rotinas DEPOIS das tabelas estarem prontas
+    badgesExpirados();
+    console.log("⏰ Rotina de expiração de badges iniciada.");
 
     app.listen(3000, () => {
       console.log("🚀 API a correr na porta 3000");
