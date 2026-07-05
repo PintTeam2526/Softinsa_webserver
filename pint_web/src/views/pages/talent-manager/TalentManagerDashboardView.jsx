@@ -151,7 +151,7 @@ function TalentManagerDashboardView() {
   if (erro) return <p className="tm-error">{erro}</p>
 
   // Mapear pedidos pendentes
-  const pendingRequests = (dados.proximos_pedidos_expirar ?? []).map(pedido => ({
+  const pendingRequests = (dados.proximos_pedidos ?? []).map(pedido => ({
     title: `${pedido.nome_badge} - ${pedido.nivel_badge}`,
     consultant: pedido.nome_consultor,
     deadline: textoDeadline(pedido.tempo_resposta_dias),
