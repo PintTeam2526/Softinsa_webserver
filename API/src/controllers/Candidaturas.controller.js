@@ -152,7 +152,8 @@ controllers.candidatarBadge = async (req, res) => {
             notificacao: 'Candidatura Submetida',
             descricao: 'A tua candidatura ao badge foi submetida e aguarda validação.',
             remetente: 'Sistema de Badges',
-            data_de_envio: new Date()
+            data_de_envio: new Date(),
+            tipo: 4
         }, { transaction });
         await transaction.commit();
         firebase.notificarSync('pedidosBadge');

@@ -28,7 +28,16 @@ const {
 const NotificacoesPedidos = require('../models/Notificacoes.models');
 const controllers = {};
 
-
+/* =====================================================
+   TIPOS DE NOTIFICAÇÃO
+   1 - informação | 2 - aviso | 3 - perigo | 4 - correto/válido
+===================================================== */
+const TIPO_NOTIFICACAO = {
+  INFORMACAO: 1,
+  AVISO: 2,       // devolvido
+  PERIGO: 3,      // rejeitado
+  VALIDO: 4,      // aprovado
+};
 
 /* =====================================================
    FUNÇÕES AUXILIARES
@@ -65,12 +74,14 @@ async function criarHistorico(
   });
 }
 
-async function criarNotificacao(idConsultor, texto, descricao, remetente) {
+async function criarNotificacao(idConsultor, texto, descricao, remetente, tipo) {
   await Notificacoes.create({
     id_consultor: idConsultor,
     notificacao: texto,
     descricao: descricao || null,
     remetente: remetente,
+    tipo: tipo,
+    estado_a_i: true,
     data_de_envio: new Date()
   });
 }
@@ -296,6 +307,8 @@ controllers.createPedido = async (req, res) => {
           notificacao: "Novo pedido criado",
           descricao: "O pedido foi submetido e aguarda validação.",
           remetente: "Sistema",
+          tipo: TIPO_NOTIFICACAO.INFORMACAO,
+          estado_a_i: true,
           data_de_envio: new Date(),
         },
         { transaction },
@@ -384,12 +397,14 @@ controllers.tmReview = async (req, res) => {
     let mensagemHistorico;
     let mensagemNotificacao;
     let mensagemResposta;
+    let tipoNotificacao;
 
     if (acao === "aprovar") {
       estado = 2;
       mensagemHistorico = "Aprovado pelo Talent Manager";
       mensagemNotificacao = "Pedido aprovado pelo Talent Manager.";
       mensagemResposta = "Pedido aprovado";
+      tipoNotificacao = TIPO_NOTIFICACAO.VALIDO; // 4
       const slCompleto = await ServiceLineLider.findByPk(
         pedido.id_service_line_lider,
         {
@@ -424,6 +439,7 @@ controllers.tmReview = async (req, res) => {
       mensagemHistorico = "Devolvido pelo Talent Manager";
       mensagemNotificacao = motivo;
       mensagemResposta = "Pedido devolvido";
+      tipoNotificacao = TIPO_NOTIFICACAO.AVISO; // 2
       const consultor = await Consultor.findByPk(
         pedido.id_consultor,
         {
@@ -460,7 +476,8 @@ controllers.tmReview = async (req, res) => {
       pedido.id_consultor,
       mensagemNotificacao,
       acao === "devolver" ? motivo : "O teu pedido foi aprovado pelo Talent Manager e segue para avaliação final.",
-      "Talent Manager"
+      "Talent Manager",
+      tipoNotificacao
     );
 
     //basta dar sync a tabela dos pedidos no mobile
@@ -530,18 +547,21 @@ controllers.slReview = async (req, res) => {
         historico: "Aprovado final",
         notificacao: "Pedido aprovado. Badge atribuído.",
         resposta: "Pedido aprovado com sucesso",
+        tipo: TIPO_NOTIFICACAO.VALIDO,   // 4
       },
       devolver: {
         estado: 6,
         historico: "Devolvido pelo Service Line Líder",
         notificacao: motivo,
         resposta: "Pedido devolvido",
+        tipo: TIPO_NOTIFICACAO.AVISO,    // 2
       },
       rejeitar: {
         estado: 5,
         historico: "Pedido rejeitado",
         notificacao: motivo,
         resposta: "Pedido rejeitado",
+        tipo: TIPO_NOTIFICACAO.PERIGO,   // 3
       },
     };
 
@@ -598,7 +618,8 @@ controllers.slReview = async (req, res) => {
       pedido.id_consultor,
       config.notificacao,
       acao !== "aprovar" ? motivo : "O teu pedido foi aprovado e o badge foi atribuído com sucesso.",
-      "Service Line Líder"
+      "Service Line Líder",
+      config.tipo
     );
 
     try {
@@ -674,66 +695,6 @@ controllers.slReview = async (req, res) => {
     });
   }
 };
-
-/* =====================================================
-   CONSULTOR
-===================================================== */
-
-/*controllers.resubmitPedido = async (req, res) => {
-    try {
-        if (!isConsultor(req) && !isAdmin(req)) {
-            return res.status(401).json({
-                mensagem: "Utilizador não autorizado"
-            });
-        }
-
-        const pedido = await Pedidos.findByPk(req.params.id);
-
-        if (!pedido) {
-            return res.status(404).json({
-                mensagem: "Pedido não existe"
-            });
-        }
-
-        // 🔒 Garantir que só pode reenviar se foi devolvido
-        const estadosPermitidos = [3, 6]; // devolvido TM ou SL
-
-        if (!estadosPermitidos.includes(pedido.estado_atual)) {
-            return res.status(400).json({
-                mensagem: "Pedido não pode ser reenviado neste estado"
-            });
-        }
-
-        // 🔄 Atualizar estado (volta para TM)
-        pedido.estado_atual = 1;
-        await pedido.save();
-
-        // 📝 Histórico
-        await criarHistorico(
-            pedido.id_pedido_badge,
-            1,
-            req.user.id,
-            "Pedido reenviado pelo consultor"
-        );
-
-        // 🔔 Notificação (podes adaptar para TM/SL se quiseres)
-        await criarNotificacao(
-            pedido.id_consultor,
-            pedido.id_pedido_badge,
-            "Pedido reenviado para nova avaliação."
-        );
-
-        return res.status(200).json({
-            mensagem: "Pedido reenviado com sucesso"
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            mensagem: "Erro ao reenviar pedido",
-            erro: error.message
-        });
-    }
-};*/
 
 /* =====================================================
    HISTÓRICO DO PEDIDO
