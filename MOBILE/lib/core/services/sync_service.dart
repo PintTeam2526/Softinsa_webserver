@@ -206,13 +206,16 @@ class SyncService {
           return {'ID_ESTADO': m.idEstado, 'NOME_ESTADO': m.nome, 'DESCRICAO_ESTADO': m.descricao};
         case 'pedidosBadge':
           final m = PedidosBadgeModel.fromJson(item);
-          return {'ID_PEDIDO_BADGE': m.idPedidoBadge, 'ID_CONSULTOR': idConsultor ?? m.idConsultor, 'ID_BADGE': m.idBadge, 'ESTADO_ATUAL': m.idEstadoAtual};
+          return {'ID_PEDIDO_BADGE': m.idPedidoBadge, 'ID_CONSULTOR': idConsultor ?? m.idPedidoBadge, 'ID_BADGE': m.idBadge, 'ESTADO_ATUAL': m.idEstadoAtual};
         case 'historicoPedidos':
           final m = HistoricoPedidosModel.fromJson(item);
           return {'ID_HISTORICO': m.idHistorico, 'ID_BADGE': m.idBadge, 'ID_CONSULTOR': idConsultor ?? m.idConsultor, 'DATA': m.data};
         case 'documentacoes':
           final m = DocumentacaoModel.fromJson(item);
           return {'ID_DOCUMENTACAO': m.id, 'ID_HISTORICO': m.id_historico, 'ID_CONSULTOR': idConsultor ?? m.id_consultor, 'DOCUMENTACAO': m.documentacao};
+        case 'conquistas':
+          final m = ConquistasModel.fromJson(item);
+          return m.toMap();
         case 'conquistasConsultores':
           final m = ConquistasConsultoresModel.fromJson(item);
           return {'ID_CONQUISTA_CONSULTOR': m.id_conquista_consultor, 'ID_CONSULTOR': idConsultor ?? m.id_consultor, 'ID_CONQUISTA': m.id_conquista};
