@@ -5,7 +5,7 @@ import 'dart:io';
 
 class DatabaseHelper {
   static const _databaseName = "MyDbLocal.db";
-  static const _databaseVersion = 2; // Aumentado para 2 para forçar o upgrade
+  static const _databaseVersion = 3; // Incrementado para 3 para adicionar ID_CONSULTOR
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
@@ -28,7 +28,7 @@ class DatabaseHelper {
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Se a versão for antiga, garantimos que todas as tabelas têm as colunas de sync
+    // Versão 2: Adiciona colunas de sync a todas as tabelas
     if (oldVersion < 2) {
       List<String> tables = [
         'learningPaths', 'serviceLines', 'areas', 'consultores', 
@@ -52,6 +52,16 @@ class DatabaseHelper {
 
       try {
         await db.execute("ALTER TABLE documentacoes ADD COLUMN SESSAO_ID TEXT;");
+      } catch (e) { /* Coluna já existe */ }
+    }
+
+    // Versão 3: Adiciona ID_CONSULTOR às tabelas recomendados e favoritos
+    if (oldVersion < 3) {
+      try {
+        await db.execute("ALTER TABLE badgesRecomendados ADD COLUMN ID_CONSULTOR INTEGER;");
+      } catch (e) { /* Coluna já existe */ }
+      try {
+        await db.execute("ALTER TABLE badgesFavoritos ADD COLUMN ID_CONSULTOR INTEGER;");
       } catch (e) { /* Coluna já existe */ }
     }
   }
@@ -255,19 +265,21 @@ class DatabaseHelper {
           ''');
     await db.execute('''
           CREATE TABLE badgesRecomendados (
-          ID_BADGE INTEGER PRIMARY KEY,
-          NOME_BADGE TEXT NOT NULL,
-          IMAGEM_BADGE TEXT NOT NULL,
-          updated_at TEXT,
-          sync_status TEXT
+            ID_BADGE INTEGER PRIMARY KEY,
+            ID_CONSULTOR INTEGER,
+            NOME_BADGE TEXT NOT NULL,
+            IMAGEM_BADGE TEXT NOT NULL,
+            updated_at TEXT,
+            sync_status TEXT
           )
     ''');
     await db.execute('''
           CREATE TABLE badgesFavoritos (
-          ID_BADGE INTEGER PRIMARY KEY,
-          FAVORITO INTEGER, 
-          updated_at TEXT,
-          sync_status TEXT
+            ID_BADGE INTEGER PRIMARY KEY,
+            ID_CONSULTOR INTEGER,
+            FAVORITO INTEGER, 
+            updated_at TEXT,
+            sync_status TEXT
           )
     '''); // FAVORITO: 1 para sim, null para não (na api chamas-se set)
   }
@@ -301,7 +313,7 @@ class DatabaseHelper {
   Future<void> updateAfterSync(String table, String idColumnName, int oldId, int newId) async {
     Database db = await instance.database;
     await db.rawUpdate(
-        'UPDATE $table SET $idColumnName = ?, sync_status = "synced" WHERE $idColumnName = ?',
+        "UPDATE $table SET $idColumnName = ?, sync_status = 'synced' WHERE $idColumnName = ?",
         [newId, oldId]
     );
   }
@@ -315,7 +327,7 @@ class DatabaseHelper {
       'objetivos', 'notificacoes', 'documentacoes', 'conquistasConsultores', 'badgesRecomendados', 'badgesFavoritos'
     ];
 
-    String query = 'SELECT MAX(updated_at) as lastUpdate FROM $table WHERE sync_status = "synced"';
+    String query = "SELECT MAX(updated_at) as lastUpdate FROM $table WHERE sync_status = 'synced'";
     List<dynamic> args = [];
 
     if (idConsultor != null && userTables.contains(table)) {
