@@ -20,23 +20,25 @@ class PerfilConsultorWidget extends StatelessWidget {
     required this.totalPontos,
   });
 
-  // Função para converter Base64 em bytes (bits)
+  // Função para converter Base64 em bytes (bits) com tratamento robusto
   Uint8List _getImageBytes(String base64String) {
     try {
-      // Remove o prefixo da API se existir (ex: data:image/png;base64,)
       String cleanBase64 = base64String.contains(',')
           ? base64String.split(',').last
           : base64String;
 
-      // Limpeza de espaços e quebras de linha
-      cleanBase64 = cleanBase64.replaceAll(RegExp(r'\s+'), '');
 
-      // Correção de padding
+      cleanBase64 = cleanBase64.trim().replaceAll(RegExp(r'\s+'), '');
+
+      // 3. Correção de padding (Base64 deve ser múltiplo de 4)
       int paddingNeeded = (4 - (cleanBase64.length % 4)) % 4;
-      cleanBase64 += '=' * paddingNeeded;
+      if (paddingNeeded > 0) {
+        cleanBase64 += '=' * paddingNeeded;
+      }
 
       return base64Decode(cleanBase64);
     } catch (e) {
+      debugPrint(">>> [DEBUG] Erro ao descodificar imagem Base64: $e");
       return Uint8List(0);
     }
   }
@@ -46,37 +48,48 @@ class PerfilConsultorWidget extends StatelessWidget {
       return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
     }
 
-    // Suporte para ficheiro local
-    if (imagemPerfil.startsWith('/')) {
-      return Image.file(
-        File(imagemPerfil),
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
-      );
+    bool isBase64 = imagemPerfil.startsWith('data:image') || imagemPerfil.length > 100;
+
+    if (isBase64) {
+      final bytes = _getImageBytes(imagemPerfil);
+      if (bytes.isNotEmpty) {
+        return Image.memory(
+          bytes,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            debugPrint(">>> [DEBUG] Erro Image.memory: $error");
+            return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+          },
+        );
+      }
     }
 
-    // Suporte para Base64 (legado ou novos dados ainda não convertidos)
-    bool isBase64 = imagemPerfil.length > 100 || !imagemPerfil.contains('/');
-    if (isBase64) {
-      try {
-        return Image.memory(
-          _getImageBytes(imagemPerfil),
+    if (imagemPerfil.startsWith('/') || imagemPerfil.startsWith('C:') || imagemPerfil.startsWith('content:')) {
+      final file = File(imagemPerfil);
+      if (file.existsSync()) {
+        return Image.file(
+          file,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) =>
               Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
         );
-      } catch (e) {
-        return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
       }
     }
 
-    // Suporte para Assets (caminhos curtos sem '/')
+    // Suporte para Assets
     return Image.asset(
       imagemPerfil,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) =>
-          Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+      errorBuilder: (context, error, stackTrace) {
+        // Se falhar como asset, tenta uma última vez como base64 caso a string seja curta
+        if (!isBase64 && imagemPerfil.length > 20) {
+           final bytes = _getImageBytes(imagemPerfil);
+           if (bytes.isNotEmpty) {
+             return Image.memory(bytes, fit: BoxFit.cover);
+           }
+        }
+        return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
+      },
     );
   }
 
@@ -91,11 +104,9 @@ class PerfilConsultorWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // --- PARTE SUPERIOR (Foto + Stats) ---
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 1. Círculo de Perfil
               Container(
                 width: 160,
                 height: 160,
@@ -107,20 +118,14 @@ class PerfilConsultorWidget extends StatelessWidget {
                   child: _buildProfileImage(),
                 ),
               ),
-
               const SizedBox(width: 40),
-
-              // 2. Estatísticas
               Column(
                 children: [
                   SvgPicture.asset(
                     'lib/assets/icons/Icon_BadgeObtido.svg',
                     width: 42,
                     height: 42,
-                    colorFilter: const ColorFilter.mode(
-                      azulEscuro,
-                      BlendMode.srcIn,
-                    ),
+                    colorFilter: const ColorFilter.mode(azulEscuro, BlendMode.srcIn),
                   ),
                   const SizedBox(height: 10),
                   Text('$totalBadges Badges', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
@@ -129,37 +134,22 @@ class PerfilConsultorWidget extends StatelessWidget {
                     'lib/assets/icons/Icon_Pontos.svg',
                     width: 50,
                     height: 50,
-                    colorFilter: const ColorFilter.mode(
-                      azulEscuro,
-                      BlendMode.srcIn,
-                    ),
+                    colorFilter: const ColorFilter.mode(azulEscuro, BlendMode.srcIn),
                   ),
                   Text('$totalPontos Pontos', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                 ],
               ),
             ],
           ),
-
           const SizedBox(height: 25),
-
-          // --- PARTE INFERIOR (Nome e Cargo) ---
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
               style: const TextStyle(color: Colors.black, fontSize: 20),
               children: [
-                TextSpan(
-                  text: nomeConsultor,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const TextSpan(
-                  text: ' | ',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                TextSpan(
-                  text: areaPreferencia,
-                  style: TextStyle(color: Colors.black.withOpacity(0.7), fontSize: 16),
-                ),
+                TextSpan(text: nomeConsultor, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const TextSpan(text: ' | ', style: TextStyle(color: Colors.grey)),
+                TextSpan(text: areaPreferencia, style: TextStyle(color: Colors.black.withOpacity(0.7), fontSize: 16)),
               ],
             ),
           ),
