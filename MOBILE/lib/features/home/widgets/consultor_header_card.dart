@@ -78,21 +78,31 @@ class _imagemPerfilState extends State<_imagemPerfil> {
       provider = const AssetImage('lib/assets/images/default-consultor-pfp.png');
     } else if (widget.imagemPerfil.startsWith('http')) {
       provider = NetworkImage(widget.imagemPerfil);
-    } else if (widget.imagemPerfil.startsWith('/')) {
-      // Suporte para ficheiro local
-      provider = FileImage(File(widget.imagemPerfil));
     } else {
+      // JPEGs em Base64 começam com '/9j/', por isso não podemos assumir que '/' é sempre um ficheiro.
       try {
-        String cleanBase64 = widget.imagemPerfil.contains(',')
-            ? widget.imagemPerfil.split(',').last
-            : widget.imagemPerfil;
-        cleanBase64 = cleanBase64.trim().replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
-        while (cleanBase64.length % 4 != 0) {
-          cleanBase64 += '=';
+        if (widget.imagemPerfil.startsWith('/') && widget.imagemPerfil.length < 500) {
+          // Se começar por '/' e for uma string curta, é provavelmente um caminho de ficheiro
+          provider = FileImage(File(widget.imagemPerfil));
+        } else {
+          // Caso contrário, tentamos descodificar como Base64
+          String cleanBase64 = widget.imagemPerfil.contains(',')
+              ? widget.imagemPerfil.split(',').last
+              : widget.imagemPerfil;
+          cleanBase64 = cleanBase64.trim().replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
+          
+          while (cleanBase64.length % 4 != 0) {
+            cleanBase64 += '=';
+          }
+          provider = MemoryImage(base64Decode(cleanBase64));
         }
-        provider = MemoryImage(base64Decode(cleanBase64));
       } catch (e) {
-        provider = const AssetImage('lib/assets/images/default-consultor-pfp.png');
+        // Se falhar a descodificação, fazemos um último fallback para ficheiro ou imagem default
+        if (widget.imagemPerfil.startsWith('/')) {
+          provider = FileImage(File(widget.imagemPerfil));
+        } else {
+          provider = const AssetImage('lib/assets/images/default-consultor-pfp.png');
+        }
       }
     }
 
