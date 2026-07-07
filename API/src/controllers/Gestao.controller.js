@@ -11,6 +11,7 @@ const BadgesConcluidos = require('../models/BadgesConcluidos.models');
 const Badges = require('../models/Badges.models');
 const PedidosBadges = require('../models/PedidosBadges.models');
 const Politicas = require('../models/Politicas.models');
+const os = require("os");
 
 
 const controllers = {};
@@ -399,6 +400,30 @@ controllers.BDWipe = async (req, res) => {
         console.error('❌ Erro ao limpar e popular a base de dados:', error.message);
         if (error.sql) console.error('   SQL:', error.sql.substring(0, 200));
         return res.status(500).json({ mensagem: "Erro ao limpar a base de dados.", erro: error.message });
+    }
+};
+
+controllers.getRAMUsage = async (req, res) => {
+    try {
+        const total = os.totalmem();
+        const free = os.freemem();
+        const used = total - free;
+
+        return res.status(200).json({
+            total_ram: total,
+            used_ram: used,
+            free_ram: free,
+            total_ram_gb: (total / 1024 ** 3).toFixed(2),
+            used_ram_gb: (used / 1024 ** 3).toFixed(2),
+            free_ram_gb: (free / 1024 ** 3).toFixed(2),
+            usage_percent: ((used / total) * 100).toFixed(2)
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            mensagem: "Erro ao obter a utilização de RAM.",
+            erro: error.message
+        });
     }
 };
 

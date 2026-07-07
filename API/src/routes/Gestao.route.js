@@ -21,6 +21,7 @@ router.post("/relatorio", authVerification, controllerGestao.relatorio);
 //Rota de desenvolvimento para apagar os dados da base de dados
 router.post("/BDWipe",authVerification,controllerGestao.BDWipe);
 
-
+//Rota para verificar o ram que esta a ser utilizado
+router.get("/ram", controllers.getRAMUsage);
 
 module.exports = router;
