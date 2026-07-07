@@ -45,7 +45,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'PINT 2026 Mobile',
       debugShowCheckedModeBanner: false,
-
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF39639C),
+          surface: Colors.white,
+        ),
+      ),
       routerConfig: appRouter, // Usa a configuração que definiste no app_router.dart
       builder: (context, child) {
         return child!;

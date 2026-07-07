@@ -45,6 +45,8 @@ class PaginaAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           child: AppBar(
             backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
             elevation: 0,
             centerTitle: false,
             leadingWidth: 50,

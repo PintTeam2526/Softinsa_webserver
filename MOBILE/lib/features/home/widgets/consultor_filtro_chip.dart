@@ -26,10 +26,12 @@ class ConsultorFiltroChip extends StatelessWidget {
       tween: Tween(begin: 0.0, end: 1.0),
       curve: Curves.easeOutBack,
       builder: (context, value, child) {
+        // Garante que o valor da opacidade esteja entre 0.0 e 1.0
+        final double opacityValue = value.clamp(0.0, 1.0);
         return Transform.scale(
           scale: value,
           child: Opacity(
-            opacity: value,
+            opacity: opacityValue,
             child: child,
           ),
         );

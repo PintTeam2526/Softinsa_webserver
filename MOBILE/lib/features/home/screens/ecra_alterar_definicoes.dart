@@ -85,12 +85,21 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
       return Image.file(_imagemPerfilLocal!, fit: BoxFit.cover);
     }
 
-    if (imageSource.isEmpty || imageSource == "null") {
+    if (imageSource.isEmpty || imageSource == "null" || imageSource == "teste") {
       return Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover);
     }
 
-    // Suporte para ficheiro local
-    if (imageSource.startsWith('/')) {
+    if (imageSource.startsWith('http')) {
+      return Image.network(
+        imageSource,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Image.asset('lib/assets/images/default-consultor-pfp.png', fit: BoxFit.cover),
+      );
+    }
+
+    // JPEGs em Base64 começam com '/9j/', por isso verificamos o comprimento para não confundir com path local
+    if (imageSource.startsWith('/') && imageSource.length < 500) {
       return Image.file(
         File(imageSource),
         fit: BoxFit.cover,
@@ -99,7 +108,7 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
       );
     }
 
-    // Fallback para Base64
+    // Fallback para Base64 (Imagens guardadas diretamente na BD)
     return Image.memory(
       _getImageBytes(imageSource),
       fit: BoxFit.cover,
