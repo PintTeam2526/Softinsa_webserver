@@ -150,7 +150,7 @@ class SyncService {
 
       final response = await http.get(Uri.parse(url), headers: {
         if (token != null) HttpHeaders.authorizationHeader: 'Bearer $token',
-      }).timeout(const Duration(seconds: 25));
+      }).timeout(Duration(seconds: (tableName == 'badges' || tableName == 'badgesRecomendados') ? 120 : 50));
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         dynamic decoded = jsonDecode(response.body);

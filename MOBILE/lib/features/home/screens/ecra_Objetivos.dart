@@ -103,9 +103,16 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                   const SizedBox(width: 10),
                   ConsultorFiltroChip(
                     texto: 'Por Concluir',
-                    icone: 'lib/assets/icons/Icon_Expirado.svg',
+                    icone: 'lib/assets/icons/Icon_Objetivos.svg',
                     isSelected: _filtroAtivo == 'Por Concluir',
                     onTap: () => setState(() => _filtroAtivo = 'Por Concluir'),
+                  ),
+                  const SizedBox(width: 10),
+                  ConsultorFiltroChip(
+                    texto: 'Expirados',
+                    icone: 'lib/assets/icons/Icon_Expirado.svg',
+                    isSelected: _filtroAtivo == 'Expirados',
+                    onTap: () => setState(() => _filtroAtivo = 'Expirados'),
                   ),
                 ],
               ),
@@ -133,7 +140,7 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                     return 0;
                   });
 
-                  // Filtrar por pesquisa e por estado (Todos / Por Concluir)
+                  // Filtrar por pesquisa e por estado (Todos / Por Concluir / Expirados)
                   final listaObjetivosFiltrada = listaOrdenada.where((obj) {
                     final matchPesquisa = obj.nome.toLowerCase().contains(_controllerPesquisa.text.toLowerCase());
                     
@@ -141,6 +148,20 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                       final naoConcluido = obj.data_conclusao_objetivo == null || obj.data_conclusao_objetivo!.isEmpty;
                       return matchPesquisa && naoConcluido;
                     }
+
+                    if (_filtroAtivo == 'Expirados') {
+                      final naoConcluido = obj.data_conclusao_objetivo == null || obj.data_conclusao_objetivo!.isEmpty;
+                      if (!naoConcluido) return false;
+                      try {
+                        DateTime dataLimite = DateFormat("dd/MM/yyyy").parse(obj.data_limite_conclusao);
+                        final today = DateTime.now();
+                        final todayDate = DateTime(today.year, today.month, today.day);
+                        return matchPesquisa && dataLimite.isBefore(todayDate);
+                      } catch (e) {
+                        return false;
+                      }
+                    }
+
                     return matchPesquisa;
                   }).toList();
         
