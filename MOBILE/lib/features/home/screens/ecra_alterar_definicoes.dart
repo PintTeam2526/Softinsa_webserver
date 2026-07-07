@@ -98,7 +98,6 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
       );
     }
 
-    // JPEGs em Base64 começam com '/9j/', por isso verificamos o comprimento para não confundir com path local
     if (imageSource.startsWith('/') && imageSource.length < 500) {
       return Image.file(
         File(imageSource),
@@ -108,7 +107,6 @@ class _EcraAlterarDefinicoesState extends State<EcraAlterarDefinicoes> {
       );
     }
 
-    // Fallback para Base64 (Imagens guardadas diretamente na BD)
     return Image.memory(
       _getImageBytes(imageSource),
       fit: BoxFit.cover,
