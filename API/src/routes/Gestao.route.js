@@ -22,6 +22,6 @@ router.post("/relatorio", authVerification, controllerGestao.relatorio);
 router.post("/BDWipe",authVerification,controllerGestao.BDWipe);
 
 //Rota para verificar o ram que esta a ser utilizado
-router.get("/ram", controllers.getRAMUsage);
+router.get("/ram", controllerGestao.getRAMUsage);
 
 module.exports = router;
