@@ -80,19 +80,6 @@ class _EcraLearningpathsState extends ConsumerState<EcraMostrarLearningpaths> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              child: Row(
-                children: [
-                  ConsultorFiltroChip(
-                    texto: 'Todos',
-                    icone: 'lib/assets/icons/Icon_LearningPaths.svg',
-                    isSelected: _filtroAtivo == 'Todos',
-                    onTap: () {
-                      setState(() => _filtroAtivo = 'Todos');
-                      ref.invalidate(allLearningPathsProvider);
-                    },
-                  )
-                ],
-              ),
             ),
         
             const SizedBox(height: 10),
@@ -129,8 +116,8 @@ class _EcraLearningpathsState extends ConsumerState<EcraMostrarLearningpaths> {
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 0,
-                      childAspectRatio: 0.7,
+                      mainAxisSpacing: 5,
+                      childAspectRatio: 0.55,
                     ),
                     itemCount: listaFiltrada.length,
                     itemBuilder: (context, index) {

@@ -93,19 +93,6 @@ class _EcraMostrarServiceLines extends ConsumerState<EcraMostrarServiceLines>{
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal:25, vertical: 10),
-              child: Row(
-                children: [
-                  ConsultorFiltroChip(
-                    texto: 'Todas',
-                    icone: 'lib/assets/icons/Icon_ServiceLines.svg',
-                    isSelected: _filtroAtivo == 'Todas',
-                    onTap: () {
-                      setState(() => _filtroAtivo = 'Todas');
-                      ref.invalidate(allServiceLinesProvider);
-                    },
-                  )
-                ]
-              )
             ),
             const SizedBox(height: 10),
         
@@ -143,8 +130,8 @@ class _EcraMostrarServiceLines extends ConsumerState<EcraMostrarServiceLines>{
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 20,
-                      childAspectRatio: 0.6,
+                      mainAxisSpacing: 5,
+                      childAspectRatio: 0.55,
                     ),
                     itemCount: listaServiceLinesFiltrada.length,
                     itemBuilder: (context, index) {

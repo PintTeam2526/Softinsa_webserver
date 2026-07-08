@@ -84,26 +84,6 @@ class _EcraMostrarAreasState extends ConsumerState<EcraMostrarAreas> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              child: Row(
-                children: [
-                  ConsultorFiltroChip(
-                    texto: 'Favoritos',
-                    icone: 'lib/assets/icons/Icon_Favoritos.svg',
-                    isSelected: _filtroAtivo == 'Favoritos',
-                    onTap: () => setState(() => _filtroAtivo = 'Favoritos'),
-                  ),
-                  const SizedBox(width: 9),
-                  ConsultorFiltroChip(
-                    texto: 'Todos',
-                    icone: 'lib/assets/icons/Icon_Areas.svg',
-                    isSelected: _filtroAtivo == 'Todos',
-                    onTap: () {
-                      setState(() => _filtroAtivo = 'Todos');
-                      ref.invalidate(allAreasProvider);
-                    },
-                  )
-                ],
-              ),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -139,8 +119,8 @@ class _EcraMostrarAreasState extends ConsumerState<EcraMostrarAreas> {
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 0,
-                      childAspectRatio: 0.7,
+                      mainAxisSpacing: 5,
+                      childAspectRatio: 0.55,
                     ),
                     itemCount: listaAreasFiltrada.length,
                     itemBuilder: (context, index) {

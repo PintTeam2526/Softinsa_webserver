@@ -157,7 +157,7 @@ class BadgePorObterRetangulo extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                     child: const Text(
-                      'Candidatar ao badge',
+                      'Candidatar',
                       style: TextStyle(
                         color: Color(0xFF39639C),
                         fontWeight: FontWeight.bold,
