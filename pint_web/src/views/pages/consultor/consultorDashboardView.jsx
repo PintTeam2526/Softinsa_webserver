@@ -261,6 +261,9 @@ function DashboardView() {
       .finally(() => setLoading(false))
   }, [])
 
+  if (loading) return <DashboardSkeleton />
+  if (erro) return <p className="consultor-dashboard-error">{erro}</p>
+
   const metricCards = [
     { title: 'Área', percent: Math.round(dados.progresso_area), widthClass: 'is-area' },
     { title: 'Service Line', percent: Math.round(dados.progresso_service_line), widthClass: 'is-service-line' },
@@ -310,9 +313,6 @@ function DashboardView() {
     status: pedido.estado_atual,
     ...(STATUS_MAP[pedido.estado_atual] ?? { Icon: null, statusClass: '' }),
   }))
-
-  if (loading) return <DashboardSkeleton />
-  if (erro) return <p className="consultor-dashboard-error">{erro}</p>
 
   return (
     <section className="consultor-dashboard-page">
