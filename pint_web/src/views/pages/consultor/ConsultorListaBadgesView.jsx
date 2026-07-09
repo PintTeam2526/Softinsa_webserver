@@ -110,6 +110,30 @@ function BadgeRow({ badge, onOpen }) {
   )
 }
 
+function BadgeRowSkeleton() {
+  return (
+    <tr className="consultor-lista-row">
+      <td>
+        <div className="consultor-lista-name-cell d-flex align-items-center gap-2">
+          <div className="consultor-lista-skeleton consultor-lista-skeleton-thumb" />
+          <div className="consultor-lista-skeleton consultor-lista-skeleton-line consultor-lista-skeleton-line-name" />
+        </div>
+      </td>
+      <td>
+        <div className="consultor-lista-skeleton consultor-lista-skeleton-pill" />
+      </td>
+      <td>
+        <div className="consultor-lista-skeleton consultor-lista-skeleton-pill consultor-lista-skeleton-pill-wide" />
+      </td>
+      <td>
+        <div className="consultor-lista-action-cell d-flex justify-content-end">
+          <div className="consultor-lista-skeleton consultor-lista-skeleton-action-btn" />
+        </div>
+      </td>
+    </tr>
+  )
+}
+
 function ConsultorListaBadgesView() {
   const navigate = useNavigate()
 
@@ -226,7 +250,23 @@ function ConsultorListaBadgesView() {
           </header>
 
           {loading && (
-            <div className="consultor-lista-empty">A carregar…</div>
+            <div className="consultor-lista-table-wrap w-100 table-responsive">
+              <table className="consultor-lista-table w-100">
+                <thead>
+                  <tr>
+                    <th className="consultor-lista-col-name" scope="col">NOME DO BADGE</th>
+                    <th className="consultor-lista-col-level" scope="col">NÍVEL</th>
+                    <th className="consultor-lista-col-points" scope="col">PONTOS</th>
+                    <th className="consultor-lista-col-action" scope="col" aria-label="Ações"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <BadgeRowSkeleton key={i} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {!loading && error && (
