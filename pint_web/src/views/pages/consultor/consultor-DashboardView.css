@@ -528,3 +528,106 @@
   flex-shrink: 0;
   color: #8a92a6;
 }
+
+/* ─── Skeleton ─────────────────────────────────────────────────────────── */
+
+.consultor-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e9ecef;
+  border-radius: 6px;
+}
+
+.consultor-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  animation: consultor-skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes consultor-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.consultor-skeleton-hero-title {
+  width: 240px;
+  height: 34px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.consultor-skeleton-hero-subtitle {
+  width: 320px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.consultor-skeleton-hero-title::after,
+.consultor-skeleton-hero-subtitle::after {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%);
+}
+
+.consultor-skeleton-line {
+  height: 16px;
+  border-radius: 4px;
+}
+
+.consultor-skeleton-line-sm {
+  width: 50%;
+}
+
+.consultor-skeleton-line-md {
+  width: 70%;
+  height: 20px;
+}
+
+.consultor-skeleton-line-lg {
+  width: 60%;
+  height: 26px;
+  margin-bottom: 8px;
+}
+
+.consultor-skeleton-line-title {
+  width: 200px;
+  height: 24px;
+  margin: 0 auto;
+}
+
+.consultor-skeleton-donut {
+  width: 71px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.consultor-skeleton-icon-tile {
+  width: clamp(44px, 12vw, 64px);
+  height: clamp(44px, 12vw, 64px);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.consultor-skeleton-badge-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+}
+
+.consultor-skeleton-pill {
+  width: 70px;
+  height: 20px;
+  border-radius: 999px;
+  margin-top: auto;
+}

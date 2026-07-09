@@ -185,6 +185,67 @@ function resolveImagem(imagem_badge) {
   return `data:image/png;base64,${imagem_badge}`
 }
 
+// ─── Skeleton ───────────────────────────────────────────────────────────────
+
+function DashboardSkeleton() {
+  return (
+    <section className="consultor-dashboard-page">
+      <header className="consultor-dashboard-hero">
+        <div className="consultor-dashboard-hero-copy">
+          <div className="consultor-skeleton consultor-skeleton-hero-title" />
+          <div className="consultor-skeleton consultor-skeleton-hero-subtitle" />
+        </div>
+      </header>
+
+      <Row as="section" className="g-4 justify-content-center mb-4" aria-label="Métricas">
+        {['is-area', 'is-service-line', 'is-learning-path'].map((widthClass) => (
+          <Col xs={12} sm={6} lg={4} key={widthClass}>
+            <article className={`consultor-dashboard-summary-card w-100 ${widthClass}`}>
+              <div className="consultor-dashboard-summary-copy w-100">
+                <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-lg" />
+                <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-sm" />
+              </div>
+              <div className="consultor-skeleton consultor-skeleton-donut" />
+            </article>
+          </Col>
+        ))}
+      </Row>
+
+      <section className="consultor-dashboard-alerts" aria-label="Alertas">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <article key={i} className="consultor-dashboard-metric">
+            <div className="consultor-skeleton consultor-skeleton-icon-tile" />
+            <div className="consultor-dashboard-metric-copy">
+              <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-md" />
+              <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-sm mt-2" />
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <Row as="section" className="g-4 justify-content-center mb-5" aria-label="Badges">
+        <Col xs={12}>
+          <article className="consultor-dashboard-card consultor-dashboard-card--my-badges">
+            <div className="consultor-dashboard-card-header consultor-dashboard-card-header--centered">
+              <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-title" />
+            </div>
+
+            <div className="consultor-dashboard-badge-grid">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="consultor-dashboard-badge-card">
+                  <div className="consultor-skeleton consultor-skeleton-badge-image" />
+                  <div className="consultor-skeleton consultor-skeleton-line consultor-skeleton-line-sm" />
+                  <div className="consultor-skeleton consultor-skeleton-pill" />
+                </div>
+              ))}
+            </div>
+          </article>
+        </Col>
+      </Row>
+    </section>
+  )
+}
+
 
 function DashboardView() {
   const navigate = useNavigate()
@@ -199,9 +260,6 @@ function DashboardView() {
       .catch(() => setErro('Não foi possível carregar o dashboard.'))
       .finally(() => setLoading(false))
   }, [])
-
-  if (loading) return <p className="consultor-dashboard-loading">A carregar...</p>
-  if (erro) return <p className="consultor-dashboard-error">{erro}</p>
 
   const metricCards = [
     { title: 'Área', percent: Math.round(dados.progresso_area), widthClass: 'is-area' },
@@ -252,6 +310,9 @@ function DashboardView() {
     status: pedido.estado_atual,
     ...(STATUS_MAP[pedido.estado_atual] ?? { Icon: null, statusClass: '' }),
   }))
+
+  if (loading) return <DashboardSkeleton />
+  if (erro) return <p className="consultor-dashboard-error">{erro}</p>
 
   return (
     <section className="consultor-dashboard-page">
