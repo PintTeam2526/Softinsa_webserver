@@ -152,6 +152,83 @@ function MetricIcon({ icon }) {
   return <DashboardBadgesIcon />
 }
 
+// ─── Skeleton ───────────────────────────────────────────────────────────────
+
+function DashboardSkeleton() {
+  return (
+    <section className="softinsa-dashboard-page">
+      <div className="softinsa-dashboard-hero">
+        <div className="softinsa-skeleton softinsa-skeleton-hero-title" />
+      </div>
+
+      <div className="softinsa-summary-grid">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i}>
+            <Card className="softinsa-summary-card">
+              <Card.Body className="softinsa-summary-card-body">
+                <span className="softinsa-summary-icon-shell softinsa-skeleton softinsa-skeleton-circle" />
+                <div className="softinsa-summary-content w-100">
+                  <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-sm" />
+                  <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-md mt-2" />
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        ))}
+      </div>
+
+      <Card className="softinsa-chart-card mb-4">
+        <Card.Header className="softinsa-chart-card-header d-flex justify-content-between align-items-center gap-3 flex-wrap flex-lg-nowrap">
+          <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-title" />
+          <div className="d-flex gap-2">
+            <div className="softinsa-skeleton softinsa-skeleton-pill" />
+            <div className="softinsa-skeleton softinsa-skeleton-pill" />
+          </div>
+        </Card.Header>
+        <Card.Body className="softinsa-primary-chart-body">
+          <div className="softinsa-skeleton softinsa-skeleton-chart" />
+        </Card.Body>
+      </Card>
+
+      <Row className="g-4">
+        <Col xl={4} lg={5}>
+          <Card className="softinsa-chart-card softinsa-learning-path-card h-100">
+            <Card.Header className="softinsa-chart-card-header softinsa-learning-path-card-header">
+              <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-title" />
+            </Card.Header>
+            <Card.Body className="softinsa-learning-path-card-body">
+              <div className="softinsa-skeleton softinsa-skeleton-circle-lg" />
+              <div className="softinsa-learning-path-legend">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="softinsa-learning-path-legend-item w-100">
+                    <span className="softinsa-skeleton softinsa-skeleton-dot" />
+                    <div className="softinsa-learning-path-legend-content w-100">
+                      <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-sm" />
+                      <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-xs mt-1" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col xl={8} lg={7}>
+          <Card className="softinsa-chart-card h-100">
+            <Card.Header className="softinsa-chart-card-header softinsa-badges-card-header">
+              <div className="softinsa-skeleton softinsa-skeleton-line softinsa-skeleton-line-title" />
+              <div className="softinsa-skeleton softinsa-skeleton-pill" />
+            </Card.Header>
+            <Card.Body>
+              <div className="softinsa-skeleton softinsa-skeleton-chart softinsa-skeleton-chart-tall" />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </section>
+  )
+}
+
 // ─── View ───────────────────────────────────────────────────────────────────────
 
 function DashboardView() {
@@ -273,7 +350,7 @@ function DashboardView() {
     xaxis: { ...areaChartOptions.xaxis, categories: filteredMonths },
   }
 
-  if (loading) return <div className="softinsa-dashboard-page">A carregar...</div>
+  if (loading) return <DashboardSkeleton />
   if (error) return <div className="softinsa-dashboard-page">Erro ao carregar dashboard.</div>
 
   return (

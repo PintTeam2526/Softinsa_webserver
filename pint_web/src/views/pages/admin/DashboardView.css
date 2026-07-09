@@ -129,10 +129,10 @@
 .softinsa-badges-dropdown .softinsa-badges-dropdown-toggle:focus,
 .softinsa-badges-dropdown .softinsa-badges-dropdown-toggle:focus-visible,
 .softinsa-badges-dropdown .softinsa-badges-dropdown-toggle:active,
-.softinsa-badges-dropdown.show > .softinsa-badges-dropdown-toggle,
-.softinsa-badges-dropdown.show > .softinsa-badges-dropdown-toggle:hover,
-.softinsa-badges-dropdown.show > .softinsa-badges-dropdown-toggle:focus,
-.softinsa-badges-dropdown.show > .softinsa-badges-dropdown-toggle:active {
+.softinsa-badges-dropdown.show>.softinsa-badges-dropdown-toggle,
+.softinsa-badges-dropdown.show>.softinsa-badges-dropdown-toggle:hover,
+.softinsa-badges-dropdown.show>.softinsa-badges-dropdown-toggle:focus,
+.softinsa-badges-dropdown.show>.softinsa-badges-dropdown-toggle:active {
   color: #8a92a6 !important;
   background: transparent !important;
   border: 0 !important;
@@ -202,10 +202,10 @@
 .softinsa-learning-path-dropdown .softinsa-learning-path-dropdown-toggle:focus,
 .softinsa-learning-path-dropdown .softinsa-learning-path-dropdown-toggle:focus-visible,
 .softinsa-learning-path-dropdown .softinsa-learning-path-dropdown-toggle:active,
-.softinsa-learning-path-dropdown.show > .softinsa-learning-path-dropdown-toggle,
-.softinsa-learning-path-dropdown.show > .softinsa-learning-path-dropdown-toggle:hover,
-.softinsa-learning-path-dropdown.show > .softinsa-learning-path-dropdown-toggle:focus,
-.softinsa-learning-path-dropdown.show > .softinsa-learning-path-dropdown-toggle:active {
+.softinsa-learning-path-dropdown.show>.softinsa-learning-path-dropdown-toggle,
+.softinsa-learning-path-dropdown.show>.softinsa-learning-path-dropdown-toggle:hover,
+.softinsa-learning-path-dropdown.show>.softinsa-learning-path-dropdown-toggle:focus,
+.softinsa-learning-path-dropdown.show>.softinsa-learning-path-dropdown-toggle:active {
   color: #8a92a6 !important;
   background: transparent !important;
   border: 0 !important;
@@ -376,10 +376,10 @@
 .softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:focus,
 .softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:focus-visible,
 .softinsa-primary-chart-year-dropdown .softinsa-primary-chart-year-dropdown-toggle:active,
-.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle,
-.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:hover,
-.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:focus,
-.softinsa-primary-chart-year-dropdown.show > .softinsa-primary-chart-year-dropdown-toggle:active {
+.softinsa-primary-chart-year-dropdown.show>.softinsa-primary-chart-year-dropdown-toggle,
+.softinsa-primary-chart-year-dropdown.show>.softinsa-primary-chart-year-dropdown-toggle:hover,
+.softinsa-primary-chart-year-dropdown.show>.softinsa-primary-chart-year-dropdown-toggle:focus,
+.softinsa-primary-chart-year-dropdown.show>.softinsa-primary-chart-year-dropdown-toggle:active {
   color: #8a92a6 !important;
   background: transparent !important;
   border: 0 !important;
@@ -432,7 +432,7 @@
 .softinsa-primary-chart-period-toggle:focus,
 .softinsa-primary-chart-period-toggle:focus-visible,
 .softinsa-primary-chart-period-toggle:active,
-.softinsa-primary-chart-period-dropdown.show > .softinsa-primary-chart-period-toggle {
+.softinsa-primary-chart-period-dropdown.show>.softinsa-primary-chart-period-toggle {
   background: #ffffff !important;
   color: #8a92a6 !important;
   border-color: #eee !important;
@@ -443,7 +443,7 @@
 .softinsa-primary-chart-period-placeholder:focus,
 .softinsa-primary-chart-period-placeholder:focus-visible,
 .softinsa-primary-chart-period-placeholder:active,
-.softinsa-primary-chart-period-dropdown.show > .softinsa-primary-chart-period-placeholder {
+.softinsa-primary-chart-period-dropdown.show>.softinsa-primary-chart-period-placeholder {
   color: #c5c9d3 !important;
 }
 
@@ -471,3 +471,101 @@
   color: #232d42;
 }
 
+/* ─── Skeleton ─────────────────────────────────────────────────────────── */
+
+.softinsa-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e9ecef;
+  border-radius: 6px;
+}
+
+.softinsa-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%);
+  animation: softinsa-skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes softinsa-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.softinsa-skeleton-hero-title {
+  width: 260px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.softinsa-skeleton-hero-title::after {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%);
+}
+
+.softinsa-skeleton-circle {
+  border-radius: 999px;
+}
+
+.softinsa-skeleton-circle-lg {
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  margin: 0 auto;
+}
+
+.softinsa-skeleton-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.softinsa-skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.softinsa-skeleton-line-xs {
+  width: 40%;
+  height: 12px;
+}
+
+.softinsa-skeleton-line-sm {
+  width: 60%;
+}
+
+.softinsa-skeleton-line-md {
+  width: 40%;
+  height: 20px;
+}
+
+.softinsa-skeleton-line-title {
+  width: 180px;
+  height: 19px;
+}
+
+.softinsa-skeleton-pill {
+  width: 90px;
+  height: 24px;
+  border-radius: 999px;
+}
+
+.softinsa-skeleton-chart {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+}
+
+.softinsa-skeleton-chart-tall {
+  height: 400px;
+}
