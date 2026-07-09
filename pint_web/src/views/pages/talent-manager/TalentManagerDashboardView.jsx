@@ -134,6 +134,77 @@ function textoDeadline(diasRestantes) {
   return `Tempo limite de resposta termina em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}`
 }
 
+// ─── Skeleton ───────────────────────────────────────────────────────────────
+
+function TMDashboardSkeleton() {
+  return (
+    <>
+      <section className="tm-hero" aria-label="Dashboard Talent Manager">
+        <div className="tm-hero-copy">
+          <div className="tm-skeleton tm-skeleton-hero-title" />
+        </div>
+      </section>
+
+      <div className="tm-notification-callout">
+        <div className="tm-skeleton tm-skeleton-notif-icon" />
+        <div>
+          <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-md" />
+          <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-sm mt-2" />
+        </div>
+      </div>
+
+      <section className="tm-dashboard-grid" aria-label="Conteúdo principal">
+        <article className="tm-panel tm-pending-panel">
+          <div className="tm-panel-header">
+            <div className="tm-panel-title-wrap">
+              <div className="tm-skeleton tm-skeleton-panel-badge" />
+              <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-title" />
+            </div>
+          </div>
+
+          <div className="tm-pending-list">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="tm-pending-item-wrap">
+                <article className="tm-pending-card">
+                  <div className="tm-pending-copy w-100">
+                    <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-md" />
+                    <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-sm mt-2" />
+                    <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-sm mt-2" />
+                  </div>
+                  <div className="tm-pending-image-wrap">
+                    <div className="tm-skeleton tm-skeleton-circle" />
+                  </div>
+                </article>
+                {i < 2 ? <div className="tm-panel-divider" aria-hidden="true" /> : null}
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="tm-panel tm-badges-panel">
+          <div className="tm-panel-header tm-badges-header">
+            <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-title" />
+          </div>
+
+          <div className="tm-badges-list">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="tm-badge-row">
+                <div className="tm-badge-row-left">
+                  <div className="tm-skeleton tm-skeleton-badge-image" />
+                  <div className="tm-badge-row-copy w-100">
+                    <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-md" />
+                    <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-sm mt-2" />
+                  </div>
+                </div>
+                <div className="tm-skeleton tm-skeleton-line tm-skeleton-line-sm" />
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+    </>
+  )
+}
 
 function TalentManagerDashboardView() {
   const [dados, setDados] = useState(null)
@@ -147,7 +218,7 @@ function TalentManagerDashboardView() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p className="tm-loading">A carregar...</p>
+  if (loading) return <TMDashboardSkeleton />
   if (erro) return <p className="tm-error">{erro}</p>
 
   // Mapear pedidos pendentes
@@ -212,12 +283,16 @@ function TalentManagerDashboardView() {
           </div>
 
           <div className="tm-pending-list">
-            {pendingRequests.map((item, index) => (
-              <div key={item.title} className="tm-pending-item-wrap">
-                <PendingCard item={item} />
-                {index < pendingRequests.length - 1 ? <div className="tm-panel-divider" aria-hidden="true" /> : null}
-              </div>
-            ))}
+            {pendingRequests.length === 0 ? (
+              <p className="tm-pending-empty">Não há pedidos pendentes de momento.</p>
+            ) : (
+              pendingRequests.map((item, index) => (
+                <div key={item.title} className="tm-pending-item-wrap">
+                  <PendingCard item={item} />
+                  {index < pendingRequests.length - 1 ? <div className="tm-panel-divider" aria-hidden="true" /> : null}
+                </div>
+              ))
+            )}
           </div>
         </article>
 

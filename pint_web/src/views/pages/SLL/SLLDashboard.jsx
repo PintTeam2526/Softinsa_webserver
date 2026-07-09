@@ -237,6 +237,114 @@ function calcularDeadlineTone(diasRestantes) {
 const RANK_MAP = ['gold', 'silver', 'bronze']
 const RANK_LABEL = ['1o', '2o', '3o']
 
+// ─── Skeleton ───────────────────────────────────────────────────────────────
+
+function SLLDashboardSkeleton() {
+  return (
+    <div className="sll-homepage">
+      <main className="sll-main-content">
+        <div className="sll-main-scroll">
+
+          <section className="sll-hero" aria-label="Resumo de boas-vindas">
+            <div className="sll-hero-copy">
+              <div className="sll-skeleton sll-skeleton-hero-title" />
+              <div className="sll-skeleton sll-skeleton-hero-subtitle" />
+            </div>
+          </section>
+
+          <div className="sll-alert-card">
+            <div className="sll-skeleton sll-skeleton-alert-icon" />
+            <div className="sll-alert-copy">
+              <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-md" />
+              <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm mt-2" />
+            </div>
+          </div>
+
+          <Row className="row-cols-1 row-cols-md-2 g-3">
+            <Col>
+              <article className="sll-card sll-pending-card">
+                <header className="sll-card-header">
+                  <div className="sll-title-wrap">
+                    <div className="sll-skeleton sll-skeleton-title-icon" />
+                    <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-title" />
+                  </div>
+                </header>
+                <div className="sll-request-list">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <article key={i} className="sll-request-row">
+                      <div className="sll-request-main w-100">
+                        <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-md" />
+                        <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm mt-2" />
+                        <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm mt-2" />
+                      </div>
+                      <div className="sll-request-badge">
+                        <div className="sll-skeleton sll-skeleton-circle" />
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            </Col>
+
+            <Col>
+              <div className="sll-status-column">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <article key={i} className="sll-card sll-status-card">
+                    <div className="sll-skeleton sll-skeleton-status-icon" />
+                    <div className="w-100">
+                      <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm" />
+                      <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-md mt-2" />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </Col>
+          </Row>
+
+          <Row className="row-cols-1 row-cols-md-2 g-3">
+            <Col>
+              <article className="sll-card sll-top-consultants-card">
+                <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-title mx-auto" />
+                <div className="sll-top-list">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="sll-top-item">
+                      <div className="sll-top-main w-100">
+                        <div className="sll-skeleton sll-skeleton-avatar" />
+                        <div className="w-100">
+                          <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm" />
+                          <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-xs mt-1" />
+                        </div>
+                      </div>
+                      <div className="sll-skeleton sll-skeleton-rank" />
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </Col>
+
+            <Col>
+              <article className="sll-card sll-team-card">
+                <header className="sll-team-header">
+                  <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-title mx-auto" />
+                </header>
+                <div className="sll-team-stats">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <article key={i} className="sll-team-stat">
+                      <div className="sll-skeleton sll-skeleton-team-icon" />
+                      <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-sm" />
+                      <div className="sll-skeleton sll-skeleton-line sll-skeleton-line-xs" />
+                    </article>
+                  ))}
+                </div>
+              </article>
+            </Col>
+          </Row>
+
+        </div>
+      </main>
+    </div>
+  )
+}
 
 function SLLDashboard() {
   const [dados, setDados] = useState(null)
@@ -250,7 +358,7 @@ function SLLDashboard() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p className="sll-loading">A carregar...</p>
+  if (loading) return <SLLDashboardSkeleton />
   if (erro) return <p className="sll-error">{erro}</p>
 
   // Pedidos pendentes
@@ -306,90 +414,94 @@ function SLLDashboard() {
 
           <Row as="section" className="row-cols-1 row-cols-md-2 g-3">
             <Col>
-            <article className="sll-card sll-pending-card">
-              <header className="sll-card-header">
-                <div className="sll-title-wrap">
-                  <IconPedidosPendentes className="sll-title-icon-svg" />
-                  <h3>Pedidos Pendentes</h3>
+              <article className="sll-card sll-pending-card">
+                <header className="sll-card-header">
+                  <div className="sll-title-wrap">
+                    <IconPedidosPendentes className="sll-title-icon-svg" />
+                    <h3>Pedidos Pendentes</h3>
+                  </div>
+                  <Link className="sll-link-btn" to="/sll/pendentes">Ver todos</Link>
+                </header>
+                <div className="sll-request-list">
+                  {pendingRequests.length === 0 ? (
+                    <p className="sll-pending-empty">Não há pedidos pendentes de momento.</p>
+                  ) : (
+                    pendingRequests.map((request, i) => (
+                      <PendingRequestCard key={i} request={request} />
+                    ))
+                  )}
                 </div>
-                <Link className="sll-link-btn" to="/sll/pendentes">Ver todos</Link>
-              </header>
-              <div className="sll-request-list">
-                {pendingRequests.map((request, i) => (
-                  <PendingRequestCard key={i} request={request} />
-                ))}
-              </div>
-            </article>
+              </article>
             </Col>
 
             <Col>
-            <div className="sll-status-column">
-              {teamStatusCards.map((statusCard) => {
-                const Icon = statusCard.Icon
-                return (
-                  <article className="sll-card sll-status-card" key={statusCard.label}>
-                    <Icon className={`sll-status-icon-svg is-${statusCard.tone}`} />
-                    <div>
-                      <p>{statusCard.label}</p>
-                      <strong>{statusCard.value}</strong>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
+              <div className="sll-status-column">
+                {teamStatusCards.map((statusCard) => {
+                  const Icon = statusCard.Icon
+                  return (
+                    <article className="sll-card sll-status-card" key={statusCard.label}>
+                      <Icon className={`sll-status-icon-svg is-${statusCard.tone}`} />
+                      <div>
+                        <p>{statusCard.label}</p>
+                        <strong>{statusCard.value}</strong>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
             </Col>
           </Row>
 
           <Row as="section" className="row-cols-1 row-cols-md-2 g-3">
             <Col>
-            <article className="sll-card sll-top-consultants-card">
-              <h3>Top 3 Consultores</h3>
-              <div className="sll-top-list">
-                {topConsultants.map((consultant) => (
-                  <Link
-                    className="sll-top-item"
-                    key={consultant.rank}
-                    to={consultant.profilePath}
-                    aria-label={`Ver perfil público de ${consultant.name}`}
-                  >
-                    <div className="sll-top-main">
-                      <span className="sll-top-avatar" aria-hidden="true">
-                        <FaUserCircle />
-                      </span>
-                      <div>
-                        <h4>{consultant.name}</h4>
-                        <p>{consultant.badges}</p>
+              <article className="sll-card sll-top-consultants-card">
+                <h3>Top 3 Consultores</h3>
+                <div className="sll-top-list">
+                  {topConsultants.map((consultant) => (
+                    <Link
+                      className="sll-top-item"
+                      key={consultant.rank}
+                      to={consultant.profilePath}
+                      aria-label={`Ver perfil público de ${consultant.name}`}
+                    >
+                      <div className="sll-top-main">
+                        <span className="sll-top-avatar" aria-hidden="true">
+                          <FaUserCircle />
+                        </span>
+                        <div>
+                          <h4>{consultant.name}</h4>
+                          <p>{consultant.badges}</p>
+                        </div>
                       </div>
-                    </div>
-                    <span className={`sll-rank-badge is-${consultant.rankTone}`}>{consultant.rank}</span>
-                  </Link>
-                ))}
-              </div>
-            </article>
+                      <span className={`sll-rank-badge is-${consultant.rankTone}`}>{consultant.rank}</span>
+                    </Link>
+                  ))}
+                </div>
+              </article>
             </Col>
 
             <Col>
-            <article className="sll-card sll-team-card">
-              <header className="sll-team-header">
-                <h3>Service Line Pessoal</h3>
-              </header>
-              <div className="sll-team-stats">
-                <article className="sll-team-stat">
-                  <IconTeamConsultores className="sll-team-stat-icon-svg" />
-                  <div className="sll-team-stat-copy">
-                    <strong>{dados.total_consultores}</strong>
-                    <p>Consultores</p>
-                  </div>
-                </article>
-                <article className="sll-team-stat">
-                  <IconTeamBadges className="sll-team-stat-icon-svg" />
-                  <div className="sll-team-stat-copy">
-                    <strong>{dados.total_badges}</strong>
-                    <p>Badges Conquistados</p>
-                  </div>
-                </article>
-              </div>
-            </article>
+              <article className="sll-card sll-team-card">
+                <header className="sll-team-header">
+                  <h3>Service Line Pessoal</h3>
+                </header>
+                <div className="sll-team-stats">
+                  <article className="sll-team-stat">
+                    <IconTeamConsultores className="sll-team-stat-icon-svg" />
+                    <div className="sll-team-stat-copy">
+                      <strong>{dados.total_consultores}</strong>
+                      <p>Consultores</p>
+                    </div>
+                  </article>
+                  <article className="sll-team-stat">
+                    <IconTeamBadges className="sll-team-stat-icon-svg" />
+                    <div className="sll-team-stat-copy">
+                      <strong>{dados.total_badges}</strong>
+                      <p>Badges Conquistados</p>
+                    </div>
+                  </article>
+                </div>
+              </article>
             </Col>
           </Row>
 
