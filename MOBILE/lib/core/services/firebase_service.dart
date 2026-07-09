@@ -32,31 +32,36 @@ class FirebaseService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('>>> [FIREBASE] Notificacao push recebida!');
 
-      // O backend deve enviar: { "table": "nome_da_tabela", "id_consultor": "3" }
-      if (message.data.containsKey('table')) {
-        String table = message.data['table'];
-        String? idPushStr = message.data['id_consultor'];
-        
-        int currentId = AppState().idConsultor;
-        int? idToSync;
+      String? table = message.data['table'];
+      String? idPushStr = message.data['id_consultor'];
+      
+      int currentId = AppState().idConsultor;
+      int? idToSync;
 
-        print('>>> [FIREBASE] Sync solicitado: Tabela $table');
+      // 1. Verificar se a notificação é destinada ao consultor logado (se vier ID no push)
+      if (idPushStr != null && idPushStr.isNotEmpty) {
+        int? idPush = int.tryParse(idPushStr);
 
-        // Se vier um ID de consultor no Push, verificamos se coincide com o logado
-        if (idPushStr != null && idPushStr.isNotEmpty) {
-          int? idPush = int.tryParse(idPushStr);
-
-          if (idPush != null && idPush != currentId && currentId != 0) {
-            print('>>> [FIREBASE] Notificação ignorada: não é para o consultor logado');
-            return;
-          }
-          idToSync = idPush;
-        } else {
-          // Se não vier ID no push, usamos o logado (caso de tabelas globais que podem precisar de ID para filtros)
-          idToSync = currentId > 0 ? currentId : null;
+        if (idPush != null && idPush != currentId && currentId != 0) {
+          print('>>> [FIREBASE] Notificação ignorada: não é para o consultor logado');
+          return;
         }
-        
-        // Disparar o sync APENAS para a tabela solicitada
+        idToSync = idPush;
+      } else {
+        // Se não vier ID no push, assumimos o consultor logado (se houver) para syncs globais ou dependentes de ID
+        idToSync = currentId > 0 ? currentId : null;
+      }
+      
+      // 2. SEMPRE que recebermos uma notificação válida para o consultor logado, sincronizamos a tabela 'consultores'
+      // Isto garante que o perfil, pontos, etc. estejam sempre atualizados.
+      if (idToSync != null) {
+        print('>>> [FIREBASE] Sync automático: consultores');
+        _syncService.syncTableByName('consultores', idConsultor: idToSync);
+      }
+
+      // 3. Sincronizar a tabela específica solicitada no payload (se for diferente de 'consultores')
+      if (table != null && table.isNotEmpty && table != 'consultores') {
+        print('>>> [FIREBASE] Sync solicitado: Tabela $table');
         _syncService.syncTableByName(table, idConsultor: idToSync);
       }
     });

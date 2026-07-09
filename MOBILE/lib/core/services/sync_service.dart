@@ -283,7 +283,7 @@ class SyncService {
             }
             pushed = true;
           }
-        } catch (e) { }
+        } catch (e) {print(">>> [SYNC UPSERT] Erro POST $tableName: $e"); }
       }
     } finally {
       if (!force) _syncingTables.remove(tableName);
