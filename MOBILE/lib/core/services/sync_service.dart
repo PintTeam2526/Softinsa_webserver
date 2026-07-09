@@ -113,6 +113,8 @@ class SyncService {
 
     try {
       String? endpoint;
+      bool shouldIgnoreLastUpdate = ignoreLastUpdate || force;
+
       switch (tableName) {
         case 'learningPaths': endpoint = '/syncMobile/learningpaths'; break;
         case 'serviceLines': endpoint = '/syncMobile/servicelines'; break;
@@ -129,12 +131,17 @@ class SyncService {
         case 'historicoPedidos': if (idConsultor != null) endpoint = '/syncMobile/historicoPedidos/$idConsultor'; break;
         case 'documentacoes': if (idConsultor != null) endpoint = '/syncMobile/documentacoes/$idConsultor'; break;
         case 'conquistasConsultores': if (idConsultor != null) endpoint = '/syncMobile/conquistasConsultores/$idConsultor'; break;
-        case 'badgesRecomendados': endpoint = '/syncMobile/badges/recomendados'; break;
+        case 'badgesRecomendados':
+          if (idConsultor != null) {
+            endpoint = '/badges/recomendados';
+            shouldIgnoreLastUpdate = true;
+          }
+          break;
         case 'badgesFavoritos': if (idConsultor != null) endpoint = '/syncMobile/badges/favoritos/$idConsultor'; break;
       }
 
       if (endpoint != null) {
-        await _syncTable(tableName: tableName, endpoint: endpoint, idConsultor: idConsultor, ignoreLastUpdate: ignoreLastUpdate || force);
+        await _syncTable(tableName: tableName, endpoint: endpoint, idConsultor: idConsultor, ignoreLastUpdate: shouldIgnoreLastUpdate);
       }
     } finally { if (!force) _syncingTables.remove(tableName); }
   }
@@ -154,7 +161,16 @@ class SyncService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         dynamic decoded = jsonDecode(response.body);
-        List<dynamic> remoteData = (decoded is List) ? decoded : (decoded is Map && decoded.containsKey('data')) ? decoded['data'] : (decoded is Map && decoded.containsKey('recomendados')) ? decoded['recomendados'] : [decoded];
+        
+        List<dynamic> remoteData;
+        if (tableName == 'badgesRecomendados' && decoded is Map && decoded.containsKey('recomendados')) {
+          remoteData = [
+            ...(decoded['recomendados'] is List ? decoded['recomendados'] : []),
+            ...(decoded['restantes'] is List ? decoded['restantes'] : [])
+          ];
+        } else {
+          remoteData = (decoded is List) ? decoded : (decoded is Map && decoded.containsKey('data')) ? decoded['data'] : [decoded];
+        }
 
         bool hasChanges = false;
         for (var item in remoteData) {
@@ -221,7 +237,12 @@ class SyncService {
           return {'ID_CONQUISTA_CONSULTOR': m.id_conquista_consultor, 'ID_CONSULTOR': idConsultor ?? m.id_consultor, 'ID_CONQUISTA': m.id_conquista};
         case 'badgesRecomendados':
           final m = BadgesRecomendadosModel.fromJson(item);
-          return {'ID_BADGE': m.idBadge, 'NOME_BADGE': m.nomeBadge, 'IMAGEM_BADGE': await _saveImageLocally(m.imagemBadge, 'recomendados', 'rec_${m.idBadge}')};
+          return {
+            'ID_BADGE': m.idBadge,
+            'ID_CONSULTOR': idConsultor,
+            'NOME_BADGE': m.nomeBadge,
+            'IMAGEM_BADGE': await _saveImageLocally(m.imagemBadge, 'recomendados', 'rec_${m.idBadge}')
+          };
         case 'badgesFavoritos':
           final m = BadgesFavoritosModel.fromJson(item);
           return {'ID_BADGE': m.id, 'FAVORITO': m.setFavorito != null ? 1 : 0};

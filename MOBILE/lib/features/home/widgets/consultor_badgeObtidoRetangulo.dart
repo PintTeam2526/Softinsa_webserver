@@ -182,13 +182,13 @@ class ConsultorBadgeObtidoRetangulo extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             _buildButton(
-                              label: 'Certificado PDF',
+                              label: 'Certificado',
                               onPressed: onCertificado,
                               color: primaryColor,
                             ),
                             const SizedBox(height: 8),
                             _buildButton(
-                              label: 'Partilhar Badge',
+                              label: 'Partilhar',
                               onPressed: onPartilhar,
                               color: primaryColor,
                             ),

@@ -27,7 +27,8 @@ class _EcraBadgesRecomendadosState extends ConsumerState<EcraBadgesRecomendados>
     // Sincroniza a tabela apenas uma vez ao entrar para evitar loops
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!_isInitialSyncDone) {
-        await SyncService.instance.syncTableByName('badgesRecomendados');
+        final id = AppState().idConsultor;
+        await SyncService.instance.syncTableByName('badgesRecomendados', idConsultor: id);
         if (mounted) {
           setState(() {
             _isInitialSyncDone = true;

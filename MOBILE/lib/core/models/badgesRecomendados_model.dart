@@ -4,16 +4,16 @@ class BadgesRecomendadosModel {
   final String imagemBadge;
 
   BadgesRecomendadosModel({
-   required this.idBadge,
-   required this.nomeBadge,
-   required this.imagemBadge,
-});
+    required this.idBadge,
+    required this.nomeBadge,
+    required this.imagemBadge,
+  });
 
   factory BadgesRecomendadosModel.fromJson(Map<String, dynamic> json) {
     return BadgesRecomendadosModel(
-      idBadge: json['id_badge'],
-      nomeBadge: json['nome_badge'],
-      imagemBadge: json['imagem_badge']
+      idBadge: int.tryParse((json['id_badge'] ?? json['ID_BADGE'] ?? json['id'] ?? '0').toString()) ?? 0,
+      nomeBadge: (json['nome_badge'] ?? json['NOME_BADGE'] ?? json['nome'] ?? '').toString(),
+      imagemBadge: (json['imagem_badge'] ?? json['IMAGEM_BADGE'] ?? json['imagem'] ?? '').toString(),
     );
   }
 

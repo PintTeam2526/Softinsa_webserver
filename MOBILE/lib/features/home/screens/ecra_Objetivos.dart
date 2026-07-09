@@ -150,13 +150,21 @@ class _EcraObjetivosState extends ConsumerState<EcraObjetivos> {
                     }
 
                     if (_filtroAtivo == 'Expirados') {
+                      // ANTIGO -> final naoConcluido = obj.data_conclusao_objetivo == null || obj.data_conclusao_objetivo!.isEmpty;
                       final naoConcluido = obj.data_conclusao_objetivo == null || obj.data_conclusao_objetivo!.isEmpty;
                       if (!naoConcluido) return false;
                       try {
+                        //DateTime dataLimite = DateFormat("dd/MM/yyyy").parse(obj.data_limite_conclusao);
+                        //final today = DateTime.now();
+                        //final todayDate = DateTime(today.year, today.month, today.day);
+                        //return matchPesquisa && dataLimite.isBefore(todayDate);
+
                         DateTime dataLimite = DateFormat("dd/MM/yyyy").parse(obj.data_limite_conclusao);
-                        final today = DateTime.now();
-                        final todayDate = DateTime(today.year, today.month, today.day);
-                        return matchPesquisa && dataLimite.isBefore(todayDate);
+
+                        final agora = DateTime.now();
+                        final hoje = DateTime(agora.year, agora.month, agora.day);
+
+                        return matchPesquisa && dataLimite.isBefore(hoje);
                       } catch (e) {
                         return false;
                       }

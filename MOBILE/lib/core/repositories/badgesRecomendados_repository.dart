@@ -35,7 +35,8 @@ class BadgesRecomendadosRepository {
 
       final List<Map<String, dynamic>> maps = await db.rawQuery('''
         SELECT br.* FROM badgesRecomendados br
-        WHERE br.ID_BADGE NOT IN (
+        WHERE br.ID_CONSULTOR = ?
+        AND br.ID_BADGE NOT IN (
           SELECT o.ID_BADGE FROM objetivos o 
           WHERE o.ID_CONSULTOR = ? 
           AND (
@@ -47,7 +48,7 @@ class BadgesRecomendadosRepository {
           SELECT bc.ID_BADGE FROM badgesConcluidos bc WHERE bc.ID_CONSULTOR = ?
         )
         LIMIT 18
-      ''', [idConsultor, idConsultor]);
+      ''', [idConsultor, idConsultor, idConsultor]);
 
       if (maps.isEmpty) {
         print(">> [BADGES_RECOMENDADOS] Nenhum badge recomendado disponível após filtragem.");
