@@ -599,10 +599,12 @@ function ConsultorBadgePageView({ isGuest = false }) {
                   <span>{badge.status}</span>
                 </span>
               )}
-              <span className="consultor-badge-info-status-row">
-                <HiOutlineCurrencyEuro aria-hidden="true" />
-                <span>{badge.pago === true ? 'Inclui documentação paga' : badge.pago === false ? 'Badge Gratuito' : '—'}</span>
-              </span>
+              {badge.isSpecial && (
+                <span className="consultor-badge-info-status-row">
+                  <HiOutlineCurrencyEuro aria-hidden="true" />
+                  <span>Inclui documentação paga</span>
+                </span>
+              )}
               {!isGuest && (
                 <span className="consultor-badge-info-status-row">
                   <HiOutlineCalendarDays aria-hidden="true" />
