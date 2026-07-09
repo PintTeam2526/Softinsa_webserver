@@ -142,6 +142,67 @@ function InfoButton({ name, description, image, cp }) {
   )
 }
 
+function TabSkeleton({ cp }) {
+  return (
+    <div className={`${cp}-tab`} aria-hidden="true">
+      <span className={`${cp}-skeleton ${cp}-skeleton-tab-label`} />
+    </div>
+  )
+}
+
+function BadgeCardSkeleton({ cp }) {
+  return (
+    <div className={`${cp}-card`} aria-hidden="true">
+      <div className={`${cp}-card-icon ${cp}-skeleton ${cp}-skeleton-circle`} />
+      <div className={`${cp}-card-copy`}>
+        <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-title`} />
+        <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-sm`} />
+        <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-xs`} />
+      </div>
+    </div>
+  )
+}
+
+function BadgesAreaSkeleton({ cp }) {
+  return (
+    <div className={`${cp}-areas-card`} aria-hidden="true">
+      {Array.from({ length: 2 }).map((_, i) => (
+        <div key={i}>
+          {i > 0 ? <div className={`${cp}-divider`} /> : null}
+          <div className={`${cp}-area-section`}>
+            <div className={`${cp}-area-trigger`}>
+              <div className={`${cp}-area-trigger-main`}>
+                <div className={`${cp}-area-icon ${cp}-skeleton ${cp}-skeleton-square`} />
+                <div className={`${cp}-area-trigger-copy`}>
+                  <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-md`} />
+                  <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-sm mt-1`} />
+                </div>
+              </div>
+            </div>
+
+            {i === 0 && (
+              <div className={`${cp}-area-body`}>
+                <div className={`${cp}-badge-group`}>
+                  <div className={`${cp}-badge-group-title`}>
+                    <span className={`${cp}-skeleton ${cp}-skeleton-line ${cp}-skeleton-line-sm`} />
+                  </div>
+                  <Row className="justify-content-center g-2">
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <Col xs="auto" key={j}>
+                        <BadgeCardSkeleton cp={cp} />
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── componente principal ──────────────────────────────────────────────────────
 
 function TalentManagerBadgesView({
@@ -155,6 +216,7 @@ function TalentManagerBadgesView({
   const navigate = useNavigate()
 
   const [learningPaths, setLearningPaths] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeTabId, setActiveTabId] = useState(null)
   const [openSection, setOpenSection] = useState(null)
   const [showExport, setShowExport] = useState(false)
@@ -171,6 +233,7 @@ function TalentManagerBadgesView({
 
   async function loadData() {
     try {
+      setLoading(true)
       const [lpData, slData, areasData, badgesData] = await Promise.all([
         getLearningPaths(),
         getServiceLines(),
@@ -235,6 +298,8 @@ function TalentManagerBadgesView({
       }
     } catch (error) {
       console.error('Erro ao carregar badges:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -349,25 +414,29 @@ function TalentManagerBadgesView({
         <div className={`${cp}-toolbar`}>
           {/* Tabs = Learning Paths */}
           <div className={`${cp}-tabs`} role="tablist" aria-label="Categorias de badges">
-            {learningPaths.map((lp) => (
-              <button
-                key={lp.id}
-                type="button"
-                className={`${cp}-tab${activeTabId === lp.id ? ' is-active' : ''}`}
-                role="tab"
-                aria-selected={activeTabId === lp.id}
-                onClick={() => {
-                  setActiveTabId(lp.id)
-                  const firstSL = lp.serviceLines[0]
-                  setOpenSection(firstSL ? firstSL.id : null)
-                }}
-              >
-                <span className={`${cp}-tab-label`}>
-                  {lp.title}
-                  <InfoButton cp={cp} name={lp.title} description={lp.description} image={lp.image} />
-                </span>
-              </button>
-            ))}
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => <TabSkeleton key={i} cp={cp} />)
+            ) : (
+              learningPaths.map((lp) => (
+                <button
+                  key={lp.id}
+                  type="button"
+                  className={`${cp}-tab${activeTabId === lp.id ? ' is-active' : ''}`}
+                  role="tab"
+                  aria-selected={activeTabId === lp.id}
+                  onClick={() => {
+                    setActiveTabId(lp.id)
+                    const firstSL = lp.serviceLines[0]
+                    setOpenSection(firstSL ? firstSL.id : null)
+                  }}
+                >
+                  <span className={`${cp}-tab-label`}>
+                    {lp.title}
+                    <InfoButton cp={cp} name={lp.title} description={lp.description} image={lp.image} />
+                  </span>
+                </button>
+              ))
+            )}
           </div>
 
           {!isGuest && showExportButton ? (
@@ -405,155 +474,159 @@ function TalentManagerBadgesView({
         ) : null}
 
         {/* Acordeão: Service Lines → Áreas → Badges */}
-        <div className={`${cp}-areas-card`}>
-          {serviceLines.length === 0 ? (
-            <p style={{ padding: '1rem' }}>Sem dados disponíveis.</p>
-          ) : (
-            serviceLines.map((sl, index) => {
-              const isOpen = openSection === sl.id
-              const areaCount = sl.areas.length
-              const badgeCount = sl.areas.reduce((sum, a) => sum + a.badges.length, 0)
-              const detail = `${areaCount} Área${areaCount !== 1 ? 's' : ''} • ${badgeCount} Badge${badgeCount !== 1 ? 's' : ''}`
+        {loading ? (
+          <BadgesAreaSkeleton cp={cp} />
+        ) : (
+          <div className={`${cp}-areas-card`}>
+            {serviceLines.length === 0 ? (
+              <p style={{ padding: '1rem' }}>Sem dados disponíveis.</p>
+            ) : (
+              serviceLines.map((sl, index) => {
+                const isOpen = openSection === sl.id
+                const areaCount = sl.areas.length
+                const badgeCount = sl.areas.reduce((sum, a) => sum + a.badges.length, 0)
+                const detail = `${areaCount} Área${areaCount !== 1 ? 's' : ''} • ${badgeCount} Badge${badgeCount !== 1 ? 's' : ''}`
 
-              return (
-                <div key={sl.id}>
-                  {index > 0 ? <div className={`${cp}-divider`} aria-hidden="true" /> : null}
+                return (
+                  <div key={sl.id}>
+                    {index > 0 ? <div className={`${cp}-divider`} aria-hidden="true" /> : null}
 
-                  <div className={`${cp}-area-section${isOpen ? ' is-open' : ''}`}>
-                    <button
-                      type="button"
-                      className={`${cp}-area-trigger`}
-                      onClick={() => toggleSection(sl.id)}
-                      aria-expanded={isOpen}
-                    >
-                      <div className={`${cp}-area-trigger-main`}>
-                        <div className={`${cp}-area-icon`}>
-                          <IconAreaMenu className={`${cp}-area-icon-svg`} />
+                    <div className={`${cp}-area-section${isOpen ? ' is-open' : ''}`}>
+                      <button
+                        type="button"
+                        className={`${cp}-area-trigger`}
+                        onClick={() => toggleSection(sl.id)}
+                        aria-expanded={isOpen}
+                      >
+                        <div className={`${cp}-area-trigger-main`}>
+                          <div className={`${cp}-area-icon`}>
+                            <IconAreaMenu className={`${cp}-area-icon-svg`} />
+                          </div>
+                          <div className={`${cp}-area-trigger-copy`}>
+                            <strong>Service Line: {sl.title} <InfoButton cp={cp} name={sl.title} description={sl.description} image={sl.image} /> </strong>
+                            <span>{detail}</span>
+                          </div>
                         </div>
-                        <div className={`${cp}-area-trigger-copy`}>
-                          <strong>Service Line: {sl.title} <InfoButton cp={cp} name={sl.title} description={sl.description} image={sl.image} /> </strong>
-                          <span>{detail}</span>
+                        <div className={`${cp}-area-chevron${isOpen ? ' is-open' : ''}`} aria-hidden="true">
+                          <img alt="" src={imgChevron} />
                         </div>
-                      </div>
-                      <div className={`${cp}-area-chevron${isOpen ? ' is-open' : ''}`} aria-hidden="true">
-                        <img alt="" src={imgChevron} />
-                      </div>
-                    </button>
+                      </button>
 
-                    {isOpen ? (
-                      <div className={`${cp}-area-body`}>
-                        {sl.areas.length === 0 ? (
-                          <p style={{ padding: '0.5rem 1rem', opacity: 0.6 }}>Sem áreas definidas.</p>
-                        ) : (
-                          sl.areas.map((area) => (
-                            <div key={area.id} className={`${cp}-badge-group`}>
-                              <div className={`${cp}-badge-group-title`}>
-                                <span>Área: {area.title} <InfoButton cp={cp} name={area.title} description={area.description} image={area.image} /></span>
+                      {isOpen ? (
+                        <div className={`${cp}-area-body`}>
+                          {sl.areas.length === 0 ? (
+                            <p style={{ padding: '0.5rem 1rem', opacity: 0.6 }}>Sem áreas definidas.</p>
+                          ) : (
+                            sl.areas.map((area) => (
+                              <div key={area.id} className={`${cp}-badge-group`}>
+                                <div className={`${cp}-badge-group-title`}>
+                                  <span>Área: {area.title} <InfoButton cp={cp} name={area.title} description={area.description} image={area.image} /></span>
+                                </div>
+
+                                {area.badges.length === 0 ? (
+                                  <p style={{ padding: '0.5rem', opacity: 0.6 }}>Sem badges definidos.</p>
+                                ) : (
+                                  <Row className="justify-content-center g-2">
+                                    {area.badges.map((badge) => (
+                                      <Col xs="auto" key={badge.id}>
+                                        <BadgeCard
+                                          cp={cp}
+                                          icon={badge.icon}
+                                          title={badge.title}
+                                          level={badge.level}
+                                          points={badge.points}
+                                          onClick={() => handleBadgeClick(badge)}
+                                        />
+                                      </Col>
+                                    ))}
+                                  </Row>
+                                )}
                               </div>
+                            ))
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                )
+              })
+            )}
 
-                              {area.badges.length === 0 ? (
-                                <p style={{ padding: '0.5rem', opacity: 0.6 }}>Sem badges definidos.</p>
+            {/* Modal detalhe do badge */}
+            {selectedBadge ? (
+              <div className={`${cp}-detail-backdrop`} role="presentation" onClick={closeBadgeModal}>
+                <div className={`${cp}-detail-modal`} role="dialog" aria-modal="true" aria-label="Detalhes do badge" onClick={(e) => e.stopPropagation()}>
+                  <div className={`${cp}-detail-top`}>
+                    <div className={`${cp}-detail-badge-wrap`}>
+                      <img
+                        alt=""
+                        src={selectedBadge.icon}
+                        className={`${cp}-detail-badge`}
+                        onError={(e) => { e.target.src = imgModalBadge }}
+                      />
+                    </div>
+                    <button type="button" className={`${cp}-detail-close`} onClick={closeBadgeModal} aria-label="Fechar detalhes">
+                      <FaTimes aria-hidden="true" />
+                    </button>
+                  </div>
+
+                  <div className={`${cp}-detail-copy`}>
+                    <div className={`${cp}-detail-title`}>{selectedBadge.title}</div>
+                    <div className={`${cp}-detail-attributes`}>
+                      <div className={`${cp}-detail-attribute`}>
+                        <IconPoints className={`${cp}-detail-attribute-icon`} />
+                        <span>{selectedBadge.points} Pontos</span>
+                      </div>
+                      {selectedBadge.isSpecial ? (
+                        <div className={`${cp}-detail-attribute`}>
+                          <HiOutlineCurrencyEuro className={`${cp}-detail-attribute-icon`} aria-hidden="true" />
+                          <span>Badge Especial</span>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className={`${cp}-detail-section`}>
+                    <h3>Descrição:</h3>
+                    <p>{selectedBadge.description || 'Sem descrição disponível.'}</p>
+                  </div>
+
+                  <div className={`${cp}-detail-section`}>
+                    <h3>Nível:</h3>
+                    <p>{selectedBadge.level}</p>
+                  </div>
+
+                  <div className={`${cp}-detail-section`}>
+                    <h3>Requisitos:</h3>
+                    {loadingRequisitos ? (
+                      <p className={`${cp}-detail-req-loading`}>A carregar requisitos…</p>
+                    ) : selectedBadgeRequisitos.length === 0 ? (
+                      <p className={`${cp}-detail-req-loading`}>Sem requisitos definidos.</p>
+                    ) : (
+                      <div className={`${cp}-detail-req-list`}>
+                        {selectedBadgeRequisitos.map((req, index) => (
+                          <div key={req.id} className={`${cp}-detail-req-item`}>
+                            <div className={`${cp}-detail-req-number`}>
+                              {req.image ? (
+                                <img src={req.image} alt={req.title} />
                               ) : (
-                                <Row className="justify-content-center g-2">
-                                  {area.badges.map((badge) => (
-                                    <Col xs="auto" key={badge.id}>
-                                      <BadgeCard
-                                        cp={cp}
-                                        icon={badge.icon}
-                                        title={badge.title}
-                                        level={badge.level}
-                                        points={badge.points}
-                                        onClick={() => handleBadgeClick(badge)}
-                                      />
-                                    </Col>
-                                  ))}
-                                </Row>
+                                index + 1
                               )}
                             </div>
-                          ))
-                        )}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              )
-            })
-          )}
-
-          {/* Modal detalhe do badge */}
-          {selectedBadge ? (
-            <div className={`${cp}-detail-backdrop`} role="presentation" onClick={closeBadgeModal}>
-              <div className={`${cp}-detail-modal`} role="dialog" aria-modal="true" aria-label="Detalhes do badge" onClick={(e) => e.stopPropagation()}>
-                <div className={`${cp}-detail-top`}>
-                  <div className={`${cp}-detail-badge-wrap`}>
-                    <img
-                      alt=""
-                      src={selectedBadge.icon}
-                      className={`${cp}-detail-badge`}
-                      onError={(e) => { e.target.src = imgModalBadge }}
-                    />
-                  </div>
-                  <button type="button" className={`${cp}-detail-close`} onClick={closeBadgeModal} aria-label="Fechar detalhes">
-                    <FaTimes aria-hidden="true" />
-                  </button>
-                </div>
-
-                <div className={`${cp}-detail-copy`}>
-                  <div className={`${cp}-detail-title`}>{selectedBadge.title}</div>
-                  <div className={`${cp}-detail-attributes`}>
-                    <div className={`${cp}-detail-attribute`}>
-                      <IconPoints className={`${cp}-detail-attribute-icon`} />
-                      <span>{selectedBadge.points} Pontos</span>
-                    </div>
-                    {selectedBadge.isSpecial ? (
-                      <div className={`${cp}-detail-attribute`}>
-                        <HiOutlineCurrencyEuro className={`${cp}-detail-attribute-icon`} aria-hidden="true" />
-                        <span>Badge Especial</span>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className={`${cp}-detail-section`}>
-                  <h3>Descrição:</h3>
-                  <p>{selectedBadge.description || 'Sem descrição disponível.'}</p>
-                </div>
-
-                <div className={`${cp}-detail-section`}>
-                  <h3>Nível:</h3>
-                  <p>{selectedBadge.level}</p>
-                </div>
-
-                <div className={`${cp}-detail-section`}>
-                  <h3>Requisitos:</h3>
-                  {loadingRequisitos ? (
-                    <p className={`${cp}-detail-req-loading`}>A carregar requisitos…</p>
-                  ) : selectedBadgeRequisitos.length === 0 ? (
-                    <p className={`${cp}-detail-req-loading`}>Sem requisitos definidos.</p>
-                  ) : (
-                    <div className={`${cp}-detail-req-list`}>
-                      {selectedBadgeRequisitos.map((req, index) => (
-                        <div key={req.id} className={`${cp}-detail-req-item`}>
-                          <div className={`${cp}-detail-req-number`}>
-                            {req.image ? (
-                              <img src={req.image} alt={req.title} />
-                            ) : (
-                              index + 1
-                            )}
+                            <div className={`${cp}-detail-req-copy`}>
+                              <strong>{req.title}</strong>
+                              {req.descricao && <span>{req.descricao}</span>}
+                            </div>
                           </div>
-                          <div className={`${cp}-detail-req-copy`}>
-                            <strong>{req.title}</strong>
-                            {req.descricao && <span>{req.descricao}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        )}
       </section>
     </div>
   )
