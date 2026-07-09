@@ -449,7 +449,7 @@ function DashboardView() {
                   <Dropdown.Menu align="start" className="softinsa-learning-path-dropdown-menu">
                     {learningPathBadgeLevels.map((level) => (
                       <Dropdown.Item key={level.value} active={level.value === selectedLearningPathLevel.value} onClick={() => setSelectedLevel(level.value)}>
-                        {level.label}
+                        Nível {level.label}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
