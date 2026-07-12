@@ -13,7 +13,9 @@ controllers.getAllUtilizadores = async (req, res) => {
         const isConsultor = req.user?.role === "c";
 
         if (isConsultor) {
-            const resultado = await Utilizadores.findByPk(req.user.id);
+            const resultado = await Utilizadores.findByPk(req.user.id, {
+                attributes: { exclude: ['password_utilizador'] }
+            });
 
             if (!resultado) {
                 return res.status(404).json({
@@ -31,7 +33,10 @@ controllers.getAllUtilizadores = async (req, res) => {
                 tipo_utilizador: { [Op.ne]: 'a' }
             };
 
-        const resultado = await Utilizadores.findAll({ where: whereClause });
+        const resultado = await Utilizadores.findAll({
+            where: whereClause,
+            attributes: { exclude: ['password_utilizador'] }
+        });
 
         if (!resultado || resultado.length === 0) {
             return res.status(404).json({
@@ -64,7 +69,9 @@ controllers.getUtilizadorById = async (req, res) => {
             });
         }
 
-        const resultado = await Utilizadores.findByPk(id);
+        const resultado = await Utilizadores.findByPk(id, {
+            attributes: { exclude: ['password_utilizador'] }
+        });
 
         if (!resultado) {
             return res.status(404).json({
