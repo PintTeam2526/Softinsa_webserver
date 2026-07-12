@@ -131,7 +131,7 @@ class _EcraPerfilPublicoState extends ConsumerState<EcraPerfilPublico> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: [
                             SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                            const Center(child: Text("Nenhum badge encontrado.")),
+                            const Center(child: Text("Nenhum badge concluido.")),
                           ],
                         )
                       : ListView.builder(

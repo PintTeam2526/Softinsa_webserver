@@ -66,36 +66,6 @@ class _EcraNotificacoesState extends ConsumerState<EcraNotificacoes> {
             ),
             const SizedBox(height: 15),
 
-            // FILTROS
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-              child: Row(
-                children: [
-                  ConsultorFiltroChip(
-                    texto: 'Todas',
-                    icone: 'lib/assets/icons/Icon_Notificacoes_Navbar.svg',
-                    isSelected: _filtroAtivo == 'Todas',
-                    onTap: () => setState(() => _filtroAtivo = 'Todas'),
-                  ),
-                  const SizedBox(width: 13),
-                  ConsultorFiltroChip(
-                    texto: 'Lidas',
-                    icone: 'lib/assets/icons/Icon_NotificacaoLida.svg',
-                    isSelected: _filtroAtivo == 'Lidas',
-                    onTap: () => setState(() => _filtroAtivo = 'Lidas'),
-                  ),
-                  const SizedBox(width: 13),
-                  ConsultorFiltroChip(
-                    texto: 'Não Lidas',
-                    icone: 'lib/assets/icons/Icon_NotificacaoNaoLida.svg',
-                    isSelected: _filtroAtivo == 'Não Lidas',
-                    onTap: () => setState(() => _filtroAtivo = 'Não Lidas'),
-                  ),
-                ],
-              ),
-            ),
-
             // LISTA DE NOTIFICAÇÕES
             Expanded(
               child: notificacoesAsync.when(

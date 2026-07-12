@@ -125,7 +125,7 @@ class _EcraPedidosState extends ConsumerState<EcraPedidos> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: [
                         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                        const Center(child: Text("Não existem pedidos efetuados localmente.")),
+                        const Center(child: Text("Não existem pedidos.")),
                       ],
                     );
                   }
