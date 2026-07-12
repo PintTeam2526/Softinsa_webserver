@@ -17,7 +17,7 @@ var candidaturasRoutes = require('../routes/Candidaturas.route');
 var requisitosRoutes = require('../routes/Requisitos.route');
 var objetivosRoutes = require('../routes/Objetivos.route');
 var syncMobileRoutes = require('../routes/SyncMobile.route');
-
+var mobileAPKRoutes = require('../routes/mobileAPK.route');
 const router = express.Router();
 
 router.use('/autenticacao', autenticacaoRouter);
@@ -37,5 +37,6 @@ router.use('/candidaturas', candidaturasRoutes);
 router.use('/requisitos', requisitosRoutes);
 router.use('/objetivos', objetivosRoutes);
 router.use('/syncMobile', syncMobileRoutes);
+router.use('/mobileAPK', mobileAPKRoutes);
 
 module.exports = router;

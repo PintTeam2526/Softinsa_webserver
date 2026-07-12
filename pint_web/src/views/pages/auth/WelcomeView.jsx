@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './WelcomeView.css'
+import api from '../../../services/api'
 
 function WelcomeView() {
   const navigate = useNavigate()
+  const [isDownloadingAPK, setIsDownloadingAPK] = useState(false)
 
   function handleLogin() {
     const token = localStorage.getItem('token') ?? sessionStorage.getItem('token')
@@ -26,6 +29,38 @@ function WelcomeView() {
       localStorage.removeItem('token')
       sessionStorage.removeItem('token')
       navigate('/login')
+    }
+  }
+
+  const handleDownloadAPK = async () => {
+    if (isDownloadingAPK) return
+
+    setIsDownloadingAPK(true)
+
+    try {
+      const response = await api.get('/mobileAPK/downloadAPK', {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/octet-stream',
+        },
+      })
+
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'] || 'application/vnd.android.package-archive',
+      })
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'Softinsa-mobile.apk'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('Erro ao transferir o APK: ', e)
+    } finally {
+      setIsDownloadingAPK(false)
     }
   }
 
@@ -83,6 +118,17 @@ function WelcomeView() {
           </button>
         </div>
 
+         <div>
+           <button
+            onClick={handleDownloadAPK}
+            className="welcome-btn-secondary mt-2"
+            disabled={isDownloadingAPK}
+            aria-busy={isDownloadingAPK}
+          >
+            {isDownloadingAPK ? 'A transferir APK...' : 'Transferir APK Android para consultores'}
+          </button>
+        </div>
+        
         <a
           href="https://softinsa.pt/"
           target="_blank"
@@ -98,6 +144,9 @@ function WelcomeView() {
             <path d="M2 10L10 2M10 2H5M10 2v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </a>
+
+        
+       
       </div>
 
     </div>
