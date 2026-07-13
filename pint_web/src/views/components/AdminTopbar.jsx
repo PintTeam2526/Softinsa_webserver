@@ -37,13 +37,91 @@ function NotificationRepositoryArrowIcon({ isOpen }) {
   )
 }
 
+function NotificationDeactivateIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="softinsa-shell-notification-item-deactivate-icon" aria-hidden="true">
+      <path
+        d="M5 5L15 15M15 5L5 15"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function NotificationList({ items, expandedId, onToggleItem, onDeactivate, emptyLabel }) {
+  if (!items.length) {
+    return <div className="softinsa-shell-notification-empty">{emptyLabel}</div>
+  }
+
+  return (
+    <div className="softinsa-shell-notification-list">
+      {items.map((item) => {
+        const isExpanded = expandedId === item.id
+
+        return (
+          <div key={item.id} className="softinsa-shell-notification-item-group">
+            <button
+              type="button"
+              className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
+              onClick={() => onToggleItem(item.id)}
+              aria-expanded={isExpanded}
+            >
+              <span className="softinsa-shell-notification-item-left">
+                <span className="softinsa-shell-notification-item-title">{item.title}</span>
+              </span>
+
+              <span className="softinsa-shell-notification-item-right">
+                <span className="softinsa-shell-notification-item-source">{item.source}</span>
+
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="softinsa-shell-notification-item-deactivate"
+                  aria-label="Inativar notificacao"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDeactivate(item.id)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation()
+                      onDeactivate(item.id)
+                    }
+                  }}
+                >
+                  <NotificationDeactivateIcon />
+                </span>
+
+                <NotificationRepositoryArrowIcon isOpen={isExpanded} />
+              </span>
+            </button>
+
+            {isExpanded ? (
+              <div className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}>
+                {item.message}
+              </div>
+            ) : null}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function NotificationRepository({
-  items,
+  globalItems,
+  personalItems,
+  activeTab,
+  onChangeTab,
   expandedId,
   isComposerOpen,
   composeMessage,
   onComposeMessageChange,
   onToggleItem,
+  onDeactivate,
   onClose,
   onToggleComposer,
   onShowRepository,
@@ -86,6 +164,29 @@ function NotificationRepository({
         </button>
       </div>
 
+      {!isComposerOpen ? (
+        <div className="softinsa-shell-notification-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'global'}
+            className={`softinsa-shell-notification-tab${activeTab === 'global' ? ' is-active' : ''}`}
+            onClick={() => onChangeTab('global')}
+          >
+            Globais
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'pessoal'}
+            className={`softinsa-shell-notification-tab${activeTab === 'pessoal' ? ' is-active' : ''}`}
+            onClick={() => onChangeTab('pessoal')}
+          >
+            Pessoais
+          </button>
+        </div>
+      ) : null}
+
       <div className="softinsa-shell-notification-panel-divider" />
 
       {isComposerOpen ? (
@@ -116,38 +217,22 @@ function NotificationRepository({
             </button>
           </div>
         </div>
+      ) : activeTab === 'global' ? (
+        <NotificationList
+          items={globalItems}
+          expandedId={expandedId}
+          onToggleItem={onToggleItem}
+          onDeactivate={onDeactivate}
+          emptyLabel="Sem notificacoes globais."
+        />
       ) : (
-        <div className="softinsa-shell-notification-list">
-          {items.map((item) => {
-            const isExpanded = expandedId === item.id
-
-            return (
-              <div key={item.id} className="softinsa-shell-notification-item-group">
-                <button
-                  type="button"
-                  className={`softinsa-shell-notification-item softinsa-shell-notification-item-${item.tone}`}
-                  onClick={() => onToggleItem(item.id)}
-                  aria-expanded={isExpanded}
-                >
-                  <span className="softinsa-shell-notification-item-left">
-                    <span className="softinsa-shell-notification-item-title">{item.title}</span>
-                  </span>
-
-                  <span className="softinsa-shell-notification-item-right">
-                    <span className="softinsa-shell-notification-item-source">{item.source}</span>
-                    <NotificationRepositoryArrowIcon isOpen={isExpanded} />
-                  </span>
-                </button>
-
-                {isExpanded ? (
-                  <div className={`softinsa-shell-notification-message softinsa-shell-notification-message-${item.tone}`}>
-                    {item.message}
-                  </div>
-                ) : null}
-              </div>
-            )
-          })}
-        </div>
+        <NotificationList
+          items={personalItems}
+          expandedId={expandedId}
+          onToggleItem={onToggleItem}
+          onDeactivate={onDeactivate}
+          emptyLabel="Sem notificacoes pessoais."
+        />
       )}
     </div>
   )
@@ -173,7 +258,10 @@ const AdminTopbar = memo(() => {
     isNotificationComposerOpen,
     expandedNotificationId,
     notificationBroadcastMessage,
-    notificationItems,
+    activeNotificationTab,
+    setActiveNotificationTab,
+    globalNotificationItems,
+    personalNotificationItems,
     toggleNotifications,
     closeNotifications,
     toggleNotificationMessage,
@@ -181,6 +269,7 @@ const AdminTopbar = memo(() => {
     showRepository,
     sendBroadcast,
     setNotificationBroadcastMessage,
+    handleDeactivateNotification,
   } = useTopbarController()
 
   const [profile, setProfile] = useState(null)
@@ -222,12 +311,16 @@ const AdminTopbar = memo(() => {
 
           {isNotificationsOpen ? (
             <NotificationRepository
-              items={notificationItems}
+              globalItems={globalNotificationItems}
+              personalItems={personalNotificationItems}
+              activeTab={activeNotificationTab}
+              onChangeTab={setActiveNotificationTab}
               expandedId={expandedNotificationId}
               isComposerOpen={isNotificationComposerOpen}
               composeMessage={notificationBroadcastMessage}
               onComposeMessageChange={setNotificationBroadcastMessage}
               onToggleItem={toggleNotificationMessage}
+              onDeactivate={handleDeactivateNotification}
               onClose={closeNotifications}
               onToggleComposer={toggleComposer}
               onShowRepository={showRepository}

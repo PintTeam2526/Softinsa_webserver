@@ -144,16 +144,14 @@
   width: 8px;
   height: 21px;
   display: inline-block;
-  background: linear-gradient(
-    to right,
-    #8a92a6 0,
-    #8a92a6 1px,
-    transparent 1px,
-    transparent 4px,
-    #8a92a6 4px,
-    #8a92a6 5px,
-    transparent 5px
-  );
+  background: linear-gradient(to right,
+      #8a92a6 0,
+      #8a92a6 1px,
+      transparent 1px,
+      transparent 4px,
+      #8a92a6 4px,
+      #8a92a6 5px,
+      transparent 5px);
 }
 
 .softinsa-shell-notification-panel-add {
@@ -447,6 +445,60 @@
   outline: none;
 }
 
+.softinsa-shell-notification-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.softinsa-shell-notification-tab {
+  border: 0;
+  background: transparent;
+  color: #8a92a6;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+  padding: 0 0 6px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.softinsa-shell-notification-tab.is-active {
+  color: #232d42;
+  border-bottom-color: #3a57e8;
+}
+
+.softinsa-shell-notification-empty {
+  color: #8a92a6;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px 15px;
+}
+
+.softinsa-shell-notification-item-deactivate {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a92a6;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.softinsa-shell-notification-item-deactivate:hover {
+  color: #d49690;
+  background: rgba(212, 150, 144, 0.15);
+}
+
+.softinsa-shell-notification-item-deactivate-icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
 @media (max-width: 992px) {
   .softinsa-shell-topbar {
     flex-wrap: nowrap;
@@ -470,7 +522,7 @@
     display: none;
   }
 
-.softinsa-shell-profile-panel {
+  .softinsa-shell-profile-panel {
     width: min(263px, calc(100vw - 20px));
     padding: 16px;
     right: -4px;
