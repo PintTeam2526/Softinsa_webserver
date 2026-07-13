@@ -1,6 +1,26 @@
 import api from '../services/api'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { getNotifications, createNotification } from './notificacoesController'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getNotifications, createNotification, deactivateNotification } from './notificacoesController'
+
+// tipo: 1-informação, 2-aviso, 3-perigo, 4-correto/válido
+const TIPO_TONE_MAP = {
+  1: 'info',
+  2: 'warning',
+  3: 'danger',
+  4: 'success',
+}
+
+function mapNotificacao(n) {
+  return {
+    id: n.id_notificacao,
+    id_consultor: n.id_consultor,
+    title: n.notificacao,
+    source: n.remetente,
+    tone: TIPO_TONE_MAP[n.tipo] || 'info',
+    message: n.descricao ?? n.notificacao,
+    grupo: n.id_consultor === null ? 'global' : 'pessoal',
+  }
+}
 
 export function useTopbarController() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
@@ -9,6 +29,7 @@ export function useTopbarController() {
   const [expandedNotificationId, setExpandedNotificationId] = useState(null)
   const [notificationBroadcastMessage, setNotificationBroadcastMessage] = useState('')
   const [notificationItems, setNotificationItems] = useState([])
+  const [activeNotificationTab, setActiveNotificationTab] = useState('global')
 
   const notificationWrapRef = useRef(null)
   const profileWrapRef = useRef(null)
@@ -34,21 +55,15 @@ export function useTopbarController() {
     resetNotificationsState()
   }, [resetNotificationsState])
 
-  useEffect(() => {
-    getNotifications()
-      .then((data) =>
-        setNotificationItems(
-          data.map((n, index) => ({
-            id: `notif-${index}`,
-            title: n.notificacao,
-            source: n.remetente,
-            tone: 'info',
-            message: n.descricao ?? n.notificacao,
-          }))
-        )
-      )
+  const loadNotifications = useCallback(() => {
+    return getNotifications()
+      .then((data) => setNotificationItems(data.map(mapNotificacao)))
       .catch((err) => console.error('Erro ao carregar notificacoes', err))
   }, [])
+
+  useEffect(() => {
+    loadNotifications()
+  }, [loadNotifications])
 
   useEffect(() => {
     window.addEventListener('softinsa:open-notifications', openNotifications)
@@ -115,18 +130,10 @@ export function useTopbarController() {
         id_consultor: null,
       })
 
-      const data = await getNotifications()
-      setNotificationItems(
-        data.map((n, index) => ({
-          id: `notif-${index}`,
-          title: n.notificacao,
-          source: n.remetente,
-          tone: 'info',
-          message: n.descricao ?? n.notificacao,
-        }))
-      )
+      await loadNotifications()
 
-      setExpandedNotificationId('notif-0')
+      setActiveNotificationTab('global')
+      setExpandedNotificationId(null)
       setIsNotificationComposerOpen(false)
       setNotificationBroadcastMessage('')
       setIsNotificationsOpen(true)
@@ -136,7 +143,26 @@ export function useTopbarController() {
     }
   }
 
-  // ← return aqui, fora do sendBroadcast, dentro do useTopbarController
+  async function handleDeactivateNotification(id) {
+    try {
+      await deactivateNotification(id)
+      setNotificationItems((prev) => prev.filter((item) => item.id !== id))
+      setExpandedNotificationId((prev) => (prev === id ? null : prev))
+    } catch (err) {
+      console.error('Erro ao inativar notificacao', err)
+    }
+  }
+
+  const globalNotificationItems = useMemo(
+    () => notificationItems.filter((item) => item.grupo === 'global'),
+    [notificationItems]
+  )
+
+  const personalNotificationItems = useMemo(
+    () => notificationItems.filter((item) => item.grupo === 'pessoal'),
+    [notificationItems]
+  )
+
   return {
     notificationWrapRef,
     profileWrapRef,
@@ -146,6 +172,10 @@ export function useTopbarController() {
     expandedNotificationId,
     notificationBroadcastMessage,
     notificationItems,
+    activeNotificationTab,
+    setActiveNotificationTab,
+    globalNotificationItems,
+    personalNotificationItems,
     toggleNotifications,
     openNotifications,
     closeNotifications,
@@ -155,6 +185,7 @@ export function useTopbarController() {
     toggleProfileMenu,
     sendBroadcast,
     setNotificationBroadcastMessage,
+    handleDeactivateNotification,
   }
 }
 

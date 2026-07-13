@@ -22,3 +22,14 @@ export const createNotification = async (payload) => {
         throw error
     }
 }
+
+// Desativar uma Notificação (Admin: qualquer uma / Consultor: só as suas pessoais)
+export const deactivateNotification = async (id) => {
+    try {
+        const response = await api.post(`/notificacoes/desativar/${id}`)
+        return response.data
+    } catch (error) {
+        console.error('Erro ao inativar notificacao', error)
+        throw error
+    }
+}
