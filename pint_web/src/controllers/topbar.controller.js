@@ -128,6 +128,7 @@ export function useTopbarController() {
         descricao: trimmedMessage,
         remetente: 'Admin',
         id_consultor: null,
+        tipo: 1,
       })
 
       await loadNotifications()
