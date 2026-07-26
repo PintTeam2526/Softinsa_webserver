@@ -1,14 +1,3 @@
--- ============================================================
--- SEED: Softinsa API — Dados Placeholder
--- Passwords hashed com bcrypt (cost=10)
--- ============================================================
--- ============================================================
--- 1. Utilizadores
--- Password hashes (bcrypt, cost=10):
---   "123456"     -> $2b$10$aPmmoiRP5J6giFUDeOEsgec2ZTotulMnpuBxkFUXBH0FyYrXWQaR.
---   "admin123"   -> $2b$10$q7grLZi3EFDNK7Bvf2PfneKAmguswEADXPe8IhJOpYNzUwIjtpWca
---   "password123" -> $2b$10$FDHqgkwHpCZ9qeZ2k5jI9.04EC.IJC/p7hJiNRwMG7swcs1R.U98S
--- ============================================================
 INSERT INTO "Utilizadores"
     (
         nome_utilizador    ,
